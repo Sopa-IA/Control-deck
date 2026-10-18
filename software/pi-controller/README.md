@@ -23,6 +23,9 @@ python -m orbitd --serial /dev/ttyACM0                      # Arduino real
 | `ORBIT_UI_TOKEN` | Opcional: token para la interfaz |
 | `--host` | `127.0.0.1` por defecto; fuera de localhost exige los dos tokens |
 | `--state-dir` | Dónde se guarda `controls.json` (por defecto `~/.local/state/orbitd`) |
+| `ORBIT_REMOTE_CMD` | Modo A (remoto): orden del visor del escritorio del HP, sin shell (p. ej. Moonlight) |
+| `ORBIT_CAPTURE_DEVICE`, `ORBIT_CAPTURE_CMD` | Modo C (capturadora HDMI→USB): dispositivo V4L2 (`/dev/videoN` o `/dev/v4l/by-id/…`) y visor sin shell; `{device}` se sustituye |
+| `ORBIT_VIDEO_DDC`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS` | Modo B (DDC/CI, poco probable con la MSI) |
 
 La telemetría de la Pi es **real**: se lee con psutil del equipo donde corre orbitd. Si ese equipo no es una Raspberry Pi, el campo `model` lo indica.
 
