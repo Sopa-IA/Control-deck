@@ -74,7 +74,16 @@
         "hp": { "$ref": "#/$defs/node" },
         "pi": { "$ref": "#/$defs/node" },
         "arduino": { "$ref": "#/$defs/node" },
-        "video_input": { "enum": ["hp", "pi", "desconocida"], "description": "Entrada del MSI: se cambia a mano en el OSD; orbitd no la conoce (siempre 'desconocida' salvo que el usuario la indique)." }
+        "video_input": { "enum": ["hp", "pi", "desconocida"], "description": "Entrada física activa de la MSI: 'pi' en modo remoto (la MSI muestra siempre la Pi); en modo ddc, la última fijada por DDC/CI; 'desconocida' si no se sabe." },
+        "visible": {
+          "type": "object", "required": ["system", "mode"], "additionalProperties": false,
+          "description": "Sistema que el usuario ve y cómo se consigue. remoto = escritorio del HP en un visor de la Pi (modo A); ddc = entrada de la MSI cambiada por DDC/CI (modo B).",
+          "properties": {
+            "system": { "enum": ["hp", "pi"] },
+            "mode": { "enum": ["remoto", "ddc"] },
+            "detail": { "type": "string", "maxLength": 200 }
+          }
+        }
       }
     },
     "telemetry": {

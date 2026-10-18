@@ -16,7 +16,10 @@ Estado: **borrador implementado en v0**, validado solo con tests y simulación. 
 
 - **orbitd** (en la Pi) es el *hub*. Sirve la interfaz estática, acepta WebSockets de la interfaz (`role: ui`) y del agente del HP (`role: hp-agent`), lee el Arduino por serie, aplica la **lista blanca** y reenvía acciones.
 - **hp-agent** abre la conexión **hacia** orbitd (sale del HP), así que el HP no expone ningún puerto.
-- El vídeo **no** pasa por aquí. En el prototipo, el MSI MP161 E2U recibe el HP por una entrada (Mini-HDMI o USB-C) y la Pi por la otra, y la entrada se cambia **a mano en el OSD del monitor**. orbitd no sabe qué entrada está activa (`video_input: "desconocida"`). El KVM queda como opción futura.
+- El vídeo **no** pasa por este protocolo. El cambio de «sistema visible» lo hace **orbitd** con la acción `pi.switch_visible` (botón B2 por defecto); Miguel nunca toca el menú OSD del MSI. Hay dos modos (ver `docs/conmutacion-video-usb.md`):
+  - **remoto** (modo A, base): la MSI muestra siempre la Pi; el escritorio del HP se abre en un visor de la Pi por el Ethernet interno (p. ej. Moonlight contra Sunshine en el HP). orbitd lanza la orden fija de `ORBIT_REMOTE_CMD` (configuración local, nunca desde la interfaz) y la cierra al volver a Orbit OS.
+  - **ddc** (modo B, opcional): orbitd ejecuta `ddcutil setvcp 60 <valor>` con los valores de `ORBIT_DDC_HP` / `ORBIT_DDC_PI` (solo si `ORBIT_VIDEO_DDC=1`, ddcutil existe y los valores son hexadecimales válidos). Si ddcutil falla, vuelve solo al modo remoto. Soporte DDC/CI del MSI y adaptador HDMI→USB-C: **PENDIENTES de verificar**.
+  - El estado `state` lleva `visible: {system: "hp"|"pi", mode: "remoto"|"ddc", detail}` y `video_input` (entrada física: `pi` en modo remoto).
 
 ## 2. Sobre común
 

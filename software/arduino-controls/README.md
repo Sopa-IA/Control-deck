@@ -9,7 +9,7 @@ Este firmware lee los potenciómetros y botones de la consola y los envía a orb
 | P1 (volumen HP) | A0 | Cursor del potenciómetro; extremos a 5 V y GND |
 | P2 (desplazar / foco) | A1 | Ídem |
 | B1 (menú de apagado) | D2 | Pulsador a GND (pull-up interno) |
-| B2 (cambiar sistema: guía OSD) | D3 | Pulsador a GND |
+| B2 (cambiar sistema visible, automático) | D3 | Pulsador a GND |
 | Reservado para datos de la tira LED | D6 | **PENDIENTE**: tira sin identificar |
 
 Notas sobre los pines:
