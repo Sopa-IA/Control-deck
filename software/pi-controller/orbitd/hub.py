@@ -17,6 +17,7 @@ import orbit_protocol as P
 from . import __version__
 from .serial_events import Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
+from .video import VideoConfig, VideoSwitcher
 
 log = logging.getLogger("orbitd")
 
@@ -37,6 +38,7 @@ class Config:
     heartbeat_s: float = P.HEARTBEAT_S
     heartbeat_timeout_s: float = P.HEARTBEAT_TIMEOUT_S
     telemetry_period_s: float = 2.0
+    video: VideoConfig = field(default_factory=VideoConfig)
 
     def check(self) -> None:
         if self.host not in ("127.0.0.1", "localhost", "::1") and not (self.hp_token and self.ui_token):
@@ -66,6 +68,7 @@ class Hub:
         self.pending_confirm: dict[str, dict] = {}
         self.pending_results: dict[str, Client] = {}
         self.mapping = self._load_mapping()
+        self.video = VideoSwitcher(cfg.video)
         self._last_volume_sent = 0.0
         self._volume_pending: Optional[int] = None
         self._tasks: list[asyncio.Task] = []
@@ -95,7 +98,8 @@ class Hub:
                    "detail": "hp-agent conectado" if hp_conn else ("HP simulado" if self.cfg.sim_hp else "hp-agent no conectado")},
             "pi": {"connected": True, "simulated": False, "last_seen": P.now_ms(), "detail": "orbitd local"},
             "arduino": dict(self.arduino),
-            "video_input": "desconocida",
+            "video_input": (self.video.visible if self.video.last_mode == "ddc" else "pi"),
+            "visible": self.video.state(),
         }
 
     # --------------------------------------------------------------- mapeo
@@ -282,6 +286,9 @@ class Hub:
                 if c is not None:
                     await self.error(c, "target_offline", "hp-agent no conectado", reply_to)
                 return
+        elif action == "pi.switch_visible":
+            res = await self.video.switch()
+            await self.broadcast_ui("state", self.state_payload())
         else:
             res = self._pi_action(action, params, spec)
         if c is not None:
@@ -382,6 +389,7 @@ class Hub:
             t.cancel()
         if self._serial:
             self._serial.stop()
+        await self.video.close()
         for c in list(self.clients.values()):
             await c.ws.close()
 
