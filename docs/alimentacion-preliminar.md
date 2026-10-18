@@ -1,0 +1,71 @@
+# Alimentación: enfoque preliminar
+
+> Documento: `docs/alimentacion-preliminar.md` · Fuentes comprobadas el **2026-10-18**
+> **Principios de seguridad (no negociables):**
+> 1. El proyecto **no diseña ningún circuito conectado a la red eléctrica (230 V AC)**. Solo se usan **fuentes comerciales certificadas** (marcado CE, con el modelo identificado) tal como las entrega el fabricante.
+> 2. Dentro del chasis solo circula **baja tensión continua** (≤ 20 V DC según las fuentes elegidas).
+> 3. **La batería queda fuera de la Fase 1**: solo como estudio futuro (ver §5).
+> 4. Ningún consumo se inventa: los valores proceden de datasheets o documentación del fabricante, o figuran como **pendiente**. En la Fase 3 se sustituirán por **mediciones**.
+
+## 1. Arquitectura propuesta (preliminar)
+
+### Variante 1: fuentes externas originales (recomendada para el prototipo)
+```
+Red 230 V ─┬─ Adaptador original del HP (certificado) ────────► HP (conector original)
+           ├─ Fuente oficial de la Raspberry Pi (USB-C 5,1 V) ─► Pi
+           └─ Fuente certificada de 5 V o 12 V para pantalla + LED + KVM ─► Raíl interno DC
+```
+- Se reutiliza el adaptador original del HP (ya certificado y adecuado a su "smart pin", si lo tuviera).
+- La entrada de corriente del chasis puede ser una **regleta comercial certificada** externa. El chasis solo recibe los conectores DC de baja tensión de cada adaptador por pasamuros.
+- Ventaja: cero diseño de red y cada equipo con la fuente para la que fue certificado. Inconveniente: varios adaptadores externos.
+
+### Variante 2: una fuente DC única + convertidores DC-DC (evaluar en la Fase 3)
+```
+Red 230 V ─ Fuente certificada única (p. ej. 19–20 V o 12 V, potencia pendiente) ─► Raíl principal DC
+   ├─ HP (solo si su tensión coincide y el conector o "smart pin" lo permiten)
+   ├─ Convertidor DC-DC comercial → 5,1 V / 5 A → Pi 5 (USB-C sin PD; verificar comportamiento)
+   └─ Convertidor DC-DC comercial → 5 V → pantalla, LED y KVM
+```
+- Solo viable cuando se conozcan la tensión y el conector del HP (U-07). Los convertidores DC-DC serían módulos comerciales con datasheet, no diseño propio. **Pendiente de evaluar.**
+- Riesgo: la Pi 5 negocia 5 A por USB-PD. Con una fuente sin PD limita el USB a 600 mA (documentación oficial). Pendiente de comprobar el método oficial para indicar una fuente de 5 A sin PD (`usb_max_current_enable`, mencionado en la documentación oficial).
+
+## 2. Tabla de consumidores (solo con valores documentados)
+
+| Consumidor | Tensión | Valor documentado | Tipo de dato | Fuente |
+|---|---|---|---|---|
+| HP (modelo desconocido) | **pendiente** | **pendiente** | — | Etiqueta del adaptador + medición (D-4.1/4.4) |
+| Raspberry Pi 5 | 5,1 V | Fuente recomendada de 5,0 A; 800 mA bare-board activo; USB para periféricos de hasta 1,6 A | Recomendación / típico | power-supplies.adoc (oficial)¹ |
+| Raspberry Pi 4B | 5,1 V | Fuente de 3,0 A; 600 mA bare-board; 1,25 A máx. en estrés (tabla oficial) | Recomendación / medido por el fabricante | ¹ |
+| Raspberry Pi 3B+ | 5,1 V | Fuente de 2,5 A; 500 mA bare-board | Recomendación / típico | ¹ |
+| Pi 5 apagada | 5,1 V | ~1–1,4 W por defecto; ~0,01 W con `POWER_OFF_ON_HALT=1` | Fabricante | ¹ |
+| Pantalla Waveshare 12.3" In-Cell (28481) | 5 V | **Máx. 5 W**; adaptador recomendado de 5 V 3 A | Máximo | https://www.waveshare.com/wiki/12.3inch_1920x720_LCD |
+| Pantalla Waveshare 12.3" HDMI LCD 600 nit | 12 V | **1,25 A** de corriente de trabajo | Fabricante | https://www.waveshare.com/wiki/12.3inch_HDMI_LCD |
+| Pantalla Waveshare 11.6" (H) | 12 V (+5 V del USB táctil) | ~0,5 A a 12 V en uso normal (adaptador de 1 A) + ~80 mA a 5 V | Fabricante | https://www.waveshare.com/wiki/11.6inch_HDMI_LCD_(H) |
+| Pantalla Waveshare 10.1" (B) | 5 V | ~750 mA con la retroiluminación encendida, ~300 mA apagada | Fabricante | https://www.waveshare.com/wiki/10.1inch_HDMI_LCD_(B)_(with_case) |
+| Pantalla Elecrow DIS85101D | 5 V | Máx. 5,29 W | Máximo | datasheet de Elecrow |
+| KVM ATEN CS692 | 5 V (bus) | 0,72 W típico sin carga | Fabricante | https://www.aten.com/us/en/products/kvm/cable-kvm-switches/cs692/ |
+| KVM TESmart HKS201-P23-V2 | 12 V DC | **pendiente** (no publicado en la ficha) | — | https://www.tesmart.com/products/hks201-p23-v2 |
+| KVM UGREEN CM664 | USB-C | **pendiente** | — | manual de UGREEN |
+| Tira SK6812 WWA (N LED) | 5 V | Encapsulado de "0,2 W" por LED → cota preliminar de N × 0,2 W | Fabricante (cota) | datasheet SK6812WWA |
+| Codificadores PEC11R (×2) | 3,3 V (lógica) | Contacto de 10 mA a 5 V DC (valor nominal); la corriente real la fija el pull-up (~0,33 mA con 10 kΩ a 3,3 V, por ley de Ohm) | Cálculo | datasheet de Bourns |
+| Ventilador (si hiciera falta) | 5 V | El ventilador de la caja oficial de la Pi consume ~60 mA a 5 V (300 mW) | Fabricante | ¹ |
+
+¹ https://github.com/raspberrypi/documentation/blob/master/documentation/asciidoc/computers/raspberry-pi/power-supplies.adoc
+
+**No se suma un total** porque el término dominante (el HP) es desconocido. El presupuesto de potencia se cerrará cuando se cierre U-07.
+
+## 3. Secuencia de encendido y apagado (lógica preliminar)
+
+1. **Encendido:** al pulsar el botón del chasis, la Pi (siempre alimentada o despertada por GPIO3/J2) arranca. Después enciende el HP por **Wake-on-LAN** (si la BIOS lo permite, U-09) o, como alternativa, con un optoacoplador en paralelo con el botón del HP (solo si se valida el acceso sin modificar la red eléctrica).
+2. **Apagado seguro:** con una pulsación larga, la Pi pide al agente del HP un apagado ordenado (mensaje autenticado), espera la confirmación o la pérdida de latido con un tiempo de espera configurable, y después se apaga ella.
+3. **Corte de corriente:** sin batería no hay apagado limpio posible. Se documenta como limitación y la BIOS "After Power Loss" decidirá el comportamiento al volver la corriente.
+
+## 4. Protecciones previstas (solo en baja tensión)
+- Fusible o polifusible en cada raíl DC interno, dimensionado cuando se conozcan los consumos (pendiente).
+- Conectores con polaridad indicada y cables de sección adecuada a la corriente (cálculo en la Fase 3).
+- Condensador de entrada en la tira LED (valor según la tira elegida).
+- Separación física entre los adaptadores externos y la electrónica interna.
+
+## 5. Batería (solo estudio futuro)
+- No forma parte de la Fase 1 ni del prototipo. Requeriría un SAI/power bank comercial certificado compatible con la tensión del HP o un BMS comercial. El proyecto **no diseñará** cargadores ni BMS propios.
+- Abrir este estudio solo cuando estén cerrados U-07 (fuente del HP) y U-13 (térmica).

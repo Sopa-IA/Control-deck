@@ -1,0 +1,23 @@
+# Dependencias y artefactos
+node_modules/
+dist/
+coverage/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# STEP facetados (42 MB, regenerables con hardware/cad/stl_a_step_freecad.py)
+hardware/cad/export/step/*.step
+
+# Secretos y configuración local: NUNCA al repositorio
+.env
+*.env
+!*.env.example
+config.local.*
+**/secrets/
+*.token
+*.pem
+*.key
