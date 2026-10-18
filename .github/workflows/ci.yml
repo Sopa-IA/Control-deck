@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar
+        run: |
+          pip install -e software/shared/python -e software/pi-controller -e software/hp-agent pytest pytest-asyncio ruff
+      - name: Lint (ruff)
+        run: ruff check software tests
+      - name: Tests (pytest)
+        run: pytest -q
+
+  interface:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software/interface
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: software/interface/package-lock.json
+      - run: npm ci
+      - name: Lint (tsc)
+        run: npm run lint
+      - name: Tests (vitest)
+        run: npm test
+      - name: Build
+        run: npm run build
