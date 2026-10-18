@@ -22,6 +22,7 @@ module conjunto(e = 0) {
     color(C_CUERPO) base();
     color([0.15, 0.15, 0.16]) translate([0, 0, -0.9*e]) bandeja_servicio();
     color([0.13, 0.13, 0.14]) translate([0, 0, -0.9*e + 0.3*e]) soporte_arduino();
+    if (hp_desnuda) color([0.16, 0.16, 0.17]) translate([0, 0, 0.3*e]) soporte_disco();
     translate([0, -1.4*e, 0.15*e]) guias_luz_montadas();
     translate([0, 0, 0.6*e]) componentes_internos();
     color([0.03, 0.03, 0.03]) for (p = pies()) translate([p[0], p[1], -alto_pies - 0.4*e]) cylinder(d = 12, h = alto_pies + 1);
@@ -33,6 +34,7 @@ else if (vista == "interior") {
     color(C_CUERPO) base();
     color([0.14, 0.14, 0.15]) bandeja_servicio();
     color([0.13, 0.13, 0.14]) soporte_arduino();
+    if (hp_desnuda) color([0.16, 0.16, 0.17]) soporte_disco();
     componentes_internos();
     if (interior_con_mandos) { translate([0, 0, 0]) mandos_montados(); color(C_BISEL, 0.25) carcasa_superior(); }
     guias_luz_montadas();
@@ -60,6 +62,8 @@ else if (vista == "check") {
     echo(str("TRAY;", serv_x - serv_ala, ";", serv_y - serv_ala, ";", serv_w + 2*serv_ala, ";", serv_d + 2*serv_ala));
     echo(str("OBST;Canal USB;", ard_cx - canal_usb_ancho/2 - 1.6, ";", canal_usb_y0, ";", suelo, ";", canal_usb_ancho + 3.2, ";", canal_usb_y1 - canal_usb_y0, ";", 8));
     for (p = orejetas) echo(str("OBST;Orejeta;", p[0] - 6, ";", p[1] - 6, ";", suelo, ";", 12, ";", 12, ";", (p[1] > pared + 10 && p[1] < 40) ? H : 11));
+    for (p = empalmes()) echo(str("OBST;Torreta empalme;", p[0] - boss_d/2, ";", p[1] - boss_d/2, ";", suelo, ";", boss_d, ";", boss_d, ";", 5));
+    if (hp_desnuda) echo(str("PARAM;hp_io;", ventana_hp_x, ";", ventana_hp_z, ";", ventana_hp[0], ";", ventana_hp[1]));
     echo(str("OBST;Carril LED;", luz_margen - 3, ";", 0, ";", suelo, ";", W - 2*luz_margen + 6, ";", pared + 8.2, ";", luz_z0 + luz_alto + 2 - suelo));
     cube(1);
 }

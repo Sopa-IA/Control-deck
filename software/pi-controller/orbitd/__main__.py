@@ -9,6 +9,7 @@ from pathlib import Path
 from aiohttp import web
 
 from .hub import Config, build_app
+from .video import VideoConfig
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -28,7 +29,8 @@ def main(argv: list[str] | None = None) -> None:
     logging.basicConfig(level=logging.DEBUG if a.verbose else logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
     cfg = Config(host=a.host, port=a.port, static_dir=a.static, serial_port=a.serial, serial_baud=a.baud,
                  hp_token=os.environ.get("ORBIT_HP_TOKEN") or None, ui_token=os.environ.get("ORBIT_UI_TOKEN") or None,
-                 sim_hp=a.sim or a.sim_hp, sim_controls=a.sim or a.sim_controls, sim_buttons=a.sim_buttons)
+                 sim_hp=a.sim or a.sim_hp, sim_controls=a.sim or a.sim_controls, sim_buttons=a.sim_buttons,
+                 video=VideoConfig.from_env())
     if a.state_dir:
         cfg.state_dir = a.state_dir
     cfg.check()

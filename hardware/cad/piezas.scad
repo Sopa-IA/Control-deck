@@ -31,10 +31,16 @@ module base() {
     difference() {
         union() {
             intersection() { cuerpo_exterior(); translate([-1, -1, 0]) cube([W + 2, D + 2, suelo]); }
-            // raíles del HP
-            for (dx = [12, hp_w - 22]) translate([hp_x + dx, hp_y + 10, suelo - 0.01]) cube([10, hp_d - 20, hp_z - suelo]);
-            // topes del HP (frontal y lateral)
-            translate([hp_x + 30, hp_y - 5, suelo - 0.01]) cube([hp_w - 60, 3, 14]);
+            if (!hp_desnuda) {
+                // raíles del HP (v1, caja Desktop Mini)
+                for (dx = [12, hp_w - 22]) translate([hp_x + dx, hp_y + 10, suelo - 0.01]) cube([10, hp_d - 20, hp_z - suelo]);
+                translate([hp_x + 30, hp_y - 5, suelo - 0.01]) cube([hp_w - 60, 3, 14]);
+            } else {
+                // HP v2: separadores mini-ITX impresos (inserto M3) [patrón PENDIENTE de verificar]
+                for (p = hp_agujeros()) translate([p[0], p[1], suelo - 0.01]) torreta(hp_separador + 0.01, 9);
+                // torretas del soporte del disco
+                for (p = torretas_disco()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = boss_d, h = 2);
+            }
             // torretas de la bandeja
             for (p = torretas_bandeja()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = boss_d, h = 5);
             // torretas del KVM (solo si usar_kvm) [PENDIENTE: el TESmart no publica agujeros]
@@ -52,10 +58,33 @@ module base() {
         }
         // insertos de la bandeja (desde abajo) y de los empalmes
         for (p = concat(torretas_bandeja(), empalmes())) translate([p[0], p[1], -0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
-        // ranuras de entrada de aire bajo el HP
+        // pasos M3 (desde abajo) al soporte del disco
+        if (hp_desnuda) for (p = torretas_disco()) translate([p[0], p[1], -1]) {
+            cylinder(d = tornillo_d, h = suelo + 4);
+            translate([0, 0, 0.99]) mirror([0, 0, 1]) cylinder(d1 = tornillo_d, d2 = 6.6, h = 1.8);
+        }
+        // ranuras de entrada de aire bajo el HP (v2: bajo la placa; entrada de aire fresco)
         for (y = [hp_y + 20 : 9 : hp_y + hp_d - 25]) translate([hp_x + 30, y, -1]) caja_r([hp_w - 60, 4, suelo + 2], 1.9);
         // alojamientos de pies de goma Ø12 x 1 mm [PENDIENTE: pie elegido]
         for (p = pies()) translate([p[0], p[1], -0.01]) cylinder(d = 12.4, h = 1);
+    }
+}
+// Soporte del disco (SSD 2,5" por defecto; HDD 3,5" con usar_hdd_35)
+function torretas_disco() = [for (x = [disco_x - 1, disco_x + disco[0] + 1], y = [disco_y + 6, disco_y + disco[1] - 6]) [x, y]];
+module soporte_disco() {
+    t = 2;
+    difference() {
+        union() {
+            translate([disco_x - 4, disco_y, disco_z - t]) caja_r([disco[0] + 8, disco[1], t], 3);
+            for (p = torretas_disco()) translate([p[0], p[1], suelo + 2]) cylinder(d = boss_d, h = disco_z - t - suelo - 2 + 0.01);
+            // topes laterales bajos
+            for (x = [disco_x - 4, disco_x + disco[0] + 1]) translate([x, disco_y + 15, disco_z - 0.01]) cube([3, disco[1] - 30, 4]);
+        }
+        for (p = torretas_disco()) translate([p[0], p[1], suelo + 1]) cylinder(d = inserto_d, h = inserto_l + 1);
+        // colisos para los tornillos inferiores del disco (posición exacta SFF [PENDIENTE])
+        for (x = [disco_x + 4, disco_x + disco[0] - 4 - 4]) translate([x, disco_y + 8, disco_z - t - 1]) caja_r([4, disco[1] - 16, t + 2], 1.9);
+        // ventana central (aire y peso)
+        translate([disco_x + 16, disco_y + 14, disco_z - t - 1]) caja_r([disco[0] - 32, disco[1] - 28, t + 2], 4);
     }
 }
 function torretas_bandeja() = [for (x = [serv_x - serv_ala/2, serv_x + serv_w + serv_ala/2],
@@ -64,7 +93,7 @@ function pies() = [[25, 25], [W - 25, 25], [25, D - 25], [W - 25, D - 25]];
 // Empalmes: pares de torretas a ambos lados de cada junta de la base
 function empalmes() = concat(
     [for (i = [1 : 1 : nx_cortes - 1]) for (y = [D*0.3, D*0.62]) for (s = [-1, 1]) [corte_x(i) + s*9, y]],
-    [for (j = [1 : 1 : ny_cortes - 1]) for (x = [W*0.22, W*0.5 + 30]) for (s = [-1, 1]) [x, corte_y(j) + s*9]]);
+    [for (j = [1 : 1 : ny_cortes - 1]) for (x = (hp_desnuda ? [hp_x + hp_w + 14, W*0.5 + 30] : [W*0.22, W*0.5 + 30])) for (s = [-1, 1]) [x, corte_y(j) + s*9]]);
 // Pletina de empalme (une dos trozos de base por dentro con 2 tornillos M3)
 module pletina_empalme() { difference() { caja_r([30, 10, 3], 2);
     for (x = [6, 24]) translate([x, 5, -1]) cylinder(d = tornillo_d, h = 5); } }

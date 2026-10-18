@@ -63,7 +63,8 @@ async def test_ui_handshake_state_mapping(server):
         w = await recv(ws, "welcome")
         assert w["payload"]["mode"] == "real"
         st = await recv(ws, "state")
-        assert st["payload"]["hp"]["connected"] is False and st["payload"]["video_input"] == "desconocida"
+        assert st["payload"]["hp"]["connected"] is False and st["payload"]["video_input"] == "pi"
+        assert st["payload"]["visible"]["system"] == "pi" and st["payload"]["visible"]["mode"] == "remoto"
         mp = await recv(ws, "mapping")
         assert mp["payload"]["pots"]["P1"] == "hp.volume_set"
         tel = await recv(ws, "telemetry")
@@ -133,6 +134,19 @@ async def test_full_flow_with_hp_agent_and_safe_shutdown(server):
         r = await recv(ui, "action_result")
         assert r["payload"]["dry_run"] is True and r["payload"]["action"] == "hp.shutdown"
         assert rid != cr["payload"]["request_id"] and ch
+
+
+async def test_switch_visible_modo_remoto_sin_visor(server):
+    # Sin ORBIT_REMOTE_CMD ni DDC/CI: el cambio se registra (dry_run) y el estado indica HP visible en modo remoto.
+    async with aiohttp.ClientSession() as s:
+        ws = await connect(s, server)
+        await recv(ws, "welcome")
+        await recv(ws, "state")
+        await send(ws, "action_request", {"action": "pi.switch_visible"})
+        st = await recv(ws, "state")
+        assert st["payload"]["visible"]["system"] == "hp" and st["payload"]["visible"]["mode"] == "remoto"
+        r = await recv(ws, "action_result")
+        assert r["payload"]["ok"] is True and r["payload"]["dry_run"] is True
 
 
 async def test_sim_hp_results_are_flagged(sim_server):

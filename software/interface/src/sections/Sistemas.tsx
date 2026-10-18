@@ -35,13 +35,23 @@ function Detail({ host }: { host: 'hp' | 'pi' }) {
 }
 
 export function Sistemas({ openOsd }: { openOsd: () => void }) {
+  const { state, requestAction } = useOrbit();
+  const visible = state.visible;
   return (
     <div className="sistemas">
       <div className="col"><SystemCard host="hp" /><Detail host="hp" /></div>
       <div className="col"><SystemCard host="pi" /><Detail host="pi" /></div>
       <Panel title="Pantalla compartida" className="span-2">
-        <p>Prototipo sin KVM: el <b>MSI PRO MP161 E2U</b> recibe el HP por una entrada (Mini-HDMI o USB-C) y la Pi por la otra. El cambio se hace a mano en el OSD del monitor; Orbit no puede saber qué entrada está visible.</p>
-        <button className="btn btn-primary" onClick={openOsd}>Ver guía para cambiar de sistema</button>
+        <p>Orbit OS cambia de sistema por ti; nunca hace falta tocar el menú del <b>MSI PRO MP161 E2U</b>.
+          Modo <b>remoto</b> (base): el escritorio del HP se ve en un visor de la Pi por el Ethernet interno.
+          Modo <b>DDC/CI</b> (opcional): la Pi cambia la entrada del monitor (HP por Mini-HDMI, Pi por USB-C con adaptador; sin verificar).</p>
+        <p>Visible ahora: <b>{visible ? (visible.system === 'hp' ? 'HP' : 'Raspberry Pi (Orbit OS)') : 'desconocido'}</b>
+          {visible ? <> · modo <b>{visible.mode === 'ddc' ? 'DDC/CI' : 'remoto'}</b></> : null}
+          {visible?.detail ? <span className="muted"> · {visible.detail}</span> : null}</p>
+        <div className="row-actions">
+          <button className="btn btn-primary" onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema visible</button>
+          <button className="btn" onClick={openOsd}>Cómo funciona</button>
+        </div>
       </Panel>
     </div>
   );

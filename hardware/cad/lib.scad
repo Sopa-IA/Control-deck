@@ -103,8 +103,8 @@ function lejos_de_cortes(v, n, L, m = 18) =
 orejetas = concat(
     [for (x = [40 : 95 : W-30]) if (nx_cortes < 2 || lejos_de_cortes(x, nx_cortes, W)) [x, pared + 15]],  // tras el carril LED
     [for (x = [40 : 95 : W-30]) if ((nx_cortes < 2 || lejos_de_cortes(x, nx_cortes, W))
-        && (x < hp_x - 6 || x > hp_x + hp_w + 6)) [x, D - pared - 5]],   // no tapar la ventana I/O del HP
-    [[hp_x + hp_w + 6, D - pared - 5]],   // orejeta junto a la ventana del HP
+        && (x < hp_x - 6 || x > hp_x + hp_w + 10)) [x, D - pared - 5]],   // no tapar la ventana I/O del HP
+    [[hp_x + hp_w + 10, D - pared - 5]],   // orejeta junto a la ventana del HP
     [for (y = [45 : 80 : D-40]) if (ny_cortes < 2 || lejos_de_cortes(y, ny_cortes, D)) [pared + 5, y]],
     [for (y = [45 : 80 : D-40]) if (ny_cortes < 2 || lejos_de_cortes(y, ny_cortes, D)) [W - pared - 5, y]]
 );
