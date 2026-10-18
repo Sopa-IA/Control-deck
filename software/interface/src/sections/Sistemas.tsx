@@ -1,6 +1,6 @@
 import { useOrbit } from '../data/OrbitContext';
 import { Panel, SimTag, StatusDot } from '../components/ui';
-import { ago, formatMb, formatPct, formatTemp, formatUptime } from '../lib/format';
+import { ago, formatMb, formatPct, formatTemp, formatUptime, videoModeLabel } from '../lib/format';
 import { SystemCard } from './Inicio';
 
 function Detail({ host }: { host: 'hp' | 'pi' }) {
@@ -44,9 +44,10 @@ export function Sistemas({ openOsd }: { openOsd: () => void }) {
       <Panel title="Pantalla compartida" className="span-2">
         <p>Orbit OS cambia de sistema por ti; nunca hace falta tocar el menú del <b>MSI PRO MP161 E2U</b>.
           Modo <b>remoto</b> (base): el escritorio del HP se ve en un visor de la Pi por el Ethernet interno.
-          Modo <b>DDC/CI</b> (opcional): la Pi cambia la entrada del monitor (HP por Mini-HDMI, Pi por USB-C con adaptador; sin verificar).</p>
+          Modo <b>capturadora</b> (recomendado): el HDMI del HP entra en una capturadora USB de la Pi y Orbit OS muestra su imagen (latencia sin medir).
+          Modo <b>DDC/CI</b> (poco probable): la Pi cambia la entrada del monitor (sin documentar en los manuales de la MSI; sin verificar).</p>
         <p>Visible ahora: <b>{visible ? (visible.system === 'hp' ? 'HP' : 'Raspberry Pi (Orbit OS)') : 'desconocido'}</b>
-          {visible ? <> · modo <b>{visible.mode === 'ddc' ? 'DDC/CI' : 'remoto'}</b></> : null}
+          {visible ? <> · modo <b>{videoModeLabel(visible.mode)}</b></> : null}
           {visible?.detail ? <span className="muted"> · {visible.detail}</span> : null}</p>
         <div className="row-actions">
           <button className="btn btn-primary" onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema visible</button>

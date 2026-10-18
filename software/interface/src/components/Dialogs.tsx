@@ -42,9 +42,10 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
         <p>El botón <b>Cambiar sistema visible</b> (B2 por defecto) lo hace todo desde Orbit OS; no hace falta tocar el menú del monitor.</p>
         <ol className="steps">
           <li><b>Modo remoto</b> (base, siempre disponible): la pantalla muestra siempre la Pi y el escritorio del HP aparece en un visor (p. ej. Moonlight con Sunshine en el HP) por el cable Ethernet interno.</li>
-          <li><b>Modo DDC/CI</b> (opcional): si está configurado y el monitor lo acepta, la Pi cambia la entrada del MSI (HP por Mini-HDMI, Pi por USB-C con adaptador HDMI→USB-C). Si falla, Orbit vuelve solo al modo remoto.</li>
+          <li><b>Modo capturadora</b> (recomendado junto al remoto): el HDMI del HP entra en una capturadora HDMI→USB conectada a la Pi y Orbit OS muestra su imagen a pantalla completa. La pantalla sigue siempre en la Pi; teclado y ratón van al HP por separado. Si la capturadora no está, Orbit vuelve solo al modo remoto.</li>
+          <li><b>Modo DDC/CI</b> (opcional, poco probable): si está configurado y el monitor lo acepta, la Pi cambia la entrada del MSI (HP por Mini-HDMI, Pi por USB-C con adaptador HDMI→USB-C). Los manuales del MSI no documentan DDC/CI. Si falla, Orbit pasa a la capturadora o al modo remoto.</li>
         </ol>
-        <p className="muted">PENDIENTE de verificar: soporte DDC/CI del MSI MP161 E2U, adaptador HDMI→USB-C (DP Alt) y rendimiento del visor remoto en el HP (AMD A6-7310).</p>
+        <p className="muted">PENDIENTE de verificar: soporte DDC/CI del MSI MP161 E2U, adaptador HDMI→USB-C (DP Alt), latencia y fps de la capturadora (sin medir) y rendimiento del visor remoto en el HP (AMD A6-7310).</p>
         <div className="modal-actions"><button className="btn btn-primary" onClick={onClose} autoFocus>Entendido</button></div>
       </div>
     </div>

@@ -19,7 +19,7 @@ export interface OrbitState {
   controls: Record<string, ControlReading>;
   mapping: MappingPayload | null;
   pendingConfirm: ConfirmRequiredPayload | null;
-  /** Sistema visible y modo de cambio (remoto = visor del HP en la Pi; ddc = entrada de la MSI por DDC/CI). */
+  /** Sistema visible y modo de cambio (remoto = visor del HP en la Pi; ddc = entrada de la MSI por DDC/CI; captura = capturadora HDMI->USB en la Pi). */
   visible: StatePayload['visible'] | null;
   log: LogEntry[];
 }
