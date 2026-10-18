@@ -15,4 +15,12 @@ Consecuencias:
 
 - orbitd no puede saber qué entrada muestra el MSI (`video_input: "desconocida"`). El botón "cambiar sistema" abre una guía del OSD.
 - El volumen del HP lo aplica hp-agent a través de orbitd. El HID del Arduino iría a la Pi, que es donde está enchufado, y por eso está desactivado.
-- El diseño mecánico v0 (`diseno-mecanico.md`) se hizo con encoders y con hueco para el KVM. Para la siguiente iteración del CAD hay que cambiar los huecos de los encoders por los de los potenciómetros (eje y casquillo según el modelo que tenga Miguel, **PENDIENTE**) y añadir el alojamiento del Arduino Micro.
+- **CAD v1** (`diseno-mecanico.md`) ya incorpora estas decisiones:
+  - sin KVM (opcional);
+  - 2 potenciómetros genéricos + 2 pulsadores de panel;
+  - soporte del Arduino Micro con canal USB hacia la Pi;
+  - puertos y teclas del canto derecho del MSI accesibles;
+  - impresión en Bambu Lab A1 con PETG.
+
+  Las medidas de potenciómetros, pulsadores y posiciones del canto siguen **PENDIENTES**.
+- Impresora: **Bambu Lab A1** (256 × 256 × 256 mm, marco abierto) → **PETG** recomendado.

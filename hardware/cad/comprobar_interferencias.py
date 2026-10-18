@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-"""ORBIT TERMINAL · Comprobación programática de interferencias (v0, PROVISIONAL).
+"""ORBIT TERMINAL · Comprobación programática de interferencias (v1, PROVISIONAL).
 
 Ejecuta OpenSCAD en modo vista="check" (que hace echo de parámetros, cajas de
 componentes y obstáculos) y comprueba por muestreo de puntos:
   1. Cada componente queda dentro del volumen interior libre de la carcasa
      (paredes, techo inclinado, tina de la pantalla, torretas del bisel,
      costillas de unión junto a los planos de corte, orejetas y carril LED).
-  2. Solapes por pares entre cajas de componentes.
+  2. Solapes por pares entre cajas de componentes (incluidos potenciómetros y
+     pulsadores, que se transforman desde la pendiente).
+  3. (v1) Los cuerpos de mandos quedan dentro de paredes y suelo, y la bandeja de
+     servicio (con su ala) no pisa ninguna orejeta de unión carcasa-base.
 Es una comprobación de CAJAS ENVOLVENTES (AABB) sobre marcadores de posición,
 NO una validación con modelos reales. Uso:
   python3 comprobar_interferencias.py [-D 'pantalla="waveshare_12_3"'] ...
 """
 import math, re, subprocess, sys, tempfile, itertools, os
+TRAY = None
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,6 +24,7 @@ def run_check(defs):
     cmd = ["openscad", "-o", out, "-D", 'vista="check"'] + sum([["-D", d] for d in defs], []) + [os.path.join(HERE, "ensamblaje.scad")]
     subprocess.run(cmd, check=True, capture_output=True)
     P, comps, local, obst, cutx, cuty = {}, [], [], [], [], []
+    global TRAY
     for line in open(out):
         m = re.search(r'ECHO: "(.*)"', line)
         if not m: continue
@@ -32,6 +37,9 @@ def run_check(defs):
         elif f[0] == "OBST": obst.append((f[1], list(map(float, f[2:8]))))
         elif f[0] == "CUTX": cutx.append(float(f[1]))
         elif f[0] == "CUTY": cuty.append(float(f[1]))
+        elif f[0] == "TRAY": TRAY = list(map(float, f[1:5]))
+        elif f[0] == "SOPORTE_EN_BANDEJA": P["sop_ok"] = f[1] == "1"
+        elif f[0] == "PANEL_CONECTORES": P["panel"] = (float(f[1]), float(f[2]), float(f[4]), float(f[5]), float(f[6]))
     return P, comps, local, obst, cutx, cuty
 
 def main():
@@ -90,7 +98,7 @@ def main():
         return None
 
     print(f"Preset pantalla: {P['pantalla']} · HP: {P['hp_preset']} · inclinación {P['inclinacion']}°")
-    print(f"Envolvente: W={W:.1f} D={D:.1f} H={H:.1f} mm (sin pies; +{P['alto_pies']:.0f} mm con pies)")
+    print(f"Envolvente: W={W:.1f} D={D:.1f} H={H:.1f} mm (sin pies; +{P['alto_pies']:.0f} mm con pies) · KVM: {'sí' if P.get('usar_kvm') else 'no'} · cama {P.get('cama')} ({P.get('impresora')})")
     print(f"Cortes X: {cutx}  Cortes Y: {cuty}")
     ok_all = True
     for name, b in comps:
@@ -110,6 +118,28 @@ def main():
         pts = [to_world((x+i*dx, v+j*dv, n+k*dn)) for i in (0,1) for j in (0,1) for k in (0,1)]
         lo = [min(p[i] for p in pts) for i in range(3)]; hi = [max(p[i] for p in pts) for i in range(3)]
         wl.append((name, lo + [hi[i]-lo[i] for i in range(3)]))
+    print("Cuerpos de mandos (bajo la pendiente) dentro de paredes y suelo:")
+    for name, q in local:
+        x, v, n, dx, dv, dn = q
+        pts = [to_world((x+i*dx, v+j*dv, n+k*dn)) for i in (0,1) for j in (0,1) for k in (0,1)]
+        mx = min(min(p[0] for p in pts) - P["pared"], W - P["pared"] - max(p[0] for p in pts))
+        mz = min(p[2] for p in pts) - P["suelo"]
+        ok = mx >= 0 and mz >= 0
+        if not ok: ok_all = False
+        print(f"  [{'OK' if ok else 'XX'}] {name:<34} margen a pared lateral {mx:.1f} mm · sobre el suelo {mz:.1f} mm")
+    if TRAY:
+        tx, ty, tw, td = TRAY
+        hits = [ob for nm, ob in obst if nm == "Orejeta" and ob[0] < tx + tw and tx < ob[0] + ob[3] and ob[1] < ty + td and ty < ob[1] + ob[4]]
+        if hits: ok_all = False
+        print(f"  [{'XX' if hits else 'OK'}] Bandeja de servicio + ala ({tw:.0f} x {td:.0f} mm) frente a orejetas: {len(hits)} solapes")
+    if "sop_ok" in P:
+        if not P["sop_ok"]: ok_all = False
+        print(f"  [{'OK' if P['sop_ok'] else 'XX'}] Soporte del Arduino dentro de la abertura de la bandeja (se desmonta con ella)")
+    if "panel" in P:
+        x0, x1, pix, pz0, pitop = P["panel"]
+        okp = (x1 < pix - 5 or pz0 > pitop + 5) and all(abs(c - x) > 7 + 2 for c in cutx for x in (x0, x1)) and not any(x0 < c < x1 for c in cutx)
+        if not okp: ok_all = False
+        print(f"  [{'OK' if okp else 'XX'}] Panel de conectores traseros x={x0:.0f}–{x1:.0f} mm: sin cortar costillas ni invadir la Pi (Pi en x≥{pix:.0f}, z≤{pitop:.0f}; panel desde z={pz0:.0f})")
     allb = comps + wl
     print("Solapes entre componentes (AABB):")
     any_ov = False

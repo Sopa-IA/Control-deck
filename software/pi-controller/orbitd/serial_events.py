@@ -82,7 +82,7 @@ class SerialReader:
 class SimControls:
     """Genera líneas serie SIMULADAS (mismo formato que el firmware) para desarrollo sin Arduino."""
 
-    def __init__(self, pots: int = 3, buttons: int = 4, seed: Optional[int] = None, press_buttons: bool = False):
+    def __init__(self, pots: int = 2, buttons: int = 2, seed: Optional[int] = None, press_buttons: bool = False):
         self.pots, self.buttons, self.press_buttons = pots, buttons, press_buttons
         self.rng = random.Random(seed)
         self.values = [512] * pots

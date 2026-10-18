@@ -3,12 +3,12 @@
 #pragma once
 
 // ---- Potenciómetros (lineales, 10 kΩ recomendados; extremos a 5 V y GND, cursor al pin analógico)
-#define NUM_POTS 3
-static const uint8_t POT_PINS[NUM_POTS] = {A0, A1, A2};
+#define NUM_POTS 2
+static const uint8_t POT_PINS[NUM_POTS] = {A0, A1};
 
 // ---- Botones (pulsador entre el pin y GND; se usa INPUT_PULLUP: pulsado = LOW)
-#define NUM_BUTTONS 4
-static const uint8_t BUTTON_PINS[NUM_BUTTONS] = {2, 3, 5, 7};
+#define NUM_BUTTONS 2
+static const uint8_t BUTTON_PINS[NUM_BUTTONS] = {2, 3};
 
 // ---- Filtro de potenciómetros
 #define POT_EMA_SHIFT 3      // media exponencial con alfa = 1/2^3 = 1/8

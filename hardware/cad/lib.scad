@@ -70,8 +70,20 @@ act_cy = aloj_y0 + aloj_h/2 + act_off_y;
 
 // Posiciones de mandos (local, sobre la pendiente)
 pod_cx = pod_x0 + ancho_pod/2;
-pos_knobs   = [[pod_cx - knob_sep/2, knob_v], [pod_cx + knob_sep/2, knob_v]];
-pos_botones = [[pod_cx - knob_sep/2, boton_v], [pod_cx + knob_sep/2, boton_v]];
+pos_knobs   = disposicion_mandos == "fila"
+    ? [[pod_cx - knob_sep/2, knob_v], [pod_cx + knob_sep/2, knob_v]]
+    : [[pod_cx, knob_v], [pod_cx, knob_v - knob_sep]];          // columna: superior e inferior
+pos_botones = [[pod_cx - boton_sep/2, boton_v], [pod_cx + boton_sep/2, boton_v]];
+
+// --- Puertos laterales del MSI MP161 E2U -----------------------------------
+// [FUENTE] manual oficial (PRO-MP161-E2-English.pdf, "Overview of the monitor") y
+// reseña de PCMag: botón de encendido, tecla arriba/abajo, Type-C2, Type-C1 y Mini-HDMI
+// están en el CANTO DERECHO. Posición exacta a lo largo del canto: [PENDIENTE medir].
+// Fracciones de aloj_h medidas desde el borde inferior (v local = subiendo la pendiente).
+osd_v0 = 0.66; osd_v1 = 0.92;       // [PENDIENTE] botón de encendido + tecla arriba/abajo
+puertos_v0 = 0.14; puertos_v1 = 0.60;   // [PENDIENTE] Type-C2, Type-C1, Mini-HDMI
+osd_ancho = 13;                      // [DISEÑO] ventana para pulsar las teclas del canto con el dedo
+puertos_hueco = 28;                  // [DISEÑO] espacio lateral para clavijas acodadas (cables en L de serie)
 
 // Tornillos del bisel (local): esquinas + 1/4 y 3/4 de cada lado
 bisel_sol = 9;          // [DISEÑO] solape del bisel más allá del alojamiento

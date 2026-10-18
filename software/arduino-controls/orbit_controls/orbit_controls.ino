@@ -1,7 +1,7 @@
 // Orbit Terminal · orbit_controls v1 · Arduino Micro (ATmega32U4)
 // Lee N potenciómetros (EMA + histéresis) y M botones (antirrebote + pulsación larga) y emite
 // eventos serie compactos (ver software/shared/PROTOCOLO.md §7):
-//   H orbit-controls 1 P3 B4    saludo (al arrancar y al recibir '?')
+//   H orbit-controls 1 P2 B2    saludo (al arrancar y al recibir '?'; los números salen de config.h)
 //   P1 512                      potenciómetro 1 = 512 (0..1023)
 //   B2 1 / B2 0 / B2 L          botón 2 pulsado / soltado / pulsación larga
 // Opcional: teclas multimedia de volumen por USB HID (ENABLE_HID_VOLUME en config.h).

@@ -13,7 +13,7 @@ done; done
 for ((i=0;i<NBX;i++)); do for ((j=0;j<NBY;j++)); do jobs_list+=("bisel $i $j 0 PROVISIONAL_bisel_x${i}_y${j}"); done; done
 for ((k=0;k<NG;k++)); do jobs_list+=("guia 0 0 $k PROVISIONAL_guia_luz_frontal_${k}"); done
 jobs_list+=("bandeja 0 0 0 PROVISIONAL_bandeja_servicio" "pomo 0 0 0 PROVISIONAL_pomo_x2" "anillo 0 0 0 PROVISIONAL_anillo_luz_x2" \
-            "boton 0 0 0 PROVISIONAL_tapa_boton_x2" "pletina 0 0 0 PROVISIONAL_pletina_empalme_x4")
+            "soporte_arduino 0 0 0 PROVISIONAL_soporte_arduino" "pletina 0 0 0 PROVISIONAL_pletina_empalme_x4")
 printf '%s\n' "${jobs_list[@]}" | xargs -P "$(nproc)" -L1 bash -c \
   'openscad -o "'"$OUT"'/$4.stl" -D "parte=\"$0\"" -D ix=$1 -D iy=$2 -D k=$3 partes.scad >/dev/null 2>&1 && \
    sed -i "1s/.*/solid $4/" "'"$OUT"'/$4.stl" && echo "ok $4"'

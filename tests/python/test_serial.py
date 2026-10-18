@@ -25,5 +25,7 @@ def test_sim_controls_emit_valid_lines():
 
 def test_sim_controls_no_buttons_by_default():
     s = SimControls(seed=2)
+    assert s.pots == 2 and s.buttons == 2
+    assert s.hello() == "H orbit-controls-sim 1 P2 B2"
     s._next_btn = 0
     assert not any(ln.startswith("B") for _ in range(50) for ln in s.step())

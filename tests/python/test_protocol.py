@@ -57,6 +57,8 @@ def test_destructive_actions_require_confirm():
 
 def test_mapping_validation():
     m = P.load_default_mapping()
+    assert set(m["pots"]) == {"P1", "P2"}
+    assert set(m["buttons"]) == {"B1", "B2"}
     assert P.check_mapping(m) is m
     with pytest.raises(P.ProtocolError):
         P.check_mapping({"pots": {"P1": "ui.select"}, "buttons": {}})   # función de botón en pot

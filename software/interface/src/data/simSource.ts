@@ -27,7 +27,7 @@ export class SimDataSource implements DataSource {
   readonly kind = 'sim' as const;
   private timers: ReturnType<typeof setInterval>[] = [];
   private onMessage: (m: Message) => void = () => {};
-  private pots = [512, 300, 800];
+  private pots = Object.keys(defaultControls.pots).sort().map((_, i) => [512, 300, 800][i] ?? 512);
   private mapping: MappingPayload = { version: 1, pots: { ...defaultControls.pots }, buttons: { ...defaultControls.buttons } };
   private pending = new Map<string, { action: string; challenge: string; expires: number }>();
   constructor(private opts: { animateControls?: boolean; seed?: number } = {}) {}
@@ -44,7 +44,7 @@ export class SimDataSource implements DataSource {
       mode: 'sim', video_input: 'desconocida',
       hp: { connected: true, simulated: true, last_seen: Date.now(), detail: 'HP simulado' },
       pi: { connected: true, simulated: true, last_seen: Date.now(), detail: 'Pi simulada' },
-      arduino: { connected: true, simulated: true, last_seen: Date.now(), detail: 'orbit-controls-sim v1: 3 pots, 4 botones' },
+      arduino: { connected: true, simulated: true, last_seen: Date.now(), detail: `orbit-controls-sim v1: ${Object.keys(this.mapping.pots).length} pots, ${Object.keys(this.mapping.buttons).length} botones` },
     });
     state();
     this.emit('mapping', this.mapping);

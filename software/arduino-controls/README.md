@@ -8,17 +8,14 @@ Este firmware lee los potenciómetros y botones de la consola y los envía a orb
 |---|---|---|
 | P1 (volumen HP) | A0 | Cursor del potenciómetro; extremos a 5 V y GND |
 | P2 (desplazar / foco) | A1 | Ídem |
-| P3 (brillo LED, pendiente) | A2 | Ídem |
 | B1 (menú de apagado) | D2 | Pulsador a GND (pull-up interno) |
 | B2 (cambiar sistema: guía OSD) | D3 | Pulsador a GND |
-| B3 (seleccionar) | D5 | Pulsador a GND |
-| B4 (volver) | D7 | Pulsador a GND |
 | Reservado para datos de la tira LED | D6 | **PENDIENTE**: tira sin identificar |
 
 Notas sobre los pines:
 
 - D2 y D3 son también SDA y SCL (I²C). Si más adelante hace falta I²C, hay que mover los botones a otros pines.
-- Libres para ampliar: A3–A5, D4/A6, D8/A7, D9/A8, D10/A9, D12/A11.
+- Libres para ampliar: A2–A5, D4/A6, D5, D7, D8/A7, D9/A8, D10/A9, D12/A11.
 
 La función de cada control se asigna en orbitd y en la interfaz (sección **Controles**). El Arduino solo informa de lo que lee.
 
@@ -26,8 +23,8 @@ La función de cada control se asigna en orbitd y en la interfaz (sección **Con
 
 | Parámetro | Valor por defecto |
 |---|---|
-| `NUM_POTS` / `POT_PINS` | 3 / `{A0, A1, A2}` |
-| `NUM_BUTTONS` / `BUTTON_PINS` | 4 / `{2, 3, 5, 7}` |
+| `NUM_POTS` / `POT_PINS` | 2 / `{A0, A1}` |
+| `NUM_BUTTONS` / `BUTTON_PINS` | 2 / `{2, 3}` |
 | `POT_EMA_SHIFT` | 3 (media exponencial con α = 1/8) |
 | `POT_HYSTERESIS` | 4 cuentas de 1023 |
 | `POT_SAMPLE_MS` | 5 ms |

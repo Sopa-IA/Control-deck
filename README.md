@@ -23,8 +23,8 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 ```
 README.md
 docs/                        Investigación fase 1, diseño mecánico v0, decisiones del prototipo
-hardware/cad/                CAD paramétrico OpenSCAD, STL PROVISIONALES, scripts de comprobación
-assets/renders/              Renders del diseño v0
+hardware/cad/                CAD paramétrico OpenSCAD (v1), STL PROVISIONALES, scripts de comprobación
+assets/renders/              Renders del diseño v1
 assets/screenshots/          Capturas de la interfaz
 software/interface/          Orbit OS Interface (React + TypeScript + Vite)
 software/pi-controller/      orbitd: hub WebSocket, servidor de la interfaz y lector del Arduino (Python)
@@ -86,7 +86,8 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | Modelo del HP y de la Pi, cableado y asignación de entradas del MSI | **Requiere intervención humana** | Ver `docs/datos-pendientes-hp.md` |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
-| CAD v0 (cuña, STL) | **Pendiente de validar** | Provisional, NO apto para fabricación; hecho antes de cambiar a potenciómetros y Arduino |
+| CAD v1 (cuña 456 × 300 × 154 mm, 19 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Sin KVM, 2 potenciómetros + 2 pulsadores genéricos, soporte del Arduino Micro con canal USB, puertos y teclas OSD del canto derecho del MSI. Comprobación de interferencias y de STL correctas (en cajas envolventes); NO apto para fabricación |
+| Medidas de potenciómetros, pulsadores y puertos/teclas del MSI | **Requiere intervención humana** | Medir las piezas de Miguel y ajustar `params.scad`/`lib.scad` |
 
 ## Tests (última ejecución local, 2026-10-18)
 
@@ -110,7 +111,7 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 - [`docs/datos-pendientes-hp.md`](docs/datos-pendientes-hp.md)
 
 **Diseño y decisiones:**
-- Diseño mecánico v0: [`docs/diseno-mecanico.md`](docs/diseno-mecanico.md) (CAD en `hardware/cad/`)
+- Diseño mecánico v1: [`docs/diseno-mecanico.md`](docs/diseno-mecanico.md) (CAD en `hardware/cad/`, renders en `assets/renders/`)
 - Decisiones del prototipo: [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md)
 
 ## Seguridad
