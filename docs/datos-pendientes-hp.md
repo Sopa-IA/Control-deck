@@ -1,6 +1,6 @@
 # Datos del HP y datos pendientes
 
-> Documento: `docs/datos-pendientes-hp.md` · Versión 2026-10-18 (HP v2)
+> Documento: `docs/datos-pendientes-hp.md` · Versión 2026-10-18 (HP v3: primeras medidas reales tras abrir el HP)
 > **El HP está identificado: HP Slimline 260-a110ns** (torre estrecha, no un Desktop Mini). Por decisión de Miguel **se desmonta de su caja**: en Orbit van su placa base, el disipador/ventilador, la RAM, el disco y el I/O frontal. El adaptador de corriente es **externo** y queda fuera.
 > Fuentes: **"datos del propietario 2026-10-18"** (lo que Miguel ha comprobado en su equipo) y documentación **oficial de HP de modelos hermanos** de la serie 260-a1xx, consultada el 2026-10-18. **No se ha encontrado la ficha oficial específica del 260-a110ns** en support.hp.com (varias fichas de la serie dan hoy 404). Lo no verificable figura como **PENDIENTE de medir tras desmontar**.
 
@@ -10,7 +10,7 @@
 |---|---|---|---|
 | Procesador | AMD A6-7310 (4 núcleos / 4 hilos, 2,0–2,4 GHz), gráfica Radeon R4 integrada | Datos del propietario 2026-10-18 | Coincide con tiendas (P/N Y4K46EA)¹. TDP 15 W (cTDP 12 W) según fichas HP de los 260-a010z / 260-a020 (c05150901, c05112353; vistas por buscador, hoy 404) |
 | Placa base | HP **"Iris-A6"** (identificador provisional) | Datos del propietario 2026-10-18 | HP publica las placas hermanas **Iris-E2** (SSID 81B3) e **Iris-A8** de la misma serie: **Mini ITX 17,0 × 17,0 cm**² ³. HP Community: la placa Iris (SSID 81B3, p/n 844844-606) **no tiene ranura PCIe gráfica**⁴. Nombre exacto: PENDIENTE (serigrafía) |
-| Formato y anclajes | Mini-ITX 170 × 170 mm. Patrón de agujeros estándar mini-ITX (157,48 × 154,94 mm) **supuesto** | HP (hermanas)² | Que la placa HP siga el patrón y los offsets estándar: **PENDIENTE de medir tras desmontar** |
+| Formato y anclajes | Mini-ITX 170 × 170 mm, **medido por Miguel (17 × 17 cm)**. Agujeros: **patrón estándar mini-ITX; coincide visualmente con los 4 tornillos de la foto, no medido** (ver §A2) | HP (hermanas)²; medida del propietario 2026-10-18; estándar mini-ITX⁹ | Cotas exactas de los agujeros: no medidas (Miguel indicó tomarlas de la especificación) |
 | RAM | 8 GB DDR3L-1600; 2 ranuras DIMM; máximo 16 GB | Datos del propietario 2026-10-18 | Iris-E2: 2 ranuras DDR3L UDIMM de 240 contactos, canal simple, máx. 16 GB²; tiendas: 1 × 8 GB¹ |
 | Almacenamiento | HDD SATA de 1 TB (posible cambio a SSD SATA) | Datos del propietario 2026-10-18 | Tiendas: 1 TB 7200 rpm¹. Listas de piezas HP: HDD de 1 TB de clase 3,5" (Seagate/WD/Toshiba)⁵ → formato 3,5": **PENDIENTE de confirmar al desmontar**. Iris-E2 tiene además 1 M.2 key A (para Wi-Fi, no para disco)² |
 | Óptico | Grabadora DVD (slim, bandeja 9,5 mm según piezas HP⁵) | Datos del propietario 2026-10-18 | **Se retira** |
@@ -28,14 +28,14 @@
 | # | Dato | Cómo | Para qué |
 |---|---|---|---|
 | H-1 | Serigrafía de la placa (nombre, p/n, SSID) | Foto | Confirmar "Iris-A6" |
-| H-2 | Posición de los 4 agujeros y diámetro | Calibre, foto con regla | Separadores del CAD (`mitx_agujeros`, `mitx_ag_borde`) |
-| H-3 | Altura máxima de componentes sobre la PCB (DIMM, disipador + ventilador) | Calibre | `hp_comp_h` (supuesto 38 mm; el CAD admite **hasta 41 mm con 3 mm de holgura**) |
-| H-4 | Pila de conectores traseros: alto, ancho, posición respecto al borde, y si HP usa escudo I/O | Calibre | Ventana trasera (`hp_io_*`) |
-| H-5 | Disipador: tipo, ventilador (tamaño, conector), sentido del aire | Observación | Rejillas de entrada y salida |
+| H-2 | Posición de los 4 agujeros y diámetro | Calibre, foto con regla | Separadores del CAD (`mitx_agujeros`, `mitx_ag_f`, `mitx_ag_borde`). **v3: patrón estándar mini-ITX; coincide visualmente con la foto, no medido** |
+| H-3 | ~~Altura máxima de componentes sobre la PCB~~ | — | **Medido: 35 mm** (Miguel, 2026-10-18). `hp_comp_h = 35`; el CAD admite hasta 41 mm con 3 mm de holgura |
+| H-4 | Pila de conectores traseros: alto, ancho y posición de cada conector respecto al borde. **Escudo: no hay** (foto) | Calibre | Ventana trasera (`hp_io_*`) y placa I/O impresa |
+| H-5 | Disipador: tamaño del ventilador y sentido del aire (foto: ventilador de 3 hilos sobre el disipador) | Observación | Rejillas de entrada y salida |
 | H-6 | **Cabezal del botón de encendido**: conector, patillas del pulsador y del LED | Polímetro (continuidad al pulsar el botón original) | Pulsador de Orbit en paralelo |
 | H-7 | Placa de I/O frontal (USB 2.0, audio, lector SD): medidas, cables y longitudes | Calibre | Ventana del lateral izquierdo (`io_frontal`) |
 | H-8 | Formato real del HDD (3,5" o 2,5") y cables SATA (datos y alimentación: ¿conector propietario en placa?) | Observación | Soporte del disco; cables para el SSD |
-| H-9 | Antenas Wi-Fi: longitud de los cables y dónde van pegadas | Observación | Colocarlas lejos de metal |
+| H-9 | Antenas Wi-Fi (tarjeta M.2 vista en la foto): longitud de los cables, o decidir Wi-Fi USB | Observación | Colocarlas lejos de metal (ver §A2) |
 | H-10 | Conector DC: diámetro y si es "smart pin" | Calibre | Verificar que el adaptador original entra por la ventana trasera |
 | H-11 | BIOS: Wake-on-LAN (S3/S4/S5) y "After Power Loss" | Menú de la BIOS (F10) | Encendido del HP desde la Pi / al dar corriente |
 | H-12 | Consumo real (reposo y carga) | Medidor de enchufe en el adaptador | Térmica; nunca se usará un valor no medido |
@@ -49,14 +49,48 @@
 6. HP, especificaciones del **HP Slimline 260-a103nc** (placa Geneva-C, Mini ITX 17 × 17 cm): https://support.hp.com/ro-en/document/c05245687 ; placa Geneva-C (I/O trasero con entrada DC, VGA, HDMI, 2 × USB 3.0, LAN, 2 × USB 2.0, audio): documento HP c05137943.
 7. HP, especificaciones del **HP Slimline 260-a129** (Iris-A8, A8-7410): documento HP c05296965.
 8. Página de descargas de BIOS del 260-a110ns: SSID 81B4 / 81B3 / 821D.
+9. Patrón de agujeros mini-ITX (C, F, H, J): Intel, *Mini-ITX Addendum to the microATX Motherboard Interface Specification* (tabla 3, agujeros C, F, H, J); cotas 6,35 / 157,48 / 10,16 / 22,86 / 154,94 mm contrastadas con el plano de una placa mini-ITX comercial (ES France, FLEX-WIZARD-IMX8M-MINI: agujeros a 6,35 / 163,83 mm del lateral y 10,16 / 33,02 / 165,1 mm del borde) y el patrón ATX publicado (22,86 mm = 0,9"). Consultado el 2026-10-18.
 
-## B. Nota de seguridad para desmontar el HP
+## A2. Medidas y observaciones reales (2026-10-18, HP abierto)
+
+**Medidas** (tomadas por Miguel, 2026-10-18; instrumento no indicado):
+
+| Dato | Valor | En el CAD |
+|---|---|---|
+| Tamaño de la placa | **17 × 17 cm** (mini-ITX) | `mitx = 170` `[MEDIDO]` |
+| Altura máxima sobre la placa | **35 mm** (lo más alto es el disipador con su ventilador) | `hp_comp_h = 35` `[MEDIDO]`. Límite del modelo: 41 mm con 3 mm de holgura a la tina de la pantalla; con 35 mm quedan **≈ 9 mm** (comprobación por muestreo: 41 mm → 3 mm, 44 mm → 0 mm, 45 mm → interfiere) |
+
+**Agujeros de anclaje** (Miguel: "sácalos de las specs"): **patrón estándar mini-ITX; coincide visualmente con los 4 tornillos de la foto, no medido.** Cotas del estándar⁹, desde el agujero C (a 6,35 mm del lateral y 10,16 mm del borde trasero/I/O): F = +157,48 mm a lo largo del borde I/O y **+22,86 mm hacia dentro**; H = +154,94 mm hacia delante; J = +157,48 / +154,94 mm. Es decir, F queda a 33,02 mm del borde trasero, no a 10,16 mm: **el CAD v2 lo tenía mal (F alineado con C) y v3 lo corrige** (cambia solo el separador de la base `base_x0_y1`). En la foto, el tornillo trasero más próximo al borde está en el extremo del audio y el más retrasado en el extremo del jack DC, como en el estándar.
+
+**Observaciones de la foto** (no son medidas):
+
+- **I/O trasero sin escudo separado:** los conectores asoman por la chapa de la propia caja HP. Orden a lo largo del borde: jack DC, VGA, HDMI, 2 × USB, RJ45 + USB, audio. En Orbit (vista superior, I/O hacia la pared trasera) el audio queda a la izquierda y el jack DC a la derecha, así que el **HDMI queda en el lado de la Pi**.
+- **2 zócalos DDR3L** paralelos al borde opuesto al I/O.
+- **Tarjeta Wi-Fi M.2** con sus cables de antena.
+- **Ventilador de CPU de 3 hilos**, cables SATA (datos y alimentación) y cables del panel frontal.
+- El HP ya está abierto; la Pi ya da imagen en la MSI (tipo de conexión y modelo de Pi: **PENDIENTES**).
+
+### Antenas Wi-Fi: dos opciones
+
+1. **Conservar la tarjeta M.2 y sus antenas.** Las antenas originales van pegadas a la caja HP; al sacarla, hay que despegarlas sin tirar de los cables (soltar antes el conector de la tarjeta, que es un micro-coaxial frágil) y pegarlas por dentro de la carcasa de PETG, **lejos de chapas metálicas, del disipador y del cable HDMI**. El sitio natural es la pared trasera alta o el lomo superior, encima de la placa. La longitud de los cables decide el sitio: **PENDIENTE de medir (H-9)**. El PETG no bloquea la señal como la chapa.
+2. **Quitar la tarjeta y usar un adaptador Wi-Fi USB** (la opción que Miguel ya contemplaba en su lista de mejoras). Se enchufa en un USB trasero o frontal y evita mover las antenas. Ocupa un USB.
+
+Si el HP va solo por cable (Ethernet a la Pi) y no necesita Wi-Fi, se puede quitar la tarjeta sin más.
+
+### I/O trasero sin escudo: consecuencias en la carcasa
+
+- La ventana trasera de Orbit es una **abertura libre** del tamaño estándar (158,75 × 44,45 mm + 1 mm de holgura); **no asume ningún escudo I/O**.
+- Alrededor de los conectores queda hueco. Para cerrarlo hará falta una **placa I/O impresa a medida**, con un hueco por conector. **No se modela todavía**: hacen falta las posiciones reales de los conectores (H-4).
+- Sin chapa, las carcasas de los conectores ya no tocan la masa de la caja metálica: en una carcasa de PETG eso no rompe nada, pero **no hay apantallamiento** (ver §B).
+- El borde de la placa queda a 3 mm de la pared (3 mm de espesor): las clavijas deben entrar unos 5–6 mm por la ventana. Comprobar con las clavijas reales (HDMI, RJ45, jack DC).
+
+
 
 - **Garantía:** el equipo es de ~2016; lo probable es que la garantía haya caducado (**PENDIENTE de confirmar**, p. ej. con el número de serie en HP). Desmontarlo puede anularla si aún estuviera vigente.
 - **Desenchufar** el adaptador de la red **y** de la placa antes de tocar nada; pulsar el botón de encendido unos segundos con todo desconectado para descargar.
 - **ESD:** pulsera antiestática conectada a tierra (o tocar una superficie metálica conectada a tierra con frecuencia); manipular la placa por los bordes y dejarla sobre su bolsa antiestática.
 - **Fuente:** es un **adaptador externo certificado** y sigue siéndolo: no se abre, no se modifica, no entra en la carcasa. **Dentro de Orbit no hay red eléctrica** (solo 19,5 V DC y 5 V USB). El proyecto nunca diseña circuitos de red.
-- **Masa de las piezas metálicas:** el escudo I/O (si existe) y cualquier chapa o soporte metálico deben quedar unidos a la masa de la placa (a través de los separadores/tornillos o con un cable de masa al agujero de anclaje con pad metalizado). La carcasa de PETG no es conductora: **no** se da por hecho ningún apantallamiento.
+- **Masa de las piezas metálicas:** la placa HP no lleva escudo I/O propio (foto 2026-10-18); si se añade una placa I/O metálica, y cualquier chapa o soporte metálico deben quedar unidos a la masa de la placa (a través de los separadores/tornillos o con un cable de masa al agujero de anclaje con pad metalizado). La carcasa de PETG no es conductora: **no** se da por hecho ningún apantallamiento.
 - **Pila CMOS:** se conserva en la placa; no cortocircuitarla.
 - **Disco duro:** manipular sin golpes, apagado; mejor clonar a un SSD antes de manipularlo (copia de seguridad previa).
 - **Térmica:** el PETG se reblandece hacia 70–80 °C (temperatura de transición vítrea del material, según fabricante del filamento: **PENDIENTE de la ficha del filamento real**). Conservar el disipador y ventilador originales, no tapar las rejillas y medir temperaturas en un prototipo abierto antes de cerrarlo.

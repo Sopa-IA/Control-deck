@@ -1,8 +1,22 @@
-# ORBIT TERMINAL · Diseño mecánico v1 + HP v2 (Fase 3 preliminar)
+# ORBIT TERMINAL · Diseño mecánico v1 + HP v3 (Fase 3 preliminar)
 
 > **⚠️ NO APTO PARA FABRICACIÓN.** Volumen de diseño industrial paramétrico para validar proporciones, distribución interna y la estrategia de impresión. Hay varias cotas **PENDIENTES** (medidas de la placa del HP tras desmontarla, posición de puertos y teclas del MSI, potenciómetros, pulsadores, insertos), no se ha impreso ni montado ninguna pieza y las comprobaciones son **simulaciones geométricas sobre cajas envolventes**, no pruebas físicas. Los STL llevan el prefijo `PROVISIONAL_`.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
+
+## 0c. HP v3: primeras medidas reales y capturadora (2026-10-18)
+
+| Cambio | Detalle | Origen |
+|---|---|---|
+| Tamaño de la placa | 170 × 170 mm confirmado | **Medido por Miguel** (17 × 17 cm) |
+| Altura de componentes | `hp_comp_h` 38 → **35 mm** (disipador + ventilador, lo más alto). Holgura a la tina de la pantalla ≈ **9 mm** (límite del modelo: 41 mm con 3 mm) | **Medido por Miguel** |
+| Agujeros de anclaje | **Patrón estándar mini-ITX; coincide visualmente con los 4 tornillos de la foto, no medido.** Corregido el agujero F: está **22,86 mm más adentro** que C (33,02 mm del borde I/O); v2 lo ponía alineado con C. Cambia solo `PROVISIONAL_base_x0_y1` | Estándar mini-ITX (`datos-pendientes-hp.md` §A2, fuente 9) |
+| I/O trasero | La placa **no tiene escudo I/O** (los conectores asomaban por la chapa de la caja HP). La ventana de Orbit es una **abertura libre**; para cerrar el hueco hará falta una **placa I/O impresa a medida** (pendiente de medir los conectores; no se modela). Orden observado: audio a la izquierda … jack DC a la derecha, con el HDMI en el lado de la Pi | Foto de Miguel (observación) |
+| Disposición de la placa | Marcador ilustrativo según la foto: 2 DDR3L paralelos al borde delantero, Wi-Fi M.2, disipador central (la altura total = 35 mm) | Foto (ilustrativo) |
+| Capturadora (modo C) | **Reserva de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`usar_capturadora`, `captura`). Sin pieza nueva: velcro o brida. Cables ilustrativos del modo C | Diseño; medidas reales PENDIENTES |
+| Envolvente | Sin cambios: 456,3 × 300,5 × 153,9 mm | — |
+
+Comprobación de interferencias v3: **sin interferencias** (15 cajas, sin solapes); capturadora con holgura ≥ 10 mm. STL: 20 piezas que caben en la A1 y son mallas cerradas. Renders regenerados: `01b`, `02`, `03`, `04`, `05`, `05b` (los demás no cambian).
 
 ## 0b. HP v2: HP Slimline 260-a110ns desmontado (2026-10-18)
 
@@ -11,9 +25,9 @@ El HP de Miguel es un **HP Slimline 260-a110ns** (torre estrecha de ~307 × 100 
 | Elemento | Modelado en CAD (`hp_preset = "iris_mitx_desnuda"`, por defecto) | Estado |
 |---|---|---|
 | Placa mini-ITX 170 × 170 | En horizontal, atrás a la izquierda (`hp_x` = 17 mm, borde trasero a 3 mm de la pared), componentes hacia arriba | Formato: fuente HP (hermanas) |
-| Separadores | 4 torretas impresas en la base, Ø9, **6,35 mm** (estándar ATX), con inserto M3, en el **patrón estándar mini-ITX** (157,48 × 154,94 mm; agujero C a 6,35 mm del lateral y 10,16 mm del borde I/O) | **PENDIENTE de medir tras desmontar** (H-2) |
-| Altura de componentes | Caja de 38 mm sobre la PCB (DIMM DDR3 en vertical + disipador). El modelo admite **hasta 41 mm con 3 mm de holgura** a la tina de la pantalla (43 mm con 1 mm; 45 mm interfiere) | **PENDIENTE** (H-3) |
-| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa; sustituye la ventana genérica de v1. El jack DC del adaptador de 19,5 V entra por aquí | Posición y si HP usa escudo: **PENDIENTE** (H-4) |
+| Separadores | 4 torretas impresas en la base, Ø9, **6,35 mm** (estándar ATX), con inserto M3, en el **patrón estándar mini-ITX** (C a 6,35 mm del lateral y 10,16 mm del borde I/O; F a +157,48 / +22,86 mm; H y J a +154,94 mm) | v3: patrón estándar, coincide visualmente con la foto, **no medido** (H-2) |
+| Altura de componentes | v3: caja de **35 mm** sobre la PCB (medido). El modelo admite **hasta 41 mm con 3 mm de holgura** a la tina de la pantalla (43 mm con 1 mm; 45 mm interfiere) | **Medido** (H-3) |
+| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa; sustituye la ventana genérica de v1. El jack DC del adaptador de 19,5 V entra por aquí | v3: **sin escudo** (foto); abertura libre, placa I/O impresa pendiente; posición de cada conector **PENDIENTE** (H-4) |
 | Flujo de aire | **Entrada:** ranuras de la base bajo la placa y ranuras bajas del lateral izquierdo (zona trasera, hasta z ≈ 60 mm). **Salida:** rejilla superior trasera sobre la placa (el aire caliente sube). Se conserva el disipador/ventilador original | Sentido real del ventilador: **PENDIENTE** (H-5); térmica: U-20 |
 | Disco | **SSD 2,5"** (100,45 × 69,85 × 9,5, SFF-8201) en un **soporte impreso** nuevo (`PROVISIONAL_soporte_disco`), a la derecha de la placa, sobre 4 torretas; la plancha queda 3 mm por encima de las torretas de empalme. **Opción HDD 3,5"** (`usar_hdd_35 = true`, 101,6 × 147 × 26,1, SFF-8301) en el mismo sitio, también sin interferencias | Agujeros de los discos: **PENDIENTE** (colisos en el soporte) |
 | DVD | **Retirado**; no se modela | — |
@@ -218,12 +232,13 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 | Waveshare 11,6" (H) | 279,50 × 177,09 × 21,20; activa 256,32 × 144,18 | **Con fuente** | Plano de Waveshare (ver `pantallas.md`) |
 | Overlay Obeytouch | 382 × 235 × 7,9 | **Con fuente** | Web de Obeytouch (§2.3) |
 | HP, preset `desktop_mini_ref` (histórico v1, ya no es el defecto) | 177,04 × 174,75 × 34,29 (ancho × fondo × alto) | **Con fuente, pero solo como REFERENCIA**: son las medidas del chasis del HP EliteDesk 800 G3 Desktop Mini, **no** del equipo de Miguel | Hoja de especificaciones de HP (doc. c05371240). La URL original de support.hp.com ahora da 404; se consultó una copia del mismo documento en https://server-shop.ua/assets/images/resources/18163/hp-elitedesk-800-g3-desktop-mini-business-pc-35-w-65-w-specifications-hp-customer-support.pdf |
-| HP real (HP Slimline 260-a110ns), placa mini-ITX desnuda | 170 × 170; separadores 6,35; patrón 157,48 × 154,94 | Formato: **con fuente** (HP, placas hermanas, Mini ITX 17 × 17 cm); patrón y separadores: estándar ATX/mini-ITX, **PENDIENTE de medir tras desmontar** | `datos-pendientes-hp.md` §A |
-| Altura de componentes de la placa HP | 38 (supuesto; máx. 41 con 3 mm de holgura) | **PENDIENTE** | H-3 |
+| HP real (HP Slimline 260-a110ns), placa mini-ITX desnuda | 170 × 170; separadores 6,35; patrón C-F-H-J estándar (157,48 / 154,94; F +22,86) | Formato: **medido** (17 × 17 cm, Miguel, 2026-10-18); patrón: estándar mini-ITX, coincide visualmente con la foto, **no medido**; separadores: estándar ATX | `datos-pendientes-hp.md` §A2 |
+| Altura de componentes de la placa HP | 35 (máx. 41 con 3 mm de holgura) | **Medido** (Miguel, 2026-10-18) | H-3 |
 | SSD 2,5" / HDD 3,5" (opción) | 100,45 × 69,85 × 9,5 / 101,6 × 147 × 26,1 | **Con fuente** (SFF-8201 / SFF-8301, formatos estándar) | `usar_hdd_35` |
 | I/O frontal HP, pulsador Ø12 + LED 3 mm | Marcador 16 × 70 × 26; ventana 62 × 18 | **PENDIENTE** | H-6, H-7 |
-| Adaptador HDMI→USB-C (hueco) | 72 × 32 × 16 | **PENDIENTE** (modelo sin verificar) | `adap_video` |
-| HP, ventana I/O trasera | 159,75 × 45,45 (abertura de escudo I/O 158,75 × 44,45 + 1 mm) | **Con fuente** (estándar ATX); posición en la placa HP **PENDIENTE** (H-4) | `hp_io_*` |
+| Adaptador HDMI→USB-C (hueco, modo B) | 72 × 32 × 16 | **PENDIENTE** (modelo sin verificar) | `adap_video` |
+| Capturadora HDMI→USB (reserva, modo C) | 72 × 30 × 20 | **Reserva de diseño**; medidas del aparato **PENDIENTES** | `captura` |
+| HP, ventana I/O trasera | 159,75 × 45,45 (abertura de escudo I/O 158,75 × 44,45 + 1 mm), abertura libre | **Con fuente** (estándar ATX); la placa HP no tiene escudo (foto); posición de conectores **PENDIENTE** (H-4) | `hp_io_*` |
 | Raspberry Pi | Placa 85 × 56; agujeros 58 × 49 a 3,5 mm del borde, Ø2,7 | **Con fuente** | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf |
 | Raspberry Pi, altura con conectores | 20 | **PENDIENTE** | Según el modelo que tenga Miguel |
 | KVM (opcional, desactivado) | 140 × 90 × 30 | **PENDIENTE** | Solo con `usar_kvm = true`. El fabricante no publica medidas (ver `conmutacion-video-usb.md`) |
@@ -262,15 +277,16 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
    - el soporte del Arduino pasa por su abertura.
 5. **(v1) Panel de conectores traseros:** no corta la costilla del corte X ni invade la Pi.
 
-Resultados del 2026-10-18 (configuración por defecto):
+Resultados del 2026-10-18 (configuración por defecto, HP v3):
 
 | Elemento | Resultado | Holgura mínima (mayor margen probado sin colisión) |
 |---|---|---|
-| Placa HP + RAM/disipador (38 mm sobre la PCB) | OK | ≥ 3 mm (limita una orejeta; tina: margen ≥ 3 mm hasta 41 mm de componentes) |
+| Placa HP + RAM/disipador (35 mm sobre la PCB, medido) | OK | ≥ 3 mm (limita una orejeta); tina: ≈ 9 mm (≥ 3 mm hasta 41 mm de componentes) |
 | Placa HP, zona I/O trasera | OK | ≥ 1 mm a la pared trasera (intencionado: los conectores asoman por la ventana) |
 | SSD 2,5" + soporte | OK | ≥ 5 mm (limita una torreta de empalme) |
 | I/O frontal HP / pulsador HP (lateral izq.) | OK | 0 mm a la pared (van montados en ella) |
 | Adaptador HDMI→USB-C (hueco) | OK | ≥ 10 mm |
+| Capturadora HDMI→USB (reserva) | OK | ≥ 10 mm |
 | Raspberry Pi | OK | ≥ 3 mm (limita el canal USB) |
 | Arduino Micro + soporte | OK | ≥ 10 mm |
 | Clavija micro-USB | OK | ≥ 10 mm |
@@ -280,7 +296,7 @@ Resultados del 2026-10-18 (configuración por defecto):
 | Bandeja + ala frente a orejetas | OK | 0 solapes |
 | Soporte del Arduino frente a la abertura de la bandeja | OK | — |
 | Panel de conectores (x = 241–318 mm) | OK | Pi a partir de x = 328 |
-| Solapes por pares (10 cajas) | Ninguno | — |
+| Solapes por pares (15 cajas) | Ninguno | — |
 | **Resultado** | **Sin interferencias** (en cajas envolventes) | |
 
 Variantes probadas sin interferencias:
@@ -300,10 +316,10 @@ Variantes probadas sin interferencias:
 
 Holguras que conviene revisar con piezas reales:
 
-- Componentes de la placa HP frente a la tina: ≥ 3 mm solo si miden ≤ 41 mm sobre la PCB (PENDIENTE H-3).
+- Componentes de la placa HP frente a la tina: ≈ 9 mm con los 35 mm medidos (la caja envolvente ocupa toda la placa a 35 mm: conservador).
 - Canal USB frente a la Pi: unos 3 mm.
 - Pulsador exterior frente a la pared derecha: unos 4,5 mm.
-- Conectores traseros del HP: a ras por dentro de la pared de 3 mm; comprobar que las clavijas (HDMI, DC, RJ45, USB) entran hasta el fondo a través de 3 mm de PETG (PENDIENTE; si no, rebajar la pared alrededor de la ventana).
+- Conectores traseros del HP (sin escudo I/O): a ras por dentro de la pared de 3 mm; comprobar que las clavijas (HDMI, DC, RJ45, USB) entran hasta el fondo a través de 3 mm de PETG (PENDIENTE; si no, rebajar la pared alrededor de la ventana).
 
 ---
 
@@ -350,7 +366,7 @@ Herramientas usadas: OpenSCAD 2021.01, con `xvfb-run` para trabajar sin pantalla
 
 ## 7. Pendiente antes de fabricar (lista no exhaustiva)
 
-1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). **Medir la placa tras desmontarla** (H-1…H-10 de `datos-pendientes-hp.md`) y ajustar `mitx_*`, `hp_comp_h`, `hp_io_*`, `io_frontal`, `boton_hp_*`.
+1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). ~~Tamaño y altura~~ medidos (§0c). Falta: posición real de los agujeros (H-2), **posición de cada conector trasero para diseñar la placa I/O impresa** (H-4), `io_frontal`, `boton_hp_*` (H-6, H-7) y antenas Wi-Fi (H-9).
 2. **Medir el MSI de Miguel:**
    - posición de los puertos y de las teclas OSD a lo largo del canto derecho (`puertos_v0/1`, `osd_v0/1`);
    - marcos y desplazamiento del área activa;
@@ -370,7 +386,7 @@ Herramientas usadas: OpenSCAD 2021.01, con `xvfb-run` para trabajar sin pantalla
    - USB-C → HP/fuente por el pasacables;
    - micro-USB → Pi.
    Añadir alivio de tensión. En los renders están **dibujados**, no validados.
-6. **Vídeo:** modo A (visor remoto, sin cambios mecánicos) o modo B (HP HDMI → Mini-HDMI; Pi → adaptador HDMI→USB-C → USB-C 1; MSI alimentada por USB-C 2 con PD > 15 W). Medidas del adaptador real: **PENDIENTE** (hueco de 72 × 32 × 16 mm).
+6. **Vídeo:** modo C recomendado (capturadora en la bandeja: reserva de 72 × 30 × 20 mm, medidas reales **PENDIENTES**), modo A (visor remoto, sin cambios mecánicos) o modo B, poco probable (hueco de 72 × 32 × 16 mm para el adaptador).
 7. Medidas reales de la **distribución DC** y de los **prolongadores de panel**. Ajustar los huecos traseros.
 8. **Térmica:** con la placa desnuda, comprobar el sentido del ventilador del disipador, medir temperaturas abierta y cerrada y, si hace falta, añadir un ventilador de extracción en la rejilla trasera (alimentación y modelo PENDIENTES).
 9. **Rigidez:** el hueco de la pantalla y ahora las aberturas del tramo de puertos debilitan la pendiente. Revisar si flexa una vez impresa y quizá añadir nervios.
