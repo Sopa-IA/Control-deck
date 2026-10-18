@@ -18,7 +18,7 @@ export function Controles() {
 
   return (
     <div className="controles">
-      <Panel title="Potenciómetros" right={<span className="muted">Arduino Micro · A0–A2 · 0–1023</span>}>
+      <Panel title="Potenciómetros" right={<span className="muted">Arduino Micro · A0–A1 · 0–1023</span>}>
         <div className="pot-grid">
           {potIds.map((id) => {
             const c = state.controls[id];
@@ -36,7 +36,7 @@ export function Controles() {
           })}
         </div>
       </Panel>
-      <Panel title="Botones" right={<span className="muted">D2 · D3 · D5 · D7 · pulsación larga ≥ 800 ms</span>}>
+      <Panel title="Botones" right={<span className="muted">D2 · D3 · pulsación larga ≥ 800 ms</span>}>
         <div className="btn-grid">
           {btnIds.map((id) => {
             const c = state.controls[id];

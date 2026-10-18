@@ -94,7 +94,7 @@ Puerto USB CDC a 115200 baudios, con líneas ASCII terminadas en `\n`:
 
 | Línea | Significado |
 |---|---|
-| `H orbit-controls 1 P3 B4` | Saludo: firmware, versión, número de potenciómetros y de botones (se envía al arrancar y al recibir `?`) |
+| `H orbit-controls 1 P2 B2` | Saludo: firmware, versión y cuántos potenciómetros y botones hay (por defecto 2 y 2; configurable en `config.h`). Se envía al arrancar y al recibir `?` |
 | `P1 512` | Potenciómetro 1, valor filtrado de 0 a 1023 (solo se envía si cambia más que la histéresis) |
 | `B2 1` / `B2 0` | Botón 2 pulsado / soltado (con antirrebote) |
 | `B2 L` | Pulsación larga (≥ 800 ms) |

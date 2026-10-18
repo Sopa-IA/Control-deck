@@ -17,6 +17,8 @@ describe('protocolo compartido', () => {
     expect(isAllowedAction('__proto__')).toBe(false);
   });
   it('asignación por defecto válida', () => {
+    expect(Object.keys(controlsDefault.pots)).toEqual(['P1', 'P2']);
+    expect(Object.keys(controlsDefault.buttons)).toEqual(['B1', 'B2']);
     for (const [, fn] of Object.entries(controlsDefault.pots)) expect(canAssign(fn, 'pot')).toBe(true);
     for (const [, fn] of Object.entries(controlsDefault.buttons)) expect(canAssign(fn, 'button')).toBe(true);
     expect(canAssign('ui.select', 'pot')).toBe(false);

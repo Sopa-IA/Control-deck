@@ -70,7 +70,10 @@ class Hub:
         self._volume_pending: Optional[int] = None
         self._tasks: list[asyncio.Task] = []
         self._serial: Optional[SerialReader] = None
-        self.sim_controls = SimControls(press_buttons=cfg.sim_buttons) if cfg.sim_controls else None
+        self.sim_controls = (
+            SimControls(pots=len(self.mapping["pots"]), buttons=len(self.mapping["buttons"]),
+                        press_buttons=cfg.sim_buttons)
+            if cfg.sim_controls else None)
 
     # ------------------------------------------------------------------ estado
     @property
