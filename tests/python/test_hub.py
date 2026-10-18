@@ -215,3 +215,30 @@ async def test_ui_gets_last_pot_values_on_connect(server):
         ui = await connect(s, server)
         ev = await recv(ui, "control_event")
         assert ev["payload"]["control"] == "P2" and ev["payload"]["value"] == 300
+
+
+async def test_switch_visible_modo_captura(tmp_path, monkeypatch):
+    # Modo C configurado en local (dispositivo simulado por el test): el estado indica «captura»
+    # y la entrada física de la MSI sigue siendo la Pi.
+    import sys
+
+    from orbitd.video import VideoConfig
+    monkeypatch.setattr("orbitd.video.os.path.exists", lambda p: p == "/dev/video0")
+    cfg = Config(state_dir=tmp_path, hp_token=TOKEN, telemetry_period_s=30,
+                 video=VideoConfig(capture_device="/dev/video0",
+                                   capture_cmd=[sys.executable, "-c", "import time; time.sleep(30)", "{device}"]))
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        async with aiohttp.ClientSession() as s:
+            ws = await connect(s, srv)
+            await recv(ws, "welcome")
+            await recv(ws, "state")
+            await send(ws, "action_request", {"action": "pi.switch_visible"})
+            st = await recv(ws, "state")
+            assert st["payload"]["visible"]["system"] == "hp" and st["payload"]["visible"]["mode"] == "captura"
+            assert st["payload"]["video_input"] == "pi"
+            r = await recv(ws, "action_result")
+            assert r["payload"]["ok"] is True and r["payload"]["dry_run"] is False
+    finally:
+        await srv.close()
