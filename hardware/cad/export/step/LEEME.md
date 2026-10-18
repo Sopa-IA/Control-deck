@@ -1,5 +1,5 @@
-# STEP PROVISIONALES (facetados, generados desde los STL con FreeCAD; 3 trozos de carcasa no pasan la validación de OpenCASCADE) · ORBIT TERMINAL v0
+# STEP · ORBIT TERMINAL
 
-**NO APTOS PARA FABRICACIÓN.** Generados el 2026-10-18 con `exportar.sh` a partir del preset `msi_15_6` y del HP de referencia `desktop_mini_ref`. Hay cotas PENDIENTES; ver `docs/diseno-mecanico.md`.
+**No regenerados en v1.** Los STEP facetados de v0 (generados desde los STL con FreeCAD) ya no corresponden a la geometría actual. Además, 3 trozos de carcasa no pasaban la validación de OpenCASCADE. Por tamaño (~42 MB) no se suben al repositorio (`.gitignore`).
 
-Los archivos `*_x2` / `*_x4` indican cuántas copias imprimir.
+Para regenerarlos desde los STL de v1: `freecadcmd hardware/cad/stl_a_step_freecad.py`. Sigue siendo una malla facetada, no un B-rep paramétrico. **La referencia de geometría son el código OpenSCAD y los STL.** **NO APTOS PARA FABRICACIÓN.**

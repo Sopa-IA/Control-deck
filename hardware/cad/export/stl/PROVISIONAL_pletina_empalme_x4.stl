@@ -559,20 +559,6 @@ solid PROVISIONAL_pletina_empalme_x4
       vertex 4.96511 3.6513 0
     endloop
   endfacet
-  facet normal 0.0653848 0.99786 -0
-    outer loop
-      vertex 6 3.3 0
-      vertex 5.7781 3.31454 3
-      vertex 6 3.3 3
-    endloop
-  endfacet
-  facet normal 0.0653848 0.99786 0
-    outer loop
-      vertex 5.7781 3.31454 3
-      vertex 6 3.3 0
-      vertex 5.7781 3.31454 0
-    endloop
-  endfacet
   facet normal 0.19513 0.980777 -0
     outer loop
       vertex 5.7781 3.31454 0
@@ -599,6 +585,20 @@ solid PROVISIONAL_pletina_empalme_x4
       vertex 4.52776 5.85 0
       vertex 4.4294 5.65056 3
       vertex 4.4294 5.65056 0
+    endloop
+  endfacet
+  facet normal 0.0653848 0.99786 -0
+    outer loop
+      vertex 6 3.3 0
+      vertex 5.7781 3.31454 3
+      vertex 6 3.3 3
+    endloop
+  endfacet
+  facet normal 0.0653848 0.99786 0
+    outer loop
+      vertex 5.7781 3.31454 3
+      vertex 6 3.3 0
+      vertex 5.7781 3.31454 0
     endloop
   endfacet
   facet normal 0.89686 0.442314 0

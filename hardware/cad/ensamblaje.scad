@@ -4,6 +4,7 @@
 include <componentes.scad>
 
 vista = "montado";
+interior_con_mandos = false;   // vista interior: muestra también pomos y carcasa translúcida
 expl  = 75;     // separación en la vista explosionada
 
 module guias_luz_montadas() {
@@ -20,6 +21,7 @@ module conjunto(e = 0) {
     translate([0, 0, zc] + nrm*0.9*e) mandos_montados();
     color(C_CUERPO) base();
     color([0.15, 0.15, 0.16]) translate([0, 0, -0.9*e]) bandeja_servicio();
+    color([0.13, 0.13, 0.14]) translate([0, 0, -0.9*e + 0.3*e]) soporte_arduino();
     translate([0, -1.4*e, 0.15*e]) guias_luz_montadas();
     translate([0, 0, 0.6*e]) componentes_internos();
     color([0.03, 0.03, 0.03]) for (p = pies()) translate([p[0], p[1], -alto_pies - 0.4*e]) cylinder(d = 12, h = alto_pies + 1);
@@ -30,7 +32,9 @@ else if (vista == "explosionado") conjunto(expl);
 else if (vista == "interior") {
     color(C_CUERPO) base();
     color([0.14, 0.14, 0.15]) bandeja_servicio();
+    color([0.13, 0.13, 0.14]) soporte_arduino();
     componentes_internos();
+    if (interior_con_mandos) { translate([0, 0, 0]) mandos_montados(); color(C_BISEL, 0.25) carcasa_superior(); }
     guias_luz_montadas();
 
 }
@@ -48,8 +52,13 @@ else if (vista == "check") {
     for (j = [1 : 1 : ny_cortes - 1]) echo(str("CUTY;", corte_y(j)));
     for (c = cajas_componentes()) echo(str("COMP;", c[0], c[1], c[2], ";", c[3][0], ";", c[3][1], ";", c[3][2], ";", c[4][0], ";", c[4][1], ";", c[4][2]));
     // Encoders y pulsadores (local -> se pasan como cajas locales)
-    for (p = pos_knobs)   echo(str("LOCAL;Encoder;", p[0] - enc_cuerpo[0]/2 - 6, ";", p[1] - enc_cuerpo[1]/2 - 6, ";", -pared - 2 - enc_cuerpo[2] - 1.6, ";", enc_cuerpo[0] + 12, ";", enc_cuerpo[1] + 12, ";", enc_cuerpo[2] + 1.6));
-    for (p = pos_botones) echo(str("LOCAL;Pulsador;", p[0] - pul_cuerpo[0]/2, ";", p[1] - pul_cuerpo[1]/2, ";", -pared - 2 - pul_cuerpo[2], ";", pul_cuerpo[0], ";", pul_cuerpo[1], ";", pul_cuerpo[2]));
+    for (c = cajas_mandos()) echo(str("LOCAL;", c[0], ";", c[1][0], ";", c[1][1], ";", c[1][2], ";", c[2][0], ";", c[2][1], ";", c[2][2]));
+    echo(str("PARAM;pod_x0;", pod_x0)); echo(str("PARAM;usar_kvm;", usar_kvm ? 1 : 0));
+    echo(str("PARAM;cama;", cama_x, "x", cama_y, "x", cama_z)); echo(str("PARAM;impresora;", impresora));
+    // bandeja de servicio con ala (para comprobar que no pisa orejetas)
+    echo(str("SOPORTE_EN_BANDEJA;", (ard_cx - sop_ard_w/2 >= serv_x && ard_cx + sop_ard_w/2 <= serv_x + serv_w && sop_ard_y0 >= serv_y && sop_ard_y0 + sop_ard_l <= serv_y + serv_d) ? 1 : 0));
+    echo(str("TRAY;", serv_x - serv_ala, ";", serv_y - serv_ala, ";", serv_w + 2*serv_ala, ";", serv_d + 2*serv_ala));
+    echo(str("OBST;Canal USB;", ard_cx - canal_usb_ancho/2 - 1.6, ";", canal_usb_y0, ";", suelo, ";", canal_usb_ancho + 3.2, ";", canal_usb_y1 - canal_usb_y0, ";", 8));
     for (p = orejetas) echo(str("OBST;Orejeta;", p[0] - 6, ";", p[1] - 6, ";", suelo, ";", 12, ";", 12, ";", (p[1] > pared + 10 && p[1] < 40) ? H : 11));
     echo(str("OBST;Carril LED;", luz_margen - 3, ";", 0, ";", suelo, ";", W - 2*luz_margen + 6, ";", pared + 8.2, ";", luz_z0 + luz_alto + 2 - suelo));
     cube(1);

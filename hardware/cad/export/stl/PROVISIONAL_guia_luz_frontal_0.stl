@@ -1,43 +1,43 @@
 solid PROVISIONAL_guia_luz_frontal_0
   facet normal 1 -0 0
     outer loop
-      vertex 241.98 -10.85 3.2
-      vertex 241.98 -6.15 0.25
-      vertex 241.98 -6.15 3.2
+      vertex 227.98 -10.85 3.2
+      vertex 227.98 -6.15 0.25
+      vertex 227.98 -6.15 3.2
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
-      vertex 241.98 -6.15 0.25
-      vertex 241.98 -10.85 3.2
-      vertex 241.98 -10.85 0.25
+      vertex 227.98 -6.15 0.25
+      vertex 227.98 -10.85 3.2
+      vertex 227.98 -10.85 0.25
     endloop
   endfacet
   facet normal 0 -1 0
     outer loop
       vertex 30.15 -10.85 0.25
-      vertex 241.98 -10.85 3.2
+      vertex 227.98 -10.85 3.2
       vertex 30.15 -10.85 3.2
     endloop
   endfacet
   facet normal 0 -1 -0
     outer loop
-      vertex 241.98 -10.85 3.2
+      vertex 227.98 -10.85 3.2
       vertex 30.15 -10.85 0.25
-      vertex 241.98 -10.85 0.25
+      vertex 227.98 -10.85 0.25
     endloop
   endfacet
   facet normal 0 1 -0
     outer loop
-      vertex 241.98 -6.15 0.25
+      vertex 227.98 -6.15 0.25
       vertex 30.15 -6.15 3.2
-      vertex 241.98 -6.15 3.2
+      vertex 227.98 -6.15 3.2
     endloop
   endfacet
   facet normal 0 1 0
     outer loop
       vertex 30.15 -6.15 3.2
-      vertex 241.98 -6.15 0.25
+      vertex 227.98 -6.15 0.25
       vertex 30.15 -6.15 0.25
     endloop
   endfacet
@@ -58,70 +58,70 @@ solid PROVISIONAL_guia_luz_frontal_0
   facet normal 0 0 -1
     outer loop
       vertex 30.15 -10.85 0.25
-      vertex 241.98 -6.15 0.25
-      vertex 241.98 -10.85 0.25
+      vertex 227.98 -6.15 0.25
+      vertex 227.98 -10.85 0.25
     endloop
   endfacet
   facet normal -0 0 -1
     outer loop
-      vertex 241.98 -6.15 0.25
+      vertex 227.98 -6.15 0.25
       vertex 30.15 -10.85 0.25
       vertex 30.15 -6.15 0.25
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
-      vertex 242.13 -4.4 7.2
-      vertex 242.13 -13 7.2
-      vertex 242.13 -4.4 5.2
+      vertex 228.13 -4.4 7.2
+      vertex 228.13 -13 7.2
+      vertex 228.13 -4.4 5.2
     endloop
   endfacet
   facet normal 1 -0 0
     outer loop
-      vertex 242.13 -4.4 5.2
-      vertex 242.13 -4 3.2
-      vertex 242.13 -4 5.2
+      vertex 228.13 -4.4 5.2
+      vertex 228.13 -4 3.2
+      vertex 228.13 -4 5.2
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
-      vertex 242.13 -13 3.2
-      vertex 242.13 -4.4 5.2
-      vertex 242.13 -13 7.2
+      vertex 228.13 -13 3.2
+      vertex 228.13 -4.4 5.2
+      vertex 228.13 -13 7.2
     endloop
   endfacet
   facet normal 1 0 0
     outer loop
-      vertex 242.13 -4.4 5.2
-      vertex 242.13 -13 3.2
-      vertex 242.13 -4 3.2
+      vertex 228.13 -4.4 5.2
+      vertex 228.13 -13 3.2
+      vertex 228.13 -4 3.2
     endloop
   endfacet
   facet normal 0 -1 0
     outer loop
       vertex 27 -13 3.2
-      vertex 242.13 -13 7.2
+      vertex 228.13 -13 7.2
       vertex 27 -13 7.2
     endloop
   endfacet
   facet normal 0 -1 -0
     outer loop
-      vertex 242.13 -13 7.2
+      vertex 228.13 -13 7.2
       vertex 27 -13 3.2
-      vertex 242.13 -13 3.2
+      vertex 228.13 -13 3.2
     endloop
   endfacet
   facet normal 0 1 -0
     outer loop
-      vertex 242.13 -4 3.2
+      vertex 228.13 -4 3.2
       vertex 27 -4 5.2
-      vertex 242.13 -4 5.2
+      vertex 228.13 -4 5.2
     endloop
   endfacet
   facet normal 0 1 0
     outer loop
       vertex 27 -4 5.2
-      vertex 242.13 -4 3.2
+      vertex 228.13 -4 3.2
       vertex 27 -4 3.2
     endloop
   endfacet
@@ -156,29 +156,29 @@ solid PROVISIONAL_guia_luz_frontal_0
   facet normal -0 0 1
     outer loop
       vertex 27 -4 5.2
-      vertex 242.13 -4.4 5.2
-      vertex 242.13 -4 5.2
+      vertex 228.13 -4.4 5.2
+      vertex 228.13 -4 5.2
     endloop
   endfacet
   facet normal 0 0 1
     outer loop
-      vertex 242.13 -4.4 5.2
+      vertex 228.13 -4.4 5.2
       vertex 27 -4 5.2
       vertex 27 -4.4 5.2
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
-      vertex 242.13 -13 3.2
-      vertex 241.98 -10.85 3.2
-      vertex 242.13 -4 3.2
+      vertex 228.13 -13 3.2
+      vertex 227.98 -10.85 3.2
+      vertex 228.13 -4 3.2
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
-      vertex 242.13 -13 3.2
+      vertex 228.13 -13 3.2
       vertex 30.15 -10.85 3.2
-      vertex 241.98 -10.85 3.2
+      vertex 227.98 -10.85 3.2
     endloop
   endfacet
   facet normal -0 0 -1
@@ -192,28 +192,28 @@ solid PROVISIONAL_guia_luz_frontal_0
     outer loop
       vertex 27 -13 3.2
       vertex 30.15 -10.85 3.2
-      vertex 242.13 -13 3.2
+      vertex 228.13 -13 3.2
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
-      vertex 241.98 -6.15 3.2
-      vertex 242.13 -4 3.2
-      vertex 241.98 -10.85 3.2
+      vertex 227.98 -6.15 3.2
+      vertex 228.13 -4 3.2
+      vertex 227.98 -10.85 3.2
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
       vertex 30.15 -6.15 3.2
-      vertex 242.13 -4 3.2
-      vertex 241.98 -6.15 3.2
+      vertex 228.13 -4 3.2
+      vertex 227.98 -6.15 3.2
     endloop
   endfacet
   facet normal 0 0 -1
     outer loop
       vertex 30.15 -6.15 3.2
       vertex 27 -4 3.2
-      vertex 242.13 -4 3.2
+      vertex 228.13 -4 3.2
     endloop
   endfacet
   facet normal 0 0 -1
@@ -225,28 +225,28 @@ solid PROVISIONAL_guia_luz_frontal_0
   endfacet
   facet normal 0 1 -0
     outer loop
-      vertex 242.13 -4.4 5.2
+      vertex 228.13 -4.4 5.2
       vertex 27 -4.4 7.2
-      vertex 242.13 -4.4 7.2
+      vertex 228.13 -4.4 7.2
     endloop
   endfacet
   facet normal 0 1 0
     outer loop
       vertex 27 -4.4 7.2
-      vertex 242.13 -4.4 5.2
+      vertex 228.13 -4.4 5.2
       vertex 27 -4.4 5.2
     endloop
   endfacet
   facet normal -0 0 1
     outer loop
       vertex 27 -4.4 7.2
-      vertex 242.13 -13 7.2
-      vertex 242.13 -4.4 7.2
+      vertex 228.13 -13 7.2
+      vertex 228.13 -4.4 7.2
     endloop
   endfacet
   facet normal 0 0 1
     outer loop
-      vertex 242.13 -13 7.2
+      vertex 228.13 -13 7.2
       vertex 27 -4.4 7.2
       vertex 27 -13 7.2
     endloop

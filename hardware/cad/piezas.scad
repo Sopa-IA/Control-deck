@@ -15,6 +15,8 @@ module bisel_local() {
             translate([0, 0, -1]) cube([act_w + 2*ventana_holgura, act_h + 2*ventana_holgura, 0.01 + 2*(1 + 0.6)], center = true);
             translate([0, 0, bisel_t + 0.01]) cube([act_w + 2*ventana_holgura + 3, act_h + 2*ventana_holgura + 3, 0.02], center = true);
         }
+        // v1: muesca sobre la ventana OSD del canto derecho
+        translate([aloj_x0 + aloj_w - 1, aloj_y0 + aloj_h*osd_v0, -5]) caja_r([osd_ancho + 1, aloj_h*(osd_v1 - osd_v0), 20], 2);
         for (p = torn_bisel()) translate([p[0], p[1], -1]) {
             cylinder(d = tornillo_d, h = 10);
             translate([0, 0, bisel_t - 1.7 + 1 - 0.6]) cylinder(d1 = tornillo_d, d2 = 6.4, h = 1.71);  // avellanado M3 [PENDIENTE tornillo]
@@ -35,8 +37,8 @@ module base() {
             translate([hp_x + 30, hp_y - 5, suelo - 0.01]) cube([hp_w - 60, 3, 14]);
             // torretas de la bandeja
             for (p = torretas_bandeja()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = boss_d, h = 5);
-            // torretas del KVM [PENDIENTE: el TESmart no publica agujeros; brida adhesiva o abrazadera]
-            for (x = [kvm_x - 4, kvm_x + kvm_w + 4], y = [kvm_y + 15, kvm_y + kvm_d - 15])
+            // torretas del KVM (solo si usar_kvm) [PENDIENTE: el TESmart no publica agujeros]
+            if (usar_kvm) for (x = [kvm_x - 4, kvm_x + kvm_w + 4], y = [kvm_y + 15, kvm_y + kvm_d - 15])
                 translate([x, y, suelo - 0.01]) torreta(8);
             // torretas de empalme en las juntas de la base
             for (p = empalmes()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = boss_d, h = 5);
@@ -81,6 +83,14 @@ module bandeja_servicio() {
             // torretas para la distribución [PENDIENTE: placa elegida]
             for (x = [psu_x + 6, psu_x + psu_w - 6], y = [psu_y + 6, psu_y + psu_d - 6])
                 translate([x, y, suelo - 0.01]) torreta(4);
+            // v1: torretas del soporte del Arduino Micro
+            for (p = agujeros_soporte_ard()) translate([p[0], p[1], suelo - 0.01]) torreta(sop_ard_z0 - suelo + 0.01);
+            // v1: canal del cable micro-USB (Arduino -> USB de la Pi), dos paredes de 8 mm
+            for (sx = [-1, 1]) translate([ard_cx + sx*(canal_usb_ancho/2 + 0.8) - 0.8, canal_usb_y0, suelo - 0.01])
+                cube([1.6, canal_usb_y1 - canal_usb_y0, 8]);
+            // grapas del canal (puentes cada 30 mm; el cable entra a presión por el lateral)
+            for (y = [canal_usb_y0 + 10 : 30 : canal_usb_y1 - 5]) translate([ard_cx - canal_usb_ancho/2 - 1.6, y, suelo + 6.5])
+                difference() { cube([canal_usb_ancho/2 + 1.6 + 2, 4, 1.5]); }
         }
         for (p = agujeros_pi()) translate([p[0], p[1], 1.5]) cylinder(d = 2.7, h = 20);   // rosca/inserto M2.5 [PENDIENTE]
         for (p = torretas_bandeja()) translate([p[0], p[1], -5]) cylinder(d = tornillo_d, h = 10);
@@ -88,6 +98,55 @@ module bandeja_servicio() {
         for (y = [pi_y + 12 : 7 : pi_y + pi_d - 12]) translate([pi_x + 15, y, -5]) caja_r([pi_w - 30, 3.5, 12], 1.6);
     }
 }
+function agujeros_soporte_ard() = [[ard_cx, sop_ard_y0 + sop_tab/2], [ard_cx, sop_ard_y0 + sop_ard_l - sop_tab/2]];
+canal_usb_y0 = ard_y + ard_l + ard_usb_sale + ard_clavija + 2;   // tras la clavija micro-USB
+canal_usb_y1 = pi_y - 4;                                           // hasta el frente de la Pi (luego el cable gira hacia sus USB)
+
+// ---------------------------------------------------------------------
+// SOPORTE DEL ARDUINO MICRO (pieza impresa; se atornilla a la bandeja)
+// La PCB (48 x 17,7) apoya por sus extremos sobre dos bloques con labio de
+// centrado; los pines quedan colgando en el hueco central (dupont hembra).
+// Se sujeta con una brida de 3,6 mm por las dos ranuras centrales.
+// [PENDIENTE] confirmar el borde libre de pines en los extremos (~2,4 mm) con la placa real.
+// ---------------------------------------------------------------------
+module soporte_arduino() {
+    x0 = ard_cx - sop_ard_w/2;
+    difference() {
+        union() {
+            translate([x0, sop_ard_y0, sop_ard_z0]) caja_r([sop_ard_w, sop_ard_l, 3], 2);
+            // bloques de apoyo en los extremos de la PCB
+            for (yb = [[ard_y - 3, 5.4], [ard_y + ard_l - 2.4, 5.4]])
+                translate([x0, yb[0], sop_ard_z0]) cube([sop_ard_w, yb[1], ard_altura_soporte]);
+            // labios de centrado (1,5 mm sobre la PCB) en las esquinas
+            for (sx = [x0, x0 + sop_ard_w - 3.7], yb = [ard_y - 3, ard_y + ard_l - 2.4])
+                translate([sx, yb, sop_ard_z0]) cube([3.7, 5.4, ard_altura_soporte + ard_pcb + 1.5]);
+            // paredes laterales bajas (rigidez)
+            for (sx = [x0, x0 + sop_ard_w - 2]) translate([sx, ard_y - 3, sop_ard_z0]) cube([2, ard_l + 6, 6]);
+        }
+        // asiento de la PCB con holgura 0,3
+        translate([ard_cx - ard_w/2 - 0.3, ard_y - 0.3, sop_ard_z0 + ard_altura_soporte]) cube([ard_w + 0.6, ard_l + 0.6, 10]);
+        // paso del conector micro-USB (extremo trasero, centrado) [PENDIENTE posición exacta]
+        translate([ard_cx - 6, ard_y + ard_l - 5, sop_ard_z0 + ard_altura_soporte - 1]) cube([12, 20, 10]);
+        // tornillos M3 a las torretas de la bandeja
+        for (p = agujeros_soporte_ard()) translate([p[0], p[1], sop_ard_z0 - 1]) {
+            cylinder(d = tornillo_d, h = 10);
+            translate([0, 0, 3.01 - 0.6]) cylinder(d = 6.2, h = ard_altura_soporte);   // cabeza
+        }
+        // ranuras para brida
+        for (sx = [-1, 1]) translate([ard_cx + sx*(ard_w/2 + 2) - 1, ard_y + ard_l/2 - 2, sop_ard_z0 - 1]) cube([2, 4, 5]);
+    }
+}
+// Marcador del Arduino Micro (PCB + componentes + pines + clavija micro-USB)
+module arduino_marcador() {
+    translate([ard_cx - ard_w/2, ard_y, ard_pcb_z]) {
+        color([0.05, 0.35, 0.45]) cube([ard_w, ard_l, ard_pcb]);
+        color([0.15, 0.15, 0.16]) translate([3, 6, ard_pcb]) cube([ard_w - 6, 30, ard_arriba]);
+        color([0.8, 0.75, 0.3]) for (sx = [ard_w/2 - 7.62, ard_w/2 + 7.62]) translate([sx - 1.25, 2.4, -ard_pines]) cube([2.5, ard_l - 4.8, ard_pines]);
+        color([0.75, 0.75, 0.78]) translate([ard_w/2 - 4, ard_l - 4 , ard_pcb]) cube([8, 4 + ard_usb_sale, 3]);
+        color([0.1, 0.1, 0.1]) translate([ard_w/2 - 5, ard_l + ard_usb_sale, ard_pcb - 1]) cube([10, ard_clavija, 6]);
+    }
+}
+
 function agujeros_pi() = [for (dx = [0, pi_agujeros[0]], dy = [0, pi_agujeros[1]])
     [pi_x + pi_agujero_borde + dx, pi_y + pi_agujero_borde + dy]];
 
@@ -112,14 +171,19 @@ function tramo_guia(k) = [luz_margen + (W - 2*luz_margen) * k / n_guia, luz_marg
 // ---------------------------------------------------------------------
 // MANDOS
 // ---------------------------------------------------------------------
-module pomo() {   // pomo Ø30 moleteado, eje D de 6 mm
+pomo_eje_D = false;   // [PENDIENTE] true si el eje del potenciómetro es en D (plano a 4.5 mm)
+module pomo() {   // pomo Ø30 moleteado, eje de 6 mm
     difference() {
         union() {
             cylinder(d = knob_d, h = knob_h - 2, $fn = 72);
             translate([0, 0, knob_h - 2]) cylinder(d1 = knob_d, d2 = knob_d - 3, h = 2, $fn = 72);
         }
         for (a = [0 : 10 : 359]) rotate([0, 0, a]) translate([knob_d/2 + 0.2, 0, -1]) cylinder(d = 1.6, h = knob_h - 3, $fn = 8);
-        difference() { translate([0, 0, -1]) cylinder(d = eje_encoder_d + 0.2, h = 14); translate([1.5 + 0.1, -5, -2]) cube([10, 10, 20]); }
+        // eje de 6 mm: agujero redondo + plano en D opcional + prisionero M3 radial
+        // (vale para eje en D o liso; estriado: usar pomo comercial) [PENDIENTE medir eje]
+        difference() { translate([0, 0, -1]) cylinder(d = eje_pot_d + 0.2, h = 14);
+            if (pomo_eje_D) translate([1.5 + 0.1, -5, -2]) cube([10, 10, 20]); }
+        translate([0, 0, 6]) rotate([0, 90, 0]) cylinder(d = 2.5, h = knob_d);   // prisionero M3 (rosca a mano o inserto)
         translate([0, 0, -1]) cylinder(d = 12, h = 2.5);
         translate([0, knob_d/2 - 5, knob_h - 0.8]) cylinder(d = 2.4, h = 2);   // marca de posición (relleno ámbar)
     }
@@ -134,10 +198,5 @@ module anillo_luz() {  // guía de luz anular bajo cada pomo (PETG translúcido)
         for (a = [90, 210, 330]) rotate([0, 0, a]) translate([0, -1.5, -0.01]) cube([anillo_ext, 3, 10]);
     }
 }
-module tapa_boton() {
-    difference() {
-        union() { cylinder(d = boton_d, h = 6); translate([0, 0, -1.5]) cylinder(d = boton_d + 4, h = 1.5); }
-        translate([0, 0, 5.4]) cylinder(d = 8, h = 1);     // icono / indicador ámbar
-        translate([0, 0, -2]) cylinder(d = 3.8, h = 5);    // vástago del pulsador [PENDIENTE]
-    }
-}
+// v1: la tapa de botón impresa desaparece: los pulsadores de panel genéricos traen
+// su propio actuador (modelo [PENDIENTE]).
