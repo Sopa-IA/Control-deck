@@ -8,6 +8,8 @@
 //   [FUENTE]    dato de fabricante con URL (comprobado 2026-10-18)
 //   [DISEÑO]    decisión de diseño de este modelo (modificable)
 //   [PENDIENTE] valor provisional; hay que medirlo o confirmarlo
+//   [MEDIDO]    medida real tomada por Miguel (fecha e instrumento indicados)
+//   [FOTO]      observación en una foto de Miguel (posición/orden, NO es una medida)
 // =====================================================================
 
 // ---------------------------------------------------------------------
@@ -171,15 +173,31 @@ luz_margen = 30;   // [DISEÑO] distancia a los laterales
 // hp_preset: definido en la sección de mínimos de hardware (más arriba)
 hp_desnuda = hp_preset == "iris_mitx_desnuda";
 mitx = 170;                 // [FUENTE] mini-ITX 170 x 170 mm (HP: "Mini ITX 17.0 x 17.0 cm")
-mitx_agujeros = [157.48, 154.94];   // [FUENTE estándar mini-ITX/ATX] separación de agujeros
-                            // (6,2" x 6,1"); que la placa HP lo respete: [PENDIENTE de medir]
+                            // [MEDIDO 2026-10-18, Miguel] la placa mide 17 x 17 cm: coincide.
+// Agujeros: patrón estándar mini-ITX (C, F, H, J); coincide visualmente con los 4 tornillos
+// de la foto, NO medido. [FUENTE estándar ATX/mini-ITX: agujeros C-F-H-J; cotas relativas a C:
+// F = (+157,48 a lo largo del borde I/O, +22,86 hacia delante), H = (0, +154,94), J = (+157,48,
+// +154,94); C a 6,35 mm del lateral y 10,16 mm del borde trasero]. Comprobado con el plano de
+// una placa mini-ITX comercial (FLEX-WIZARD-IMX8M-MINI, ES France: 6,35 / 163,83 / 10,16 /
+// 33,02 / 165,1 mm). v2 tenía F alineado con C (sin los 22,86 mm): corregido en v3.
+// [FOTO] el agujero trasero más cercano al borde I/O está en el extremo del audio (C, X baja
+// en Orbit) y el más retrasado (F) en el extremo del jack DC.
+mitx_agujeros = [157.48, 154.94];   // [FUENTE estándar] C->F/J a lo largo del borde I/O; C->H/J hacia delante
+mitx_ag_f = 22.86;                  // [FUENTE estándar] F está 22,86 mm (0,9") más adentro que C
 mitx_ag_borde = [6.35, 10.16];      // [FUENTE estándar] agujero C: 6,35 mm del lateral y
-                            // 10,16 mm del borde trasero (I/O). [PENDIENTE de medir]
+                            // 10,16 mm del borde trasero (I/O). No medido en la placa HP.
 hp_separador = 6.35;        // [FUENTE estándar ATX] altura de separadores 6,35 mm (1/4")
 hp_pcb = 1.6;               // [PENDIENTE] espesor PCB típico
-hp_comp_h = 38;             // [PENDIENTE de medir] componentes sobre la PCB: DIMM DDR3 en
-                            // vertical (~30,35 mm módulo JEDEC + zócalo) y disipador del A6-7310
-                            // (TDP 15 W). 38 mm = supuesto prudente.
+hp_comp_h = 35;             // [MEDIDO 2026-10-18, Miguel] altura máxima sobre la placa: 35 mm
+                            // (el disipador con su ventilador es lo más alto). Límite del modelo:
+                            // 41 mm con 3 mm de holgura a la tina. v2: supuesto de 38 mm.
+// I/O trasero [FOTO 2026-10-18]: los conectores asoman por la chapa de la caja HP; NO hay escudo
+// I/O separado. Orden a lo largo del borde (de DC a audio): jack DC, VGA, HDMI, 2x USB,
+// RJ45 + USB, audio. En Orbit (vista superior, I/O hacia atrás) el audio queda a la izquierda
+// (X baja) y el jack DC a la derecha. Posiciones exactas [PENDIENTE de medir].
+// La ventana de Orbit es una abertura LIBRE del tamaño de la abertura estándar (no asume escudo).
+// Para cerrar el hueco alrededor de los conectores hace falta una PLACA I/O IMPRESA a medida
+// (pendiente de medir los conectores; no se modela aún). Ver docs/diseno-mecanico.md.
 hp_io_h = 44.45;            // [FUENTE estándar ATX] abertura del escudo I/O 158,75 x 44,45 mm
 hp_io_w = 158.75;
 hp_io_prof = 25;            // [PENDIENTE] fondo de la pila de conectores traseros sobre la placa
@@ -197,8 +215,9 @@ hp_atras = hp_desnuda ? 3 : 14;   // [DISEÑO] placa desnuda: borde trasero a 3 
 hp_y = D - pared - hp_atras - hp_d;
 hp_z = hp_desnuda ? suelo : suelo + 5;   // desnuda: separadores desde el suelo
 hp_pcb_z = hp_z + hp_separador;          // cara inferior de la PCB
-function hp_agujeros() = [for (i = [0, 1], j = [0, 1])
-    [hp_x + mitx_ag_borde[0] + i*mitx_agujeros[0], hp_y + hp_d - mitx_ag_borde[1] - j*mitx_agujeros[1]]];
+function hp_agujeros() = [for (i = [0, 1], j = [0, 1])   // C (0,0), H (0,1), F (1,0), J (1,1)
+    [hp_x + mitx_ag_borde[0] + i*mitx_agujeros[0],
+     hp_y + hp_d - mitx_ag_borde[1] - (j == 1 ? mitx_agujeros[1] : i*mitx_ag_f)]];
 
 // Disco: SSD 2,5" RECOMENDADO (SFF-8201: 100,45 x 69,85 x 7/9,5 mm). El HDD 3,5" de
 // 1 TB del propietario queda como OPCIÓN (SFF-8301: 147 x 101,6 x 26,1 mm).
@@ -256,6 +275,19 @@ adap_video = [72, 32, 16];   // [PENDIENTE] marcador x y z (incluye holgura de c
 adap_x = pi_x;
 adap_y = pi_y - 12 - adap_video[1];
 adap_z = suelo + 2;
+// Modo B ahora poco probable (los manuales de la MSI no documentan DDC/CI): el hueco se conserva.
+usar_adaptador_video = true;   // [DISEÑO] reserva el hueco del adaptador HDMI->USB-C
+
+// Capturadora HDMI->USB (UVC) para el modo C (RECOMENDADO): HDMI del HP -> capturadora -> USB
+// de la Pi. Referencia vista en Amazon.es el 2026-10-18 (marca SUOFEIXIANG, "4K30 entrada /
+// 1080p", 14,69 €, sin URL): tipo "pincho" con cable corto USB-A/USB-C. Medidas NO publicadas.
+// Es una RESERVA DE ESPACIO [DISEÑO], no la medida del aparato: cuerpo + clavija HDMI recta.
+// Va en la bandeja de servicio, por delante del hueco del adaptador (se fija con velcro o brida).
+usar_capturadora = true;       // [DISEÑO]
+captura = [72, 30, 20];        // [DISEÑO reserva; PENDIENTE de medir el aparato real]
+cap_x = pi_x;
+cap_y = adap_y - 12 - captura[1];
+cap_z = suelo + 2;
 
 // Arduino Micro (lee potenciómetros y botones; USB a la Pi)
 // [FUENTE] tienda oficial: largo 48 mm, ancho 18 mm, 13 g; PCB máx. 48 x 17,7 mm con el
