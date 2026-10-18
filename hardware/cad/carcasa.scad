@@ -140,7 +140,7 @@ module _ventilacion() {
         y_min = max(y_pend0 + (z + 16 - alto_frontal) / tan(inclinacion), D - 120);
         y_max = D - 18;
         if (y_max - y_min > 12)
-            for (x = [-1, W - pared - 1]) translate([x, y_min, z]) hull() {
+            for (x = [-1, W - pared - 1]) if (!(hp_desnuda && x < 0 && z > io_frontal_z - 10)) translate([x, y_min, z]) hull() {
                 translate([0, 0, 0]) cube([pared + 2, 0.01, 3]);
                 translate([0, y_max - y_min, 0]) cube([pared + 2, 0.01, 3]);
             }
@@ -156,16 +156,22 @@ module _ventilacion() {
 // --- Conectores traseros ---------------------------------------------
 // Ventana I/O del HP: el HP queda con su trasera hacia la pared posterior.
 // Tamaño y posición de sus puertos [PENDIENTE: modelo real del HP].
-ventana_hp = [hp_w - 8, hp_h + 2];
+// HP v2 (placa desnuda): abertura estándar de escudo I/O 158,75 x 44,45 mm [FUENTE estándar ATX];
+// posición exacta y si HP usa escudo [PENDIENTE de medir tras desmontar]. El jack DC del adaptador
+// externo de 19,5 V está en este I/O trasero (HP, placas hermanas Iris-E2/Iris-A8).
+ventana_hp = hp_desnuda ? [hp_io_w + 1, hp_io_h + 1] : [hp_w - 8, hp_h + 2];
+ventana_hp_x = hp_desnuda ? hp_x + hp_io_x0 - 0.5 : hp_x + 4;
+ventana_hp_z = hp_desnuda ? hp_pcb_z + hp_pcb - hp_io_baja - 0.5 : hp_z;
 // Panel de conectores Orbit (prolongadores de montaje en panel, modelos [PENDIENTE]):
 // [nombre, x_centro, z_centro, ancho, alto, forma("r"|"c")]
 // Medidas de hueco orientativas [PENDIENTE], ajustar al prolongador comprado.
 // v1: pasacables trasero junto al HP: el cable de vídeo del HP (p.ej. DP/HDMI -> USB-C)
 // sale por la ventana I/O y vuelve a entrar por aquí hacia el USB-C del MSI; también
 // entra por aquí el cable de la fuente USB-C PD del monitor (> 15 W según el manual).
-pasacables = [34, 14];     // [DISEÑO] ancho x alto
+// HP v2: por él pasan el HDMI del HP (-> Mini-HDMI MSI) y la fuente USB-C PD de la MSI (USB-C 2).
+pasacables = [40, 16];     // [DISEÑO] ancho x alto
 pasacables_x = hp_x + hp_w/2 - pasacables[0]/2;   // encima de la ventana I/O del HP
-pasacables_z = hp_z + hp_h + 14;
+pasacables_z = ventana_hp_z + ventana_hp[1] + 12;
 // v1: bloque compacto (77 mm) entre la costilla del corte X y la Pi.
 // Con KVM el bloque queda sobre la Pi: se sube por encima de ella.
 conectores = let(z0 = usar_kvm ? pi_z + pi_h + 12 : suelo + 20,
@@ -182,8 +188,14 @@ conectores = let(z0 = usar_kvm ? pi_z + pi_h + 12 : suelo + 20,
 ];
 echo(str("PANEL_CONECTORES;", conectores[0][1] - 3.25, ";", conectores[8][1] + 5.75, ";PI_X;", pi_x, ";", conectores[0][2] - 4, ";", pi_z + pi_h));
 module cortes_traseros() {
-    translate([hp_x + 4, D - pared - 1, hp_z]) rotate([-90, 0, 0])
+    translate([ventana_hp_x, D - pared - 1, ventana_hp_z]) rotate([-90, 0, 0])
         translate([0, -ventana_hp[1], 0]) caja_r([ventana_hp[0], ventana_hp[1], pared + 2], 2);
+    // HP v2: lateral izquierdo: ventana del I/O frontal del HP, pulsador de encendido y LED [PENDIENTE medidas]
+    if (hp_desnuda) {
+        translate([-1, io_frontal_y + 4, io_frontal_z + 4]) cube([pared + 2, io_frontal[1] - 8, io_frontal[2] - 8]);
+        translate([-1, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d + 0.2, h = pared + 2);
+        translate([-1, boton_hp_y, boton_hp_z + 14]) rotate([0, 90, 0]) cylinder(d = 3.1, h = pared + 2);   // LED 3 mm
+    }
     translate([pasacables_x, D - pared - 1, pasacables_z]) rotate([-90, 0, 0])
         translate([0, -pasacables[1], 0]) caja_r([pasacables[0], pasacables[1], pared + 2], 4);
     for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])

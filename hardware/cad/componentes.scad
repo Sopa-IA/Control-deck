@@ -13,10 +13,16 @@ panel_pot = pared + refuerzo_pot;   // espesor de panel en los pomos
 
 // Cajas AABB de cada componente (mundo): [nombre, [x,y,z], [dx,dy,dz]]
 function cajas_componentes() = [
-    ["HP (" , hp_preset, ")", [hp_x, hp_y, hp_z], [hp_w, hp_d, hp_h]],
+    if (!hp_desnuda) ["HP (" , hp_preset, ")", [hp_x, hp_y, hp_z], [hp_w, hp_d, hp_h]],
+    if (hp_desnuda) ["Placa HP + RAM/disipador", "", "", [hp_x, hp_y, hp_pcb_z], [hp_w, hp_d - hp_io_prof, hp_pcb + hp_comp_h]],
+    if (hp_desnuda) ["Placa HP zona I/O trasera", "", "", [hp_x, hp_y + hp_d - hp_io_prof, hp_pcb_z], [hp_w, hp_io_prof + 2, hp_pcb + hp_io_h - hp_io_baja]],
+    if (hp_desnuda) [usar_hdd_35 ? "HDD 3,5 + soporte" : "SSD 2,5 + soporte", "", "", [disco_x - 4, disco_y, disco_z - 2], [disco[0] + 8, disco[1], 2 + disco[2]]],
+    if (hp_desnuda) ["I/O frontal HP (lateral izq.)", "", "", [pared, io_frontal_y, io_frontal_z], io_frontal],
+    if (hp_desnuda) ["Pulsador encendido HP", "", "", [pared, boton_hp_y - boton_hp_d/2 - 2, boton_hp_z - boton_hp_d/2 - 2], [boton_hp_prof, boton_hp_d + 4, boton_hp_d + 4]],
+    ["Adaptador HDMI->USB-C (Pi)", "", "", [adap_x, adap_y, adap_z], adap_video],
     ["Raspberry Pi", "", "", [pi_x, pi_y, pi_z], [pi_w, pi_d, pi_h]],
     if (usar_kvm) ["KVM", "", "", [kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h]],
-    ["Distribucion DC", "", "", [psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h]],
+    if (usar_distribucion) ["Distribucion DC", "", "", [psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h]],
     ["Arduino Micro + soporte", "", "", [ard_cx - sop_ard_w/2, sop_ard_y0, sop_ard_z0], [sop_ard_w, ard_y + ard_l + ard_usb_sale - sop_ard_y0, ard_altura_soporte + ard_pcb + ard_arriba]],
     ["Clavija micro-USB", "", "", [ard_cx - 5, ard_y + ard_l + ard_usb_sale, ard_pcb_z - 1], [10, ard_clavija, 6]],
     ["Clavija USB-A en la Pi", "", "", [pi_x + pi_w, pi_y + 21, pi_z + 1.6], [35, 16, 16]]
@@ -58,7 +64,25 @@ module ui_ejemplo(w, h) {
     }
 }
 
-module hp_marcador() {
+module hp_marcador() { if (hp_desnuda) hp_placa_marcador(); else hp_caja_marcador(); }
+// Placa mini-ITX desnuda (ilustrativa: posiciones de RAM/disipador/conectores [PENDIENTE de medir])
+module hp_placa_marcador() {
+    for (p = hp_agujeros()) color([0.75, 0.7, 0.4]) translate([p[0], p[1], hp_z]) cylinder(d = 5.5, h = hp_separador, $fn = 6);
+    translate([hp_x, hp_y, hp_pcb_z]) {
+        color([0.05, 0.30, 0.16]) cube([hp_w, hp_d, hp_pcb]);
+        translate([0, 0, hp_pcb]) {
+            color([0.2, 0.2, 0.22]) for (i = [0, 1]) translate([18 + i*10, 20, 0]) cube([6, 133.35, 30.35]);   // 2x DDR3L (ilustrativo)
+            color([0.55, 0.55, 0.6]) translate([70, 50, 0]) cube([70, 70, 26]);                               // disipador [PENDIENTE]
+            color([0.12, 0.12, 0.12]) translate([85, 65, 26]) cube([40, 40, 8]);                              // ventilador [PENDIENTE]
+            color([0.7, 0.7, 0.74]) translate([hp_io_x0, hp_d - hp_io_prof + 2, 0]) cube([hp_io_w, hp_io_prof, hp_io_h - hp_io_baja - 4]);  // pila I/O
+        }
+    }
+    // disco, I/O frontal, pulsador y LED
+    color([0.25, 0.27, 0.32]) translate([disco_x, disco_y, disco_z]) cube(disco);
+    color([0.3, 0.3, 0.32]) translate([pared, io_frontal_y, io_frontal_z]) cube(io_frontal);
+    color([0.6, 0.6, 0.62]) translate([pared, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d, h = boton_hp_prof);
+}
+module hp_caja_marcador() {
     translate([hp_x, hp_y, hp_z]) {
         color([0.28, 0.28, 0.30]) cube([hp_w, hp_d, hp_h]);
         color([0.6, 0.6, 0.62]) translate([hp_w/2, hp_d - 30, hp_h]) cylinder(d = 22, h = 0.3);
@@ -95,7 +119,8 @@ module componentes_internos() {
     hp_marcador();
     pi_marcador();
     if (usar_kvm) caja_marcador([kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h], [0.22, 0.22, 0.25]);
-    caja_marcador([psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h], [0.35, 0.18, 0.12]);
+    if (usar_distribucion) caja_marcador([psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h], [0.35, 0.18, 0.12]);
+    caja_marcador([adap_x, adap_y, adap_z], adap_video, [0.18, 0.22, 0.35]);   // adaptador HDMI->USB-C [PENDIENTE]
     mandos_marcador();
     arduino_marcador();
     cables_ilustrativos();
@@ -131,8 +156,11 @@ module cables_ilustrativos() {
            [ard_cx, canal_usb_y1, suelo + 3], [pi_x + pi_w + 30, pi_y + 37, pi_z + 10], [pi_x + pi_w + 2, pi_y + 37, pi_z + 10]], 3.5);
     pm = pend_a_mundo([aloj_x0 + aloj_w + 8, aloj_y0 + aloj_h*(puertos_v0 + 0.08), -aloj_t/2]);
     pc = pend_a_mundo([aloj_x0 + aloj_w + 8, aloj_y0 + aloj_h*(puertos_v0 + 0.28), -aloj_t/2]);
-    cable([pm, [pm[0], pm[1] + 10, pm[2] - 30], [pi_x + 30, psu_y + psu_d/2, psu_z + psu_h + 8], [pi_x + 30, pi_y - 7, psu_z + psu_h + 4], [pi_x + 30, pi_y - 7, pi_z + 4]], 5, [0.12, 0.12, 0.3]);
-    cable([pc, [pc[0] - 10, pc[1] + 20, pc[2] - 40], [pasacables_x + 17, D - 40, pasacables_z + 7], [pasacables_x + 17, D - pared - 1, pasacables_z + 7]], 4.5, [0.3, 0.12, 0.12]);
+    // HP v2: Mini-HDMI MSI <- HDMI del HP (sale por la ventana I/O y vuelve por el pasacables)
+    cable([pm, [pm[0] - 10, pm[1] + 20, pm[2] - 30], [pasacables_x + pasacables[0]/2 - 8, D - 40, pasacables_z + 7], [pasacables_x + pasacables[0]/2 - 8, D - pared - 1, pasacables_z + 7]], 5, [0.12, 0.12, 0.3]);
+    // USB-C 1 MSI <- adaptador HDMI->USB-C <- micro-HDMI de la Pi
+    cable([pc, [pc[0], pc[1] + 5, pc[2] - 30], [adap_x + adap_video[0]/2, adap_y - 6, adap_z + adap_video[2] + 6], [adap_x + adap_video[0]/2, adap_y, adap_z + adap_video[2]/2]], 4.5, [0.3, 0.12, 0.12]);
+    cable([[adap_x + 20, adap_y + adap_video[1], adap_z + 8], [adap_x + 20, pi_y + 2, pi_z + 4]], 4, [0.12, 0.3, 0.3]);
 }
 
 // Para la vista interior: encoders y pulsadores sin la carcasa

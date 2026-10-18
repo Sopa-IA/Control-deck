@@ -81,8 +81,9 @@ alto_pies = 4;  // [DISEÑO] pies de goma (placeholder)
 // Con pantallas pequeñas la carcasa la dimensiona el HP, no la pantalla.
 // KVM: NO se usa en el prototipo (cambio de entrada por el OSD del MSI).
 usar_kvm = false;    // [DISEÑO] true = reserva la bahía del KVM (marcador 140 x 90 x 30)
-W_min_hw = 17 + 177.04 + 12 + (usar_kvm ? 140 + 8 : 0) + 153 + 3;   // ver sección 5
-D_min_hw = 174.75 + 12 + 3 + 100;
+hp_preset = "iris_mitx_desnuda";   // [DISEÑO] ver sección 5 (HP Slimline 260-a110ns desmontado)
+W_min_hw = 17 + (hp_preset == "desktop_mini_ref" ? 177.04 : 170) + 12 + (usar_kvm ? 140 + 8 : 0) + 153 + 3;   // ver sección 5
+D_min_hw = (hp_preset == "desktop_mini_ref" ? 174.75 + 12 : 170 + 3) + 3 + 100;
 // Derivadas
 L_pend = marco_inf + aloj_h + marco_sup;        // longitud sobre la pendiente
 run    = L_pend * cos(inclinacion);
@@ -155,22 +156,71 @@ luz_margen = 30;   // [DISEÑO] distancia a los laterales
 // ---------------------------------------------------------------------
 // 5. COMPONENTES INTERNOS (marcadores de posición)
 // ---------------------------------------------------------------------
-// HP: modelo exacto DESCONOCIDO (torre/mini de ~2017).
-// "desktop_mini_ref" usa las medidas de chasis del HP EliteDesk 800 G3
-// Desktop Mini como REFERENCIA ilustrativa [FUENTE, NO es el equipo de
-// Miguel]: 177.04 x 34.29 x 174.75 mm (W x H x D, sin bisel).
-// https://support.hp.com (doc. c05371240, copia consultada en
-// https://server-shop.ua/assets/images/resources/18163/hp-elitedesk-800-g3-desktop-mini-business-pc-35-w-65-w-specifications-hp-customer-support.pdf)
-// "generico": caja provisional [PENDIENTE] 200 x 200 x 45.
-// Un SFF (~2017) NO cabe en esta cuña: requeriría rediseño.
-hp_preset = "desktop_mini_ref";
-function datos_hp(p) = p == "desktop_mini_ref" ? [177.04, 174.75, 34.29] : [200, 200, 45];
+// HP: HP Slimline 260-a110ns (confirmado 2026-10-18), SE DESMONTA DE SU CAJA.
+// En Orbit va solo la placa base (+ disipador/ventilador, RAM, SSD, I/O frontal).
+// Datos del propietario 2026-10-18: placa HP "Iris-A6" (id provisional), AMD A6-7310,
+// 2 DIMM DDR3L, adaptador EXTERNO 65 W 19,5 V 3,33 A (sin red eléctrica dentro de Orbit).
+// [FUENTE HP, modelos hermanos, consultado 2026-10-18]: placas Iris-E2/Iris-A8 de la
+// serie 260-a1xx = Mini ITX 17,0 x 17,0 cm; I/O trasero con entrada DC, VGA, HDMI,
+// 2x USB 3.0, 2x USB 2.0, RJ45, audio (support.hp.com c05102388, c05341421, c05296965).
+// Ver docs/datos-pendientes-hp.md. Todo lo marcado [PENDIENTE] es "de medir tras desmontar".
+//
+// "iris_mitx_desnuda": placa mini-ITX en horizontal, I/O trasero contra la pared
+//                      posterior (ventana tipo escudo I/O). POR DEFECTO.
+// "desktop_mini_ref":  caja v1 (EliteDesk 800 G3 Desktop Mini, solo referencia histórica).
+// hp_preset: definido en la sección de mínimos de hardware (más arriba)
+hp_desnuda = hp_preset == "iris_mitx_desnuda";
+mitx = 170;                 // [FUENTE] mini-ITX 170 x 170 mm (HP: "Mini ITX 17.0 x 17.0 cm")
+mitx_agujeros = [157.48, 154.94];   // [FUENTE estándar mini-ITX/ATX] separación de agujeros
+                            // (6,2" x 6,1"); que la placa HP lo respete: [PENDIENTE de medir]
+mitx_ag_borde = [6.35, 10.16];      // [FUENTE estándar] agujero C: 6,35 mm del lateral y
+                            // 10,16 mm del borde trasero (I/O). [PENDIENTE de medir]
+hp_separador = 6.35;        // [FUENTE estándar ATX] altura de separadores 6,35 mm (1/4")
+hp_pcb = 1.6;               // [PENDIENTE] espesor PCB típico
+hp_comp_h = 38;             // [PENDIENTE de medir] componentes sobre la PCB: DIMM DDR3 en
+                            // vertical (~30,35 mm módulo JEDEC + zócalo) y disipador del A6-7310
+                            // (TDP 15 W). 38 mm = supuesto prudente.
+hp_io_h = 44.45;            // [FUENTE estándar ATX] abertura del escudo I/O 158,75 x 44,45 mm
+hp_io_w = 158.75;
+hp_io_prof = 25;            // [PENDIENTE] fondo de la pila de conectores traseros sobre la placa
+hp_io_x0 = 5.6;             // [PENDIENTE de medir] posición de la abertura respecto al borde izq.
+hp_io_baja = 2.24;          // [PENDIENTE] la abertura empieza ~2,2 mm bajo la cara superior de la PCB
+function datos_hp(p) = p == "desktop_mini_ref" ? [177.04, 174.75, 34.29]
+                     : p == "iris_mitx_desnuda" ? [mitx, mitx, hp_separador + hp_pcb + hp_io_h - hp_io_baja]
+                     : [200, 200, 45];
 HPD = datos_hp(hp_preset);
-hp_w = HPD[0]; hp_d = HPD[1]; hp_h = HPD[2];
+hp_w = HPD[0]; hp_d = HPD[1]; hp_h = HPD[2];   // envolvente (con separadores y pila I/O)
 hp_holgura = 3;      // [DISEÑO]
 hp_x = pared + 14;   // [DISEÑO] posición (izquierda, contra la trasera; deja sitio a orejetas)
-hp_y = D - pared - 14 - hp_d;   // 14 mm: orejetas + holgura de conectores traseros
-hp_z = suelo + 5;    // [DISEÑO] sobre raíles de 5 mm (flujo de aire inferior)
+hp_atras = hp_desnuda ? 3 : 14;   // [DISEÑO] placa desnuda: borde trasero a 3 mm de la pared
+                                  // (los conectores sobresalen ~1-2 mm y asoman por la ventana)
+hp_y = D - pared - hp_atras - hp_d;
+hp_z = hp_desnuda ? suelo : suelo + 5;   // desnuda: separadores desde el suelo
+hp_pcb_z = hp_z + hp_separador;          // cara inferior de la PCB
+function hp_agujeros() = [for (i = [0, 1], j = [0, 1])
+    [hp_x + mitx_ag_borde[0] + i*mitx_agujeros[0], hp_y + hp_d - mitx_ag_borde[1] - j*mitx_agujeros[1]]];
+
+// Disco: SSD 2,5" RECOMENDADO (SFF-8201: 100,45 x 69,85 x 7/9,5 mm). El HDD 3,5" de
+// 1 TB del propietario queda como OPCIÓN (SFF-8301: 147 x 101,6 x 26,1 mm).
+// La grabadora DVD SE RETIRA (no se modela).
+usar_hdd_35 = false;        // [DISEÑO] true = soporte para el HDD 3,5" original
+disco = usar_hdd_35 ? [101.6, 147, 26.1] : [100.45, 69.85, 9.5];   // [x, y, z]
+disco_soporte_h = 8;        // [DISEÑO] patas del soporte (la plancha queda 3 mm sobre las torretas de empalme de 5 mm)
+disco_x = hp_x + hp_w + 6;
+disco_y = usar_hdd_35 ? D - pared - 30 - disco[1] : D - pared - 30 - disco[1];
+disco_z = suelo + disco_soporte_h + 2;   // plancha de 2 mm sobre las patas
+
+// I/O frontal del HP (USB 2.0, audio, lector SD según el propietario) reubicado en el
+// lateral IZQUIERDO, zona trasera alta. Placa y conectores [PENDIENTE de medir tras desmontar].
+io_frontal = [16, 70, 26];  // [PENDIENTE] marcador x(fondo) y(ancho) z(alto)
+io_frontal_y = D - pared - 28 - io_frontal[1];   // detrás de la tina de pantalla
+io_frontal_z = 70;
+// Pulsador de encendido del HP (contacto seco en paralelo al cabezal del botón original;
+// patillaje [PENDIENTE de medir con polímetro]) + LED de encendido, lateral izquierdo.
+boton_hp_d = 12;            // [DISEÑO] pulsador de panel Ø12 [PENDIENTE modelo]
+boton_hp_prof = 22;         // [PENDIENTE]
+boton_hp_y = D - pared - 25;
+boton_hp_z = 112;
 
 // Raspberry Pi: placa 85 x 56 mm, agujeros M2.5 a 58 x 49 mm [FUENTE]
 // (dibujo mecánico oficial Pi 4: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf ; agujeros Ø2.7)
@@ -190,10 +240,22 @@ kvm_y = D - pared - 8 - 6 - kvm_d;   // 8 = costilla (definida más abajo)   // 
 kvm_z = suelo + 4;
 
 // Distribución de alimentación (regleta DC / DC-DC / fusibles) [PENDIENTE]
+// HP v2: NO hace falta (HP con su adaptador externo de 19,5 V al jack DC de la placa;
+// Pi y MSI con sus fuentes USB-C certificadas). Se conserva como opción.
+usar_distribucion = false;   // [DISEÑO]
 psu_w = 110; psu_d = 60; psu_h = 30;
 psu_x = pi_x + pi_w - psu_w - 6;   // a la izquierda del carril derecho (cable USB del Arduino)
 psu_y = pi_y - 14 - psu_d;
 psu_z = suelo + 4;
+
+// Adaptador de vídeo de la Pi: HDMI (entrada, desde la micro-HDMI de la Pi) -> USB-C
+// DP Alt Mode (salida, a la USB-C 1 de la MSI). Debe funcionar EN ESE SENTIDO (activo).
+// Miguel tiene uno UGREEN sin verificar (probablemente del sentido contrario, USB-C -> HDMI).
+// Hueco reservado en la bandeja, por delante de la Pi. Medidas [PENDIENTE] del adaptador real.
+adap_video = [72, 32, 16];   // [PENDIENTE] marcador x y z (incluye holgura de cables)
+adap_x = pi_x;
+adap_y = pi_y - 12 - adap_video[1];
+adap_z = suelo + 2;
 
 // Arduino Micro (lee potenciómetros y botones; USB a la Pi)
 // [FUENTE] tienda oficial: largo 48 mm, ancho 18 mm, 13 g; PCB máx. 48 x 17,7 mm con el
@@ -243,8 +305,8 @@ function corte_y(j) = D * j / ny_cortes;
 
 // Bandeja de servicio inferior extraíble (lleva la Pi y la distribución
 // de alimentación; se desmonta desde abajo sin abrir la carcasa) [DISEÑO]
-serv_x = min(psu_x, pi_x) - 6;
-serv_y = min(psu_y, sop_ard_y0) - 6;   // v1: la bandeja incluye el soporte del Arduino
+serv_x = (usar_distribucion ? min(psu_x, pi_x) : pi_x) - 6;
+serv_y = (usar_distribucion ? min(psu_y, sop_ard_y0) : sop_ard_y0) - 6;   // v1: la bandeja incluye el soporte del Arduino
 serv_w = (W - pared - 21) - serv_x;     // v1: deja libres las orejetas del lateral derecho
 serv_d = (pi_y + pi_d + 4) - serv_y;
 serv_ala = 8;        // [DISEÑO] ala de atornillado alrededor
