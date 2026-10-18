@@ -15,6 +15,7 @@ Configuración: `pantalla="msi_15_6"` (MSI PRO MP161 E2U), `hp_preset="iris_mitx
 | 04_explosionado.png | Explosionada |
 | 05_interior_cenital.png | Interior desde arriba con etiquetas |
 | 06_lo-que-tienes-vs-donde-va.png | Cada pieza y su sitio (versión sin fotos personales) |
+| 06_lo-que-tienes-vs-donde-va_con-fotos.png | La misma lámina con recortes de las fotos reales de Miguel (publicación autorizada) |
 | 07_detalle_mandos.png | Detalle de la consola y de la textura de capas del PETG |
 
 Exactitud de cada modelo: ver `hardware/render/CREDITOS-MODELOS.md`.
