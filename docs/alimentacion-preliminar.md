@@ -7,6 +7,25 @@
 > 3. **La batería queda fuera de la Fase 1**: solo como estudio futuro (ver §5).
 > 4. Ningún consumo se inventa: los valores proceden de datasheets o documentación del fabricante, o figuran como **pendiente**. En la Fase 3 se sustituirán por **mediciones**.
 
+## 0. Plan vigente (HP v2, 2026-10-18)
+
+```
+Regleta comercial certificada (fuera de Orbit)
+ ├─ Adaptador original HP 65 W, 19,5 V 3,33 A (externo, certificado) ─► jack DC del I/O trasero de la placa HP
+ ├─ Fuente USB-C certificada para la Raspberry Pi (oficial: 5,1 V 3 A Pi 4 / 5,1 V 5 A Pi 5) ─► USB-C de la Pi
+ └─ Cargador USB-C PD certificado (> 15 W según el manual MSI) ─► USB-C 2 de la MSI (obligatorio si recibe vídeo por HDMI)
+     (alternativa: un único cargador USB-C PD multipuerto certificado para Pi + MSI, si Miguel tiene uno y
+      reparte potencia suficiente por puerto: PENDIENTE de comprobar su etiqueta)
+Arduino Micro ◄─ USB de la Pi · Adaptador HDMI→USB-C (modo B) ◄─ USB, si lo necesita (PENDIENTE)
+```
+- **Dentro de Orbit no hay red eléctrica**: el adaptador del HP queda fuera y su cable DC entra directamente en la placa por la ventana I/O trasera (datos del propietario 2026-10-18; HP: adaptador externo 19,5 V 3,3 A y entrada DC en el I/O trasero de las placas hermanas Iris-E2/Iris-A8, ver `datos-pendientes-hp.md`).
+- **No hace falta distribución DC interna** (la caja "Distribución DC" del CAD v1 se desactiva: `usar_distribucion = false`). Cada equipo usa su fuente certificada.
+- La placa del HP alimenta ella misma su disco SATA y su ventilador (cables originales). Un SSD de 2,5" consume menos que el HDD de 3,5" (valor real: ficha del SSD elegido, PENDIENTE).
+- Consumo real del HP: **PENDIENTE de medir** con un medidor de enchufe (no se usa el 65 W del adaptador como consumo).
+- Encendido del HP: pulsador de panel de Orbit (lateral izquierdo) **en paralelo** con el del cabezal original (contacto seco, sin tensión de red). Encendido desde la Pi: Wake-on-LAN si la BIOS lo permite (H-11) o, más adelante, un optoacoplador en paralelo con el pulsador (patillaje PENDIENTE, H-6).
+
+> Las secciones 1–5 son el estudio de la fase 1 y siguen valiendo como principios; donde no coincidan, prevalece §0.
+
 ## 1. Arquitectura propuesta (preliminar)
 
 ### Variante 1: fuentes externas originales (recomendada para el prototipo)
@@ -33,7 +52,8 @@ Red 230 V ─ Fuente certificada única (p. ej. 19–20 V o 12 V, potencia pendi
 
 | Consumidor | Tensión | Valor documentado | Tipo de dato | Fuente |
 |---|---|---|---|---|
-| HP (modelo desconocido) | **pendiente** | **pendiente** | — | Etiqueta del adaptador + medición (D-4.1/4.4) |
+| HP Slimline 260-a110ns | 19,5 V DC | Adaptador de 65 W (19,5 V 3,33 A); **consumo real pendiente** | Capacidad del adaptador, no consumo | Datos del propietario 2026-10-18; HP (modelos hermanos) |
+| MSI PRO MP161 E2U | USB-C PD 5–15 V | Requiere > 15 W por USB-C cuando no la alimenta la fuente de vídeo | Fabricante | Manual MSI (ver `pantallas.md`) |
 | Raspberry Pi 5 | 5,1 V | Fuente recomendada de 5,0 A; 800 mA bare-board activo; USB para periféricos de hasta 1,6 A | Recomendación / típico | power-supplies.adoc (oficial)¹ |
 | Raspberry Pi 4B | 5,1 V | Fuente de 3,0 A; 600 mA bare-board; 1,25 A máx. en estrés (tabla oficial) | Recomendación / medido por el fabricante | ¹ |
 | Raspberry Pi 3B+ | 5,1 V | Fuente de 2,5 A; 500 mA bare-board | Recomendación / típico | ¹ |

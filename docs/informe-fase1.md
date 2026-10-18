@@ -3,6 +3,11 @@
 > Documento: `docs/informe-fase1.md` · Fecha: **2026-10-18** · Estado: borrador para revisión del propietario (Miguel Rodríguez)
 > Todos los datos proceden de fuentes enlazadas y comprobadas en esta fecha. Lo no verificado figura como **pendiente de verificar**. Este informe **no contiene resultados medidos**: todo es investigación documental y diseño preliminar.
 
+> **Actualización HP v2 (2026-10-18), prevalece sobre este informe donde no coincida:**
+> - **HP identificado: HP Slimline 260-a110ns** (AMD A6-7310, 8 GB DDR3L, HDMI + VGA, adaptador externo 65 W 19,5 V). Se **desmonta**: su placa mini-ITX va dentro de la cuña; DVD retirado, SSD 2,5" recomendado. → `datos-pendientes-hp.md` (fuentes y nota de seguridad)
+> - **Vídeo:** sin KVM ni táctil. Cambio de sistema **automático desde Orbit OS** (Miguel nunca toca el OSD): **modo A base** = escritorio del HP en un visor de la Pi por Ethernet interno (Sunshine + Moonlight; RDP no, por Windows 10 Home); **modo B opcional** = HP → Mini-HDMI, Pi → adaptador HDMI→USB-C → USB-C, entrada cambiada por DDC/CI. → `conmutacion-video-usb.md` §V
+> - **Pantalla:** MSI PRO MP161 E2U (ver `decisiones-prototipo.md`). **CAD HP v2:** `diseno-mecanico.md`.
+
 ## 1. Resumen ejecutivo
 
 Orbit Terminal combina **dos ordenadores que funcionan a la vez**: un HP reutilizado (sistema principal) y una Raspberry Pi (sistema auxiliar). Comparten **una pantalla táctil HDMI** mediante un **conmutador KVM HDMI + USB**. La Pi lee los dos mandos y los botones, controla la luz ámbar y el KVM, y se comunica con el HP por un **enlace Ethernet local autenticado**. Cambiar el "sistema visible" **no cambia de sistema operativo**: solo decide qué ordenador se ve y recibe el táctil.
