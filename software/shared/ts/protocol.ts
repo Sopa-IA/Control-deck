@@ -16,7 +16,7 @@ export type MessageType = (typeof MESSAGE_TYPES)[number];
 
 export interface NodeState { connected: boolean; simulated: boolean; last_seen?: number | null; detail?: string }
 export interface StatePayload { mode: Mode; hp: NodeState; pi: NodeState; arduino: NodeState; video_input?: 'hp' | 'pi' | 'desconocida';
-  visible?: { system: 'hp' | 'pi'; mode: 'remoto' | 'ddc'; detail?: string } }
+  visible?: { system: 'hp' | 'pi'; mode: 'remoto' | 'ddc' | 'captura'; detail?: string } }
 export interface TelemetryPayload {
   host: 'hp' | 'pi'; simulated: boolean; hostname?: string; model?: string; os?: string;
   cpu_pct: number; mem_pct: number; mem_used_mb?: number; mem_total_mb?: number; disk_pct?: number;

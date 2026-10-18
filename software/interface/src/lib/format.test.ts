@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ago, clamp, formatClock, formatDate, formatMb, formatPct, formatTemp, formatUptime, potToPct } from './format';
+import { ago, clamp, formatClock, formatDate, formatMb, formatPct, formatTemp, formatUptime, potToPct, videoModeLabel } from './format';
 
 describe('format', () => {
   it('reloj y fecha en español', () => {
@@ -32,5 +32,11 @@ describe('format', () => {
     expect(potToPct(0)).toBe(0);
     expect(potToPct(1023)).toBe(100);
     expect(potToPct(512)).toBe(50);
+  });
+  it('nombre del modo de cambio de sistema', () => {
+    expect(videoModeLabel('remoto')).toBe('remoto');
+    expect(videoModeLabel('ddc')).toBe('DDC/CI');
+    expect(videoModeLabel('captura')).toBe('capturadora');
+    expect(videoModeLabel(undefined)).toBe('desconocido');
   });
 });

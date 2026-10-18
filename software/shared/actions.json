@@ -27,7 +27,7 @@
     "ui.select":          { "kinds": ["button"],        "label": "Seleccionar / aceptar" },
     "ui.back":            { "kinds": ["button"],        "label": "Volver" },
     "ui.next_section":    { "kinds": ["button"],        "label": "Siguiente sección" },
-    "pi.switch_visible":  { "kinds": ["button"],        "label": "Cambiar sistema visible (automático: remoto o DDC/CI)" },
+    "pi.switch_visible":  { "kinds": ["button"],        "label": "Cambiar sistema visible (automático: remoto, captura o DDC/CI)" },
     "ui.show_switch_help":{ "kinds": ["button"],        "label": "Ayuda: cómo cambia Orbit de sistema" },
     "hp.volume_mute":     { "kinds": ["button"],        "label": "Silenciar HP" },
     "hp.media_play_pause":{ "kinds": ["button"],        "label": "Reproducir/pausar (HP)" },

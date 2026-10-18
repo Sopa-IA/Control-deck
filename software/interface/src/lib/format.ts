@@ -53,3 +53,11 @@ export function ago(ts: number | null | undefined, now = Date.now()): string {
 
 /** Valor de potenciómetro 0..1023 -> porcentaje 0..100 */
 export const potToPct = (v: number) => Math.round((clamp(v, 0, 1023) * 100) / 1023);
+
+/** Nombre visible del modo de cambio de sistema (remoto = A, ddc = B, captura = C). */
+export function videoModeLabel(mode: string | undefined): string {
+  if (mode === 'ddc') return 'DDC/CI';
+  if (mode === 'captura') return 'capturadora';
+  if (mode === 'remoto') return 'remoto';
+  return 'desconocido';
+}

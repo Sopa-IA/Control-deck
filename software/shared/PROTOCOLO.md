@@ -16,10 +16,12 @@ Estado: **borrador implementado en v0**, validado solo con tests y simulación. 
 
 - **orbitd** (en la Pi) es el *hub*. Sirve la interfaz estática, acepta WebSockets de la interfaz (`role: ui`) y del agente del HP (`role: hp-agent`), lee el Arduino por serie, aplica la **lista blanca** y reenvía acciones.
 - **hp-agent** abre la conexión **hacia** orbitd (sale del HP), así que el HP no expone ningún puerto.
-- El vídeo **no** pasa por este protocolo. El cambio de «sistema visible» lo hace **orbitd** con la acción `pi.switch_visible` (botón B2 por defecto); Miguel nunca toca el menú OSD del MSI. Hay dos modos (ver `docs/conmutacion-video-usb.md`):
+- El vídeo **no** pasa por este protocolo. El cambio de «sistema visible» lo hace **orbitd** con la acción `pi.switch_visible` (botón B2 por defecto); Miguel nunca toca el menú OSD del MSI. Hay tres modos (ver `docs/conmutacion-video-usb.md`):
   - **remoto** (modo A, base): la MSI muestra siempre la Pi; el escritorio del HP se abre en un visor de la Pi por el Ethernet interno (p. ej. Moonlight contra Sunshine en el HP). orbitd lanza la orden fija de `ORBIT_REMOTE_CMD` (configuración local, nunca desde la interfaz) y la cierra al volver a Orbit OS.
-  - **ddc** (modo B, opcional): orbitd ejecuta `ddcutil setvcp 60 <valor>` con los valores de `ORBIT_DDC_HP` / `ORBIT_DDC_PI` (solo si `ORBIT_VIDEO_DDC=1`, ddcutil existe y los valores son hexadecimales válidos). Si ddcutil falla, vuelve solo al modo remoto. Soporte DDC/CI del MSI y adaptador HDMI→USB-C: **PENDIENTES de verificar**.
-  - El estado `state` lleva `visible: {system: "hp"|"pi", mode: "remoto"|"ddc", detail}` y `video_input` (entrada física: `pi` en modo remoto).
+  - **ddc** (modo B, opcional): orbitd ejecuta `ddcutil setvcp 60 <valor>` con los valores de `ORBIT_DDC_HP` / `ORBIT_DDC_PI` (solo si `ORBIT_VIDEO_DDC=1`, ddcutil existe y los valores son hexadecimales válidos). Si ddcutil falla, pasa al modo captura (si está configurado) o al remoto. Soporte DDC/CI del MSI (los manuales no lo documentan) y adaptador HDMI→USB-C: **PENDIENTES de verificar**; poco probable.
+  - **captura** (modo C, recomendado junto al A): el HDMI del HP entra en una capturadora HDMI→USB (UVC) conectada a la Pi; la MSI muestra siempre la Pi y orbitd abre un visor del dispositivo de captura. Configuración local: `ORBIT_CAPTURE_DEVICE` (solo `/dev/videoN` o `/dev/v4l/by-id|by-path/<nombre>`) y `ORBIT_CAPTURE_CMD` (orden fija sin shell; el elemento `{device}` se sustituye por el dispositivo). Si el dispositivo no existe o el visor no arranca, vuelve solo al modo remoto. Latencia y fps: **sin medir**.
+  - Prioridad: `ddc` (si está listo) > `captura` (si está configurada) > `remoto`.
+  - El estado `state` lleva `visible: {system: "hp"|"pi", mode: "remoto"|"ddc"|"captura", detail}` y `video_input` (entrada física: `pi` en modos remoto y captura).
 
 ## 2. Sobre común
 
