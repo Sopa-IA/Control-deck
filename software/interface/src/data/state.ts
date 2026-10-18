@@ -1,6 +1,6 @@
 // Estado de la interfaz y reductor puro de mensajes del protocolo.
 import type {
-  ActionResultPayload, ConfirmRequiredPayload, ControlEventPayload, MappingPayload, Message, Mode, NodeState, TelemetryPayload,
+  ActionResultPayload, ConfirmRequiredPayload, ControlEventPayload, MappingPayload, Message, Mode, NodeState, StatePayload, TelemetryPayload,
 } from '@shared/ts/protocol';
 
 export type SourceKind = 'sim' | 'ws';
@@ -19,13 +19,15 @@ export interface OrbitState {
   controls: Record<string, ControlReading>;
   mapping: MappingPayload | null;
   pendingConfirm: ConfirmRequiredPayload | null;
+  /** Sistema visible y modo de cambio (remoto = visor del HP en la Pi; ddc = entrada de la MSI por DDC/CI). */
+  visible: StatePayload['visible'] | null;
   log: LogEntry[];
 }
 
 export const initialState = (source: SourceKind): OrbitState => ({
   source, conn: 'conectando', mode: null,
   nodes: { hp: null, pi: null, arduino: null },
-  telemetry: {}, controls: {}, mapping: null, pendingConfirm: null, log: [],
+  telemetry: {}, controls: {}, mapping: null, pendingConfirm: null, visible: null, log: [],
 });
 
 export type OrbitEvent =
@@ -51,7 +53,7 @@ export function reduce(s: OrbitState, ev: OrbitEvent): OrbitState {
         case 'welcome': return { ...s, mode: (m as Message<'welcome'>).payload.mode };
         case 'state': {
           const p = (m as Message<'state'>).payload;
-          return { ...s, mode: p.mode, nodes: { hp: p.hp, pi: p.pi, arduino: p.arduino } };
+          return { ...s, mode: p.mode, nodes: { hp: p.hp, pi: p.pi, arduino: p.arduino }, visible: p.visible ?? s.visible };
         }
         case 'telemetry': {
           const p = (m as Message<'telemetry'>).payload;

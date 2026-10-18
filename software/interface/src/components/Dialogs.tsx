@@ -38,14 +38,13 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="osd-title" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2 id="osd-title">Cambiar el sistema visible</h2>
-        <p>En el prototipo no hay KVM: el monitor <b>MSI PRO MP161 E2U</b> tiene el HP en una entrada y la Raspberry Pi en la otra.</p>
+        <h2 id="osd-title">Cómo cambia Orbit de sistema</h2>
+        <p>El botón <b>Cambiar sistema visible</b> (B2 por defecto) lo hace todo desde Orbit OS; no hace falta tocar el menú del monitor.</p>
         <ol className="steps">
-          <li>Pulsa el botón de menú del monitor (OSD).</li>
-          <li>Entra en <b>Fuente de entrada</b> (Input Source).</li>
-          <li>Elige <b>Mini-HDMI</b> o <b>USB-C</b> según qué equipo esté en cada una.</li>
+          <li><b>Modo remoto</b> (base, siempre disponible): la pantalla muestra siempre la Pi y el escritorio del HP aparece en un visor (p. ej. Moonlight con Sunshine en el HP) por el cable Ethernet interno.</li>
+          <li><b>Modo DDC/CI</b> (opcional): si está configurado y el monitor lo acepta, la Pi cambia la entrada del MSI (HP por Mini-HDMI, Pi por USB-C con adaptador HDMI→USB-C). Si falla, Orbit vuelve solo al modo remoto.</li>
         </ol>
-        <p className="muted">Nombres exactos del menú OSD y asignación de entradas: PENDIENTE de comprobar en el monitor real. La conmutación automática (DDC/CI o KVM) es una opción futura.</p>
+        <p className="muted">PENDIENTE de verificar: soporte DDC/CI del MSI MP161 E2U, adaptador HDMI→USB-C (DP Alt) y rendimiento del visor remoto en el HP (AMD A6-7310).</p>
         <div className="modal-actions"><button className="btn btn-primary" onClick={onClose} autoFocus>Entendido</button></div>
       </div>
     </div>
