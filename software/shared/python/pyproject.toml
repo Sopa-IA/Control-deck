@@ -1,0 +1,13 @@
+[project]
+name = "orbit-protocol"
+version = "0.1.0"
+description = "Orbit Terminal: protocolo compartido (sobre JSON, validación, lista blanca)"
+requires-python = ">=3.9"
+dependencies = ["jsonschema>=4"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["orbit_protocol"]

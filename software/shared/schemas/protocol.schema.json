@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orbit-terminal.local/schemas/protocol.schema.json",
+  "title": "Orbit Terminal · mensaje del protocolo v1",
+  "description": "Sobre común de todos los mensajes JSON que viajan por WebSocket entre interfaz (ui), orbitd (pi) y hp-agent (hp). Ver PROTOCOLO.md.",
+  "type": "object",
+  "required": ["v", "type", "id", "ts", "src", "payload"],
+  "additionalProperties": false,
+  "properties": {
+    "v": { "const": 1 },
+    "type": { "enum": ["hello", "welcome", "error", "ping", "pong", "state", "telemetry", "control_event",
+                       "action_request", "confirm_required", "action_confirm", "action", "action_result",
+                       "mapping", "mapping_set"] },
+    "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "ts": { "type": "integer", "minimum": 0, "description": "Milisegundos desde época Unix (UTC) en el emisor" },
+    "src": { "enum": ["ui", "pi", "hp"] },
+    "reply_to": { "type": "string", "maxLength": 64 },
+    "payload": { "type": "object" }
+  },
+  "allOf": [
+    { "if": { "properties": { "type": { "const": "hello" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/hello" } } } },
+    { "if": { "properties": { "type": { "const": "welcome" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/welcome" } } } },
+    { "if": { "properties": { "type": { "const": "error" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/error" } } } },
+    { "if": { "properties": { "type": { "enum": ["ping", "pong"] } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/heartbeat" } } } },
+    { "if": { "properties": { "type": { "const": "state" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/state" } } } },
+    { "if": { "properties": { "type": { "const": "telemetry" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/telemetry" } } } },
+    { "if": { "properties": { "type": { "const": "control_event" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/control_event" } } } },
+    { "if": { "properties": { "type": { "enum": ["action_request", "action"] } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/action_request" } } } },
+    { "if": { "properties": { "type": { "const": "confirm_required" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/confirm_required" } } } },
+    { "if": { "properties": { "type": { "const": "action_confirm" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/action_confirm" } } } },
+    { "if": { "properties": { "type": { "const": "action_result" } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/action_result" } } } },
+    { "if": { "properties": { "type": { "enum": ["mapping", "mapping_set"] } } }, "then": { "properties": { "payload": { "$ref": "#/$defs/mapping" } } } }
+  ],
+  "$defs": {
+    "hello": {
+      "type": "object", "required": ["role", "client", "version"], "additionalProperties": false,
+      "properties": {
+        "role": { "enum": ["ui", "hp-agent"] },
+        "client": { "type": "string", "maxLength": 64 },
+        "version": { "type": "string", "maxLength": 32 },
+        "token": { "type": "string", "maxLength": 256, "description": "Obligatorio para hp-agent; para ui solo si orbitd lo exige (ui_token)." }
+      }
+    },
+    "welcome": {
+      "type": "object", "required": ["session", "server_time", "heartbeat_s", "mode"], "additionalProperties": false,
+      "properties": {
+        "session": { "type": "string" },
+        "server_time": { "type": "integer" },
+        "heartbeat_s": { "type": "number", "minimum": 1 },
+        "mode": { "enum": ["sim", "real", "mixto"] }
+      }
+    },
+    "error": {
+      "type": "object", "required": ["code", "message"], "additionalProperties": false,
+      "properties": {
+        "code": { "enum": ["auth_failed", "bad_message", "not_allowed", "bad_params", "target_offline", "confirm_expired", "rate_limited", "internal"] },
+        "message": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "heartbeat": { "type": "object", "required": ["seq"], "additionalProperties": false, "properties": { "seq": { "type": "integer", "minimum": 0 } } },
+    "node": {
+      "type": "object", "required": ["connected", "simulated"], "additionalProperties": false,
+      "properties": {
+        "connected": { "type": "boolean" },
+        "simulated": { "type": "boolean" },
+        "last_seen": { "type": ["integer", "null"] },
+        "detail": { "type": "string", "maxLength": 200 }
+      }
+    },
+    "state": {
+      "type": "object", "required": ["mode", "hp", "pi", "arduino"], "additionalProperties": false,
+      "properties": {
+        "mode": { "enum": ["sim", "real", "mixto"] },
+        "hp": { "$ref": "#/$defs/node" },
+        "pi": { "$ref": "#/$defs/node" },
+        "arduino": { "$ref": "#/$defs/node" },
+        "video_input": { "enum": ["hp", "pi", "desconocida"], "description": "Entrada del MSI: se cambia a mano en el OSD; orbitd no la conoce (siempre 'desconocida' salvo que el usuario la indique)." }
+      }
+    },
+    "telemetry": {
+      "type": "object", "required": ["host", "simulated", "cpu_pct", "mem_pct"], "additionalProperties": false,
+      "properties": {
+        "host": { "enum": ["hp", "pi"] },
+        "simulated": { "type": "boolean", "description": "true si los valores son inventados por un simulador. La interfaz DEBE mostrarlos marcados." },
+        "hostname": { "type": "string", "maxLength": 64 },
+        "model": { "type": "string", "maxLength": 128 },
+        "os": { "type": "string", "maxLength": 128 },
+        "cpu_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "mem_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "mem_used_mb": { "type": "number", "minimum": 0 },
+        "mem_total_mb": { "type": "number", "minimum": 0 },
+        "disk_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "temp_c": { "type": ["number", "null"] },
+        "uptime_s": { "type": "number", "minimum": 0 },
+        "net_up_kbps": { "type": "number", "minimum": 0 },
+        "net_down_kbps": { "type": "number", "minimum": 0 }
+      }
+    },
+    "control_event": {
+      "type": "object", "required": ["control", "kind", "simulated"], "additionalProperties": false,
+      "properties": {
+        "control": { "type": "string", "pattern": "^[PB][1-9][0-9]?$" },
+        "kind": { "enum": ["pot", "button"] },
+        "value": { "type": "integer", "minimum": 0, "maximum": 1023, "description": "Potenciómetro: lectura filtrada 0..1023" },
+        "event": { "enum": ["press", "release", "long"] },
+        "simulated": { "type": "boolean" }
+      }
+    },
+    "action_request": {
+      "type": "object", "required": ["action"], "additionalProperties": false,
+      "properties": {
+        "action": { "type": "string", "pattern": "^(hp|pi)\\.[a-z_]{1,32}$" },
+        "params": { "type": "object" },
+        "dry_run": { "type": "boolean" }
+      }
+    },
+    "confirm_required": {
+      "type": "object", "required": ["request_id", "action", "challenge", "expires_in_s"], "additionalProperties": false,
+      "properties": {
+        "request_id": { "type": "string" }, "action": { "type": "string" },
+        "challenge": { "type": "string", "minLength": 8 }, "expires_in_s": { "type": "number" }
+      }
+    },
+    "action_confirm": {
+      "type": "object", "required": ["request_id", "challenge"], "additionalProperties": false,
+      "properties": { "request_id": { "type": "string" }, "challenge": { "type": "string" } }
+    },
+    "action_result": {
+      "type": "object", "required": ["action", "ok", "dry_run", "message"], "additionalProperties": false,
+      "properties": {
+        "action": { "type": "string" }, "ok": { "type": "boolean" }, "dry_run": { "type": "boolean" },
+        "simulated": { "type": "boolean" },
+        "message": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "mapping": {
+      "type": "object", "required": ["pots", "buttons"], "additionalProperties": false,
+      "properties": {
+        "version": { "type": "integer" },
+        "pots": { "type": "object", "patternProperties": { "^P[1-9][0-9]?$": { "type": "string" } }, "additionalProperties": false },
+        "buttons": { "type": "object", "patternProperties": { "^B[1-9][0-9]?$": { "type": "string" } }, "additionalProperties": false }
+      }
+    }
+  }
+}
