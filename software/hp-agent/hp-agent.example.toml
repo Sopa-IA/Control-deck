@@ -1,0 +1,14 @@
+# Orbit Terminal · hp-agent · configuración de EJEMPLO
+# Copia este archivo FUERA del repositorio, por ejemplo:
+#   Windows: %APPDATA%\orbit\hp-agent.toml
+#   Linux:   ~/.config/orbit/hp-agent.toml
+# y rellena el token. NUNCA subas el archivo con el token real.
+
+hub_url = "ws://192.168.50.2:8765/ws"   # orbitd en la Pi (IP de ejemplo)
+token = ""                               # mejor por variable de entorno ORBIT_HP_TOKEN
+telemetry_period_s = 2.0
+
+# Aplicaciones que hp.open_app puede abrir: identificador -> orden (lista de argumentos, sin shell).
+[apps]
+# navegador = ["C:\\Program Files\\Mozilla Firefox\\firefox.exe"]
+# terminal  = ["wt.exe"]

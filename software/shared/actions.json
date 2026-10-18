@@ -1,0 +1,35 @@
+{
+  "$comment": "Lista blanca ÚNICA de acciones de Orbit Terminal. Fuente de verdad compartida por la interfaz (TS), orbitd y hp-agent (Python). Cualquier acción que no esté aquí se rechaza.",
+  "version": 1,
+  "actions": {
+    "hp.ping":             { "target": "hp", "label": "Comprobar HP",            "params": {}, "confirm": false, "destructive": false },
+    "hp.lock_screen":      { "target": "hp", "label": "Bloquear sesión del HP",  "params": {}, "confirm": false, "destructive": false },
+    "hp.volume_set":       { "target": "hp", "label": "Volumen del HP",          "params": { "level": { "type": "integer", "minimum": 0, "maximum": 100 } }, "confirm": false, "destructive": false },
+    "hp.volume_mute":      { "target": "hp", "label": "Silenciar HP",            "params": {}, "confirm": false, "destructive": false },
+    "hp.media_play_pause": { "target": "hp", "label": "Reproducir/pausar (HP)",  "params": {}, "confirm": false, "destructive": false },
+    "hp.open_app":         { "target": "hp", "label": "Abrir aplicación",        "params": { "app": { "type": "string", "pattern": "^[a-z0-9_-]{1,32}$" } }, "confirm": false, "destructive": false },
+    "hp.shutdown":         { "target": "hp", "label": "Apagar HP (seguro, 60 s)", "params": {}, "confirm": true,  "destructive": true },
+    "hp.restart":          { "target": "hp", "label": "Reiniciar HP (60 s)",     "params": {}, "confirm": true,  "destructive": true },
+    "hp.shutdown_cancel":  { "target": "hp", "label": "Cancelar apagado del HP", "params": {}, "confirm": false, "destructive": false },
+    "pi.ping":             { "target": "pi", "label": "Comprobar Pi",            "params": {}, "confirm": false, "destructive": false },
+    "pi.led_mode":         { "target": "pi", "label": "Modo de LEDs",            "params": { "mode": { "type": "string", "enum": ["off", "ambar", "respirar", "sistema"] } }, "confirm": false, "destructive": false },
+    "pi.restart_ui":       { "target": "pi", "label": "Recargar interfaz",       "params": {}, "confirm": false, "destructive": false },
+    "pi.shutdown":         { "target": "pi", "label": "Apagar Raspberry Pi",     "params": {}, "confirm": true,  "destructive": true }
+  },
+  "control_functions": {
+    "$comment": "Funciones asignables a potenciómetros (kind=pot) y botones (kind=button) desde la sección Controles. ui.* las resuelve la interfaz; hp.*/pi.* las resuelve orbitd contra la lista blanca.",
+    "none":               { "kinds": ["pot", "button"], "label": "Sin asignar" },
+    "hp.volume_set":      { "kinds": ["pot"],           "label": "Volumen del HP" },
+    "ui.scroll":          { "kinds": ["pot"],           "label": "Desplazar lista / foco" },
+    "ui.brightness":      { "kinds": ["pot"],           "label": "Brillo de la interfaz (atenuación en pantalla)" },
+    "ui.led_brightness":  { "kinds": ["pot"],           "label": "Brillo de LEDs (pendiente: tira sin identificar)" },
+    "ui.select":          { "kinds": ["button"],        "label": "Seleccionar / aceptar" },
+    "ui.back":            { "kinds": ["button"],        "label": "Volver" },
+    "ui.next_section":    { "kinds": ["button"],        "label": "Siguiente sección" },
+    "ui.show_switch_help":{ "kinds": ["button"],        "label": "Cambiar sistema visible (guía OSD del MSI)" },
+    "hp.volume_mute":     { "kinds": ["button"],        "label": "Silenciar HP" },
+    "hp.media_play_pause":{ "kinds": ["button"],        "label": "Reproducir/pausar (HP)" },
+    "hp.lock_screen":     { "kinds": ["button"],        "label": "Bloquear sesión del HP" },
+    "ui.power_menu":      { "kinds": ["button"],        "label": "Menú de apagado seguro" }
+  }
+}

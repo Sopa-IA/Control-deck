@@ -1,0 +1,16 @@
+[project]
+name = "orbitd"
+version = "0.1.0"
+description = "Orbit Terminal: orbitd (hub WebSocket, servidor de la interfaz y lector del Arduino) para la Raspberry Pi"
+requires-python = ">=3.9"
+dependencies = ["aiohttp>=3.9", "psutil>=5.9", "pyserial>=3.5", "orbit-protocol"]
+
+[project.scripts]
+orbitd = "orbitd.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["orbitd"]
