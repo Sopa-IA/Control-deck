@@ -5949,6 +5949,34 @@ solid PROVISIONAL_pomo_x2
       vertex -14.4889 3.88229 -15
     endloop
   endfacet
+  facet normal -0 0 1
+    outer loop
+      vertex 14.6343 0.565685 -13
+      vertex 15 0 -13
+      vertex 14.9692 0.704417 -13
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 15 0 -13
+      vertex 14.6343 0.565685 -13
+      vertex 14.4 0 -13
+    endloop
+  endfacet
+  facet normal 0 -0 1
+    outer loop
+      vertex 14.6343 -0.565685 -13
+      vertex 15 0 -13
+      vertex 14.4 0 -13
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 15 0 -13
+      vertex 14.6343 -0.565685 -13
+      vertex 14.9692 -0.704417 -13
+    endloop
+  endfacet
   facet normal 0.382734 0.923859 -0
     outer loop
       vertex 14.9692 -0.704417 -13
@@ -6129,34 +6157,6 @@ solid PROVISIONAL_pomo_x2
       vertex 14.4676 0.163157 -4.76069
       vertex 14.4 0 0
       vertex 14.4 0 -4.75
-    endloop
-  endfacet
-  facet normal -0 0 1
-    outer loop
-      vertex 14.6343 0.565685 -13
-      vertex 15 0 -13
-      vertex 14.9692 0.704417 -13
-    endloop
-  endfacet
-  facet normal 0 0 1
-    outer loop
-      vertex 15 0 -13
-      vertex 14.6343 0.565685 -13
-      vertex 14.4 0 -13
-    endloop
-  endfacet
-  facet normal 0 -0 1
-    outer loop
-      vertex 14.6343 -0.565685 -13
-      vertex 15 0 -13
-      vertex 14.4 0 -13
-    endloop
-  endfacet
-  facet normal 0 0 1
-    outer loop
-      vertex 15 0 -13
-      vertex 14.6343 -0.565685 -13
-      vertex 14.9692 -0.704417 -13
     endloop
   endfacet
   facet normal 0.382711 -0.923868 0
@@ -6481,6 +6481,34 @@ solid PROVISIONAL_pomo_x2
       vertex 11.0143 -10.1617 -13
     endloop
   endfacet
+  facet normal 0.461682 -0.887046 0
+    outer loop
+      vertex 11.031 -9.25614 -13
+      vertex 11.5742 -8.97342 0
+      vertex 11.031 -9.25614 0
+    endloop
+  endfacet
+  facet normal 0.461682 -0.887046 0
+    outer loop
+      vertex 11.5742 -8.97342 0
+      vertex 11.031 -9.25614 -13
+      vertex 11.5742 -8.97342 -13
+    endloop
+  endfacet
+  facet normal 0.953727 -0.300673 0
+    outer loop
+      vertex 10.8469 -9.8401 0
+      vertex 11.031 -9.25614 -13
+      vertex 11.031 -9.25614 0
+    endloop
+  endfacet
+  facet normal 0.953727 -0.300673 0
+    outer loop
+      vertex 11.031 -9.25614 -13
+      vertex 10.8469 -9.8401 0
+      vertex 10.8469 -9.8401 -13
+    endloop
+  endfacet
   facet normal 0 0 1
     outer loop
       vertex 11.5742 -8.97342 -13
@@ -6509,34 +6537,6 @@ solid PROVISIONAL_pomo_x2
       vertex 11.0143 -10.1617 -13
     endloop
   endfacet
-  facet normal 0.461682 -0.887046 0
-    outer loop
-      vertex 11.031 -9.25614 -13
-      vertex 11.5742 -8.97342 0
-      vertex 11.031 -9.25614 0
-    endloop
-  endfacet
-  facet normal 0.461682 -0.887046 0
-    outer loop
-      vertex 11.5742 -8.97342 0
-      vertex 11.031 -9.25614 -13
-      vertex 11.5742 -8.97342 -13
-    endloop
-  endfacet
-  facet normal 0.953727 -0.300673 0
-    outer loop
-      vertex 10.8469 -9.8401 0
-      vertex 11.031 -9.25614 -13
-      vertex 11.031 -9.25614 0
-    endloop
-  endfacet
-  facet normal 0.953727 -0.300673 0
-    outer loop
-      vertex 11.031 -9.25614 -13
-      vertex 10.8469 -9.8401 0
-      vertex 10.8469 -9.8401 -13
-    endloop
-  endfacet
   facet normal 0.300673 -0.953727 0
     outer loop
       vertex 9.25614 -11.031 -13
@@ -6549,20 +6549,6 @@ solid PROVISIONAL_pomo_x2
       vertex 9.8401 -10.8469 0
       vertex 9.25614 -11.031 -13
       vertex 9.8401 -10.8469 -13
-    endloop
-  endfacet
-  facet normal 0.953708 0.300734 0
-    outer loop
-      vertex 9.08243 -11.9199 0
-      vertex 8.97342 -11.5742 -13
-      vertex 8.97342 -11.5742 0
-    endloop
-  endfacet
-  facet normal 0.953708 0.300734 0
-    outer loop
-      vertex 8.97342 -11.5742 -13
-      vertex 9.08243 -11.9199 0
-      vertex 9.08243 -11.9199 -13
     endloop
   endfacet
   facet normal 0.887046 -0.461682 0
@@ -6604,6 +6590,20 @@ solid PROVISIONAL_pomo_x2
     outer loop
       vertex 9.64181 -11.4907 -13
       vertex 8.97342 -11.5742 -13
+      vertex 9.08243 -11.9199 -13
+    endloop
+  endfacet
+  facet normal 0.953708 0.300734 0
+    outer loop
+      vertex 9.08243 -11.9199 0
+      vertex 8.97342 -11.5742 -13
+      vertex 8.97342 -11.5742 0
+    endloop
+  endfacet
+  facet normal 0.953708 0.300734 0
+    outer loop
+      vertex 8.97342 -11.5742 -13
+      vertex 9.08243 -11.9199 0
       vertex 9.08243 -11.9199 -13
     endloop
   endfacet
@@ -7657,20 +7657,6 @@ solid PROVISIONAL_pomo_x2
       vertex -14.4 0 0
     endloop
   endfacet
-  facet normal -0.382711 0.923868 0
-    outer loop
-      vertex -14.6343 -0.565685 -13
-      vertex -14.9692 -0.704417 0
-      vertex -14.6343 -0.565685 0
-    endloop
-  endfacet
-  facet normal -0.382711 0.923868 0
-    outer loop
-      vertex -14.9692 -0.704417 0
-      vertex -14.6343 -0.565685 -13
-      vertex -14.9692 -0.704417 -13
-    endloop
-  endfacet
   facet normal -0.923888 0.382663 0
     outer loop
       vertex -14.6343 -0.565685 -13
@@ -7710,6 +7696,20 @@ solid PROVISIONAL_pomo_x2
     outer loop
       vertex -14.6343 -0.565685 -13
       vertex -15 0 -13
+      vertex -14.9692 -0.704417 -13
+    endloop
+  endfacet
+  facet normal -0.382711 0.923868 0
+    outer loop
+      vertex -14.6343 -0.565685 -13
+      vertex -14.9692 -0.704417 0
+      vertex -14.6343 -0.565685 0
+    endloop
+  endfacet
+  facet normal -0.382711 0.923868 0
+    outer loop
+      vertex -14.9692 -0.704417 0
+      vertex -14.6343 -0.565685 -13
       vertex -14.9692 -0.704417 -13
     endloop
   endfacet
@@ -10744,20 +10744,6 @@ solid PROVISIONAL_pomo_x2
       vertex 14.9496 1.15485 -5.52165
     endloop
   endfacet
-  facet normal 0 0.0653795 0.99786
-    outer loop
-      vertex 3.08931 -0.163157 -7.23931
-      vertex 14.4 0 -7.25
-      vertex 3.1 0 -7.25
-    endloop
-  endfacet
-  facet normal 0 0.0653795 0.99786
-    outer loop
-      vertex 14.4 0 -7.25
-      vertex 3.08931 -0.163157 -7.23931
-      vertex 14.4676 -0.163157 -7.23931
-    endloop
-  endfacet
   facet normal 5.12831e-05 0.555621 -0.831435
     outer loop
       vertex 14.9668 -0.760951 -5.00831
@@ -11381,6 +11367,20 @@ solid PROVISIONAL_pomo_x2
       vertex 14.9473 1.20741 -6.32352
     endloop
   endfacet
+  facet normal 0 0.0653795 0.99786
+    outer loop
+      vertex 3.08931 -0.163157 -7.23931
+      vertex 14.4 0 -7.25
+      vertex 3.1 0 -7.25
+    endloop
+  endfacet
+  facet normal 0 0.0653795 0.99786
+    outer loop
+      vertex 14.4 0 -7.25
+      vertex 3.08931 -0.163157 -7.23931
+      vertex 14.4676 -0.163157 -7.23931
+    endloop
+  endfacet
   facet normal -0.980784 0.195098 0
     outer loop
       vertex 5.79555 -1.55291 -1.5
@@ -11463,6 +11463,20 @@ solid PROVISIONAL_pomo_x2
       vertex 4.24264 4.24264 0
       vertex 4.76012 3.65257 -1.5
       vertex 4.76012 3.65257 0
+    endloop
+  endfacet
+  facet normal 0.997859 0.0654022 0
+    outer loop
+      vertex -5.94867 -0.783156 0
+      vertex -6 0 -1.5
+      vertex -6 0 0
+    endloop
+  endfacet
+  facet normal 0.997859 0.0654022 0
+    outer loop
+      vertex -6 0 -1.5
+      vertex -5.94867 -0.783156 0
+      vertex -5.94867 -0.783156 -1.5
     endloop
   endfacet
   facet normal -0.659348 0.751838 0
@@ -12529,20 +12543,6 @@ solid PROVISIONAL_pomo_x2
       vertex -5.54328 2.2961 -1.5
     endloop
   endfacet
-  facet normal 0.997859 0.0654022 0
-    outer loop
-      vertex -5.94867 -0.783156 0
-      vertex -6 0 -1.5
-      vertex -6 0 0
-    endloop
-  endfacet
-  facet normal 0.997859 0.0654022 0
-    outer loop
-      vertex -6 0 -1.5
-      vertex -5.94867 -0.783156 0
-      vertex -5.94867 -0.783156 -1.5
-    endloop
-  endfacet
   facet normal 0.831472 -0.555567 0
     outer loop
       vertex -5.19615 3 0
@@ -12893,6 +12893,20 @@ solid PROVISIONAL_pomo_x2
       vertex -0.952024 -9.26949 -17
     endloop
   endfacet
+  facet normal -0.659326 -0.751857 0
+    outer loop
+      vertex 0.730514 -9.04798 -17
+      vertex 0.848528 -9.15147 -16.2
+      vertex 0.730514 -9.04798 -16.2
+    endloop
+  endfacet
+  facet normal -0.659326 -0.751857 -0
+    outer loop
+      vertex 0.848528 -9.15147 -16.2
+      vertex 0.730514 -9.04798 -17
+      vertex 0.848528 -9.15147 -17
+    endloop
+  endfacet
   facet normal 0.751799 0.659392 0
     outer loop
       vertex -0.848528 -10.8485 -16.2
@@ -13115,20 +13129,6 @@ solid PROVISIONAL_pomo_x2
       vertex -0.310582 -8.84089 -16.2
       vertex -0.45922 -8.89134 -17
       vertex -0.310582 -8.84089 -17
-    endloop
-  endfacet
-  facet normal -0.659326 -0.751857 0
-    outer loop
-      vertex 0.730514 -9.04798 -17
-      vertex 0.848528 -9.15147 -16.2
-      vertex 0.730514 -9.04798 -16.2
-    endloop
-  endfacet
-  facet normal -0.659326 -0.751857 -0
-    outer loop
-      vertex 0.848528 -9.15147 -16.2
-      vertex 0.730514 -9.04798 -17
-      vertex 0.848528 -9.15147 -17
     endloop
   endfacet
   facet normal 0.659362 0.751826 -0

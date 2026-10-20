@@ -29,20 +29,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.997874 0.0651764 0
     outer loop
-      vertex 11.1855 -254.562 -3
-      vertex 11.2 -254.34 -2.41
-      vertex 11.2 -254.34 -3
-    endloop
-  endfacet
-  facet normal -0.997874 0.0651764 0
-    outer loop
-      vertex 11.2 -254.34 -2.41
-      vertex 11.1855 -254.562 -3
-      vertex 11.1855 -254.562 -2.41
-    endloop
-  endfacet
-  facet normal -0.997874 0.0651764 0
-    outer loop
       vertex 11.1855 -254.562 -0.7
       vertex 11.2 -254.34 0.599999
       vertex 11.2 -254.34 -0.7
@@ -53,6 +39,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.2 -254.34 0.599999
       vertex 11.1855 -254.562 -0.7
       vertex 11.1855 -254.562 0.599999
+    endloop
+  endfacet
+  facet normal -0.997874 0.0651764 0
+    outer loop
+      vertex 11.1855 -254.562 -3
+      vertex 11.2 -254.34 -2.41
+      vertex 11.2 -254.34 -3
+    endloop
+  endfacet
+  facet normal -0.997874 0.0651764 0
+    outer loop
+      vertex 11.2 -254.34 -2.41
+      vertex 11.1855 -254.562 -3
+      vertex 11.1855 -254.562 -2.41
     endloop
   endfacet
   facet normal -0.0674471 -0.997723 0
@@ -197,20 +197,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.947101 -0.320937 0
     outer loop
-      vertex 11.1421 -253.9 -0.7
-      vertex 11.0706 -253.689 0.599999
-      vertex 11.0706 -253.689 -0.7
-    endloop
-  endfacet
-  facet normal -0.947101 -0.320937 0
-    outer loop
-      vertex 11.0706 -253.689 0.599999
-      vertex 11.1421 -253.9 -0.7
-      vertex 11.1421 -253.9 0.599999
-    endloop
-  endfacet
-  facet normal -0.947101 -0.320937 0
-    outer loop
       vertex 11.1421 -253.9 -3
       vertex 11.0706 -253.689 -2.41
       vertex 11.0706 -253.689 -3
@@ -221,6 +207,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -253.689 -2.41
       vertex 11.1421 -253.9 -3
       vertex 11.1421 -253.9 -2.41
+    endloop
+  endfacet
+  facet normal -0.947101 -0.320937 0
+    outer loop
+      vertex 11.1421 -253.9 -0.7
+      vertex 11.0706 -253.689 0.599999
+      vertex 11.0706 -253.689 -0.7
+    endloop
+  endfacet
+  facet normal -0.947101 -0.320937 0
+    outer loop
+      vertex 11.0706 -253.689 0.599999
+      vertex 11.1421 -253.9 -0.7
+      vertex 11.1421 -253.9 0.599999
     endloop
   endfacet
   facet normal -0.751516 -0.659714 0
@@ -337,20 +337,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.0674471 -0.997723 0
     outer loop
-      vertex 9.27811 -252.655 -0.7
-      vertex 9.5 -252.64 0.599999
-      vertex 9.27811 -252.655 0.599999
-    endloop
-  endfacet
-  facet normal 0.0674471 -0.997723 0
-    outer loop
-      vertex 9.5 -252.64 0.599999
-      vertex 9.27811 -252.655 -0.7
-      vertex 9.5 -252.64 -0.7
-    endloop
-  endfacet
-  facet normal 0.0674471 -0.997723 0
-    outer loop
       vertex 9.27811 -252.655 -3
       vertex 9.5 -252.64 -2.41
       vertex 9.27811 -252.655 -2.41
@@ -361,6 +347,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.5 -252.64 -2.41
       vertex 9.27811 -252.655 -3
       vertex 9.5 -252.64 -3
+    endloop
+  endfacet
+  facet normal 0.0674471 -0.997723 0
+    outer loop
+      vertex 9.27811 -252.655 -0.7
+      vertex 9.5 -252.64 0.599999
+      vertex 9.27811 -252.655 0.599999
+    endloop
+  endfacet
+  facet normal 0.0674471 -0.997723 0
+    outer loop
+      vertex 9.5 -252.64 0.599999
+      vertex 9.27811 -252.655 -0.7
+      vertex 9.5 -252.64 -0.7
     endloop
   endfacet
   facet normal 0.319506 0.947584 -0
@@ -477,20 +477,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.0674471 0.997723 -0
     outer loop
-      vertex 9.5 -256.04 -3
-      vertex 9.27811 -256.025 -2.41
-      vertex 9.5 -256.04 -2.41
-    endloop
-  endfacet
-  facet normal 0.0674471 0.997723 0
-    outer loop
-      vertex 9.27811 -256.025 -2.41
-      vertex 9.5 -256.04 -3
-      vertex 9.27811 -256.025 -3
-    endloop
-  endfacet
-  facet normal 0.0674471 0.997723 -0
-    outer loop
       vertex 9.5 -256.04 -0.7
       vertex 9.27811 -256.025 0.599999
       vertex 9.5 -256.04 0.599999
@@ -501,6 +487,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.27811 -256.025 0.599999
       vertex 9.5 -256.04 -0.7
       vertex 9.27811 -256.025 -0.7
+    endloop
+  endfacet
+  facet normal 0.0674471 0.997723 -0
+    outer loop
+      vertex 9.5 -256.04 -3
+      vertex 9.27811 -256.025 -2.41
+      vertex 9.5 -256.04 -2.41
+    endloop
+  endfacet
+  facet normal 0.0674471 0.997723 0
+    outer loop
+      vertex 9.27811 -256.025 -2.41
+      vertex 9.5 -256.04 -3
+      vertex 9.27811 -256.025 -3
     endloop
   endfacet
   facet normal -0.8964 -0.443245 0
@@ -729,20 +729,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.193434 0.981113 -0
     outer loop
-      vertex 9.27811 -256.025 -3
-      vertex 9.06001 -255.982 -2.41
-      vertex 9.27811 -256.025 -2.41
-    endloop
-  endfacet
-  facet normal 0.193434 0.981113 0
-    outer loop
-      vertex 9.06001 -255.982 -2.41
-      vertex 9.27811 -256.025 -3
-      vertex 9.06001 -255.982 -3
-    endloop
-  endfacet
-  facet normal 0.193434 0.981113 -0
-    outer loop
       vertex 9.27811 -256.025 -0.7
       vertex 9.06001 -255.982 0.599999
       vertex 9.27811 -256.025 0.599999
@@ -753,6 +739,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.06001 -255.982 0.599999
       vertex 9.27811 -256.025 -0.7
       vertex 9.06001 -255.982 -0.7
+    endloop
+  endfacet
+  facet normal 0.193434 0.981113 -0
+    outer loop
+      vertex 9.27811 -256.025 -3
+      vertex 9.06001 -255.982 -2.41
+      vertex 9.27811 -256.025 -2.41
+    endloop
+  endfacet
+  facet normal 0.193434 0.981113 0
+    outer loop
+      vertex 9.06001 -255.982 -2.41
+      vertex 9.27811 -256.025 -3
+      vertex 9.06001 -255.982 -3
     endloop
   endfacet
   facet normal -0.660284 -0.751016 0
@@ -897,20 +897,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.751472 -0.659765 0
     outer loop
-      vertex 8.1513 -253.305 -2.41
-      vertex 8.29792 -253.138 -3
-      vertex 8.29792 -253.138 -2.41
-    endloop
-  endfacet
-  facet normal 0.751472 -0.659765 0
-    outer loop
-      vertex 8.29792 -253.138 -3
-      vertex 8.1513 -253.305 -2.41
-      vertex 8.1513 -253.305 -3
-    endloop
-  endfacet
-  facet normal 0.751472 -0.659765 0
-    outer loop
       vertex 8.1513 -253.305 0.599999
       vertex 8.29792 -253.138 -0.7
       vertex 8.29792 -253.138 0.599999
@@ -921,6 +907,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 8.29792 -253.138 -0.7
       vertex 8.1513 -253.305 0.599999
       vertex 8.1513 -253.305 -0.7
+    endloop
+  endfacet
+  facet normal 0.751472 -0.659765 0
+    outer loop
+      vertex 8.1513 -253.305 -2.41
+      vertex 8.29792 -253.138 -3
+      vertex 8.29792 -253.138 -2.41
+    endloop
+  endfacet
+  facet normal 0.751472 -0.659765 0
+    outer loop
+      vertex 8.29792 -253.138 -3
+      vertex 8.1513 -253.305 -2.41
+      vertex 8.1513 -253.305 -3
     endloop
   endfacet
   facet normal -0.0674471 0.997723 0
@@ -1177,20 +1177,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.8964 0.443245 0
     outer loop
-      vertex 10.9722 -255.19 -3
-      vertex 11.0706 -254.991 -2.41
-      vertex 11.0706 -254.991 -3
-    endloop
-  endfacet
-  facet normal -0.8964 0.443245 0
-    outer loop
-      vertex 11.0706 -254.991 -2.41
-      vertex 10.9722 -255.19 -3
-      vertex 10.9722 -255.19 -2.41
-    endloop
-  endfacet
-  facet normal -0.8964 0.443245 0
-    outer loop
       vertex 10.9722 -255.19 -0.7
       vertex 11.0706 -254.991 0.599999
       vertex 11.0706 -254.991 -0.7
@@ -1201,6 +1187,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -254.991 0.599999
       vertex 10.9722 -255.19 -0.7
       vertex 10.9722 -255.19 0.599999
+    endloop
+  endfacet
+  facet normal -0.8964 0.443245 0
+    outer loop
+      vertex 10.9722 -255.19 -3
+      vertex 11.0706 -254.991 -2.41
+      vertex 11.0706 -254.991 -3
+    endloop
+  endfacet
+  facet normal -0.8964 0.443245 0
+    outer loop
+      vertex 11.0706 -254.991 -2.41
+      vertex 10.9722 -255.19 -3
+      vertex 10.9722 -255.19 -2.41
     endloop
   endfacet
   facet normal 0.997862 0.0653555 0
@@ -2689,20 +2689,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.981097 0.193519 0
     outer loop
-      vertex 104.457 -254.78 -0.7
-      vertex 104.5 -254.562 0.599999
-      vertex 104.5 -254.562 -0.7
-    endloop
-  endfacet
-  facet normal -0.981097 0.193519 0
-    outer loop
-      vertex 104.5 -254.562 0.599999
-      vertex 104.457 -254.78 -0.7
-      vertex 104.457 -254.78 0.599999
-    endloop
-  endfacet
-  facet normal -0.981097 0.193519 0
-    outer loop
       vertex 104.457 -254.78 -3
       vertex 104.5 -254.562 -2.41
       vertex 104.5 -254.562 -3
@@ -2715,18 +2701,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 104.457 -254.78 -2.41
     endloop
   endfacet
-  facet normal -0.997725 0.0674139 0
+  facet normal -0.981097 0.193519 0
     outer loop
+      vertex 104.457 -254.78 -0.7
+      vertex 104.5 -254.562 0.599999
       vertex 104.5 -254.562 -0.7
-      vertex 104.515 -254.34 0.599999
-      vertex 104.515 -254.34 -0.7
     endloop
   endfacet
-  facet normal -0.997725 0.0674139 0
+  facet normal -0.981097 0.193519 0
     outer loop
-      vertex 104.515 -254.34 0.599999
-      vertex 104.5 -254.562 -0.7
       vertex 104.5 -254.562 0.599999
+      vertex 104.457 -254.78 -0.7
+      vertex 104.457 -254.78 0.599999
     endloop
   endfacet
   facet normal -0.997725 0.0674139 0
@@ -2743,18 +2729,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 104.5 -254.562 -2.41
     endloop
   endfacet
-  facet normal -0.0674139 -0.997725 0
+  facet normal -0.997725 0.0674139 0
     outer loop
-      vertex 102.815 -252.64 -3
-      vertex 103.037 -252.655 -2.41
-      vertex 102.815 -252.64 -2.41
+      vertex 104.5 -254.562 -0.7
+      vertex 104.515 -254.34 0.599999
+      vertex 104.515 -254.34 -0.7
     endloop
   endfacet
-  facet normal -0.0674139 -0.997725 -0
+  facet normal -0.997725 0.0674139 0
     outer loop
-      vertex 103.037 -252.655 -2.41
-      vertex 102.815 -252.64 -3
-      vertex 103.037 -252.655 -3
+      vertex 104.515 -254.34 0.599999
+      vertex 104.5 -254.562 -0.7
+      vertex 104.5 -254.562 0.599999
     endloop
   endfacet
   facet normal -0.0674139 -0.997725 0
@@ -2769,6 +2755,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 103.037 -252.655 0.599999
       vertex 102.815 -252.64 -0.7
       vertex 103.037 -252.655 -0.7
+    endloop
+  endfacet
+  facet normal -0.0674139 -0.997725 0
+    outer loop
+      vertex 102.815 -252.64 -3
+      vertex 103.037 -252.655 -2.41
+      vertex 102.815 -252.64 -2.41
+    endloop
+  endfacet
+  facet normal -0.0674139 -0.997725 -0
+    outer loop
+      vertex 103.037 -252.655 -2.41
+      vertex 102.815 -252.64 -3
+      vertex 103.037 -252.655 -3
     endloop
   endfacet
   facet normal 0.660729 0.750624 -0
@@ -2829,20 +2829,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.193519 -0.981097 0
     outer loop
-      vertex 102.375 -252.698 -3
-      vertex 102.593 -252.655 -2.41
-      vertex 102.375 -252.698 -2.41
-    endloop
-  endfacet
-  facet normal 0.193519 -0.981097 0
-    outer loop
-      vertex 102.593 -252.655 -2.41
-      vertex 102.375 -252.698 -3
-      vertex 102.593 -252.655 -3
-    endloop
-  endfacet
-  facet normal 0.193519 -0.981097 0
-    outer loop
       vertex 102.375 -252.698 -0.7
       vertex 102.593 -252.655 0.599999
       vertex 102.375 -252.698 0.599999
@@ -2853,6 +2839,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 102.593 -252.655 0.599999
       vertex 102.375 -252.698 -0.7
       vertex 102.593 -252.655 -0.7
+    endloop
+  endfacet
+  facet normal 0.193519 -0.981097 0
+    outer loop
+      vertex 102.375 -252.698 -3
+      vertex 102.593 -252.655 -2.41
+      vertex 102.375 -252.698 -2.41
+    endloop
+  endfacet
+  facet normal 0.193519 -0.981097 0
+    outer loop
+      vertex 102.593 -252.655 -2.41
+      vertex 102.375 -252.698 -3
+      vertex 102.593 -252.655 -3
     endloop
   endfacet
   facet normal -0.660729 0.750624 0
@@ -3025,20 +3025,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.0674139 -0.997725 0
     outer loop
-      vertex 102.593 -252.655 -3
-      vertex 102.815 -252.64 -2.41
-      vertex 102.593 -252.655 -2.41
-    endloop
-  endfacet
-  facet normal 0.0674139 -0.997725 0
-    outer loop
-      vertex 102.815 -252.64 -2.41
-      vertex 102.593 -252.655 -3
-      vertex 102.815 -252.64 -3
-    endloop
-  endfacet
-  facet normal 0.0674139 -0.997725 0
-    outer loop
       vertex 102.593 -252.655 -0.7
       vertex 102.815 -252.64 0.599999
       vertex 102.593 -252.655 0.599999
@@ -3049,6 +3035,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 102.815 -252.64 0.599999
       vertex 102.593 -252.655 -0.7
       vertex 102.815 -252.64 -0.7
+    endloop
+  endfacet
+  facet normal 0.0674139 -0.997725 0
+    outer loop
+      vertex 102.593 -252.655 -3
+      vertex 102.815 -252.64 -2.41
+      vertex 102.593 -252.655 -2.41
+    endloop
+  endfacet
+  facet normal 0.0674139 -0.997725 0
+    outer loop
+      vertex 102.815 -252.64 -2.41
+      vertex 102.593 -252.655 -3
+      vertex 102.815 -252.64 -3
     endloop
   endfacet
   facet normal 0.318922 0.947781 -0
@@ -3081,20 +3081,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.947781 0.318922 0
     outer loop
-      vertex 104.386 -254.991 -0.7
-      vertex 104.457 -254.78 0.599999
-      vertex 104.457 -254.78 -0.7
-    endloop
-  endfacet
-  facet normal -0.947781 0.318922 0
-    outer loop
-      vertex 104.457 -254.78 0.599999
-      vertex 104.386 -254.991 -0.7
-      vertex 104.386 -254.991 0.599999
-    endloop
-  endfacet
-  facet normal -0.947781 0.318922 0
-    outer loop
       vertex 104.386 -254.991 -3
       vertex 104.457 -254.78 -2.41
       vertex 104.457 -254.78 -3
@@ -3107,18 +3093,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 104.386 -254.991 -2.41
     endloop
   endfacet
-  facet normal 0.750624 0.660729 0
+  facet normal -0.947781 0.318922 0
     outer loop
-      vertex 101.613 -255.542 -2.41
-      vertex 101.466 -255.375 -3
-      vertex 101.466 -255.375 -2.41
+      vertex 104.386 -254.991 -0.7
+      vertex 104.457 -254.78 0.599999
+      vertex 104.457 -254.78 -0.7
     endloop
   endfacet
-  facet normal 0.750624 0.660729 0
+  facet normal -0.947781 0.318922 0
     outer loop
-      vertex 101.466 -255.375 -3
-      vertex 101.613 -255.542 -2.41
-      vertex 101.613 -255.542 -3
+      vertex 104.457 -254.78 0.599999
+      vertex 104.386 -254.991 -0.7
+      vertex 104.386 -254.991 0.599999
     endloop
   endfacet
   facet normal 0.750624 0.660729 0
@@ -3133,6 +3119,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 101.466 -255.375 -0.7
       vertex 101.613 -255.542 0.599999
       vertex 101.613 -255.542 -0.7
+    endloop
+  endfacet
+  facet normal 0.750624 0.660729 0
+    outer loop
+      vertex 101.613 -255.542 -2.41
+      vertex 101.466 -255.375 -3
+      vertex 101.466 -255.375 -2.41
+    endloop
+  endfacet
+  facet normal 0.750624 0.660729 0
+    outer loop
+      vertex 101.466 -255.375 -3
+      vertex 101.613 -255.542 -2.41
+      vertex 101.613 -255.542 -3
     endloop
   endfacet
   facet normal 0.445413 -0.895325 0
@@ -3275,6 +3275,34 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 101.13 -254.118 -0.7
     endloop
   endfacet
+  facet normal 0.750624 -0.660729 0
+    outer loop
+      vertex 101.466 -253.305 0.599999
+      vertex 101.613 -253.138 -0.7
+      vertex 101.613 -253.138 0.599999
+    endloop
+  endfacet
+  facet normal 0.750624 -0.660729 0
+    outer loop
+      vertex 101.613 -253.138 -0.7
+      vertex 101.466 -253.305 0.599999
+      vertex 101.466 -253.305 -0.7
+    endloop
+  endfacet
+  facet normal 0.750624 -0.660729 0
+    outer loop
+      vertex 101.466 -253.305 -2.41
+      vertex 101.613 -253.138 -3
+      vertex 101.613 -253.138 -2.41
+    endloop
+  endfacet
+  facet normal 0.750624 -0.660729 0
+    outer loop
+      vertex 101.613 -253.138 -3
+      vertex 101.466 -253.305 -2.41
+      vertex 101.466 -253.305 -3
+    endloop
+  endfacet
   facet normal -0.193519 0.981097 0
     outer loop
       vertex 103.255 -255.982 -3
@@ -3305,20 +3333,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.832742 0.553661 0
     outer loop
-      vertex 104.164 -255.375 -0.7
-      vertex 104.287 -255.19 0.599999
-      vertex 104.287 -255.19 -0.7
-    endloop
-  endfacet
-  facet normal -0.832742 0.553661 0
-    outer loop
-      vertex 104.287 -255.19 0.599999
-      vertex 104.164 -255.375 -0.7
-      vertex 104.164 -255.375 0.599999
-    endloop
-  endfacet
-  facet normal -0.832742 0.553661 0
-    outer loop
       vertex 104.164 -255.375 -3
       vertex 104.287 -255.19 -2.41
       vertex 104.287 -255.19 -3
@@ -3329,6 +3343,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 104.287 -255.19 -2.41
       vertex 104.164 -255.375 -3
       vertex 104.164 -255.375 -2.41
+    endloop
+  endfacet
+  facet normal -0.832742 0.553661 0
+    outer loop
+      vertex 104.164 -255.375 -0.7
+      vertex 104.287 -255.19 0.599999
+      vertex 104.287 -255.19 -0.7
+    endloop
+  endfacet
+  facet normal -0.832742 0.553661 0
+    outer loop
+      vertex 104.287 -255.19 0.599999
+      vertex 104.164 -255.375 -0.7
+      vertex 104.164 -255.375 0.599999
     endloop
   endfacet
   facet normal -0.997725 -0.0674139 0
@@ -3417,20 +3445,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.193519 0.981097 -0
     outer loop
-      vertex 102.593 -256.025 -0.7
-      vertex 102.375 -255.982 0.599999
-      vertex 102.593 -256.025 0.599999
-    endloop
-  endfacet
-  facet normal 0.193519 0.981097 0
-    outer loop
-      vertex 102.375 -255.982 0.599999
-      vertex 102.593 -256.025 -0.7
-      vertex 102.375 -255.982 -0.7
-    endloop
-  endfacet
-  facet normal 0.193519 0.981097 -0
-    outer loop
       vertex 102.593 -256.025 -3
       vertex 102.375 -255.982 -2.41
       vertex 102.593 -256.025 -2.41
@@ -3441,6 +3455,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 102.375 -255.982 -2.41
       vertex 102.593 -256.025 -3
       vertex 102.375 -255.982 -3
+    endloop
+  endfacet
+  facet normal 0.193519 0.981097 -0
+    outer loop
+      vertex 102.593 -256.025 -0.7
+      vertex 102.375 -255.982 0.599999
+      vertex 102.593 -256.025 0.599999
+    endloop
+  endfacet
+  facet normal 0.193519 0.981097 0
+    outer loop
+      vertex 102.375 -255.982 0.599999
+      vertex 102.593 -256.025 -0.7
+      vertex 102.375 -255.982 -0.7
     endloop
   endfacet
   facet normal -0.660729 -0.750624 0
@@ -3581,34 +3609,6 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 101.78 -252.991 -2.41
       vertex 101.613 -253.138 -3
       vertex 101.78 -252.991 -3
-    endloop
-  endfacet
-  facet normal 0.750624 -0.660729 0
-    outer loop
-      vertex 101.466 -253.305 0.599999
-      vertex 101.613 -253.138 -0.7
-      vertex 101.613 -253.138 0.599999
-    endloop
-  endfacet
-  facet normal 0.750624 -0.660729 0
-    outer loop
-      vertex 101.613 -253.138 -0.7
-      vertex 101.466 -253.305 0.599999
-      vertex 101.466 -253.305 -0.7
-    endloop
-  endfacet
-  facet normal 0.750624 -0.660729 0
-    outer loop
-      vertex 101.466 -253.305 -2.41
-      vertex 101.613 -253.138 -3
-      vertex 101.613 -253.138 -2.41
-    endloop
-  endfacet
-  facet normal 0.750624 -0.660729 0
-    outer loop
-      vertex 101.613 -253.138 -3
-      vertex 101.466 -253.305 -2.41
-      vertex 101.466 -253.305 -3
     endloop
   endfacet
   facet normal -0.0674139 0.997725 0
@@ -3809,20 +3809,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.947781 0.318922 0
     outer loop
-      vertex 101.244 -254.991 -2.41
-      vertex 101.173 -254.78 -3
-      vertex 101.173 -254.78 -2.41
-    endloop
-  endfacet
-  facet normal 0.947781 0.318922 0
-    outer loop
-      vertex 101.173 -254.78 -3
-      vertex 101.244 -254.991 -2.41
-      vertex 101.244 -254.991 -3
-    endloop
-  endfacet
-  facet normal 0.947781 0.318922 0
-    outer loop
       vertex 101.244 -254.991 0.599999
       vertex 101.173 -254.78 -0.7
       vertex 101.173 -254.78 0.599999
@@ -3833,6 +3819,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 101.173 -254.78 -0.7
       vertex 101.244 -254.991 0.599999
       vertex 101.244 -254.991 -0.7
+    endloop
+  endfacet
+  facet normal 0.947781 0.318922 0
+    outer loop
+      vertex 101.244 -254.991 -2.41
+      vertex 101.173 -254.78 -3
+      vertex 101.173 -254.78 -2.41
+    endloop
+  endfacet
+  facet normal 0.947781 0.318922 0
+    outer loop
+      vertex 101.173 -254.78 -3
+      vertex 101.244 -254.991 -2.41
+      vertex 101.244 -254.991 -3
     endloop
   endfacet
   facet normal 0.553661 0.832742 -0
@@ -3865,20 +3865,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.895325 0.445413 0
     outer loop
-      vertex 104.287 -255.19 -0.7
-      vertex 104.386 -254.991 0.599999
-      vertex 104.386 -254.991 -0.7
-    endloop
-  endfacet
-  facet normal -0.895325 0.445413 0
-    outer loop
-      vertex 104.386 -254.991 0.599999
-      vertex 104.287 -255.19 -0.7
-      vertex 104.287 -255.19 0.599999
-    endloop
-  endfacet
-  facet normal -0.895325 0.445413 0
-    outer loop
       vertex 104.287 -255.19 -3
       vertex 104.386 -254.991 -2.41
       vertex 104.386 -254.991 -3
@@ -3889,6 +3875,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 104.386 -254.991 -2.41
       vertex 104.287 -255.19 -3
       vertex 104.287 -255.19 -2.41
+    endloop
+  endfacet
+  facet normal -0.895325 0.445413 0
+    outer loop
+      vertex 104.287 -255.19 -0.7
+      vertex 104.386 -254.991 0.599999
+      vertex 104.386 -254.991 -0.7
+    endloop
+  endfacet
+  facet normal -0.895325 0.445413 0
+    outer loop
+      vertex 104.386 -254.991 0.599999
+      vertex 104.287 -255.19 -0.7
+      vertex 104.287 -255.19 0.599999
     endloop
   endfacet
   facet normal 0.997725 0.0674139 0
@@ -5377,20 +5377,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.980753 0.195251 0
     outer loop
-      vertex 11.1421 -193.57 -0.7
-      vertex 11.1855 -193.352 0.599999
-      vertex 11.1855 -193.352 -0.7
-    endloop
-  endfacet
-  facet normal -0.980753 0.195251 0
-    outer loop
-      vertex 11.1855 -193.352 0.599999
-      vertex 11.1421 -193.57 -0.7
-      vertex 11.1421 -193.57 0.599999
-    endloop
-  endfacet
-  facet normal -0.980753 0.195251 0
-    outer loop
       vertex 11.1421 -193.57 -3
       vertex 11.1855 -193.352 -2.41
       vertex 11.1855 -193.352 -3
@@ -5403,18 +5389,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.1421 -193.57 -2.41
     endloop
   endfacet
-  facet normal -0.997874 0.0651764 0
+  facet normal -0.980753 0.195251 0
     outer loop
+      vertex 11.1421 -193.57 -0.7
+      vertex 11.1855 -193.352 0.599999
       vertex 11.1855 -193.352 -0.7
-      vertex 11.2 -193.13 0.599999
-      vertex 11.2 -193.13 -0.7
     endloop
   endfacet
-  facet normal -0.997874 0.0651764 0
+  facet normal -0.980753 0.195251 0
     outer loop
-      vertex 11.2 -193.13 0.599999
-      vertex 11.1855 -193.352 -0.7
       vertex 11.1855 -193.352 0.599999
+      vertex 11.1421 -193.57 -0.7
+      vertex 11.1421 -193.57 0.599999
     endloop
   endfacet
   facet normal -0.997874 0.0651764 0
@@ -5429,6 +5415,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.2 -193.13 -2.41
       vertex 11.1855 -193.352 -3
       vertex 11.1855 -193.352 -2.41
+    endloop
+  endfacet
+  facet normal -0.997874 0.0651764 0
+    outer loop
+      vertex 11.1855 -193.352 -0.7
+      vertex 11.2 -193.13 0.599999
+      vertex 11.2 -193.13 -0.7
+    endloop
+  endfacet
+  facet normal -0.997874 0.0651764 0
+    outer loop
+      vertex 11.2 -193.13 0.599999
+      vertex 11.1855 -193.352 -0.7
+      vertex 11.1855 -193.352 0.599999
     endloop
   endfacet
   facet normal -0.0674471 -0.997723 0
@@ -5517,20 +5517,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.193434 -0.981113 0
     outer loop
-      vertex 9.06001 -191.488 -3
-      vertex 9.27811 -191.445 -2.41
-      vertex 9.06001 -191.488 -2.41
-    endloop
-  endfacet
-  facet normal 0.193434 -0.981113 0
-    outer loop
-      vertex 9.27811 -191.445 -2.41
-      vertex 9.06001 -191.488 -3
-      vertex 9.27811 -191.445 -3
-    endloop
-  endfacet
-  facet normal 0.193434 -0.981113 0
-    outer loop
       vertex 9.06001 -191.488 -0.7
       vertex 9.27811 -191.445 0.599999
       vertex 9.06001 -191.488 0.599999
@@ -5541,6 +5527,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.27811 -191.445 0.599999
       vertex 9.06001 -191.488 -0.7
       vertex 9.27811 -191.445 -0.7
+    endloop
+  endfacet
+  facet normal 0.193434 -0.981113 0
+    outer loop
+      vertex 9.06001 -191.488 -3
+      vertex 9.27811 -191.445 -2.41
+      vertex 9.06001 -191.488 -2.41
+    endloop
+  endfacet
+  facet normal 0.193434 -0.981113 0
+    outer loop
+      vertex 9.27811 -191.445 -2.41
+      vertex 9.06001 -191.488 -3
+      vertex 9.27811 -191.445 -3
     endloop
   endfacet
   facet normal -0.660284 0.751016 0
@@ -5573,20 +5573,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.947101 -0.320937 0
     outer loop
-      vertex 11.1421 -192.69 -3
-      vertex 11.0706 -192.479 -2.41
-      vertex 11.0706 -192.479 -3
-    endloop
-  endfacet
-  facet normal -0.947101 -0.320937 0
-    outer loop
-      vertex 11.0706 -192.479 -2.41
-      vertex 11.1421 -192.69 -3
-      vertex 11.1421 -192.69 -2.41
-    endloop
-  endfacet
-  facet normal -0.947101 -0.320937 0
-    outer loop
       vertex 11.1421 -192.69 -0.7
       vertex 11.0706 -192.479 0.599999
       vertex 11.0706 -192.479 -0.7
@@ -5597,6 +5583,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -192.479 0.599999
       vertex 11.1421 -192.69 -0.7
       vertex 11.1421 -192.69 0.599999
+    endloop
+  endfacet
+  facet normal -0.947101 -0.320937 0
+    outer loop
+      vertex 11.1421 -192.69 -3
+      vertex 11.0706 -192.479 -2.41
+      vertex 11.0706 -192.479 -3
+    endloop
+  endfacet
+  facet normal -0.947101 -0.320937 0
+    outer loop
+      vertex 11.0706 -192.479 -2.41
+      vertex 11.1421 -192.69 -3
+      vertex 11.1421 -192.69 -2.41
     endloop
   endfacet
   facet normal -0.751516 -0.659714 0
@@ -5685,20 +5685,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.319452 -0.947602 0
     outer loop
-      vertex 9.93999 -191.488 -3
-      vertex 10.1506 -191.559 -2.41
-      vertex 9.93999 -191.488 -2.41
-    endloop
-  endfacet
-  facet normal -0.319452 -0.947602 -0
-    outer loop
-      vertex 10.1506 -191.559 -2.41
-      vertex 9.93999 -191.488 -3
-      vertex 10.1506 -191.559 -3
-    endloop
-  endfacet
-  facet normal -0.319452 -0.947602 0
-    outer loop
       vertex 9.93999 -191.488 -0.7
       vertex 10.1506 -191.559 0.599999
       vertex 9.93999 -191.488 0.599999
@@ -5711,18 +5697,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 10.1506 -191.559 -0.7
     endloop
   endfacet
-  facet normal 0.0674471 -0.997723 0
+  facet normal -0.319452 -0.947602 0
     outer loop
-      vertex 9.27811 -191.445 -3
-      vertex 9.5 -191.43 -2.41
-      vertex 9.27811 -191.445 -2.41
+      vertex 9.93999 -191.488 -3
+      vertex 10.1506 -191.559 -2.41
+      vertex 9.93999 -191.488 -2.41
     endloop
   endfacet
-  facet normal 0.0674471 -0.997723 0
+  facet normal -0.319452 -0.947602 -0
     outer loop
-      vertex 9.5 -191.43 -2.41
-      vertex 9.27811 -191.445 -3
-      vertex 9.5 -191.43 -3
+      vertex 10.1506 -191.559 -2.41
+      vertex 9.93999 -191.488 -3
+      vertex 10.1506 -191.559 -3
     endloop
   endfacet
   facet normal 0.0674471 -0.997723 0
@@ -5737,6 +5723,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.5 -191.43 0.599999
       vertex 9.27811 -191.445 -0.7
       vertex 9.5 -191.43 -0.7
+    endloop
+  endfacet
+  facet normal 0.0674471 -0.997723 0
+    outer loop
+      vertex 9.27811 -191.445 -3
+      vertex 9.5 -191.43 -2.41
+      vertex 9.27811 -191.445 -2.41
+    endloop
+  endfacet
+  facet normal 0.0674471 -0.997723 0
+    outer loop
+      vertex 9.5 -191.43 -2.41
+      vertex 9.27811 -191.445 -3
+      vertex 9.5 -191.43 -3
     endloop
   endfacet
   facet normal 0.319506 0.947584 -0
@@ -5769,20 +5769,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.947101 0.320937 0
     outer loop
-      vertex 11.0706 -193.781 -0.7
-      vertex 11.1421 -193.57 0.599999
-      vertex 11.1421 -193.57 -0.7
-    endloop
-  endfacet
-  facet normal -0.947101 0.320937 0
-    outer loop
-      vertex 11.1421 -193.57 0.599999
-      vertex 11.0706 -193.781 -0.7
-      vertex 11.0706 -193.781 0.599999
-    endloop
-  endfacet
-  facet normal -0.947101 0.320937 0
-    outer loop
       vertex 11.0706 -193.781 -3
       vertex 11.1421 -193.57 -2.41
       vertex 11.1421 -193.57 -3
@@ -5795,18 +5781,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -193.781 -2.41
     endloop
   endfacet
-  facet normal 0.751472 0.659765 0
+  facet normal -0.947101 0.320937 0
     outer loop
-      vertex 8.29792 -194.332 -2.41
-      vertex 8.1513 -194.165 -3
-      vertex 8.1513 -194.165 -2.41
+      vertex 11.0706 -193.781 -0.7
+      vertex 11.1421 -193.57 0.599999
+      vertex 11.1421 -193.57 -0.7
     endloop
   endfacet
-  facet normal 0.751472 0.659765 0
+  facet normal -0.947101 0.320937 0
     outer loop
-      vertex 8.1513 -194.165 -3
-      vertex 8.29792 -194.332 -2.41
-      vertex 8.29792 -194.332 -3
+      vertex 11.1421 -193.57 0.599999
+      vertex 11.0706 -193.781 -0.7
+      vertex 11.0706 -193.781 0.599999
     endloop
   endfacet
   facet normal 0.751472 0.659765 0
@@ -5821,6 +5807,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 8.1513 -194.165 -0.7
       vertex 8.29792 -194.332 0.599999
       vertex 8.29792 -194.332 -0.7
+    endloop
+  endfacet
+  facet normal 0.751472 0.659765 0
+    outer loop
+      vertex 8.29792 -194.332 -2.41
+      vertex 8.1513 -194.165 -3
+      vertex 8.1513 -194.165 -2.41
+    endloop
+  endfacet
+  facet normal 0.751472 0.659765 0
+    outer loop
+      vertex 8.1513 -194.165 -3
+      vertex 8.29792 -194.332 -2.41
+      vertex 8.29792 -194.332 -3
     endloop
   endfacet
   facet normal 0.444625 -0.895717 0
@@ -5853,20 +5853,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.0674471 0.997723 -0
     outer loop
-      vertex 9.5 -194.83 -0.7
-      vertex 9.27811 -194.815 0.599999
-      vertex 9.5 -194.83 0.599999
-    endloop
-  endfacet
-  facet normal 0.0674471 0.997723 0
-    outer loop
-      vertex 9.27811 -194.815 0.599999
-      vertex 9.5 -194.83 -0.7
-      vertex 9.27811 -194.815 -0.7
-    endloop
-  endfacet
-  facet normal 0.0674471 0.997723 -0
-    outer loop
       vertex 9.5 -194.83 -3
       vertex 9.27811 -194.815 -2.41
       vertex 9.5 -194.83 -2.41
@@ -5877,6 +5863,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.27811 -194.815 -2.41
       vertex 9.5 -194.83 -3
       vertex 9.27811 -194.815 -3
+    endloop
+  endfacet
+  facet normal 0.0674471 0.997723 -0
+    outer loop
+      vertex 9.5 -194.83 -0.7
+      vertex 9.27811 -194.815 0.599999
+      vertex 9.5 -194.83 0.599999
+    endloop
+  endfacet
+  facet normal 0.0674471 0.997723 0
+    outer loop
+      vertex 9.27811 -194.815 0.599999
+      vertex 9.5 -194.83 -0.7
+      vertex 9.27811 -194.815 -0.7
     endloop
   endfacet
   facet normal -0.8964 -0.443245 0
@@ -6021,20 +6021,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal -0.997874 -0.0651764 0
     outer loop
-      vertex 11.2 -193.13 -3
-      vertex 11.1855 -192.908 -2.41
-      vertex 11.1855 -192.908 -3
-    endloop
-  endfacet
-  facet normal -0.997874 -0.0651764 0
-    outer loop
-      vertex 11.1855 -192.908 -2.41
-      vertex 11.2 -193.13 -3
-      vertex 11.2 -193.13 -2.41
-    endloop
-  endfacet
-  facet normal -0.997874 -0.0651764 0
-    outer loop
       vertex 11.2 -193.13 -0.7
       vertex 11.1855 -192.908 0.599999
       vertex 11.1855 -192.908 -0.7
@@ -6045,6 +6031,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.1855 -192.908 0.599999
       vertex 11.2 -193.13 -0.7
       vertex 11.2 -193.13 0.599999
+    endloop
+  endfacet
+  facet normal -0.997874 -0.0651764 0
+    outer loop
+      vertex 11.2 -193.13 -3
+      vertex 11.1855 -192.908 -2.41
+      vertex 11.1855 -192.908 -3
+    endloop
+  endfacet
+  facet normal -0.997874 -0.0651764 0
+    outer loop
+      vertex 11.1855 -192.908 -2.41
+      vertex 11.2 -193.13 -3
+      vertex 11.2 -193.13 -2.41
     endloop
   endfacet
   facet normal -0.319452 0.947602 0
@@ -6105,20 +6105,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.193434 0.981113 -0
     outer loop
-      vertex 9.27811 -194.815 -0.7
-      vertex 9.06001 -194.772 0.599999
-      vertex 9.27811 -194.815 0.599999
-    endloop
-  endfacet
-  facet normal 0.193434 0.981113 0
-    outer loop
-      vertex 9.06001 -194.772 0.599999
-      vertex 9.27811 -194.815 -0.7
-      vertex 9.06001 -194.772 -0.7
-    endloop
-  endfacet
-  facet normal 0.193434 0.981113 -0
-    outer loop
       vertex 9.27811 -194.815 -3
       vertex 9.06001 -194.772 -2.41
       vertex 9.27811 -194.815 -2.41
@@ -6129,6 +6115,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 9.06001 -194.772 -2.41
       vertex 9.27811 -194.815 -3
       vertex 9.06001 -194.772 -3
+    endloop
+  endfacet
+  facet normal 0.193434 0.981113 -0
+    outer loop
+      vertex 9.27811 -194.815 -0.7
+      vertex 9.06001 -194.772 0.599999
+      vertex 9.27811 -194.815 0.599999
+    endloop
+  endfacet
+  facet normal 0.193434 0.981113 0
+    outer loop
+      vertex 9.06001 -194.772 0.599999
+      vertex 9.27811 -194.815 -0.7
+      vertex 9.06001 -194.772 -0.7
     endloop
   endfacet
   facet normal -0.660284 -0.751016 0
@@ -6497,20 +6497,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.947128 0.320856 0
     outer loop
-      vertex 7.92941 -193.781 -2.41
-      vertex 7.85793 -193.57 -3
-      vertex 7.85793 -193.57 -2.41
-    endloop
-  endfacet
-  facet normal 0.947128 0.320856 0
-    outer loop
-      vertex 7.85793 -193.57 -3
-      vertex 7.92941 -193.781 -2.41
-      vertex 7.92941 -193.781 -3
-    endloop
-  endfacet
-  facet normal 0.947128 0.320856 0
-    outer loop
       vertex 7.92941 -193.781 0.599999
       vertex 7.85793 -193.57 -0.7
       vertex 7.85793 -193.57 0.599999
@@ -6523,18 +6509,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 7.92941 -193.781 -0.7
     endloop
   endfacet
-  facet normal 0.553889 0.83259 -0
+  facet normal 0.947128 0.320856 0
     outer loop
-      vertex 8.65 -194.602 -3
-      vertex 8.46511 -194.479 -2.41
-      vertex 8.65 -194.602 -2.41
+      vertex 7.92941 -193.781 -2.41
+      vertex 7.85793 -193.57 -3
+      vertex 7.85793 -193.57 -2.41
     endloop
   endfacet
-  facet normal 0.553889 0.83259 0
+  facet normal 0.947128 0.320856 0
     outer loop
-      vertex 8.46511 -194.479 -2.41
-      vertex 8.65 -194.602 -3
-      vertex 8.46511 -194.479 -3
+      vertex 7.85793 -193.57 -3
+      vertex 7.92941 -193.781 -2.41
+      vertex 7.92941 -193.781 -3
     endloop
   endfacet
   facet normal 0.553889 0.83259 -0
@@ -6551,18 +6537,18 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 8.46511 -194.479 -0.7
     endloop
   endfacet
-  facet normal -0.8964 0.443245 0
+  facet normal 0.553889 0.83259 -0
     outer loop
-      vertex 10.9722 -193.98 -0.7
-      vertex 11.0706 -193.781 0.599999
-      vertex 11.0706 -193.781 -0.7
+      vertex 8.65 -194.602 -3
+      vertex 8.46511 -194.479 -2.41
+      vertex 8.65 -194.602 -2.41
     endloop
   endfacet
-  facet normal -0.8964 0.443245 0
+  facet normal 0.553889 0.83259 0
     outer loop
-      vertex 11.0706 -193.781 0.599999
-      vertex 10.9722 -193.98 -0.7
-      vertex 10.9722 -193.98 0.599999
+      vertex 8.46511 -194.479 -2.41
+      vertex 8.65 -194.602 -3
+      vertex 8.46511 -194.479 -3
     endloop
   endfacet
   facet normal -0.8964 0.443245 0
@@ -6577,6 +6563,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -193.781 -2.41
       vertex 10.9722 -193.98 -3
       vertex 10.9722 -193.98 -2.41
+    endloop
+  endfacet
+  facet normal -0.8964 0.443245 0
+    outer loop
+      vertex 10.9722 -193.98 -0.7
+      vertex 11.0706 -193.781 0.599999
+      vertex 11.0706 -193.781 -0.7
+    endloop
+  endfacet
+  facet normal -0.8964 0.443245 0
+    outer loop
+      vertex 11.0706 -193.781 0.599999
+      vertex 10.9722 -193.98 -0.7
+      vertex 10.9722 -193.98 0.599999
     endloop
   endfacet
   facet normal 0.997862 0.0653555 0
@@ -6637,20 +6637,6 @@ solid PROVISIONAL_bisel_x0_y1
   endfacet
   facet normal 0.444625 0.895717 -0
     outer loop
-      vertex 8.84944 -194.701 -3
-      vertex 8.65 -194.602 -2.41
-      vertex 8.84944 -194.701 -2.41
-    endloop
-  endfacet
-  facet normal 0.444625 0.895717 0
-    outer loop
-      vertex 8.65 -194.602 -2.41
-      vertex 8.84944 -194.701 -3
-      vertex 8.65 -194.602 -3
-    endloop
-  endfacet
-  facet normal 0.444625 0.895717 -0
-    outer loop
       vertex 8.84944 -194.701 -0.7
       vertex 8.65 -194.602 0.599999
       vertex 8.84944 -194.701 0.599999
@@ -6661,6 +6647,20 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 8.65 -194.602 0.599999
       vertex 8.84944 -194.701 -0.7
       vertex 8.65 -194.602 -0.7
+    endloop
+  endfacet
+  facet normal 0.444625 0.895717 -0
+    outer loop
+      vertex 8.84944 -194.701 -3
+      vertex 8.65 -194.602 -2.41
+      vertex 8.84944 -194.701 -2.41
+    endloop
+  endfacet
+  facet normal 0.444625 0.895717 0
+    outer loop
+      vertex 8.65 -194.602 -2.41
+      vertex 8.84944 -194.701 -3
+      vertex 8.65 -194.602 -3
     endloop
   endfacet
   facet normal 0.831621 0.555343 0
@@ -8063,34 +8063,6 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 11.0706 -193.781 -0.7
     endloop
   endfacet
-  facet normal -0.555978 -0.831197 0
-    outer loop
-      vertex 6.86495 -257.713 -3
-      vertex 7.3 -258.004 0.599999
-      vertex 6.86495 -257.713 0.599999
-    endloop
-  endfacet
-  facet normal -0.555978 -0.831197 -0
-    outer loop
-      vertex 7.3 -258.004 0.599999
-      vertex 6.86495 -257.713 -3
-      vertex 7.3 -258.004 -3
-    endloop
-  endfacet
-  facet normal -0.0649827 -0.997886 0
-    outer loop
-      vertex 8.77789 -258.506 -3
-      vertex 9.3 -258.54 0.599999
-      vertex 8.77789 -258.506 0.599999
-    endloop
-  endfacet
-  facet normal -0.0649827 -0.997886 -0
-    outer loop
-      vertex 9.3 -258.54 0.599999
-      vertex 8.77789 -258.506 -3
-      vertex 9.3 -258.54 -3
-    endloop
-  endfacet
   facet normal 0 -1 0
     outer loop
       vertex 9.3 -258.54 -3
@@ -8103,34 +8075,6 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 196.13 -258.54 0.599999
       vertex 9.3 -258.54 -3
       vertex 196.13 -258.54 -3
-    endloop
-  endfacet
-  facet normal -0.194951 -0.980813 0
-    outer loop
-      vertex 8.26472 -258.404 -3
-      vertex 8.77789 -258.506 0.599999
-      vertex 8.26472 -258.404 0.599999
-    endloop
-  endfacet
-  facet normal -0.194951 -0.980813 -0
-    outer loop
-      vertex 8.77789 -258.506 0.599999
-      vertex 8.26472 -258.404 -3
-      vertex 8.77789 -258.506 -3
-    endloop
-  endfacet
-  facet normal -0.751529 -0.659701 0
-    outer loop
-      vertex 6.47157 -257.368 -3
-      vertex 6.12659 -256.975 0.599999
-      vertex 6.12659 -256.975 -3
-    endloop
-  endfacet
-  facet normal -0.751529 -0.659701 0
-    outer loop
-      vertex 6.12659 -256.975 0.599999
-      vertex 6.47157 -257.368 -3
-      vertex 6.47157 -257.368 0.599999
     endloop
   endfacet
   facet normal -1 0 0
@@ -8147,20 +8091,6 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 5.3 -254.54 0.599999
     endloop
   endfacet
-  facet normal -0.997858 -0.0654151 0
-    outer loop
-      vertex 5.33422 -255.062 -3
-      vertex 5.3 -254.54 0.599999
-      vertex 5.3 -254.54 -3
-    endloop
-  endfacet
-  facet normal -0.997858 -0.0654151 0
-    outer loop
-      vertex 5.3 -254.54 0.599999
-      vertex 5.33422 -255.062 -3
-      vertex 5.33422 -255.062 0.599999
-    endloop
-  endfacet
   facet normal -0.659362 -0.751826 0
     outer loop
       vertex 6.47157 -257.368 -3
@@ -8175,32 +8105,102 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 6.86495 -257.713 -3
     endloop
   endfacet
-  facet normal -0.443182 -0.896432 0
+  facet normal -0.997858 -0.0654151 0
     outer loop
-      vertex 7.3 -258.004 -3
-      vertex 7.76927 -258.236 0.599999
-      vertex 7.3 -258.004 0.599999
+      vertex 5.33422 -255.062 -3
+      vertex 5.3 -254.54 0.599999
+      vertex 5.3 -254.54 -3
     endloop
   endfacet
-  facet normal -0.443182 -0.896432 -0
+  facet normal -0.997858 -0.0654151 0
     outer loop
-      vertex 7.76927 -258.236 0.599999
-      vertex 7.3 -258.004 -3
-      vertex 7.76927 -258.236 -3
+      vertex 5.3 -254.54 0.599999
+      vertex 5.33422 -255.062 -3
+      vertex 5.33422 -255.062 0.599999
     endloop
   endfacet
-  facet normal -0.94704 -0.321115 0
+  facet normal -0.980771 -0.19516 0
     outer loop
-      vertex 5.60448 -256.071 -3
-      vertex 5.4363 -255.575 0.599999
       vertex 5.4363 -255.575 -3
+      vertex 5.33422 -255.062 0.599999
+      vertex 5.33422 -255.062 -3
     endloop
   endfacet
-  facet normal -0.94704 -0.321115 0
+  facet normal -0.980771 -0.19516 0
     outer loop
+      vertex 5.33422 -255.062 0.599999
+      vertex 5.4363 -255.575 -3
       vertex 5.4363 -255.575 0.599999
-      vertex 5.60448 -256.071 -3
-      vertex 5.60448 -256.071 0.599999
+    endloop
+  endfacet
+  facet normal -0.555978 -0.831197 0
+    outer loop
+      vertex 6.86495 -257.713 -3
+      vertex 7.3 -258.004 0.599999
+      vertex 6.86495 -257.713 0.599999
+    endloop
+  endfacet
+  facet normal -0.555978 -0.831197 -0
+    outer loop
+      vertex 7.3 -258.004 0.599999
+      vertex 6.86495 -257.713 -3
+      vertex 7.3 -258.004 -3
+    endloop
+  endfacet
+  facet normal -0.751529 -0.659701 0
+    outer loop
+      vertex 6.47157 -257.368 -3
+      vertex 6.12659 -256.975 0.599999
+      vertex 6.12659 -256.975 -3
+    endloop
+  endfacet
+  facet normal -0.751529 -0.659701 0
+    outer loop
+      vertex 6.12659 -256.975 0.599999
+      vertex 6.47157 -257.368 -3
+      vertex 6.47157 -257.368 0.599999
+    endloop
+  endfacet
+  facet normal -0.194951 -0.980813 0
+    outer loop
+      vertex 8.26472 -258.404 -3
+      vertex 8.77789 -258.506 0.599999
+      vertex 8.26472 -258.404 0.599999
+    endloop
+  endfacet
+  facet normal -0.194951 -0.980813 -0
+    outer loop
+      vertex 8.77789 -258.506 0.599999
+      vertex 8.26472 -258.404 -3
+      vertex 8.77789 -258.506 -3
+    endloop
+  endfacet
+  facet normal -0.0649827 -0.997886 0
+    outer loop
+      vertex 8.77789 -258.506 -3
+      vertex 9.3 -258.54 0.599999
+      vertex 8.77789 -258.506 0.599999
+    endloop
+  endfacet
+  facet normal -0.0649827 -0.997886 -0
+    outer loop
+      vertex 9.3 -258.54 0.599999
+      vertex 8.77789 -258.506 -3
+      vertex 9.3 -258.54 -3
+    endloop
+  endfacet
+  facet normal -0.831441 -0.555613 0
+    outer loop
+      vertex 6.12659 -256.975 -3
+      vertex 5.8359 -256.54 0.599999
+      vertex 5.8359 -256.54 -3
+    endloop
+  endfacet
+  facet normal -0.831441 -0.555613 0
+    outer loop
+      vertex 5.8359 -256.54 0.599999
+      vertex 6.12659 -256.975 -3
+      vertex 6.12659 -256.975 0.599999
     endloop
   endfacet
   facet normal -0.321126 -0.947036 0
@@ -8231,18 +8231,32 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 5.8359 -256.54 0.599999
     endloop
   endfacet
-  facet normal -0.980771 -0.19516 0
+  facet normal -0.94704 -0.321115 0
     outer loop
+      vertex 5.60448 -256.071 -3
+      vertex 5.4363 -255.575 0.599999
       vertex 5.4363 -255.575 -3
-      vertex 5.33422 -255.062 0.599999
-      vertex 5.33422 -255.062 -3
     endloop
   endfacet
-  facet normal -0.980771 -0.19516 0
+  facet normal -0.94704 -0.321115 0
     outer loop
-      vertex 5.33422 -255.062 0.599999
-      vertex 5.4363 -255.575 -3
       vertex 5.4363 -255.575 0.599999
+      vertex 5.60448 -256.071 -3
+      vertex 5.60448 -256.071 0.599999
+    endloop
+  endfacet
+  facet normal -0.443182 -0.896432 0
+    outer loop
+      vertex 7.3 -258.004 -3
+      vertex 7.76927 -258.236 0.599999
+      vertex 7.3 -258.004 0.599999
+    endloop
+  endfacet
+  facet normal -0.443182 -0.896432 -0
+    outer loop
+      vertex 7.76927 -258.236 0.599999
+      vertex 7.3 -258.004 -3
+      vertex 7.76927 -258.236 -3
     endloop
   endfacet
   facet normal 0 0 -1
@@ -9405,20 +9419,6 @@ solid PROVISIONAL_bisel_x0_y1
       vertex 5.3 -131.92 -3
       vertex 7.8 -193.13 -3
       vertex 5.3 -254.54 -3
-    endloop
-  endfacet
-  facet normal -0.831441 -0.555613 0
-    outer loop
-      vertex 6.12659 -256.975 -3
-      vertex 5.8359 -256.54 0.599999
-      vertex 5.8359 -256.54 -3
-    endloop
-  endfacet
-  facet normal -0.831441 -0.555613 0
-    outer loop
-      vertex 5.8359 -256.54 0.599999
-      vertex 6.12659 -256.975 -3
-      vertex 6.12659 -256.975 0.599999
     endloop
   endfacet
   facet normal -0 0 1

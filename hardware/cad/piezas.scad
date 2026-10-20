@@ -36,8 +36,10 @@ module base() {
                 for (dx = [12, hp_w - 22]) translate([hp_x + dx, hp_y + 10, suelo - 0.01]) cube([10, hp_d - 20, hp_z - suelo]);
                 translate([hp_x + 30, hp_y - 5, suelo - 0.01]) cube([hp_w - 60, 3, 14]);
             } else {
-                // HP v2: separadores mini-ITX impresos (inserto M3) [patrón PENDIENTE de verificar]
-                for (p = hp_agujeros()) translate([p[0], p[1], suelo - 0.01]) torreta(hp_separador + 0.01, 9);
+                // Separadores mini-ITX impresos (inserto M3). Patrón estándar; la plantilla cuadró
+                // con la placa el 2026-10-19 (no es una medida de calibre).
+                // 2026-10-19: cilindro macizo; el agujero del inserto se abre desde la cara superior (más abajo)
+                for (p = hp_agujeros()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = 9, h = hp_separador + 0.01);
                 // torretas del soporte del disco
                 for (p = torretas_disco()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = boss_d, h = 2);
             }
@@ -58,6 +60,12 @@ module base() {
         }
         // insertos de la bandeja (desde abajo) y de los empalmes
         for (p = concat(torretas_bandeja(), empalmes())) translate([p[0], p[1], -0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
+        // 2026-10-19: paso M3 en la cara superior de las torretas de empalme (antes quedaban 2,8 mm
+        // macizos sobre el inserto y el tornillo de la pletina, que entra desde arriba, no llegaba)
+        for (p = empalmes()) translate([p[0], p[1], inserto_l]) cylinder(d = tornillo_d, h = 10);
+        // 2026-10-19: agujero del inserto M3 de los separadores HP desde ARRIBA (antes se modelaba
+        // desde abajo y quedaba tapado por ~0,17 mm). Profundidad inserto_l + 0,5; no llega al suelo.
+        if (hp_desnuda) for (p = hp_agujeros()) translate([p[0], p[1], suelo + hp_separador - inserto_l - 0.5]) cylinder(d = inserto_d, h = inserto_l + 1.5);
         // pasos M3 (desde abajo) al soporte del disco
         if (hp_desnuda) for (p = torretas_disco()) translate([p[0], p[1], -1]) {
             cylinder(d = tornillo_d, h = suelo + 4);
@@ -82,7 +90,8 @@ module soporte_disco() {
         }
         for (p = torretas_disco()) translate([p[0], p[1], suelo + 1]) cylinder(d = inserto_d, h = inserto_l + 1);
         // colisos para los tornillos inferiores del disco (posición exacta SFF [PENDIENTE])
-        for (x = [disco_x + 4, disco_x + disco[0] - 4 - 4]) translate([x, disco_y + 8, disco_z - t - 1]) caja_r([4, disco[1] - 16, t + 2], 1.9);
+        // v3,5": centrados a disco_ag_lado del lateral; empiezan a 12 mm de cada extremo (no cortan las patas)
+        for (x = [disco_x + disco_ag_lado - 2, disco_x + disco[0] - disco_ag_lado - 2]) translate([x, disco_y + 12, disco_z - t - 1]) caja_r([4, disco[1] - 24, t + 2], 1.9);
         // ventana central (aire y peso)
         translate([disco_x + 16, disco_y + 14, disco_z - t - 1]) caja_r([disco[0] - 32, disco[1] - 28, t + 2], 4);
     }
