@@ -1,0 +1,100 @@
+ORBIT TERMINAL · PAQUETE DE PRUEBA DE LA BASE (19/10/2026)
+=============================================================
+PROTOTIPO PROVISIONAL, NO APTO PARA FABRICACIÓN. Sirve para comprobar medidas,
+cómo encajan las piezas y dónde queda cada componente. No es la pieza definitiva.
+
+Cambio respecto a main: disco duro Toshiba de 3,5" en lugar del SSD de 2,5"
+(usar_hdd_35 = true). El soporte del disco sube 6 mm (patas de 14 mm) para no
+chocar con las pletinas de empalme, que quedan debajo de él. Los agujeros del HP
+(C/F/H/J) no se han movido: son los mismos que comprobaste con la plantilla.
+
+PIEZAS (medidas reales del STL, ancho x fondo x alto, en mm)
+------------------------------------------------------------
+PROVISIONAL_base_x0_y0.stl   228,1 x 150,1 x 10,3   delante-izquierda: separadores H y J del HP
+                                                     (los dos de delante), ranuras de aire y 1 pata del disco
+PROVISIONAL_base_x0_y1.stl   228,1 x 150,1 x 10,3   detrás-izquierda: separadores C y F del HP
+                                                     (lado de los puertos), ranuras de aire y 1 pata del disco
+PROVISIONAL_base_x1_y0.stl   228,1 x 150,1 x  9,0   delante-derecha: parte delantera del hueco de la
+                                                     bandeja (Arduino) y 1 pata del disco
+PROVISIONAL_base_x1_y1.stl   228,1 x 150,1 x  9,0   detrás-derecha: hueco de la bandeja (Pi) y 1 pata del disco
+PROVISIONAL_pletina_empalme_x4.stl  30 x 10 x 3     contiene UNA pletina: imprime 4
+PROVISIONAL_soporte_disco.stl     111,6 x 147 x 18  bandeja del HDD 3,5"
+PRUEBA_pared_trasera_IO_HP.stl    228,1 x 92 x 15   (recomendada) trozo de la pared trasera con el
+                                                     hueco de los puertos del HP (ver más abajo)
+OPCIONAL_PROVISIONAL_bandeja_servicio.stl 141 x 237,5 x 14  bandeja de la Pi y del Arduino
+                                                     (solo si también quieres probar la Pi)
+
+Vista: vista_base.png (3/4) y vista_base_planta.png (desde arriba). En gris
+transparente: placa HP (170 x 170), HDD 3,5", hueco de la bandeja y la Pi. En naranja:
+las pletinas y el soporte del disco.
+
+Montada, la base ocupa 456,3 x 300,5 mm.
+
+CÓMO IMPRIMIR
+-------------
+- PETG, relleno del 15-20 %.
+- Las 4 bases, las pletinas, la bandeja y la pared trasera: cara plana sobre la cama,
+  SIN soportes (los STL ya vienen así orientados; la pared trasera, con la cara
+  exterior abajo).
+- Soporte del disco: es la ÚNICA pieza que necesita soportes, porque la bandeja de 2 mm
+  queda en el aire sobre 4 patas. Imprímelo boca abajo (bandeja abajo) con soportes que
+  apoyen solo en la cama. Así los soportes miden unos 4 mm, en lugar de los 12 que
+  harían falta con las patas abajo.
+- Cada base cabe en la cama de la A1 (256 x 256) con margen.
+
+CÓMO SE UNEN
+------------
+- Las 4 bases se juntan a tope. En cada junta hay 2 torretas, una a cada lado, y una
+  pletina encima con 2 tornillos M3. En total: 4 pletinas y 8 tornillos.
+- Las torretas tienen por debajo un agujero de 4 mm para un inserto térmico M3. Con
+  inserto: tornillo M3 de unos 10 mm desde arriba. Sin inserto: M3 de unos 16 mm
+  desde arriba, con arandela y tuerca por debajo. Ojo: la tuerca sobresale unos
+  2,9 mm por debajo de la base.
+- El soporte del disco apoya sobre 4 patitas, una en cada base, así que también ayuda
+  a mantenerlas juntas. Va atornillado desde abajo con 4 M3 avellanados a insertos en
+  sus patas. Para esta prueba basta con apoyarlo.
+- La placa HP se atornilla con M3 a insertos en los separadores (agujero abierto por
+  arriba). Para esta prueba también basta con apoyarla.
+- El disco se sujeta al soporte con 4 tornillos 6-32 de disco por debajo. Los agujeros
+  son colisos: valen para cualquiera de los pares estándar. La norma SFF-8301 limita a
+  3,56 mm lo que puede entrar el tornillo en el disco, así que con la bandeja de 2 mm
+  el tornillo no debe pasar de unos 5,5 mm (o añade arandelas).
+
+QUÉ COMPROBAR
+-------------
+1. Que las 4 bases quedan planas y alineadas al unirlas con las pletinas.
+2. Que la placa HP apoya en los 4 separadores (C y F detrás, H y J delante, a ambos
+   lados de la junta) y que su borde de puertos queda hacia atrás. Mira también si
+   algún componente de debajo de la placa toca la base.
+3. Que el soporte del disco entra entre la placa HP y el hueco de la bandeja. Al borde
+   de la placa le quedan unos 2 mm, y a la pata más cercana, unos 1 mm.
+4. Que el disco cabe en el soporte, y que los colisos coinciden con los agujeros de
+   debajo de tu Toshiba (a 3,18 mm de cada lateral según la norma).
+5. Que hay sitio para los cables: SATA y alimentación del disco hacia la placa, y el
+   jack de 19,5 V por detrás.
+6. (Si imprimes la bandeja) Que entra por debajo en su hueco y que los agujeros de la Pi
+   (58 x 49) coinciden.
+7. Que los 4 separadores del HP tienen el agujero abierto por arriba: Ø4 x 6,2 mm de
+   fondo para el inserto térmico M3, que se mete desde arriba con el soldador.
+
+QUÉ NO PRUEBA LA BASE
+---------------------
+La base es solo el suelo. Ninguno de los huecos de conectores está en ella: todos van
+en las piezas de la carcasa.
+- Puertos traseros del HP: en PROVISIONAL_carcasa_x0_y1 (detrás-izquierda), pared
+  trasera. Hueco libre de 159,75 x 45,45 mm (esquinas redondeadas), de x = 22,1 a
+  181,9 mm desde el borde izquierdo y de z = 9,2 a 54,7 mm sobre la cara inferior de la
+  base. Encima lleva un pasacables de 40 x 16 mm (z = 66,7 a 82,7).
+  La posición lateral del hueco NO está medida en tu placa (es el estándar ATX).
+- En esa misma pieza, en el lateral izquierdo: el hueco del I/O frontal del HP, el
+  pulsador de encendido (Ø12) y el LED (Ø3). Todos están pendientes de medir.
+- Panel de conectores de Orbit (USB, HDMI, RJ45, DC): en PROVISIONAL_carcasa_x1_y1.
+- Puertos del canto derecho del monitor y mandos: piezas de carcasa con la pendiente.
+La carcasa_x0_y1 entera mide 228 x 150 x 151 mm (volumen del modelo: 213,7 cm³). Para
+probar solo los puertos del HP es mejor PRUEBA_pared_trasera_IO_HP.stl: es la misma
+pared trasera, recortada a 92 mm de alto y 15 mm de fondo (volumen del modelo:
+47,9 cm³). Ponla de pie sobre la base y acerca la placa: los conectores tienen que
+asomar por el hueco grande.
+
+Volumen de modelo de las 4 bases + soporte + 4 pletinas: unos 443 cm³. El filamento y
+el tiempo reales te los da Bambu Studio.
