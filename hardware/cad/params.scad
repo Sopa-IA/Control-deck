@@ -258,9 +258,13 @@ boton_hp_prof = 22;         // [PENDIENTE]
 boton_hp_y = D - pared - 25;
 boton_hp_z = 112;
 
-// Raspberry Pi: placa 85 x 56 mm, agujeros M2.5 a 58 x 49 mm [FUENTE]
+// Raspberry Pi 4 (Miguel, 2026-10-20, con la placa delante: es una Pi 4).
+// Encima va un HAT VHF con OLED y antena SMA que se pliega sobre la Pi.
+// Miguel dice que la carcasa cierra de sobra: es una observación, no una cota.
+// El HAT no se modela: sus medidas no se han tomado [PENDIENTE]. pi_h NO incluye el HAT.
+// Placa 85 x 56 mm, agujeros M2.5 a 58 x 49 mm [FUENTE]
 // (dibujo mecánico oficial Pi 4: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf ; agujeros Ø2.7)
-pi_w = 85; pi_d = 56; pi_h = 20;      // altura con conectores [PENDIENTE] según modelo
+pi_w = 85; pi_d = 56; pi_h = 20;      // altura de la placa con conectores, SIN el HAT [PENDIENTE]
 pi_agujeros = [58, 49];
 pi_agujero_borde = 3.5;               // [FUENTE] agujeros a 3.5 mm del borde
 pi_usb_hueco = 40;                    // [DISEÑO] espacio libre ante los USB de la Pi para clavijas (Arduino, ratón)
@@ -306,26 +310,32 @@ cap_x = pi_x;
 cap_y = adap_y - 12 - captura[1];
 cap_z = suelo + 2;
 
-// Arduino Micro (lee potenciómetros y botones; USB a la Pi)
-// [FUENTE] tienda oficial: largo 48 mm, ancho 18 mm, 13 g; PCB máx. 48 x 17,7 mm con el
-// conector micro-USB sobresaliendo del largo. https://store.arduino.cc/products/arduino-micro
-// Alturas [PENDIENTE]: componentes ~4 mm sobre la PCB; pines macho ~8.5 mm por debajo.
-ard_l = 48; ard_w = 17.7; ard_pcb = 1.6;
+// Arduino Nano de MANDOS (2026-10-20). Sustituye al Micro. Clon ATmega328P,
+// mini-USB, conversor USB-serie probablemente CH340 (dato de Miguel, no leído
+// el chip). [FUENTE] PCB 18 x 45 mm, 7 g, mini-USB:
+//   https://store.arduino.cc/products/arduino-nano
+//   https://docs.arduino.cc/hardware/nano/
+// La placa de la foto no se ha medido [PENDIENTE]: largo, ancho, alto y cuánto
+// sale el mini-USB. El CAD usa la cota de catálogo.
+ard_l = 45; ard_w = 18; ard_pcb = 1.6;
 ard_arriba = 4;      // [PENDIENTE]
 ard_pines  = 8.5;    // [PENDIENTE] (con conectores dupont hembra debajo hacen falta ~15 mm)
-ard_usb_sale = 1.5;  // [PENDIENTE] micro-USB sobresale del borde
-ard_clavija = 22;    // [PENDIENTE] clavija micro-USB + alivio (recta) por detrás del borde
+ard_usb_sale = 1.5;  // [PENDIENTE] cuánto sobresale el mini-USB del borde de la PCB
+ard_clavija = 22;    // [PENDIENTE] clavija mini-USB + alivio (recta), por detrás del borde
 ard_altura_soporte = 16;   // [DISEÑO] PCB sobre la bandeja (deja sitio a los dupont)
 // Soporte: en la bandeja de servicio, bajo la consola, eje largo en Y con el USB hacia atrás (hacia la Pi)
 ard_cx = W - pared - 35;               // [DISEÑO] carril derecho; el soporte cabe por la abertura de la bandeja (se desmonta con ella)
-ard_y  = 70;                           // [DISEÑO] borde frontal de la PCB (por delante de la distribución DC)
+ard_y  = 70;                           // [DISEÑO] borde frontal de la PCB. El Nano es 3 mm más corto que el Micro: el mini-USB queda más lejos de la boca del canal
 sop_tab = 8;                           // [DISEÑO] orejeta de atornillado en cada extremo
-sop_ard_w = ard_w + 8;
-sop_ard_y0 = ard_y - 3 - sop_tab;
-sop_ard_l = ard_l + 6 + 2*sop_tab;
+// Bandeja YA IMPRESA (Miguel, 2026-10-20). Estas dos cotas salen del Micro
+// (ard_l 48, ard_y 70, sop_tab 8) y no se recalculan: las torretas están en
+// y = sop_ard_y0 + sop_tab/2 = 63 y y = sop_ard_y0 + sop_ard_l - sop_tab/2 = 125.
+sop_ard_w = ard_w + 8;                 // el ancho del soporte sí sigue a la placa; las torres están en el eje X
+sop_ard_y0 = 59;                       // [DISEÑO] congelado a la bandeja impresa
+sop_ard_l = 70;                        // [DISEÑO] congelado a la bandeja impresa
 sop_ard_z0 = suelo + 4;                // sobre torretas de 4 mm de la bandeja
 ard_pcb_z = sop_ard_z0 + ard_altura_soporte;   // cara inferior de la PCB
-canal_usb_ancho = 10;                  // [DISEÑO] canal del cable micro-USB hacia la Pi
+canal_usb_ancho = 10;                  // [DISEÑO] canal impreso; el cable mini-USB puede ir más justo que el micro-USB [PENDIENTE]
 
 // ---------------------------------------------------------------------
 // 6. FABRICACIÓN
@@ -360,5 +370,53 @@ serv_w = (W - pared - 21) - serv_x;     // v1: deja libres las orejetas del late
 serv_d = (pi_y + pi_d + 4) - serv_y;
 serv_ala = 8;        // [DISEÑO] ala de atornillado alrededor
 serv_ala_t = 2;      // [DISEÑO] espesor del ala (queda dentro de la altura de los pies)
+
+// ESP8266 tipo NodeMCU (módulo ESP-12, micro-USB). Foto 2026-10-20: delante,
+// a la izquierda de la bandeja. La placa de la foto no se ha medido [PENDIENTE].
+// Envolvente de referencia [FUENTE], no de esta placa:
+//   NodeMCU DEVKIT V1.0, 25,4 x 48,26 mm (NODEMCU_DEVKIT_V1.0.PDF en
+//   https://github.com/nodemcu/nodemcu-devkit-v1.0)
+//   Ai-Thinker NodeMCU-8266 V1.2, 25,4 x 48,3 mm ± 0,2
+//   (ficha del fabricante, 2020). Un clon tipo LoLin V3 suele ser más largo
+//   (~58 x 31 en fichas de tienda, no usadas aquí): si la placa real es esa,
+//   este marcador se queda corto.
+// Fijación en la bandeja YA impresa: velcro o brida. No se añaden torretas
+// (cambiarían la pieza ya hecha). Taladros opcionales, no van en el STL:
+//   dos Ø3,2 en el centro de los lados largos, a 4 mm del borde de esta caja.
+esp_l = 48.3; esp_w = 25.4; esp_h = 13;   // alto [DISEÑO] con pines hacia arriba; no medido
+esp_x = serv_x + 4;                       // [DISEÑO] [FOTO] la zona delantera izquierda, no la cota
+// y = 66: con el alto de 13 mm, más adelante el marcador entra en la tina de
+// la pantalla (lo dijo comprobar_interferencias.py). En la foto el micro-USB
+// mira al frente; aquí mira atrás para dejar el enchufe fuera de esa tina.
+// Pegarlo como en la foto es [PENDIENTE] de probar con el cable real.
+esp_y = 66;
+esp_z = suelo + 1;                        // [DISEÑO] sobre velcro, sin torreta
+esp_clavija = 10;                         // [DISEÑO] reserva del micro-USB hacia atrás; no medido
+
+// Segundo Nano, de PRÁCTICAS (no es el de los mandos). El Uno de la foto no
+// se monta: ver docs/decisiones-prototipo.md. Misma cota de catálogo que el
+// de mandos. Que Miguel tenga ya ese segundo Nano no consta en la foto [PENDIENTE].
+pr_l = ard_l; pr_w = ard_w; pr_h = 13;    // alto [DISEÑO] no medido
+pr_x = esp_x + esp_w + 8;                 // [DISEÑO] a la derecha del ESP, delante de la capturadora
+pr_y = 66;                                // [DISEÑO] misma razón que esp_y: librar la tina
+pr_z = suelo + 1;
+pr_clavija = 12;                          // [DISEÑO] reserva del enchufe mini-USB hacia atrás; no medido
+
+// Panel de prácticas en la cara TRASERA [DISEÑO]. A la derecha de la costilla
+// del corte X (x = 228) y por encima del bloque de conectores (z ≈ 24–52).
+// No es la medida de un conector comprado. La bandeja impresa no cambia.
+panel_x0 = 250;
+panel_z0 = 68;
+panel_w = 74;
+panel_h = 72;                             // hasta z = 140; el filete superior es de 5 mm y H ≈ 154
+// OLED 0,96" 128x64 I2C SSD1306. Referencia [FUENTE], módulo no elegido ni medido:
+//   Waveshare 0.96inch OLED (B): PCB 33,0 x 33,5 mm, área visible 21,70 x 11,20,
+//   SSD1306, 128x64, I2C/SPI, amarillo/azul. La ficha dice 3,3 V; la wiki dice
+//   3,3 V/5 V. https://www.waveshare.com/0.96inch-oled-b.htm
+//   https://www.waveshare.com/wiki/0.96inch_OLED_(B)
+oled_mod = [33.5, 12, 33.0];              // x, profundidad hacia el interior, z. La profundidad es [DISEÑO]
+oled_ventana = [24, 14];                  // [DISEÑO] hueco a partir del área visible de esa ficha
+oled_cx = panel_x0 + 8 + oled_ventana[0]/2;
+oled_cz = panel_z0 + panel_h - 22 + oled_ventana[1]/2;
 
 $fn = 48;

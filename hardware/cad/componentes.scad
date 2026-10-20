@@ -24,8 +24,14 @@ function cajas_componentes() = [
     ["Raspberry Pi", "", "", [pi_x, pi_y, pi_z], [pi_w, pi_d, pi_h]],
     if (usar_kvm) ["KVM", "", "", [kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h]],
     if (usar_distribucion) ["Distribucion DC", "", "", [psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h]],
-    ["Arduino Micro + soporte", "", "", [ard_cx - sop_ard_w/2, sop_ard_y0, sop_ard_z0], [sop_ard_w, ard_y + ard_l + ard_usb_sale - sop_ard_y0, ard_altura_soporte + ard_pcb + ard_arriba]],
-    ["Clavija micro-USB", "", "", [ard_cx - 5, ard_y + ard_l + ard_usb_sale, ard_pcb_z - 1], [10, ard_clavija, 6]],
+    // La orejeta trasera del soporte es baja (no llega a la clavija). Van en cajas distintas
+    // para no marcar un solape que en la pieza no existe.
+    ["Arduino Nano mandos + soporte", "", "", [ard_cx - sop_ard_w/2, sop_ard_y0, sop_ard_z0], [sop_ard_w, ard_y + ard_l + ard_usb_sale - sop_ard_y0, ard_altura_soporte + ard_pcb + ard_arriba]],
+    ["Orejeta trasera soporte Nano", "", "", [ard_cx - sop_ard_w/2, ard_y + ard_l + ard_usb_sale, sop_ard_z0], [sop_ard_w, sop_ard_y0 + sop_ard_l - (ard_y + ard_l + ard_usb_sale), 4]],
+    ["Clavija mini-USB mandos", "", "", [ard_cx - 5, ard_y + ard_l + ard_usb_sale, ard_pcb_z - 1], [10, ard_clavija, 6]],
+    ["ESP8266 NodeMCU", "", "", [esp_x, esp_y, esp_z], [esp_w, esp_l + esp_clavija, esp_h]],
+    ["Nano practicas + mini-USB", "", "", [pr_x, pr_y, pr_z], [pr_w, pr_l + pr_clavija, pr_h]],
+    ["OLED 0,96 SSD1306", "", "", [oled_cx - oled_mod[0]/2, D - pared - 1.5 - oled_mod[1], oled_cz - oled_mod[2]/2], oled_mod],
     ["Clavija USB-A en la Pi", "", "", [pi_x + pi_w, pi_y + 21, pi_z + 1.6], [35, 16, 16]]
 ];
 // Cajas en coordenadas de la pendiente (x, v, n): cuerpo bajo el panel
@@ -137,6 +143,8 @@ module componentes_internos() {
     if (usar_capturadora) capturadora_marcador();
     mandos_marcador();
     arduino_marcador();
+    esp_marcador();
+    nano_pruebas_marcador();
     cables_ilustrativos();
     // tira LED frontal
     color(C_AMBAR) translate([luz_margen, pared + 4.4, luz_z0 + luz_alto/2 - 5]) cube([W - 2*luz_margen, 1.5, 10]);

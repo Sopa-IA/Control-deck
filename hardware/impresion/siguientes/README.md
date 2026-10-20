@@ -39,7 +39,9 @@ Pivotes en vez de tornillos, uno por agujero de la placa HP. Diámetros: **C 3,8
 
 Si ya se imprimió con la base como pieza opcional, se salta.
 
-Bandeja que entra por debajo en el hueco de la base. Lleva la Raspberry Pi (separadores M2.5, patrón 58 × 49), las torretas del soporte del Arduino y el canal del cable micro-USB. Va en el hueco de la derecha (bases x1), atornillada desde abajo con 4 M3.
+Bandeja que entra por debajo en el hueco de la base. Lleva la Raspberry Pi (separadores M2.5, patrón 58 × 49), las torretas del soporte del Arduino (y = 63 y y = 125) y el canal del cable USB (boca en y = 143,5, ancho 10 mm). Va en el hueco de la derecha (bases x1), atornillada desde abajo con 4 M3.
+
+**2026-10-20: esta pieza ya está impresa** (Miguel). El STL del repo **no se ha regenerado**: torretas, canal y contorno siguen donde estaban. El ESP8266 y el Nano de prácticas se sujetan encima con velcro o brida, sin taladros nuevos en este STL. El canal se diseñó para un micro-USB; el Nano de mandos lleva mini-USB y queda unos 3 mm más lejos de la boca. Si el tapón del cable mini-USB pasa por los 10 mm es **PENDIENTE**.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl)
 - STEP: [`STEP/02_PROVISIONAL_bandeja_servicio.step`](STEP/02_PROVISIONAL_bandeja_servicio.step)
@@ -84,11 +86,11 @@ Trozo delantero derecho: frente, un potenciómetro y los 2 pulsadores.
 
 ### 06 · `PROVISIONAL_carcasa_x1_y1` (detrás-derecha) · provisional
 
-Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi y el panel de conectores de Orbit (audio, 2 USB-A, 2 USB-C, 2 HDMI, RJ45, DC).
+Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi, el panel de conectores de Orbit (audio, 2 USB-A, 2 USB-C, 2 HDMI, RJ45, DC) y, desde el 2026-10-20, el panel de prácticas (pines del Nano, previsión de GPIO de la Pi, ventana OLED y hueco USB rotulado PRG).
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl)
-- STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**
-- Medidas: 228,1 × 150,2 × 150,9. Volumen 243,8 cm³.
+- STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl) · **regenerado el 2026-10-20** (OpenSCAD 2021.01)
+- STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**, **desfasado**: no se ha vuelto a generar y no incluye el panel de prácticas
+- Medidas del STL nuevo: 228,13 × 150,25 × 150,93. Volumen 242,11 cm³ (antes 243,84: los huecos del panel).
 - Cama: cara del corte delantero sobre la cama, 150 mm de alto: 304 cm² de apoyo, 70 cm² de voladizo. Soportes: sí.
 - Los huecos del panel son orientativos (prolongadores no elegidos).
 - Comprueba la holgura del potenciómetro, los huecos del panel y la rejilla sobre la Pi.
@@ -137,15 +139,15 @@ Ya se imprimió o estaba en cola. Se repite solo si no encaja. Pomo Ø30 moletea
 - Cama: tal cual (tapa abajo). Soportes: no (voladizo 0,3 cm²).
 - Comprueba el eje de 6 mm (liso o en D) y el prisionero. Sin resultado comunicado.
 
-### 15 · `PROVISIONAL_soporte_arduino` · provisional · ya lanzado antes
+### 15 · `PROVISIONAL_soporte_arduino` · provisional · hay que reimprimirlo para el Nano
 
-Ya se imprimió o estaba en cola. Se repite solo si no encaja. Soporte del Arduino Micro (48 × 17,7) atornillado a la bandeja (02).
+El asiento anterior era el del Micro (48 × 17,7). El de ahora es el del Nano de catálogo (45 × 18). Los tornillos siguen a 70 mm, en las torretas de la bandeja impresa (x = 418,26; y = 63 y y = 125). Si el soporte del Micro llegó a salir de la impresora, no vale para el Nano: se imprime este.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_soporte_arduino.stl`](../../cad/export/stl/PROVISIONAL_soporte_arduino.stl)
-- STEP: [`STEP/15_PROVISIONAL_soporte_arduino.step`](STEP/15_PROVISIONAL_soporte_arduino.step) · origen sólido (CSG)
-- Medidas: 25,7 × 70,0 × 19,1. Volumen 9,5 cm³.
-- Cama: tal cual. Soportes: no (voladizo 0,1 cm²).
-- Comprueba que la placa entra y que el micro-USB sale libre. Sin resultado comunicado.
+- STL: [`hardware/cad/export/stl/PROVISIONAL_soporte_arduino.stl`](../../cad/export/stl/PROVISIONAL_soporte_arduino.stl) · **regenerado el 2026-10-20**
+- STEP: [`STEP/15_PROVISIONAL_soporte_arduino.step`](STEP/15_PROVISIONAL_soporte_arduino.step) · origen sólido (CSG), **desfasado**: sigue siendo el del Micro
+- Medidas del STL nuevo: 26,00 × 70,00 × 19,10. Volumen 9,58 cm³ (antes 25,70 × 70,00 × 19,10 y 9,52 cm³).
+- Cama: tal cual. El voladizo del STL anterior no se ha vuelto a calcular.
+- Comprueba que el Nano entra y que el mini-USB sale por la ranura de 14 mm. El enchufe real del clon no se ha medido.
 
 ## Lo que no existe en el repo
 
@@ -166,7 +168,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. Este cambio no modifica el CAD ni regenera los STL.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-20 se regeneraron solo `PROVISIONAL_soporte_arduino.stl` y `PROVISIONAL_carcasa_x1_y1.stl`. Los STEP 06 y 15, el manual PDF y el resto de STL no se han regenerado: el PDF y esos STEP describen la geometría anterior en esas dos piezas.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

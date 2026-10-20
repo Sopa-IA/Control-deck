@@ -31,6 +31,7 @@ module carcasa_superior() {
         canal_luz_frontal();
         ventilacion();
         cortes_traseros();
+        cortes_panel_practicas();
         ranura_pod();
         pasadores_union();
         // insertos de orejetas (desde abajo)
@@ -151,6 +152,47 @@ module _ventilacion() {
         if (usar_kvm) translate([kvm_x + 4, D - pared - 1, z]) cube([kvm_w - 8, pared + 2, 3]);
         else translate([pi_x + 4, D - pared - 1, z]) cube([pi_w - 8, pared + 2, 3]);   // sobre la Pi
     }
+}
+
+// --- Panel de prácticas (cara trasera) -------------------------------
+// Huecos y rótulos [DISEÑO]. El mapa de pines está en
+// software/arduino-pruebas/README.md. No es un conector comprado.
+// Mirando la trasera: X mundo crece hacia la izquierda del observador,
+// así que el texto se gira 180° para leerse de izquierda a derecha.
+module rotulo_trasero(x, z, s, h = 2.4) {
+    translate([x, D - 0.35, z]) rotate([90, 0, 180])
+        linear_extrude(0.8) text(s, size = h, font = "Noto Sans", halign = "center", valign = "center");
+}
+module agujero_panel(x, z, d = 1.6) {
+    translate([x, D + 1, z]) rotate([90, 0, 0]) cylinder(d = d, h = pared + 2, $fn = 12);
+}
+module cortes_panel_practicas() {
+    // ventana de la OLED (el módulo va por dentro; la cota real es [PENDIENTE])
+    translate([panel_x0 + 8, D - pared - 1, panel_z0 + panel_h - 22])
+        cube([oled_ventana[0], pared + 2, oled_ventana[1]]);
+    // hueco del prolongador USB de programación. 14 x 8 mm [DISEÑO];
+    // el recorte del conector de panel que se compre es [PENDIENTE].
+    translate([panel_x0 + panel_w - 18, D - pared - 1, panel_z0 + panel_h - 20])
+        cube([14, pared + 2, 8]);
+    // Visto desde fuera, +X queda a la izquierda. La columna 0 es ese extremo
+    // izquierdo: se numera restando, no sumando.
+    // Nano: fila de arriba (mayor z) D2..D13 de izquierda a derecha; fila de
+    // abajo A0 A1 A2 A3 A4 A5 A6 A7 GND RST 5V 3V3.
+    for (col = [0 : 11], row = [0 : 1])
+        agujero_panel(panel_x0 + 6 + (11 - col) * 2.54, panel_z0 + 36 + row * 2.54);
+    // Pi: 2 x 20, orden oficial. Pin 1 = 3V3, fila de arriba, extremo izquierdo.
+    // Pin 2 = 5V, fila de abajo, mismo extremo. El mapa está en el README.
+    for (col = [0 : 19], row = [0 : 1])
+        agujero_panel(panel_x0 + 4 + (19 - col) * 2.54, panel_z0 + 14 + row * 2.54);
+    // marca cuadrada del pin 1 de la Pi (a la izquierda del observador, fila de arriba)
+    translate([panel_x0 + 4 + 19 * 2.54 + 1.5, D - pared - 1, panel_z0 + 14 + 2.54 + 1.5]) cube([1.3, pared + 2, 1.3]);
+    // El paso de 2,54 mm no da para rotular cada pin. Se graban los grupos;
+    // el mapa pin a pin está en software/arduino-pruebas/README.md.
+    rotulo_trasero(panel_x0 + panel_w - 22, oled_cz, "OLED", 2.2);
+    rotulo_trasero(panel_x0 + panel_w - 11, panel_z0 + panel_h - 4, "PRG", 2.2);
+    rotulo_trasero(panel_x0 + 18, panel_z0 + 44, "ARD 5V", 2.2);
+    rotulo_trasero(panel_x0 + 28, panel_z0 + 24, "PI 3V3", 2.2);
+    rotulo_trasero(panel_x0 + 36, panel_z0 + 5, "NO UNIR", 2.6);
 }
 
 // --- Conectores traseros ---------------------------------------------

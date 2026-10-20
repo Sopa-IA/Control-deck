@@ -8,7 +8,7 @@ export function Hardware() {
   const live: { id: string; label: string; n: typeof state.nodes.hp }[] = [
     { id: 'hp', label: 'Enlace hp-agent', n: state.nodes.hp },
     { id: 'pi', label: 'orbitd (Pi)', n: state.nodes.pi },
-    { id: 'arduino', label: 'Arduino Micro', n: state.nodes.arduino },
+    { id: 'arduino', label: 'Arduino Nano (mandos)', n: state.nodes.arduino },
   ];
   const piModel = state.telemetry.pi?.model;
   return (

@@ -121,7 +121,7 @@ module bandeja_servicio() {
             // torretas para la distribución [PENDIENTE: placa elegida]
             for (x = [psu_x + 6, psu_x + psu_w - 6], y = [psu_y + 6, psu_y + psu_d - 6])
                 translate([x, y, suelo - 0.01]) torreta(4);
-            // v1: torretas del soporte del Arduino Micro
+            // v1: torretas del soporte del Arduino (y = 63 y y = 125; la bandeja impresa no se mueve)
             for (p = agujeros_soporte_ard()) translate([p[0], p[1], suelo - 0.01]) torreta(sop_ard_z0 - suelo + 0.01);
             // v1: canal del cable micro-USB (Arduino -> USB de la Pi), dos paredes de 8 mm
             for (sx = [-1, 1]) translate([ard_cx + sx*(canal_usb_ancho/2 + 0.8) - 0.8, canal_usb_y0, suelo - 0.01])
@@ -137,15 +137,20 @@ module bandeja_servicio() {
     }
 }
 function agujeros_soporte_ard() = [[ard_cx, sop_ard_y0 + sop_tab/2], [ard_cx, sop_ard_y0 + sop_ard_l - sop_tab/2]];
-canal_usb_y0 = ard_y + ard_l + ard_usb_sale + ard_clavija + 2;   // tras la clavija micro-USB
+// Boca del canal USB de la bandeja YA IMPRESA. Con el Micro salía
+// ard_y + 48 + 1,5 + 22 + 2 = 143,5. No recalcularla con el Nano (45 mm):
+// el canal impreso sigue ahí. El mini-USB del Nano queda unos 3 mm más lejos.
+canal_usb_y0 = 143.5;                                              // [DISEÑO] congelado
 canal_usb_y1 = pi_y - 4;                                           // hasta el frente de la Pi (luego el cable gira hacia sus USB)
 
 // ---------------------------------------------------------------------
-// SOPORTE DEL ARDUINO MICRO (pieza impresa; se atornilla a la bandeja)
-// La PCB (48 x 17,7) apoya por sus extremos sobre dos bloques con labio de
-// centrado; los pines quedan colgando en el hueco central (dupont hembra).
+// SOPORTE DEL ARDUINO NANO (pieza impresa; se atornilla a las 2 torretas
+// que YA están en la bandeja impresa, en y = 63 y y = 125).
+// La PCB de catálogo (45 x 18) apoya por sus extremos; los pines quedan
+// colgando en el hueco central (dupont hembra). El largo del soporte sigue
+// siendo el del Micro (70 mm) para no mover los tornillos.
 // Se sujeta con una brida de 3,6 mm por las dos ranuras centrales.
-// [PENDIENTE] confirmar el borde libre de pines en los extremos (~2,4 mm) con la placa real.
+// [PENDIENTE] borde libre de pines y posición real del mini-USB en el clon.
 // ---------------------------------------------------------------------
 module soporte_arduino() {
     x0 = ard_cx - sop_ard_w/2;
@@ -163,8 +168,9 @@ module soporte_arduino() {
         }
         // asiento de la PCB con holgura 0,3
         translate([ard_cx - ard_w/2 - 0.3, ard_y - 0.3, sop_ard_z0 + ard_altura_soporte]) cube([ard_w + 0.6, ard_l + 0.6, 10]);
-        // paso del conector micro-USB (extremo trasero, centrado) [PENDIENTE posición exacta]
-        translate([ard_cx - 6, ard_y + ard_l - 5, sop_ard_z0 + ard_altura_soporte - 1]) cube([12, 20, 10]);
+        // paso del conector mini-USB (extremo trasero, centrado). 14 mm de ancho:
+        // [DISEÑO], el enchufe real del clon no se ha medido.
+        translate([ard_cx - 7, ard_y + ard_l - 5, sop_ard_z0 + ard_altura_soporte - 1]) cube([14, 20, 10]);
         // tornillos M3 a las torretas de la bandeja
         for (p = agujeros_soporte_ard()) translate([p[0], p[1], sop_ard_z0 - 1]) {
             cylinder(d = tornillo_d, h = 10);
@@ -174,14 +180,31 @@ module soporte_arduino() {
         for (sx = [-1, 1]) translate([ard_cx + sx*(ard_w/2 + 2) - 1, ard_y + ard_l/2 - 2, sop_ard_z0 - 1]) cube([2, 4, 5]);
     }
 }
-// Marcador del Arduino Micro (PCB + componentes + pines + clavija micro-USB)
+// Marcador del Arduino Nano de mandos (PCB + pines + clavija mini-USB).
+// Filas de pines a 15,24 mm: cota de protoboard, no medida en el clon [PENDIENTE].
 module arduino_marcador() {
     translate([ard_cx - ard_w/2, ard_y, ard_pcb_z]) {
-        color([0.05, 0.35, 0.45]) cube([ard_w, ard_l, ard_pcb]);
-        color([0.15, 0.15, 0.16]) translate([3, 6, ard_pcb]) cube([ard_w - 6, 30, ard_arriba]);
+        color([0.05, 0.35, 0.55]) cube([ard_w, ard_l, ard_pcb]);
+        color([0.15, 0.15, 0.16]) translate([2, 8, ard_pcb]) cube([ard_w - 4, 22, ard_arriba]);
         color([0.8, 0.75, 0.3]) for (sx = [ard_w/2 - 7.62, ard_w/2 + 7.62]) translate([sx - 1.25, 2.4, -ard_pines]) cube([2.5, ard_l - 4.8, ard_pines]);
-        color([0.75, 0.75, 0.78]) translate([ard_w/2 - 4, ard_l - 4 , ard_pcb]) cube([8, 4 + ard_usb_sale, 3]);
+        color([0.75, 0.75, 0.78]) translate([ard_w/2 - 4, ard_l - 2, ard_pcb]) cube([8, 2 + ard_usb_sale, 4]);
         color([0.1, 0.1, 0.1]) translate([ard_w/2 - 5, ard_l + ard_usb_sale, ard_pcb - 1]) cube([10, ard_clavija, 6]);
+    }
+}
+// ESP8266 (NodeMCU) y Nano de prácticas: marcadores, no hay pieza impresa nueva.
+// Van sobre la bandeja con velcro o brida.
+module esp_marcador() {
+    translate([esp_x, esp_y, esp_z]) {
+        color([0.9, 0.9, 0.88]) cube([esp_w, esp_l, 1.6]);
+        color([0.75, 0.62, 0.2]) translate([2, 4, 1.6]) cube([esp_w - 4, 16, 2.5]);            // módulo ESP-12, ilustrativo
+        color([0.15, 0.15, 0.16]) translate([esp_w/2 - 4, esp_l, 0]) cube([8, esp_clavija, 3]); // micro-USB hacia atrás
+    }
+}
+module nano_pruebas_marcador() {
+    translate([pr_x, pr_y, pr_z]) {
+        color([0.05, 0.35, 0.55]) cube([pr_w, pr_l, 1.6]);
+        color([0.15, 0.15, 0.16]) translate([2, 8, 1.6]) cube([pr_w - 4, 18, 3]);
+        color([0.1, 0.1, 0.1]) translate([pr_w/2 - 5, pr_l, 0]) cube([10, pr_clavija, 6]);    // mini-USB hacia atrás
     }
 }
 

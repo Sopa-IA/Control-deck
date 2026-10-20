@@ -6,7 +6,9 @@ Uso:
 
 Geometría: las piezas impresas, el monitor (envolvente), mandos, cables y reservas salen del CAD
 (partes_render.scad, mismas cotas que ensamblaje.scad). La placa del HP, el HDD 3,5", el Arduino
-Micro y los pulsadores/potenciómetros se modelan aquí de forma paramétrica (ver CREDITOS-MODELOS.md).
+y los pulsadores/potenciómetros se modelan aquí de forma paramétrica (ver CREDITOS-MODELOS.md).
+2026-10-20: este script sigue dibujando el Arduino Micro (ATmega32U4, 48 × 17,7). El CAD vigente
+es un Nano. No se ha vuelto a lanzar Blender; los renders fotorrealistas quedan desfasados.
 La Raspberry Pi 4 viene del modelo STEP CC0 de Innerscene (descargar_modelos.sh).
 """
 import bpy, bmesh, sys, os, math, json, random, argparse

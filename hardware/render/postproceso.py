@@ -14,7 +14,7 @@ FD = "/usr/share/fonts/truetype/dejavu/"
 def F(s, b=False, c=False): return ImageFont.truetype(FD + ("DejaVuSansCondensed" if c else "DejaVuSans") + ("-Bold" if b else "") + ".ttf", s)
 AMB = (255, 160, 40); BL = (235, 235, 235); GR = (160, 160, 165)
 AVISO = "Render del diseño CAD — no es una foto ni un prototipo fabricado"
-CONFIG = "MSI PRO MP161 E2U 15,6\" · placa HP 260-a110ns (mini-ITX) · HDD 3,5\" · Raspberry Pi 4 · modo C (capturadora) · Arduino Micro"
+CONFIG = "MSI PRO MP161 E2U 15,6\" · placa HP 260-a110ns (mini-ITX) · HDD 3,5\" · Raspberry Pi 4 · modo C (capturadora) · Arduino Micro (render desfasado: el CAD de 2026-10-20 es un Nano)"
 
 def panel(d, xy, alpha_img, fill=(10, 10, 12, 190), r=10):
     d.rounded_rectangle(xy, r, fill=fill)

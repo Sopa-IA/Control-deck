@@ -78,7 +78,7 @@ export function Inicio({ go, openOsd, openPower }: { go: (s: SectionId) => void;
           <ul className="conn-list">
             <li><StatusDot ok={conn === 'conectado'} sim={state.source === 'sim'} /> Orbit hub <span>{state.source === 'sim' ? 'simulador local' : conn}</span></li>
             <li><StatusDot ok={state.nodes.hp?.connected} sim={state.nodes.hp?.simulated} /> Enlace HP <span>{state.nodes.hp?.detail ?? '—'}</span></li>
-            <li><StatusDot ok={state.nodes.arduino?.connected} sim={state.nodes.arduino?.simulated} /> Controles <span>{state.nodes.arduino?.connected ? 'Arduino Micro' : (state.nodes.arduino?.detail ?? '—')}</span></li>
+            <li><StatusDot ok={state.nodes.arduino?.connected} sim={state.nodes.arduino?.simulated} /> Controles <span>{state.nodes.arduino?.connected ? 'Arduino Nano' : (state.nodes.arduino?.detail ?? '—')}</span></li>
             <li><StatusDot ok={null} /> Vídeo MSI <span>entrada: desconocida (OSD)</span></li>
           </ul>
         </Panel>

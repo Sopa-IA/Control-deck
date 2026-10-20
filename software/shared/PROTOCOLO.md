@@ -7,7 +7,7 @@ Estado: **borrador implementado en v0**, validado solo con tests y simulación. 
 ```
  [Interfaz web (Chromium kiosco en la Pi)] ──ws://127.0.0.1:8765/ws──┐
                                                                      │
- [Arduino Micro] ──USB serie (115200)──> [orbitd · Raspberry Pi] <───┘
+ [Arduino Nano de mandos] ──USB-serie CH340 (115200)──> [orbitd · Raspberry Pi] <───┘
                                                 ▲
                                                 │ ws:// (LAN o cable directo) + token
                                                 │   → recomendado wss:// / mTLS (pendiente)
@@ -95,7 +95,11 @@ ui <──action_result{ok, dry_run, "Apagado programado en 60 s; hp.shutdown_ca
 
 ## 7. Arduino → orbitd (serie)
 
-Puerto USB CDC a 115200 baudios, con líneas ASCII terminadas en `\n`:
+El Nano de mandos habla por el UART del ATmega328P. Un CH340 lo presenta en Linux como `/dev/ttyUSB*` (ejemplo `/dev/ttyUSB0`; con el ESP enchufado el número puede cambiar: usar `/dev/serial/by-id`, **PENDIENTE** de leerlo en la Pi). No es el puerto CDC `/dev/ttyACM*` del antiguo Micro. 115200 baudios, líneas ASCII terminadas en `\n`.
+
+Abrir el puerto reinicia la placa (DTR → RESET). orbitd espera 2 s (**DISEÑO**, no medidos en este clon) antes de escribir `?`. El saludo espontáneo del arranque se lee igual.
+
+El Nano de prácticas y su OLED **no** usan este protocolo. Su ejemplo imprime `monitor-pines 1`, que orbitd ignora. No hay que enchufarlo en el puerto de `--serial`.
 
 | Línea | Significado |
 |---|---|

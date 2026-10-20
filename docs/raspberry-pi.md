@@ -1,6 +1,8 @@
 # Elección de Raspberry Pi para el papel de sistema auxiliar
 
 > Documento: `docs/raspberry-pi.md` · Fuentes comprobadas el **2026-10-18** · Lo no verificado figura como **pendiente de verificar**.
+>
+> **2026-10-20.** Miguel confirma que la placa es una **Raspberry Pi 4** con un **HAT VHF** (trae OLED y una antena SMA plegable; dice que la carcasa cierra con holgura). Las medidas del HAT no se han tomado y no se inventan. Si el HAT no deja pasar el cabezal de 40 pines, el conector GPIO del panel trasero no se puede cablear: **PENDIENTE**. El estudio de abajo comparaba modelos por si había que comprar una; esa compra ya no está en el plan.
 
 ## 1. Qué tiene que hacer la Pi en Orbit Terminal
 

@@ -5,7 +5,9 @@
 
 Configuración: `pantalla="msi_15_6"` (MSI PRO MP161 E2U), `hp_preset="iris_mitx_desnuda"` (placa HP 260-a110ns,
 17 × 17 cm, 35 mm), `usar_hdd_35=true` (HDD Toshiba 3,5"), `usar_capturadora=true` (modo C),
-`usar_adaptador_video=false`, Raspberry Pi 4 (sin confirmar), Arduino Micro, 2 potenciómetros + 2 botones y tira LED ámbar.
+`usar_adaptador_video=false`, Raspberry Pi 4, Arduino Micro, 2 potenciómetros + 2 botones y tira LED ámbar.
+
+**2026-10-20.** Estas imágenes no se han rehecho. Siguen mostrando un Arduino Micro. El CAD vigente es un Nano, con ESP8266, un segundo Nano y un panel en la trasera. La Pi 4, que aquí figuraba sin confirmar, la confirmó Miguel ese día; el HAT VHF no está en estos renders.
 
 | Archivo | Vista |
 |---|---|

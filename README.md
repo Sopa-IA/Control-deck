@@ -20,8 +20,10 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 - **Pantalla:** MSI PRO MP161 E2U 15,6", 1920×1080, **no táctil**. Se usa con ratón y controles; la interfaz sigue preparada para táctil.
 - **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
 - **Vídeo: la Pi lo controla todo y el cambio HP ↔ Pi es automático desde Orbit OS** (Miguel nunca toca el OSD de la MSI). La MSI muestra siempre la Pi y el HP sigue funcionando por su cuenta con su Windows. **Modo C (recomendado, imagen real del HP):** el HDMI del HP entra en una **capturadora HDMI→USB** conectada a la Pi y Orbit OS muestra su imagen (latencia y fps sin medir; teclado y ratón al HP aparte). **Modo A (recomendado, sin compras):** el escritorio del HP se ve en un visor (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. **Modo B (poco probable):** Pi → adaptador HDMI→USB-C → USB-C y cambio de entrada por DDC/CI, que los manuales de la MSI no documentan. El botón "Cambiar sistema visible" usa el modo disponible.
-- **Controles:** potenciómetros y botones leídos por un **Arduino Micro**, que sustituye a los encoders.
-- **Pendientes de identificar:** el modelo de Raspberry Pi y el tipo de tira LED.
+- **Controles:** potenciómetros y botones leídos por un **Arduino Nano** (clon ATmega328P, mini-USB). Sustituye al Micro: el Nano no tiene USB nativo y no puede hacer de teclado HID.
+- **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. El Uno de la foto no se monta (no cabe bien junto al ESP y la capturadora). Detalle en [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
+- **ESP8266 NodeMCU** en la bandeja, previsto para la tira LED con WLED. La tira sigue sin identificar.
+- **Raspberry Pi 4** con HAT VHF (OLED y antena SMA). Medidas del HAT: pendientes. Si el HAT no deja pasar el GPIO, el conector de la Pi en el panel queda sin cablear.
 
 ## Estructura
 
@@ -39,7 +41,8 @@ software/interface/          Orbit OS Interface (React + TypeScript + Vite)
 software/pi-controller/      orbitd: hub WebSocket, servidor de la interfaz y lector del Arduino (Python)
 software/hp-agent/           Agente de telemetría y acciones de lista blanca para el HP (Python)
 software/shared/             Protocolo v1: PROTOCOLO.md, esquema JSON, actions.json, tipos TS y paquete Python
-software/arduino-controls/   Firmware del Arduino Micro (potenciómetros y botones)
+software/arduino-controls/   Firmware del Nano de mandos (potenciómetros y botones)
+software/arduino-pruebas/    Ejemplo del Nano de prácticas (monitor de pines en la OLED)
 tests/python/                pytest (protocolo, orbitd, hp-agent, serie, vídeo)
 scripts/                     Instalación, tests, simulación, capturas, token, compilación Arduino
 .github/workflows/ci.yml     Lint + tests (ruff, pytest, tsc, vitest, build)
@@ -64,7 +67,7 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
 2. **Raspberry Pi:**
    ```bash
    set -a; . ./.env; set +a
-   python -m orbitd --host 0.0.0.0 --serial /dev/ttyACM0 --static software/interface/dist
+   python -m orbitd --host 0.0.0.0 --serial /dev/ttyUSB0 --static software/interface/dist
    ```
    Fuera de localhost exige `ORBIT_HP_TOKEN` y `ORBIT_UI_TOKEN`. Después se abre Chromium en modo kiosco en `http://127.0.0.1:8765/`.
 3. **HP:**
@@ -73,7 +76,7 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
    ORBIT_HP_TOKEN=... python -m hp_agent --hub ws://<ip-pi>:8765/ws
    ```
    Arranca en **dry-run**; con `--live` ejecuta las órdenes de verdad.
-4. **Arduino Micro:** `./scripts/compile-arduino.sh` y luego `arduino-cli upload` (ver [`software/arduino-controls/README.md`](software/arduino-controls/README.md)).
+4. **Nano de mandos:** `./scripts/compile-arduino.sh` (también compila el ejemplo de prácticas) y luego `arduino-cli upload` con `arduino:avr:nano` o, en clones de bootloader viejo, `arduino:avr:nano:cpu=atmega328old`. Puerto de ejemplo `/dev/ttyUSB0`; si hay más de un USB-serie, `/dev/serial/by-id`. Ver [`software/arduino-controls/README.md`](software/arduino-controls/README.md) y [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
 
 Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` (usa `/usr/bin/google-chrome`, o la ruta que indique `CHROME_PATH`).
 
@@ -89,12 +92,15 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | hp-agent: telemetría y acciones en dry-run | **Implementado** | Probado contra orbitd en local, en este entorno Linux; **no en el HP** |
 | hp-agent `--live` en Windows: bloquear, apagar o reiniciar con 60 s, cancelar | **Pendiente de validar** | Órdenes fijas sin shell; no ejecutadas nunca de verdad |
 | hp-agent en Windows: volumen, silencio, reproducir/pausar | **Pendiente** | No hay orden nativa (habría que usar pycaw o nircmd) |
-| Firmware del Arduino Micro | **Pendiente de validar** | Compila con arduino-cli (18 % de la flash); sin probar en placa |
+| Firmware del Nano de mandos | **Pendiente de validar** | Compila con arduino-cli 1.5.1 para `arduino:avr:nano` y para `cpu=atmega328old` (2982 bytes, 9 % de la flash). Sin HID. Sin probar en placa |
+| Ejemplo OLED del Nano de prácticas | **Pendiente de validar** | `monitor_pines`: 5558 bytes, 18 % de la flash, los dos FQBN. Sin probar en placa ni en pantalla |
+| ESP8266 y tira LED (WLED) | **Requiere intervención humana** | La tira sigue sin identificar. D6 del Nano de mandos ya no se reserva |
 | Apagado de la Pi (`pi.shutdown`) | **Pendiente** | Requiere permisos de systemd/polkit; ahora solo se registra |
 | Modos de la tira LED | **Requiere intervención humana** | Identificar la tira (tipo y tensión) |
 | Cambio automático de sistema visible (`pi.switch_visible`, botón B2) | **Implementado (sin hardware)** | orbitd elige el modo disponible: **B DDC/CI** (si está configurado; poco probable con la MSI), **C captura** (capturadora HDMI→USB en la Pi: `ORBIT_CAPTURE_DEVICE` + visor fijo `ORBIT_CAPTURE_CMD`, sin shell) o **A remoto** (visor del escritorio del HP por Ethernet interno, p. ej. Moonlight + Sunshine; `ORBIT_REMOTE_CMD`). Si uno falla pasa al siguiente. Probado con tests unitarios y de integración (dispositivo simulado); **sin verificar** con la MSI, la capturadora, el adaptador ni Sunshine. No se dan latencias ni fps. Ver [`docs/conmutacion-video-usb.md`](docs/conmutacion-video-usb.md) §V |
 | HP: **HP Slimline 260-a110ns** (A6-7310, 8 GB, HDMI + VGA, adaptador externo 19,5 V 65 W) | **Identificado y abierto** | **Medido por Miguel:** placa 17 × 17 cm, altura máxima 35 mm. Agujeros: patrón estándar mini-ITX (coincide visualmente con la foto, no medido). Sin escudo I/O. Faltan posición de conectores traseros, botón de encendido, antenas y BIOS: **requieren intervención humana** (`docs/datos-pendientes-hp.md` §A2, con nota de seguridad) |
-| Modelo de la Pi y su conexión a la MSI (ya da imagen), capturadora (comprarla o no: decisión de Miguel), adaptador HDMI→USB-C y soporte DDC/CI de la MSI | **Requiere intervención humana** | Ver `docs/conmutacion-video-usb.md` §V.5 |
+| Pi 4 confirmada (2026-10-20) con HAT VHF; conexión a la MSI, medidas del HAT y si deja pasar el GPIO | **Requiere intervención humana** | El HAT no está modelado. Ver `software/arduino-pruebas/README.md` |
+| Capturadora (comprarla o no: decisión de Miguel), adaptador HDMI→USB-C y soporte DDC/CI de la MSI | **Requiere intervención humana** | Ver `docs/conmutacion-video-usb.md` §V.5 |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
 | CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Plantilla de pivotes (C 3,8 / F 3,6 / H 3,4 / J 3,2) **sin resultado**. STEP para SolidWorks en `hardware/impresion/`, sin regenerar el CAD. **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
@@ -102,12 +108,17 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 
 ## Tests
 
-Reejecutados el 2026-10-20 sobre este árbol (el software no cambió en ese cambio):
+Reejecutados el 2026-10-20 en este cambio (Nano, ESP y placa de prácticas):
 
-- `pytest`: **47 pasados**.
-- `vitest`: **27 pasados** en 6 archivos.
+- `ruff check software tests`: sin avisos.
+- `pytest`: **50 pasados**.
+- `vitest`: **27 pasados** en 6 archivos (Vitest 2.1.9).
+- `tsc -b` y `vite build`: salida 0.
+- `arduino-cli` 1.5.1, core `arduino:avr` 1.8.8: `orbit_controls` 2982 bytes (9 %) y `monitor_pines` 5558 bytes (18 %), cada uno en `arduino:avr:nano` y en `cpu=atmega328old`.
+- `comprobar_interferencias.py`: sin interferencias, 19 cajas.
+- `comprobar_stl.py`: las 20 caben y son mallas cerradas.
 
-`ruff`, `tsc`, `vite build` y `arduino-cli compile` no se han vuelto a lanzar en ese cambio. La última vez que constan en verde en este README fue el 2026-10-18. El workflow de CI los vuelve a correr en cada PR.
+Nada de eso se ha probado en la placa, en la Pi ni impreso.
 
 ## Documentación
 
