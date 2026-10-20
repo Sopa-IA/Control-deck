@@ -7,6 +7,8 @@ Orbit Terminal es un terminal de sobremesa en forma de cuña que reúne dos mund
 **Estado: prototipo.** El software funciona en **simulación** y con tests automáticos. **No se ha probado aún con el HP, la Pi, el Arduino ni el monitor reales.** La carcasa **no está lista para fabricar.**
 
 > **Para retomar el proyecto sin contexto** (Miguel u otro agente): [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md). Ahí están el mapa del repo, lo que Miguel ya tiene, cada STL con su caja medida, los modos de vídeo y los comandos para comprobar el CAD.
+>
+> **Manual de montaje** (prototipo, estilo IKEA, 21 páginas, dibujos del CAD): [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf). No autoriza a fabricar. Lo que se imprime después de la base está en [`hardware/impresion/siguientes/README.md`](hardware/impresion/siguientes/README.md).
 
 ![Inicio](assets/screenshots/inicio_1920x1080.png)
 
@@ -26,9 +28,10 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 ```
 README.md
 docs/ESTADO-Y-TRASPASO.md    Estado para retomar el proyecto (léelo primero)
+docs/manual-montaje/         Manual de montaje (PDF, 21 páginas, prototipo)
 docs/                        Investigación fase 1, diseño mecánico, decisiones del prototipo
 hardware/cad/                CAD paramétrico OpenSCAD, STL PROVISIONALES, scripts de comprobación
-hardware/impresion/          Guía de la base, pared de prueba, plantillas mini-ITX y scripts
+hardware/impresion/          Base, siguientes impresiones (STEP), plantillas mini-ITX y scripts
 hardware/render/             Pipeline de los renders fotorrealistas
 assets/renders/              Renders (v1 y láminas del prototipo)
 assets/screenshots/          Capturas de la interfaz
@@ -94,7 +97,7 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | Modelo de la Pi y su conexión a la MSI (ya da imagen), capturadora (comprarla o no: decisión de Miguel), adaptador HDMI→USB-C y soporte DDC/CI de la MSI | **Requiere intervención humana** | Ver `docs/conmutacion-video-usb.md` §V.5 |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
-| CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Sin KVM. Comprobaciones de cajas y de malla correctas el 2026-10-20; **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
+| CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Plantilla de pivotes (C 3,8 / F 3,6 / H 3,4 / J 3,2) **sin resultado**. STEP para SolidWorks en `hardware/impresion/`, sin regenerar el CAD. **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
 | Medidas de potenciómetros, pulsadores y puertos/teclas del MSI | **Requiere intervención humana** | Medir las piezas de Miguel y ajustar `params.scad`/`lib.scad` |
 
 ## Tests
@@ -109,6 +112,8 @@ Reejecutados el 2026-10-20 sobre este árbol (el software no cambió en ese camb
 ## Documentación
 
 **Estado para retomar:** [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md).
+
+**Manual de montaje (prototipo, no listo para fabricar):** [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf). Orden de impresión posterior a la base: [`hardware/impresion/siguientes/README.md`](hardware/impresion/siguientes/README.md).
 
 **Fase 1:**
 - [`docs/informe-fase1.md`](docs/informe-fase1.md)
