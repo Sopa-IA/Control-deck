@@ -4,7 +4,9 @@
 
 Orbit Terminal es un terminal de sobremesa en forma de cuña que reúne dos mundos en una sola pantalla: un **HP** reutilizado como sistema principal y una **Raspberry Pi** que ejecuta *Orbit OS*. Tiene consola de mandos física (potenciómetros y botones) y luces ámbar.
 
-**Estado: prototipo v0.** El software funciona en **simulación** y con tests automáticos. **No se ha probado aún con el HP, la Pi, el Arduino ni el monitor reales.**
+**Estado: prototipo.** El software funciona en **simulación** y con tests automáticos. **No se ha probado aún con el HP, la Pi, el Arduino ni el monitor reales.** La carcasa **no está lista para fabricar.**
+
+> **Para retomar el proyecto sin contexto** (Miguel u otro agente): [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md). Ahí están el mapa del repo, lo que Miguel ya tiene, cada STL con su caja medida, los modos de vídeo y los comandos para comprobar el CAD.
 
 ![Inicio](assets/screenshots/inicio_1920x1080.png)
 
@@ -14,7 +16,7 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 
 - **Solo piezas que Miguel ya tiene.**
 - **Pantalla:** MSI PRO MP161 E2U 15,6", 1920×1080, **no táctil**. Se usa con ratón y controles; la interfaz sigue preparada para táctil.
-- **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado, SSD 2,5" recomendado).
+- **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
 - **Vídeo: la Pi lo controla todo y el cambio HP ↔ Pi es automático desde Orbit OS** (Miguel nunca toca el OSD de la MSI). La MSI muestra siempre la Pi y el HP sigue funcionando por su cuenta con su Windows. **Modo C (recomendado, imagen real del HP):** el HDMI del HP entra en una **capturadora HDMI→USB** conectada a la Pi y Orbit OS muestra su imagen (latencia y fps sin medir; teclado y ratón al HP aparte). **Modo A (recomendado, sin compras):** el escritorio del HP se ve en un visor (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. **Modo B (poco probable):** Pi → adaptador HDMI→USB-C → USB-C y cambio de entrada por DDC/CI, que los manuales de la MSI no documentan. El botón "Cambiar sistema visible" usa el modo disponible.
 - **Controles:** potenciómetros y botones leídos por un **Arduino Micro**, que sustituye a los encoders.
 - **Pendientes de identificar:** el modelo de Raspberry Pi y el tipo de tira LED.
@@ -23,16 +25,19 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 
 ```
 README.md
-docs/                        Investigación fase 1, diseño mecánico v0, decisiones del prototipo
-hardware/cad/                CAD paramétrico OpenSCAD (v1 + HP v3), STL PROVISIONALES, scripts de comprobación
-assets/renders/              Renders del diseño v1
+docs/ESTADO-Y-TRASPASO.md    Estado para retomar el proyecto (léelo primero)
+docs/                        Investigación fase 1, diseño mecánico, decisiones del prototipo
+hardware/cad/                CAD paramétrico OpenSCAD, STL PROVISIONALES, scripts de comprobación
+hardware/impresion/          Guía de la base, pared de prueba, plantillas mini-ITX y scripts
+hardware/render/             Pipeline de los renders fotorrealistas
+assets/renders/              Renders (v1 y láminas del prototipo)
 assets/screenshots/          Capturas de la interfaz
 software/interface/          Orbit OS Interface (React + TypeScript + Vite)
 software/pi-controller/      orbitd: hub WebSocket, servidor de la interfaz y lector del Arduino (Python)
 software/hp-agent/           Agente de telemetría y acciones de lista blanca para el HP (Python)
 software/shared/             Protocolo v1: PROTOCOLO.md, esquema JSON, actions.json, tipos TS y paquete Python
 software/arduino-controls/   Firmware del Arduino Micro (potenciómetros y botones)
-tests/python/                pytest (protocolo, orbitd, hp-agent, serie)
+tests/python/                pytest (protocolo, orbitd, hp-agent, serie, vídeo)
 scripts/                     Instalación, tests, simulación, capturas, token, compilación Arduino
 .github/workflows/ci.yml     Lint + tests (ruff, pytest, tsc, vitest, build)
 ```
@@ -89,19 +94,21 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | Modelo de la Pi y su conexión a la MSI (ya da imagen), capturadora (comprarla o no: decisión de Miguel), adaptador HDMI→USB-C y soporte DDC/CI de la MSI | **Requiere intervención humana** | Ver `docs/conmutacion-video-usb.md` §V.5 |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
-| CAD v1 + HP v3 (cuña 456 × 300 × 154 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | **HP v2/v3:** placa mini-ITX desnuda del HP (separadores en patrón estándar mini-ITX, ventana I/O libre sin escudo, altura real de 35 mm, soporte de SSD 2,5" con opción HDD 3,5", I/O frontal y pulsador del HP en el lateral izquierdo, hueco del adaptador HDMI→USB-C y **reserva para la capturadora**); placa I/O impresa pendiente de medir los conectores. Sin KVM, 2 potenciómetros + 2 pulsadores genéricos, soporte del Arduino Micro con canal USB, puertos y teclas OSD del canto derecho del MSI. Comprobación de interferencias y de STL correctas (en cajas envolventes); NO apto para fabricación |
+| CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Sin KVM. Comprobaciones de cajas y de malla correctas el 2026-10-20; **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
 | Medidas de potenciómetros, pulsadores y puertos/teclas del MSI | **Requiere intervención humana** | Medir las piezas de Miguel y ajustar `params.scad`/`lib.scad` |
 
-## Tests (última ejecución local, 2026-10-18)
+## Tests
 
-- `ruff check`: sin errores.
+Reejecutados el 2026-10-20 sobre este árbol (el software no cambió en ese cambio):
+
 - `pytest`: **47 pasados**.
-- `tsc`: sin errores.
 - `vitest`: **27 pasados** en 6 archivos.
-- `vite build`: correcto.
-- `arduino-cli compile` (arduino:avr:micro): correcto.
+
+`ruff`, `tsc`, `vite build` y `arduino-cli compile` no se han vuelto a lanzar en ese cambio. La última vez que constan en verde en este README fue el 2026-10-18. El workflow de CI los vuelve a correr en cada PR.
 
 ## Documentación
+
+**Estado para retomar:** [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md).
 
 **Fase 1:**
 - [`docs/informe-fase1.md`](docs/informe-fase1.md)

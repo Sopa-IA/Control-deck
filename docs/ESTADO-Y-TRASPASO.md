@@ -1,0 +1,285 @@
+# Estado y traspaso · Orbit Terminal
+
+Fecha de este documento: **2026-10-20**. Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+
+**Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
+
+La licencia del repositorio es la de Miguel: **Apache-2.0** (`LICENSE`). No se cambia.
+
+---
+
+## 1. Qué es y requisito n.º 1
+
+**Orbit Terminal** es un terminal de sobremesa en forma de cuña. El repositorio se llama `Sopa-IA/Control-deck`; el producto y el software se llaman Orbit Terminal / Orbit OS.
+
+Dentro de la cuña conviven:
+
+- una **Raspberry Pi** que ejecuta Orbit OS y es la que manda;
+- la placa de un **HP Slimline 260-a110ns** sacado de su caja, que sigue corriendo **Windows 10 Home** por su cuenta;
+- un **monitor MSI** compartido;
+- un **Arduino Micro** que lee potenciómetros y botones;
+- luces ámbar.
+
+**Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente. En los modos A y C la MSI se queda en la entrada de la Pi.
+
+Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
+
+---
+
+## 2. Mapa del repositorio
+
+| Ruta | Para qué |
+|---|---|
+| `README.md` | Entrada corta. Este documento es el estado largo. |
+| `LICENSE` | Apache-2.0, de Miguel. No modificarla. |
+| `docs/ESTADO-Y-TRASPASO.md` | Este archivo. |
+| `docs/decisiones-prototipo.md` | Decisiones del 2026-10-18. El disco ya no es el SSD recomendado: ver la nota del 2026-10-20 en esa tabla. |
+| `docs/diseno-mecanico.md` | Diseño v1 + HP v3. **Varios párrafos siguen hablando del SSD 2,5".** La geometría vigente está en `params.scad`, no en ese texto. |
+| `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). |
+| `docs/datos-pendientes-hp.md` | Ficha del HP, fuentes y lista H-1…H-12. Parte de H-2 y H-8 ha avanzado; el archivo no se ha reescrito entero. |
+| `docs/informe-fase1.md`, `pantallas.md`, `controles.md`, `raspberry-pi.md`, `alimentacion-preliminar.md`, `incertidumbres-hardware.md` | Investigación de la fase 1. Prevalecen las decisiones del prototipo cuando no coinciden. |
+| `hardware/cad/params.scad` | Todas las cotas, con etiqueta de origen. |
+| `hardware/cad/piezas.scad` | Bisel, base, bandeja, soportes, guía de luz, anillo, pomo, pletina. |
+| `hardware/cad/carcasa.scad`, `lib.scad`, `componentes.scad`, `ensamblaje.scad`, `partes.scad` | Carcasa, utilidades, marcadores, ensamblaje y corte para la cama. |
+| `hardware/cad/exportar.sh` | Borra `export/stl/*.stl` y los regenera en paralelo. |
+| `hardware/cad/render.sh` | Renders técnicos de OpenSCAD (no los fotorrealistas). |
+| `hardware/cad/comprobar_interferencias.py` | Cajas envolventes. No es un choque de mallas. |
+| `hardware/cad/comprobar_stl.py` | Cama 256³, margen 10 mm, malla cerrada y volumen. |
+| `hardware/cad/stl_a_step_freecad.py` | STEP facetado opcional. `export/step/LEEME.md`: los STEP no están en el repo. |
+| `hardware/cad/export/stl/` | 20 STL `PROVISIONAL_*` + `LEEME.md`. |
+| `hardware/impresion/base/` | Guía de la base (`LEEME.txt`), vistas, pared trasera de prueba y dos scripts. |
+| `hardware/impresion/plantillas/` | Plantilla de agujeros mini-ITX y plantilla de pivotes. |
+| `hardware/render/` | Pipeline fotorrealista: `escena_blender.py`, `postproceso.py`, `exportar_partes.sh`, `render_fotorrealista.sh`, `descargar_modelos.sh`, `convertir_step.py`, `etiqueta_hdd.py`, `partes_render.scad`, `CREDITOS-MODELOS.md`. |
+| `assets/renders/` | Renders antiguos del diseño (antes de los fotorrealistas). |
+| `assets/renders/prototipo/` | Láminas del PR #5. `06_lo-que-tienes-vs-donde-va_con-fotos.png` es la única imagen con recortes de fotos de Miguel, y él autorizó publicarla. El resto no son fotos. |
+| `assets/screenshots/` | Capturas de la interfaz en simulación. |
+| `software/interface/` | Orbit OS: React + TypeScript + Vite. Secciones: Inicio, Sistemas, Hardware, Controles, Herramientas, Configuración. |
+| `software/pi-controller/orbitd/` | Hub de la Pi: `__main__.py` (CLI), `hub.py` (WebSocket y acciones), `serial_events.py` (Arduino), `telemetry.py` (psutil local), `video.py` (modos A/B/C). |
+| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. Por defecto dry-run. |
+| `software/shared/` | Protocolo v1: `PROTOCOLO.md`, `actions.json`, `controls.default.json`, `schemas/protocol.schema.json`, `ts/protocol.ts`, `python/orbit_protocol`. |
+| `software/arduino-controls/` | Firmware `orbit_controls.ino` + `config.h`. Pines por defecto: P1 A0, P2 A1, B1 D2, B2 D3. |
+| `scripts/setup-dev.sh` | Crea `.venv` e instala Python y npm. |
+| `scripts/test-all.sh` | ruff + pytest + tsc + vitest. |
+| `scripts/dev-sim.sh` | Compila la interfaz y arranca orbitd simulado en `http://127.0.0.1:8765/`. |
+| `scripts/gen-token.sh` | Token local en `.env` (gitignorado). |
+| `scripts/compile-arduino.sh` | Compila el firmware si hay `arduino-cli`. |
+| `scripts/screenshots.mjs` | Capturas; hace falta orbitd y Chrome. |
+| `tests/python/` | pytest: `test_protocol.py`, `test_serial.py`, `test_hub.py`, `test_hp_agent.py`, `test_video.py`. |
+| `.github/workflows/ci.yml` | Dos jobs: Python (ruff + pytest, 3.12) e interfaz (npm ci, tsc, vitest, build, Node 20). En el PR #5 también apareció CodeQL; no está en este workflow. |
+
+`.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. El token de los tests es el fixture que ya existía (`token-de-prueba-0123456789`).
+
+Asignación por defecto (`controls.default.json`): P1 `hp.volume_set`, P2 `ui.scroll`, B1 `ui.power_menu`, B2 `pi.switch_visible`. El volumen HID del Arduino está apagado (`ENABLE_HID_VOLUME 0`): un HID USB iría a la Pi, que es donde está enchufado, y el volumen del HP lo aplica hp-agent.
+
+---
+
+## 3. Lo que Miguel ya tiene
+
+Sin compras. La capturadora del modo C **no** está en esta lista: es una referencia vista en Amazon, no un aparato que tenga.
+
+| Pieza | Qué se sabe | Etiqueta |
+|---|---|---|
+| HP Slimline 260-a110ns, sacado de la caja | Placa de la familia Iris. Nombre "Iris-A6" es provisional (datos del propietario, 2026-10-18). AMD A6-7310, 8 GB DDR3L, Windows 10 Home. | Datos del propietario 2026-10-18. La ficha oficial de este P/N no se encontró; las hermanas Iris-E2 / Iris-A8 están en `docs/datos-pendientes-hp.md`. |
+| Placa | 17 × 17 cm, mini-ITX. | **VERIFICADA** por Miguel, 2026-10-18 (instrumento no indicado). En el CAD: `mitx = 170`. |
+| Altura máxima sobre la placa | 35 mm (disipador con ventilador). | **VERIFICADA** por Miguel, 2026-10-18. `hp_comp_h = 35`. |
+| Agujeros C, F, H, J | Patrón estándar mini-ITX. | **DE FUENTE** (estándar mini-ITX / plano comercial citado en `params.scad`). **VERIFICADA FÍSICAMENTE** el 2026-10-19: Miguel imprimió `PRUEBA_plantilla_agujeros_HP.stl` y los cuatro agujeros cuadraron con su placa. No es una medida de calibre. |
+| Escudo I/O | No hay. Los conectores asoman por la chapa de la caja. | **FOTO** 2026-10-18, no es una medida. |
+| Puertos que indica el propietario | 2× USB 3, 4× USB 2, HDMI, VGA, RJ45, audio, lector SD. | Datos del propietario 2026-10-18. El I/O trasero de la hermana Iris-E2 es 2× USB 3 + 2× USB 2, así que 2× USB 2 en el frontal es una **deducción PENDIENTE**, no una medida. Posición de cada conector: **PENDIENTE**. |
+| Wi-Fi | Tarjeta M.2 con antenas, a sacar fuera de la caja original. | **FOTO**. Longitud de cables: **PENDIENTE** (H-9). |
+| Alimentación | Adaptador original externo 65 W, 19,5 V. Queda **fuera** de la cuña, sin modificar. | Datos del propietario. El diámetro del jack es **PENDIENTE**. Dentro de la cuña no hay red eléctrica. |
+| DVD | Se retira. No se modela. | Decisión. |
+| HDD Toshiba 3,5", marca de fecha MAR-2017 | El disco real. Miguel lo midió a ojo el 2026-10-20: ~150 × 100 × 25 mm. | Esa medición es **a ojo**. El CAD **no la usa**. Usa SFF-8301: 101,6 × 147 × 26,1 mm (**DE FUENTE**). |
+| Raspberry Pi | Modelo sin confirmar. En el CAD se dibuja como Pi 4 (85 × 56 mm, agujeros 58 × 49). Ya da imagen en la MSI; no se sabe por qué entrada. | Placa: **DE FUENTE** (dibujo mecánico de la Pi 4). Modelo y altura: **PENDIENTE**. Probable Pi 4, no confirmado. |
+| Arduino Micro | Lee potenciómetros y botones por USB serie hacia orbitd. | Envolvente 48 × 17,7 mm: **DE FUENTE** (tienda oficial). Alturas: **PENDIENTE**. |
+| MSI Pro MP161 E2U | 15,6", 1920×1080, no táctil. Mini-HDMI y 2 USB-C con DP Alt. | Envolvente 362,26 × 233,84 × 18,8 mm y área activa 344,16 × 193,59 mm: **DE FUENTE** (ficha MSI; el manual da 232,92 mm de alto y el CAD usa el mayor). Posición del área activa y de los puertos del canto: **PENDIENTE** (el área se supone centrada). |
+| Potenciómetros y pulsadores | Los suyos. El CAD usa marcadores genéricos de 24 mm y 16 mm. Eje de 6 mm acordado. | **PENDIENTE** de medir. `eje_pot_d` está marcado acordado y sin medir. |
+| Tira LED | La suya. Tipo y tensión desconocidos. | **PENDIENTE**. |
+| Adaptador Mini-HDMI → HDMI | Lo tiene. En el modo C iría de la Pi a la Mini-HDMI de la MSI. | Existencia: dato del propietario. Modelo: **PENDIENTE**. |
+| Adaptador UGREEN | Modelo y sentido sin confirmar. Probablemente USB-C → HDMI, que es el sentido contrario al que haría falta para el modo B. | **PENDIENTE**. |
+| Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material del diseño: PETG. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
+
+La capturadora de referencia (marca SUOFEIXIANG, texto "4K30 entrada / 1080p", 14,69 € vistos el 2026-10-18, sin URL) **no se ha comprado**. En el CAD es una reserva de 72 × 30 × 20 mm, marcada diseño, no la medida de un aparato.
+
+---
+
+## 4. Cotas vigentes en `params.scad`
+
+Unidades: milímetros. Ejes: X ancho, Y fondo (frente en 0), Z altura.
+
+| Cota | Valor | Etiqueta en el CAD |
+|---|---|---|
+| Envolvente W × D × H | 456,3 × 300,5 × 153,9 (sin pies; +4 mm con pies) | Calculada. La imprimió `comprobar_interferencias.py` el 2026-10-20. |
+| Inclinación, suelo, pared, pies | 30°, 4, 3, 4 | DISEÑO |
+| Cama y margen | 256³, margen 10 | FUENTE (A1) y DISEÑO |
+| Placa HP | 170 × 170, componentes 35, PCB 1,6 | MEDIDO / MEDIDO / PENDIENTE (PCB típico) |
+| Separador HP | 6,35 | FUENTE estándar ATX |
+| Agujero de inserto en el separador | Ø4, profundidad `inserto_l + 0,5` = 6,2, abierto por arriba | `inserto_d` y `inserto_l` (5,7) son **PENDIENTE** |
+| Paso M3 | Ø3,4 (`tornillo_d`) | DISEÑO. También en la cara superior de las torretas de empalme |
+| Ventana I/O | 158,75 × 44,45 | FUENTE estándar ATX. Posición lateral `hp_io_x0 = 5,6`: **PENDIENTE** |
+| Disco en el modelo | 101,6 × 147 × 26,1 | FUENTE SFF-8301. No es la medición a ojo |
+| Patas del soporte / agujero lateral | 14 mm / 3,18 mm del lateral | DISEÑO (para librar las pletinas) / FUENTE SFF-8301 A5 |
+| Pi | 85 × 56, agujeros 58 × 49, alto 20 | FUENTE del dibujo Pi 4 / alto PENDIENTE |
+| Arduino | 48 × 17,7 | FUENTE tienda oficial. Alturas PENDIENTE |
+| Potenciómetro / pulsador | genérico 24 mm / 16 mm | PENDIENTE |
+| Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = true` | PENDIENTE. El hueco se conserva aunque el modo B sea poco probable |
+| Capturadora (reserva) | 72 × 30 × 20 | DISEÑO, no un aparato real |
+| KVM | `usar_kvm = false` | DISEÑO |
+
+Agujeros HP en coordenadas de la carcasa, los que imprimió `comprobar_base_hdd.py` el 2026-10-20: C (23,35, 284,332), F (180,83, 261,472), H (23,35, 129,392), J (180,83, 129,392). C y F caen en `base_x0_y1`; H y J en `base_x0_y0`. Las bases de la derecha no llevan separadores del HP.
+
+---
+
+## 5. Piezas y STL
+
+Cajas medidas el 2026-10-20 con el mismo criterio que `comprobar_stl.py` (vértices del ASCII STL). Volumen en cm³ del sólido. **No autoriza a fabricar.**
+
+Orientación y soportes: solo donde un archivo del repo lo dice. Si no está escrito, la celda dice «no documentado».
+
+### Carcasa (`hardware/cad/export/stl/`)
+
+| STL | Caja X×Y×Z (mm) | Vol. | Qué es | Impresión | Estado |
+|---|---|---|---|---|---|
+| `PROVISIONAL_base_x0_y0` | 228,13 × 150,13 × 10,35 | 134,18 | Delante-izquierda: separadores H y J, ranuras, una pata del disco | Cara plana en la cama, sin soportes (`hardware/impresion/base/LEEME.txt`) | La base completa está en impresión desde el 2026-10-20. Sin resultado |
+| `PROVISIONAL_base_x0_y1` | 228,13 × 150,13 × 10,35 | 113,28 | Detrás-izquierda: separadores C y F, ranuras, una pata del disco | Igual | Igual |
+| `PROVISIONAL_base_x1_y0` | 228,13 × 150,13 × 8,99 | 92,83 | Delante-derecha: hueco delantero de la bandeja, una pata del disco | Igual | Igual |
+| `PROVISIONAL_base_x1_y1` | 228,13 × 150,13 × 8,99 | 81,02 | Detrás-derecha: hueco de la bandeja (Pi), una pata del disco | Igual | Igual |
+| `PROVISIONAL_pletina_empalme_x4` | 30,00 × 10,00 × 3,00 | 0,84 | Una pletina. Hay que imprimir 4 | Cara plana, sin soportes (misma guía) | No consta impresión de este STL |
+| `PROVISIONAL_soporte_disco` | 111,60 × 147,00 × 17,99 | 18,64 | Bandeja del HDD 3,5" (patas 14 mm, colisos a 3,18 mm del lateral) | Única pieza de la guía que pide soportes: boca abajo, bandeja contra la cama, soportes solo en la cama | El soporte **2,5"** (SSD) se imprimió y salió pequeño. Este STL 3,5" no consta como impreso |
+| `PROVISIONAL_bandeja_servicio` | 141,00 × 237,49 × 14,00 | 154,07 | Pi, Arduino y canal USB. Opcional en la prueba de la base | Cara plana, sin soportes (misma guía) | No probada |
+| `PROVISIONAL_carcasa_x0_y0` | 228,13 × 150,25 × 95,36 | 104,65 | Delante-izquierda | `diseno-mecanico.md` recomienda la cara de corte sobre la cama. Soportes: no documentado | No probada |
+| `PROVISIONAL_carcasa_x0_y1` | 228,13 × 150,25 × 150,93 | 213,68 | Detrás-izquierda: ventana I/O del HP, pasacables, I/O frontal, pulsador y LED | Igual | No probada. Volumen 213,68 cm³ |
+| `PROVISIONAL_carcasa_x1_y0` | 228,13 × 150,25 × 95,36 | 115,54 | Delante-derecha | Igual | No probada |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 243,84 | Detrás-derecha: panel de conectores de Orbit | Igual | No probada |
+| `PROVISIONAL_bisel_x0_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Plano, cara vista abajo (`diseno-mecanico.md`). Soportes: no documentado | No probado |
+| `PROVISIONAL_bisel_x0_y1` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
+| `PROVISIONAL_bisel_x1_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
+| `PROVISIONAL_bisel_x1_y1` | 190,83 × 126,62 × 3,60 | 22,81 | Trozo de bisel (menos volumen: huecos de mandos) | Igual | No probado |
+| `PROVISIONAL_guia_luz_frontal_0` | 201,13 × 9,00 × 6,95 | 9,82 | Tramo de guía de luz frontal | No documentado | No probada |
+| `PROVISIONAL_guia_luz_frontal_1` | 201,13 × 9,00 × 6,95 | 9,82 | El otro tramo | No documentado | No probada |
+| `PROVISIONAL_anillo_luz_x2` | 41,00 × 41,00 × 5,60 | 1,82 | Un anillo. Imprimir 2 | No documentado | No probado |
+| `PROVISIONAL_pomo_x2` | 30,00 × 30,00 × 17,00 | 11,02 | Un pomo. Imprimir 2 | No documentado | Impreso o en impresión. Sin resultado comunicado |
+| `PROVISIONAL_soporte_arduino` | 25,70 × 70,00 × 19,10 | 9,52 | Soporte del Arduino Micro | No documentado | Impreso o en impresión. Sin resultado comunicado |
+
+`comprobar_stl.py` (2026-10-20): las 20 caben en 256³ con 10 mm de margen y son mallas cerradas.
+
+### Pruebas (`hardware/impresion/`)
+
+| STL | Caja X×Y×Z | Vol. | Qué es | Impresión | Estado |
+|---|---|---|---|---|---|
+| `base/PRUEBA_pared_trasera_IO_HP.stl` | 228,13 × 92,01 × 15,00 | 47,92 | Recorte de la pared trasera de `carcasa_x0_y1` (ventana I/O + pasacables) | Cara exterior abajo, sin soportes (guía de la base) | No probada |
+| `plantillas/PRUEBA_plantilla_agujeros_HP.stl` | 170,00 × 170,00 × 4,60 | 9,20 | Barras finas con agujeros C, F, H, J a Ø3,0 | Geometría plana (el STL está en XY). Soportes: no documentado | **VERIFICADA FÍSICAMENTE** el 2026-10-19: los 4 agujeros cuadran con la placa |
+| `plantillas/PRUEBA_plantilla_pivotes_HP.stl` | 164,48 × 161,94 × 7,60 | 8,38 | Los mismos centros, con pivotes Ø3,8 (C), 3,6 (F), 3,4 (H) y 3,2 (J) en lugar de tornillos. Miguel prefiere esta vía | Geometría plana con pivotes hacia arriba. Soportes: no documentado | Pendiente de resultado |
+
+`prueba_pared_trasera_io.scad` hace `include <../../cad/piezas.scad>`. OpenSCAD 2021.01 lo compiló el 2026-10-20 (salida 0, 155095 bytes). Ese STL nuevo **no** es idéntico al del paquete (misma talla, distinta teselación). En el repo se queda el STL del paquete.
+
+Vistas de la base: `vista_base.png` y `vista_base_planta.png`. Montada, la guía dice 456,3 × 300,5 mm.
+
+---
+
+## 6. Modos de vídeo
+
+| Modo | Qué hace | Estado |
+|---|---|---|
+| **A · remoto** | La MSI muestra la Pi. Ver el HP es abrir en la Pi un visor del escritorio (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. Variable `ORBIT_REMOTE_CMD` (sin shell). Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. | **Base.** Implementado en `video.py` y cubierto por tests. **No** probado con Sunshine, Moonlight, el HP ni la MSI. Windows 10 Home no trae servidor RDP. |
+| **B · DDC/CI** | La Pi cambiaría la entrada de la MSI (`ddcutil`, VCP 0x60). Haría falta el adaptador HDMI → USB-C en el sentido correcto. Variables: `ORBIT_VIDEO_DDC=1`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS`. | Implementado y **apagado** por defecto. **Poco probable:** los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE. |
+| **C · capturadora** | HDMI del HP → capturadora UVC → USB de la Pi. La MSI sigue en la Pi. Variables: `ORBIT_CAPTURE_DEVICE` (`/dev/videoN` o `/dev/v4l/by-id|by-path/…`) y `ORBIT_CAPTURE_CMD` (sin shell; el texto `{device}` se sustituye). Teclado y ratón del HP van al HP, no a la capturadora. | **Recomendado** junto al A para tener imagen real del HP. Implementado y cubierto por tests con dispositivo simulado. **No** hay capturadora, y no se ha probado con hardware. |
+
+Prioridad en código: B si está listo, si no C si está configurado, si no A.
+
+---
+
+## 7. Historial de decisiones
+
+| PR | Qué se decidió y por qué |
+|---|---|
+| **#1** (merge `861db16`) | Entra el v0: investigación, CAD paramétrico y software **solo en simulación**. Nada probado en hardware. Se conserva la licencia Apache-2.0 de Miguel. |
+| **#2** (merge `68be364`) | CAD v1: 2 potenciómetros + 2 botones con Arduino Micro, sin KVM, impresora Bambu Lab A1 y PETG. Las medidas de mandos son de catálogo genérico. |
+| **#3** (merge `fc4837b`) | El HP Slimline se saca de la caja y entra la placa desnuda, sin cambiar la envolvente. El adaptador de 65 W se queda fuera y sin modificar. El cambio de sistema pasa a ser automático desde Orbit OS (entonces A y después B). |
+| **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Entra el modo C. El modo B pasa a poco probable porque los manuales de la MSI no documentan DDC/CI. |
+| **#5** (merge `bf6d641`) | Renders del CAD v3, no fotos, con créditos de qué es exacto y qué es aproximado. En un commit aparte, la lámina con recortes de fotos: Miguel autorizó publicar esa imagen. |
+| **Este cambio** | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
+
+---
+
+## 8. Restricciones
+
+- No se compra nada sin autorización de Miguel. La capturadora es una propuesta, no un pedido.
+- No se suben credenciales, tokens reales, `.env` ni fotos personales. La única excepción de imagen es la lámina autorizada del PR #5.
+- No se añade telemetría de uso ni envío de datos fuera. La telemetría que ya existe es local: psutil en la máquina donde corre orbitd o hp-agent, para la propia interfaz.
+- Nada va conectado a la red eléctrica dentro de la cuña. La fuente original del HP no se modifica y se queda fuera.
+- No se inventan medidas, latencias, resultados de impresión ni compatibilidades. Lo no medido se marca PENDIENTE o DE FUENTE.
+- La simulación se marca (`simulated: true`, distintivo **MODO SIMULACIÓN**).
+- La licencia Apache-2.0 de Miguel se mantiene.
+- No se declara nada listo para fabricación mientras falten las medidas pendientes y un montaje real.
+
+---
+
+## 9. Pendientes, en este orden
+
+1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`, `soporte_arduino`. El soporte 2,5" ya dio un resultado: salió pequeño.
+2. **Diámetro de pivote** (3,8 / 3,6 / 3,4 / 3,2) cuando Miguel pruebe `PRUEBA_plantilla_pivotes_HP.stl`.
+3. **Modelo de la Raspberry Pi** y por qué entrada da imagen hoy en la MSI.
+4. **Posiciones de los puertos y teclas del canto del MSI.**
+5. **Medidas de los potenciómetros y de los pulsadores** de Miguel (el eje de 6 mm está acordado y sin medir).
+6. **Tipo y tensión de la tira LED.**
+7. **Patillaje del botón de encendido del HP** (polímetro, H-6). No se inventa.
+8. **BIOS:** Wake-on-LAN y «After Power Loss» (H-11).
+9. **Instalar y arrancar en la Pi** (aún no hecho):
+
+```bash
+sudo apt install -y git nodejs npm python3-venv
+git clone https://github.com/Sopa-IA/Control-deck
+cd Control-deck
+./scripts/setup-dev.sh
+./scripts/dev-sim.sh
+```
+
+Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial`, hp-agent y el visor del modo A o C.
+
+También siguen abiertos: posición real de cada conector trasero del HP, placa I/O impresa, antenas, cables SATA, diámetro del jack, `pi.shutdown`, volumen del HP en Windows, `wss://`, y servicios de arranque.
+
+---
+
+## 10. Cómo lo retoma un agente
+
+Desde la raíz del repo. OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
+
+```bash
+# Ver el ensamblaje (no exporta)
+openscad hardware/cad/ensamblaje.scad
+
+# Regenerar los 20 STL. Borra export/stl/*.stl antes de escribir
+hardware/cad/exportar.sh
+
+# Comprobaciones geométricas (cajas / mallas; no son un montaje)
+python3 hardware/cad/comprobar_interferencias.py
+python3 hardware/cad/comprobar_stl.py
+python3 hardware/impresion/base/comprobar_base_hdd.py
+python3 hardware/impresion/base/verificar_separadores.py
+
+# Software
+./scripts/setup-dev.sh
+./scripts/test-all.sh          # ruff + pytest + tsc + vitest
+./scripts/dev-sim.sh           # http://127.0.0.1:8765/
+```
+
+La pared de prueba, si hay que recompilarla:
+
+```bash
+openscad -o /tmp/pared.stl hardware/impresion/base/prueba_pared_trasera_io.scad
+```
+
+### Resultados reales del 2026-10-20 (este entorno)
+
+| Comprobación | Resultado |
+|---|---|
+| `exportar.sh` | Los 20 STL de `export/stl/` salieron de esa regeneración (OpenSCAD 2021.01). Los comentarios posteriores de `params.scad` no cambian geometría. |
+| `comprobar_interferencias.py` | Salida 0. **SIN INTERFERENCIAS**, 15 cajas. Envolvente 456,3 × 300,5 × 153,9 mm. KVM no. HDD 3,5" + soporte: holgura ≥ 5 mm (limita la tina). Pi ≥ 3 mm (canal USB). Adaptador y capturadora ≥ 10 mm. **I/O frontal y pulsador del HP: holgura mínima ≥ 0 mm** (limitan contra la pared / fuera del volumen interior). El script los marca OK; 0 mm no es holgura de montaje. |
+| `comprobar_stl.py` | Salida 0. Las 20 caben y son mallas cerradas. |
+| `comprobar_base_hdd.py` | Salida 0. Plancha a 2,0 mm del borde de la placa, pata más cercana a 1,0 mm, pila bajo la plancha con 0,6 mm frente a la cabeza 6-32 (cota de cabeza pendiente). |
+| `verificar_separadores.py` | Salida 0. C y F abiertos en `base_x0_y1`; H y J abiertos en `base_x0_y0` (centro y r = 1,5 huecos en z = 10,27 y z = 7,35; r = 3,5 sólido). Las bases x1 no tienen esos separadores. |
+| `pytest` | **47 passed** (0,40 s). |
+| `vitest` | **27 passed**, 6 archivos (Vitest 2.1.9). |
+| ruff, tsc, `vite build`, `arduino-cli` | **No** se han vuelto a ejecutar en este cambio: el software no se toca. El CI del repo sí los corre. |
+
+`docs/diseno-mecanico.md` aún cita cajas del soporte de SSD (110,5 × 69,8 × 12) y un volumen de bandeja antiguo. Esas cifras no son las de los STL de hoy.

@@ -174,8 +174,10 @@ luz_margen = 30;   // [DISEÑO] distancia a los laterales
 hp_desnuda = hp_preset == "iris_mitx_desnuda";
 mitx = 170;                 // [FUENTE] mini-ITX 170 x 170 mm (HP: "Mini ITX 17.0 x 17.0 cm")
                             // [MEDIDO 2026-10-18, Miguel] la placa mide 17 x 17 cm: coincide.
-// Agujeros: patrón estándar mini-ITX (C, F, H, J); coincide visualmente con los 4 tornillos
-// de la foto, NO medido. [FUENTE estándar ATX/mini-ITX: agujeros C-F-H-J; cotas relativas a C:
+// Agujeros: patrón estándar mini-ITX (C, F, H, J). No medidos con calibre.
+// 2026-10-19: Miguel imprimió hardware/impresion/plantillas/PRUEBA_plantilla_agujeros_HP.stl
+// y los 4 agujeros C/F/H/J cuadraron con su placa (verificado físicamente con esa plantilla).
+// [FUENTE estándar ATX/mini-ITX: agujeros C-F-H-J; cotas relativas a C:
 // F = (+157,48 a lo largo del borde I/O, +22,86 hacia delante), H = (0, +154,94), J = (+157,48,
 // +154,94); C a 6,35 mm del lateral y 10,16 mm del borde trasero]. Comprobado con el plano de
 // una placa mini-ITX comercial (FLEX-WIZARD-IMX8M-MINI, ES France: 6,35 / 163,83 / 10,16 /
@@ -219,15 +221,30 @@ function hp_agujeros() = [for (i = [0, 1], j = [0, 1])   // C (0,0), H (0,1), F 
     [hp_x + mitx_ag_borde[0] + i*mitx_agujeros[0],
      hp_y + hp_d - mitx_ag_borde[1] - (j == 1 ? mitx_agujeros[1] : i*mitx_ag_f)]];
 
-// Disco: SSD 2,5" RECOMENDADO (SFF-8201: 100,45 x 69,85 x 7/9,5 mm). El HDD 3,5" de
-// 1 TB del propietario queda como OPCIÓN (SFF-8301: 147 x 101,6 x 26,1 mm).
+// Disco vigente (2026-10-20): HDD Toshiba 3,5" del propietario. El modelo usa SFF-8301
+// (101,6 x 147 x 26,1), no la medición a ojo de ~150 x 100 x 25. El SSD 2,5"
+// (SFF-8201: 100,45 x 69,85 x 9,5) queda como opción con usar_hdd_35 = false.
 // La grabadora DVD SE RETIRA (no se modela).
-usar_hdd_35 = false;        // [DISEÑO] true = soporte para el HDD 3,5" original
+usar_hdd_35 = true;         // [DISEÑO] true = soporte para el HDD 3,5" original
+                            // 2026-10-19: true. El disco real de Miguel es un Toshiba 3,5" (foto, MAR-2017).
+                            // 2026-10-20: Miguel lo midió a ojo ~150 x 100 x 25 mm. El modelo NO usa esa
+                            // medición: sigue las cotas SFF-8301 de la línea siguiente.
 disco = usar_hdd_35 ? [101.6, 147, 26.1] : [100.45, 69.85, 9.5];   // [x, y, z]
-disco_soporte_h = 8;        // [DISEÑO] patas del soporte (la plancha queda 3 mm sobre las torretas de empalme de 5 mm)
+// Patas del soporte. SSD: 8 (la plancha queda 3 mm sobre las torretas de empalme de 5 mm).
+// HDD 3,5" (2026-10-19): la plancha (147 mm de fondo) cubre 6 torretas de empalme (las 4 del
+// corte Y en x = 201/258 y las 2 del corte X en y = 186), con sus pletinas y tornillos debajo.
+// Pila bajo la plancha: torreta 5 + pletina 3 + cabeza M3 ~3 [PENDIENTE tornillo] = z 16 sobre
+// el suelo de la pieza; + cabeza 6-32 del disco ~2,4 [PENDIENTE] colgando bajo la plancha + 0,6
+// de holgura -> plancha a z = suelo + 14.
+disco_soporte_h = usar_hdd_35 ? 14 : 8;   // [DISEÑO]
 disco_x = hp_x + hp_w + 6;
 disco_y = usar_hdd_35 ? D - pared - 30 - disco[1] : D - pared - 30 - disco[1];
 disco_z = suelo + disco_soporte_h + 2;   // plancha de 2 mm sobre las patas
+// Agujeros inferiores del disco: distancia de su eje al lateral del disco.
+// HDD 3,5" [FUENTE SFF-8301 rev 1.9, A4 = 95,25 entre agujeros, A5 = 3,18 al lateral; rosca 6-32;
+//   pares a lo largo: A7 = 41,28, A6 = 44,45, A13 = 76,20; https://members.snia.org/document/dl/25862 ,
+//   consultado 2026-10-19]. SSD: 6 = valor previo del modelo (no verificado con SFF-8201).
+disco_ag_lado = usar_hdd_35 ? 3.18 : 6;   // los colisos van a lo largo (Y) y cubren todas las posiciones
 
 // I/O frontal del HP (USB 2.0, audio, lector SD según el propietario) reubicado en el
 // lateral IZQUIERDO, zona trasera alta. Placa y conectores [PENDIENTE de medir tras desmontar].

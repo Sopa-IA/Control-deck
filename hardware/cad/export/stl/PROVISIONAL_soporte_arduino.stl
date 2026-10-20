@@ -4353,6 +4353,20 @@ solid PROVISIONAL_soporte_arduino
       vertex -1.64207 4.43999 0
     endloop
   endfacet
+  facet normal 0.55557 -0.83147 0
+    outer loop
+      vertex -1.03489 5.3487 0
+      vertex -0.849999 5.47224 1.41
+      vertex -1.03489 5.3487 1.41
+    endloop
+  endfacet
+  facet normal 0.55557 -0.83147 0
+    outer loop
+      vertex -0.849999 5.47224 1.41
+      vertex -1.03489 5.3487 0
+      vertex -0.849999 5.47224 0
+    endloop
+  endfacet
   facet normal -0.896878 -0.442278 0
     outer loop
       vertex 1.57059 4.65056 0
@@ -4407,20 +4421,6 @@ solid PROVISIONAL_soporte_arduino
       vertex -0.650561 5.57059 1.41
       vertex -0.849999 5.47224 0
       vertex -0.650561 5.57059 0
-    endloop
-  endfacet
-  facet normal 0.55557 -0.83147 0
-    outer loop
-      vertex -1.03489 5.3487 0
-      vertex -0.849999 5.47224 1.41
-      vertex -1.03489 5.3487 1.41
-    endloop
-  endfacet
-  facet normal 0.55557 -0.83147 0
-    outer loop
-      vertex -0.849999 5.47224 1.41
-      vertex -1.03489 5.3487 0
-      vertex -0.849999 5.47224 0
     endloop
   endfacet
   facet normal 0.831469 -0.555572 0
@@ -6369,20 +6369,6 @@ solid PROVISIONAL_soporte_arduino
       vertex -1.64207 66.44 0
     endloop
   endfacet
-  facet normal 0.555445 -0.831553 0
-    outer loop
-      vertex -1.03489 67.3487 0
-      vertex -0.849999 67.4722 1.41
-      vertex -1.03489 67.3487 1.41
-    endloop
-  endfacet
-  facet normal 0.555445 -0.831553 0
-    outer loop
-      vertex -0.849999 67.4722 1.41
-      vertex -1.03489 67.3487 0
-      vertex -0.849999 67.4722 0
-    endloop
-  endfacet
   facet normal -0.896843 -0.442349 0
     outer loop
       vertex 1.57059 66.6506 0
@@ -6437,6 +6423,20 @@ solid PROVISIONAL_soporte_arduino
       vertex -0.650561 67.5706 1.41
       vertex -0.849999 67.4722 0
       vertex -0.650561 67.5706 0
+    endloop
+  endfacet
+  facet normal 0.555445 -0.831553 0
+    outer loop
+      vertex -1.03489 67.3487 0
+      vertex -0.849999 67.4722 1.41
+      vertex -1.03489 67.3487 1.41
+    endloop
+  endfacet
+  facet normal 0.555445 -0.831553 0
+    outer loop
+      vertex -0.849999 67.4722 1.41
+      vertex -1.03489 67.3487 0
+      vertex -0.849999 67.4722 0
     endloop
   endfacet
   facet normal 0.831483 -0.555551 0

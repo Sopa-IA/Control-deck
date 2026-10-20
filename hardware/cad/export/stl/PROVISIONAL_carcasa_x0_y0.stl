@@ -4318,20 +4318,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 5.53422 28.1794 24.413
     endloop
   endfacet
-  facet normal -0.195147 -0.849376 -0.490386
-    outer loop
-      vertex 8.46472 27.8812 16.1579
-      vertex 8.97789 24.2928 22.169
-      vertex 8.46472 24.3812 22.2201
-    endloop
-  endfacet
-  facet normal -0.195055 -0.849388 -0.490401
-    outer loop
-      vertex 8.97789 24.2928 22.169
-      vertex 8.46472 27.8812 16.1579
-      vertex 8.97789 27.7928 16.1069
-    endloop
-  endfacet
   facet normal 0.0654996 -0.864163 -0.498931
     outer loop
       vertex 9.5 24.2631 22.1519
@@ -4372,6 +4358,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8.46472 31.0733 26.0838
       vertex 8.97789 34.6617 20.0726
       vertex 8.46472 34.5733 20.0216
+    endloop
+  endfacet
+  facet normal -0.195147 -0.849376 -0.490386
+    outer loop
+      vertex 8.46472 27.8812 16.1579
+      vertex 8.97789 24.2928 22.169
+      vertex 8.46472 24.3812 22.2201
+    endloop
+  endfacet
+  facet normal -0.195055 -0.849388 -0.490401
+    outer loop
+      vertex 8.97789 24.2928 22.169
+      vertex 8.46472 27.8812 16.1579
+      vertex 8.97789 27.7928 16.1069
     endloop
   endfacet
   facet normal -0.980783 -0.168963 -0.0975502
@@ -4458,20 +4458,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 106.511 26.4016 23.3865
     endloop
   endfacet
-  facet normal -0.0655121 -0.864162 -0.498931
-    outer loop
-      vertex 102.293 27.7928 16.1069
-      vertex 102.815 24.2631 22.1519
-      vertex 102.293 24.2928 22.169
-    endloop
-  endfacet
-  facet normal -0.0656073 -0.86416 -0.498921
-    outer loop
-      vertex 102.815 24.2631 22.1519
-      vertex 102.293 27.7928 16.1069
-      vertex 102.815 27.7631 16.0897
-    endloop
-  endfacet
   facet normal 0.980812 -0.168835 -0.0974767
     outer loop
       vertex 106.781 27.2751 23.8909
@@ -4540,20 +4526,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 101.284 24.5268 22.3042
       vertex 100.815 28.2272 16.3577
       vertex 101.284 28.0268 16.242
-    endloop
-  endfacet
-  facet normal -0.659363 -0.6511 -0.375911
-    outer loop
-      vertex 100.38 28.479 16.503
-      vertex 99.9866 25.2778 22.7377
-      vertex 99.9866 28.7778 16.6755
-    endloop
-  endfacet
-  facet normal -0.659363 -0.6511 -0.375911
-    outer loop
-      vertex 99.9866 25.2778 22.7377
-      vertex 100.38 28.479 16.503
-      vertex 100.38 24.979 22.5652
     endloop
   endfacet
   facet normal 0.0655121 -0.864162 -0.498931
@@ -4820,6 +4792,34 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 102.293 24.2928 22.169
       vertex 101.78 27.8812 16.1579
       vertex 102.293 27.7928 16.1069
+    endloop
+  endfacet
+  facet normal -0.659363 -0.6511 -0.375911
+    outer loop
+      vertex 100.38 28.479 16.503
+      vertex 99.9866 25.2778 22.7377
+      vertex 99.9866 28.7778 16.6755
+    endloop
+  endfacet
+  facet normal -0.659363 -0.6511 -0.375911
+    outer loop
+      vertex 99.9866 25.2778 22.7377
+      vertex 100.38 28.479 16.503
+      vertex 100.38 24.979 22.5652
+    endloop
+  endfacet
+  facet normal -0.0655121 -0.864162 -0.498931
+    outer loop
+      vertex 102.293 27.7928 16.1069
+      vertex 102.815 24.2631 22.1519
+      vertex 102.293 24.2928 22.169
+    endloop
+  endfacet
+  facet normal -0.0656073 -0.86416 -0.498921
+    outer loop
+      vertex 102.815 24.2631 22.1519
+      vertex 102.293 27.7928 16.1069
+      vertex 102.815 27.7631 16.0897
     endloop
   endfacet
   facet normal -0.000538269 0.500001 -0.866024
@@ -8434,6 +8434,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.3478 25.8644 25.8477
     endloop
   endfacet
+  facet normal -0.659417 -0.651057 -0.375892
+    outer loop
+      vertex 10.9142 30.802 21.6547
+      vertex 10.7175 27.9014 27.0237
+      vertex 10.7175 30.9514 21.741
+    endloop
+  endfacet
+  facet normal -0.659309 -0.651142 -0.375934
+    outer loop
+      vertex 10.7175 27.9014 27.0237
+      vertex 10.9142 30.802 21.6547
+      vertex 10.9142 27.752 26.9375
+    endloop
+  endfacet
   facet normal -0.659309 0.651142 0.375934
     outer loop
       vertex 10.7175 28.2031 20.1543
@@ -8460,20 +8474,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.5 24.7952 25.2304
       vertex 9.76105 27.86 19.9562
       vertex 9.5 27.8452 19.9476
-    endloop
-  endfacet
-  facet normal -0.831531 0.481059 0.277737
-    outer loop
-      vertex 11.0867 28.5228 20.3389
-      vertex 11.232 25.6612 25.7304
-      vertex 11.232 28.7112 20.4476
-    endloop
-  endfacet
-  facet normal -0.83159 0.48098 0.277697
-    outer loop
-      vertex 11.232 25.6612 25.7304
-      vertex 11.0867 28.5228 20.3389
-      vertex 11.0867 25.4728 25.6216
     endloop
   endfacet
   facet normal 0.946961 -0.278297 -0.160673
@@ -8588,20 +8588,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.232 27.3933 26.7304
     endloop
   endfacet
-  facet normal -0.555483 -0.720122 -0.415767
-    outer loop
-      vertex 10.5 31.0772 21.8137
-      vertex 10.7175 27.9014 27.0237
-      vertex 10.5 28.0272 27.0964
-    endloop
-  endfacet
-  facet normal -0.555483 -0.720122 -0.415767
-    outer loop
-      vertex 10.7175 27.9014 27.0237
-      vertex 10.5 31.0772 21.8137
-      vertex 10.7175 30.9514 21.741
-    endloop
-  endfacet
   facet normal 0.321577 -0.820023 -0.473445
     outer loop
       vertex 8.73463 28.1274 27.1543
@@ -8644,6 +8630,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 7.5 26.5272 26.2304
     endloop
   endfacet
+  facet normal -0.555483 -0.720122 -0.415767
+    outer loop
+      vertex 10.5 31.0772 21.8137
+      vertex 10.7175 27.9014 27.0237
+      vertex 10.5 28.0272 27.0964
+    endloop
+  endfacet
+  facet normal -0.555483 -0.720122 -0.415767
+    outer loop
+      vertex 10.7175 27.9014 27.0237
+      vertex 10.5 31.0772 21.8137
+      vertex 10.7175 30.9514 21.741
+    endloop
+  endfacet
   facet normal -0.442393 0.776672 0.448408
     outer loop
       vertex 10.5 28.0772 20.0816
@@ -8670,6 +8670,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.3478 25.8644 25.8477
       vertex 11.232 28.7112 20.4476
       vertex 11.232 25.6612 25.7304
+    endloop
+  endfacet
+  facet normal -0.831531 0.481059 0.277737
+    outer loop
+      vertex 11.0867 28.5228 20.3389
+      vertex 11.232 25.6612 25.7304
+      vertex 11.232 28.7112 20.4476
+    endloop
+  endfacet
+  facet normal -0.83159 0.48098 0.277697
+    outer loop
+      vertex 11.232 25.6612 25.7304
+      vertex 11.0867 28.5228 20.3389
+      vertex 11.0867 25.4728 25.6216
     endloop
   endfacet
   facet normal 0.195051 -0.849389 -0.4904
@@ -8798,6 +8812,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.3478 27.1901 26.6131
     endloop
   endfacet
+  facet normal 0.195235 0.849362 0.490375
+    outer loop
+      vertex 9.23895 24.81 25.2389
+      vertex 8.98236 27.9042 19.9817
+      vertex 8.98236 24.8542 25.2645
+    endloop
+  endfacet
+  facet normal 0.195051 0.849389 0.4904
+    outer loop
+      vertex 8.98236 27.9042 19.9817
+      vertex 9.23895 24.81 25.2389
+      vertex 9.23895 27.86 19.9562
+    endloop
+  endfacet
   facet normal -0.946949 -0.278327 -0.160691
     outer loop
       vertex 11.4319 30.0255 21.2064
@@ -8810,20 +8838,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.3478 27.1901 26.6131
       vertex 11.4319 30.0255 21.2064
       vertex 11.4319 26.9755 26.4892
-    endloop
-  endfacet
-  facet normal -0.659417 -0.651057 -0.375892
-    outer loop
-      vertex 10.9142 30.802 21.6547
-      vertex 10.7175 27.9014 27.0237
-      vertex 10.7175 30.9514 21.741
-    endloop
-  endfacet
-  facet normal -0.659309 -0.651142 -0.375934
-    outer loop
-      vertex 10.7175 27.9014 27.0237
-      vertex 10.9142 30.802 21.6547
-      vertex 10.9142 27.752 26.9375
     endloop
   endfacet
   facet normal -0.321199 0.820134 0.47351
@@ -9162,20 +9176,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 7.5 29.5772 20.9476
     endloop
   endfacet
-  facet normal 0.195235 0.849362 0.490375
-    outer loop
-      vertex 9.23895 24.81 25.2389
-      vertex 8.98236 27.9042 19.9817
-      vertex 8.98236 24.8542 25.2645
-    endloop
-  endfacet
-  facet normal 0.195051 0.849389 0.4904
-    outer loop
-      vertex 8.98236 27.9042 19.9817
-      vertex 9.23895 24.81 25.2389
-      vertex 9.23895 27.86 19.9562
-    endloop
-  endfacet
   facet normal 0.659328 0.651127 0.375925
     outer loop
       vertex 8.08579 25.3025 25.5233
@@ -9456,6 +9456,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 103.815 28.0772 20.0816
     endloop
   endfacet
+  facet normal 0.896425 0.383819 0.221596
+    outer loop
+      vertex 100.967 25.8644 25.8477
+      vertex 101.083 28.7112 20.4476
+      vertex 100.967 28.9144 20.5649
+    endloop
+  endfacet
+  facet normal 0.896425 0.383819 0.221596
+    outer loop
+      vertex 101.083 28.7112 20.4476
+      vertex 100.967 25.8644 25.8477
+      vertex 101.083 25.6612 25.7304
+    endloop
+  endfacet
   facet normal -0.0652521 0.864177 0.498938
     outer loop
       vertex 103.076 27.86 19.9562
@@ -9678,20 +9692,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 102.05 27.977 20.0238
       vertex 102.297 24.8542 25.2645
       vertex 102.297 27.9042 19.9817
-    endloop
-  endfacet
-  facet normal 0.896425 0.383819 0.221596
-    outer loop
-      vertex 100.967 25.8644 25.8477
-      vertex 101.083 28.7112 20.4476
-      vertex 100.967 28.9144 20.5649
-    endloop
-  endfacet
-  facet normal 0.896425 0.383819 0.221596
-    outer loop
-      vertex 101.083 28.7112 20.4476
-      vertex 100.967 25.8644 25.8477
-      vertex 101.083 25.6612 25.7304
     endloop
   endfacet
   facet normal 0.441787 -0.77693 -0.448557
@@ -10170,6 +10170,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 100.815 26.5272 26.2304
     endloop
   endfacet
+  facet normal 0.441787 0.77693 0.448557
+    outer loop
+      vertex 102.05 24.927 25.3065
+      vertex 101.815 28.0772 20.0816
+      vertex 101.815 25.0272 25.3644
+    endloop
+  endfacet
+  facet normal 0.441633 0.776992 0.448601
+    outer loop
+      vertex 101.815 28.0772 20.0816
+      vertex 102.05 24.927 25.3065
+      vertex 102.05 27.977 20.0238
+    endloop
+  endfacet
   facet normal 0.896425 -0.383819 -0.221596
     outer loop
       vertex 101.083 27.3933 26.7304
@@ -10210,20 +10224,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 101.597 28.2031 20.1543
       vertex 101.815 25.0272 25.3644
       vertex 101.815 28.0772 20.0816
-    endloop
-  endfacet
-  facet normal 0.441787 0.77693 0.448557
-    outer loop
-      vertex 102.05 24.927 25.3065
-      vertex 101.815 28.0772 20.0816
-      vertex 101.815 25.0272 25.3644
-    endloop
-  endfacet
-  facet normal 0.441633 0.776992 0.448601
-    outer loop
-      vertex 101.815 28.0772 20.0816
-      vertex 102.05 24.927 25.3065
-      vertex 102.05 27.977 20.0238
     endloop
   endfacet
   facet normal -0.0652397 0.864178 0.498939
@@ -10280,6 +10280,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 11.4829 79.3106 56.7049
       vertex 11.4319 82.1384 51.2938
       vertex 11.4319 79.0884 56.5766
+    endloop
+  endfacet
+  facet normal 0.896865 0.383048 0.221151
+    outer loop
+      vertex 7.65224 78.8738 56.4527
+      vertex 7.76795 81.7206 51.0526
+      vertex 7.65224 81.9238 51.1699
+    endloop
+  endfacet
+  facet normal 0.896865 0.383048 0.221151
+    outer loop
+      vertex 7.76795 81.7206 51.0526
+      vertex 7.65224 78.8738 56.4527
+      vertex 7.76795 78.6706 56.3354
     endloop
   endfacet
   facet normal 0.442347 -0.776691 -0.448419
@@ -11150,20 +11164,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8.08579 78.3119 56.1283
     endloop
   endfacet
-  facet normal 0.896865 0.383048 0.221151
-    outer loop
-      vertex 7.65224 78.8738 56.4527
-      vertex 7.76795 81.7206 51.0526
-      vertex 7.65224 81.9238 51.1699
-    endloop
-  endfacet
-  facet normal 0.896865 0.383048 0.221151
-    outer loop
-      vertex 7.76795 81.7206 51.0526
-      vertex 7.65224 78.8738 56.4527
-      vertex 7.76795 78.6706 56.3354
-    endloop
-  endfacet
   facet normal 0.997859 0.0566387 0.0327001
     outer loop
       vertex 7.5 79.5367 56.8354
@@ -11304,102 +11304,18 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 24 50.4346 13.8216
     endloop
   endfacet
-  facet normal 0.555668 0.720012 0.415711
+  facet normal 0.946934 0.278376 0.160694
     outer loop
-      vertex 7 22.7942 24.7679
-      vertex 6.56495 23.346 24.3937
-      vertex 6.56495 23.046 24.9133
+      vertex 5.1363 24.8977 25.9824
+      vertex 5.30448 24.7686 25.215
+      vertex 5.1363 25.1977 25.4627
     endloop
   endfacet
-  facet normal 0.555668 0.720012 0.415711
+  facet normal 0.946944 0.278338 0.160703
     outer loop
-      vertex 6.56495 23.346 24.3937
-      vertex 7 22.7942 24.7679
-      vertex 7 23.0942 24.2483
-    endloop
-  endfacet
-  facet normal 0.321372 0.820079 0.473487
-    outer loop
-      vertex 7.96472 22.4482 24.5681
-      vertex 7.46927 22.8938 24.1326
-      vertex 7.46927 22.5938 24.6522
-    endloop
-  endfacet
-  facet normal 0.321372 0.820079 0.473487
-    outer loop
-      vertex 7.46927 22.8938 24.1326
-      vertex 7.96472 22.4482 24.5681
-      vertex 7.96472 22.7482 24.0485
-    endloop
-  endfacet
-  facet normal 0 0.866019 0.500011
-    outer loop
-      vertex 228.13 22.6301 23.9804
-      vertex 9 22.3301 24.5
-      vertex 228.13 22.3301 24.5
-    endloop
-  endfacet
-  facet normal 0 0.866019 0.500011
-    outer loop
-      vertex 9 22.3301 24.5
-      vertex 228.13 22.6301 23.9804
-      vertex 9 22.6301 23.9804
-    endloop
-  endfacet
-  facet normal 0.751865 0.570981 0.329666
-    outer loop
-      vertex 5.82659 23.6854 25.2825
-      vertex 6.17157 23.6447 24.5662
-      vertex 5.82659 23.9854 24.7629
-    endloop
-  endfacet
-  facet normal 0.751865 0.570981 0.329666
-    outer loop
-      vertex 6.17157 23.6447 24.5662
-      vertex 5.82659 23.6854 25.2825
-      vertex 6.17157 23.3447 25.0858
-    endloop
-  endfacet
-  facet normal 0.442263 0.77672 0.448453
-    outer loop
-      vertex 7.46927 22.5938 24.6522
-      vertex 7 23.0942 24.2483
-      vertex 7 22.7942 24.7679
-    endloop
-  endfacet
-  facet normal 0.442263 0.77672 0.448453
-    outer loop
-      vertex 7 23.0942 24.2483
-      vertex 7.46927 22.5938 24.6522
-      vertex 7.46927 22.8938 24.1326
-    endloop
-  endfacet
-  facet normal 0.997859 0.0566421 0.0327033
-    outer loop
-      vertex 5 25.7942 26.5
-      vertex 5.03422 25.6421 25.7193
-      vertex 5 26.0942 25.9804
-    endloop
-  endfacet
-  facet normal 0.997859 0.0566421 0.0327033
-    outer loop
-      vertex 5.03422 25.6421 25.7193
-      vertex 5 25.7942 26.5
-      vertex 5.03422 25.3421 26.2389
-    endloop
-  endfacet
-  facet normal 0.195055 0.849385 0.490407
-    outer loop
-      vertex 8.47789 22.3598 24.5171
-      vertex 7.96472 22.7482 24.0485
-      vertex 7.96472 22.4482 24.5681
-    endloop
-  endfacet
-  facet normal 0.195055 0.849385 0.490407
-    outer loop
-      vertex 7.96472 22.7482 24.0485
-      vertex 8.47789 22.3598 24.5171
-      vertex 8.47789 22.6598 23.9975
+      vertex 5.30448 24.7686 25.215
+      vertex 5.1363 24.8977 25.9824
+      vertex 5.30448 24.4686 25.7346
     endloop
   endfacet
   facet normal 1 0 0
@@ -11416,32 +11332,60 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 5 26.0942 25.9804
     endloop
   endfacet
-  facet normal 0.831481 0.481119 0.277782
+  facet normal 0.442263 0.77672 0.448453
     outer loop
-      vertex 5.5359 24.0622 25.5
-      vertex 5.82659 23.9854 24.7629
-      vertex 5.5359 24.3622 24.9804
+      vertex 7.46927 22.5938 24.6522
+      vertex 7 23.0942 24.2483
+      vertex 7 22.7942 24.7679
     endloop
   endfacet
-  facet normal 0.831481 0.481119 0.277782
+  facet normal 0.442263 0.77672 0.448453
     outer loop
-      vertex 5.82659 23.9854 24.7629
-      vertex 5.5359 24.0622 25.5
-      vertex 5.82659 23.6854 25.2825
+      vertex 7 23.0942 24.2483
+      vertex 7.46927 22.5938 24.6522
+      vertex 7.46927 22.8938 24.1326
     endloop
   endfacet
-  facet normal 0.659288 0.651151 0.375953
+  facet normal 0.555668 0.720012 0.415711
     outer loop
-      vertex 6.17157 23.3447 25.0858
+      vertex 7 22.7942 24.7679
       vertex 6.56495 23.346 24.3937
-      vertex 6.17157 23.6447 24.5662
-    endloop
-  endfacet
-  facet normal 0.659288 0.651151 0.375953
-    outer loop
-      vertex 6.56495 23.346 24.3937
-      vertex 6.17157 23.3447 25.0858
       vertex 6.56495 23.046 24.9133
+    endloop
+  endfacet
+  facet normal 0.555668 0.720012 0.415711
+    outer loop
+      vertex 6.56495 23.346 24.3937
+      vertex 7 22.7942 24.7679
+      vertex 7 23.0942 24.2483
+    endloop
+  endfacet
+  facet normal 0.321372 0.820079 0.473487
+    outer loop
+      vertex 7.96472 22.4482 24.5681
+      vertex 7.46927 22.8938 24.1326
+      vertex 7.46927 22.5938 24.6522
+    endloop
+  endfacet
+  facet normal 0.321372 0.820079 0.473487
+    outer loop
+      vertex 7.46927 22.8938 24.1326
+      vertex 7.96472 22.4482 24.5681
+      vertex 7.96472 22.7482 24.0485
+    endloop
+  endfacet
+  facet normal 0.997859 0.0566421 0.0327033
+    outer loop
+      vertex 5 25.7942 26.5
+      vertex 5.03422 25.6421 25.7193
+      vertex 5 26.0942 25.9804
+    endloop
+  endfacet
+  facet normal 0.997859 0.0566421 0.0327033
+    outer loop
+      vertex 5.03422 25.6421 25.7193
+      vertex 5 25.7942 26.5
+      vertex 5.03422 25.3421 26.2389
     endloop
   endfacet
   facet normal 0.0654984 0.864159 0.498937
@@ -11458,18 +11402,32 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9 22.6301 23.9804
     endloop
   endfacet
-  facet normal 0.946934 0.278376 0.160694
+  facet normal 0.980783 0.168961 0.0975526
     outer loop
-      vertex 5.1363 24.8977 25.9824
-      vertex 5.30448 24.7686 25.215
+      vertex 5.03422 25.3421 26.2389
       vertex 5.1363 25.1977 25.4627
+      vertex 5.03422 25.6421 25.7193
     endloop
   endfacet
-  facet normal 0.946944 0.278338 0.160703
+  facet normal 0.98078 0.168985 0.0975477
     outer loop
-      vertex 5.30448 24.7686 25.215
+      vertex 5.1363 25.1977 25.4627
+      vertex 5.03422 25.3421 26.2389
       vertex 5.1363 24.8977 25.9824
-      vertex 5.30448 24.4686 25.7346
+    endloop
+  endfacet
+  facet normal 0 0.866019 0.500011
+    outer loop
+      vertex 228.13 22.6301 23.9804
+      vertex 9 22.3301 24.5
+      vertex 228.13 22.3301 24.5
+    endloop
+  endfacet
+  facet normal 0 0.866019 0.500011
+    outer loop
+      vertex 9 22.3301 24.5
+      vertex 228.13 22.6301 23.9804
+      vertex 9 22.6301 23.9804
     endloop
   endfacet
   facet normal 0.896865 0.383044 0.221157
@@ -11486,18 +11444,60 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 5.5359 24.0622 25.5
     endloop
   endfacet
-  facet normal 0.980783 0.168961 0.0975526
+  facet normal 0.831481 0.481119 0.277782
     outer loop
-      vertex 5.03422 25.3421 26.2389
-      vertex 5.1363 25.1977 25.4627
-      vertex 5.03422 25.6421 25.7193
+      vertex 5.5359 24.0622 25.5
+      vertex 5.82659 23.9854 24.7629
+      vertex 5.5359 24.3622 24.9804
     endloop
   endfacet
-  facet normal 0.98078 0.168985 0.0975477
+  facet normal 0.831481 0.481119 0.277782
     outer loop
-      vertex 5.1363 25.1977 25.4627
-      vertex 5.03422 25.3421 26.2389
-      vertex 5.1363 24.8977 25.9824
+      vertex 5.82659 23.9854 24.7629
+      vertex 5.5359 24.0622 25.5
+      vertex 5.82659 23.6854 25.2825
+    endloop
+  endfacet
+  facet normal 0.751865 0.570981 0.329666
+    outer loop
+      vertex 5.82659 23.6854 25.2825
+      vertex 6.17157 23.6447 24.5662
+      vertex 5.82659 23.9854 24.7629
+    endloop
+  endfacet
+  facet normal 0.751865 0.570981 0.329666
+    outer loop
+      vertex 6.17157 23.6447 24.5662
+      vertex 5.82659 23.6854 25.2825
+      vertex 6.17157 23.3447 25.0858
+    endloop
+  endfacet
+  facet normal 0.195055 0.849385 0.490407
+    outer loop
+      vertex 8.47789 22.3598 24.5171
+      vertex 7.96472 22.7482 24.0485
+      vertex 7.96472 22.4482 24.5681
+    endloop
+  endfacet
+  facet normal 0.195055 0.849385 0.490407
+    outer loop
+      vertex 7.96472 22.7482 24.0485
+      vertex 8.47789 22.3598 24.5171
+      vertex 8.47789 22.6598 23.9975
+    endloop
+  endfacet
+  facet normal 0.659288 0.651151 0.375953
+    outer loop
+      vertex 6.17157 23.3447 25.0858
+      vertex 6.56495 23.346 24.3937
+      vertex 6.17157 23.6447 24.5662
+    endloop
+  endfacet
+  facet normal 0.659288 0.651151 0.375953
+    outer loop
+      vertex 6.56495 23.346 24.3937
+      vertex 6.17157 23.3447 25.0858
+      vertex 6.56495 23.046 24.9133
     endloop
   endfacet
   facet normal -0.00017464 -0.500007 0.866021
@@ -12774,6 +12774,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 6.50557 150.246 26.5217
     endloop
   endfacet
+  facet normal 0.454048 0 0.890977
+    outer loop
+      vertex 6.05954 150.246 23.7056
+      vertex 6.50557 143.246 23.4783
+      vertex 6.50557 150.246 23.4783
+    endloop
+  endfacet
+  facet normal 0.454048 0 0.890977
+    outer loop
+      vertex 6.50557 143.246 23.4783
+      vertex 6.05954 150.246 23.7056
+      vertex 6.05954 143.246 23.7056
+    endloop
+  endfacet
   facet normal -0.891038 0 -0.453928
     outer loop
       vertex 8.52169 143.246 25.4944
@@ -12842,20 +12856,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 7.49443 143.246 23.4783
       vertex 7 150.246 23.4
       vertex 7 143.246 23.4
-    endloop
-  endfacet
-  facet normal 0.454048 0 0.890977
-    outer loop
-      vertex 6.05954 150.246 23.7056
-      vertex 6.50557 143.246 23.4783
-      vertex 6.50557 150.246 23.4783
-    endloop
-  endfacet
-  facet normal 0.454048 0 0.890977
-    outer loop
-      vertex 6.50557 143.246 23.4783
-      vertex 6.05954 150.246 23.7056
-      vertex 6.05954 143.246 23.7056
     endloop
   endfacet
   facet normal -0.156415 0 -0.987691
@@ -14328,6 +14328,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 134.235 16.1522 4
     endloop
   endfacet
+  facet normal 0.660671 0.750676 -0
+    outer loop
+      vertex 133.782 16.4133 4
+      vertex 133.586 16.5858 10.19
+      vertex 133.782 16.4133 10.19
+    endloop
+  endfacet
+  facet normal 0.660671 0.750676 0
+    outer loop
+      vertex 133.586 16.5858 10.19
+      vertex 133.782 16.4133 4
+      vertex 133.586 16.5858 4
+    endloop
+  endfacet
   facet normal 0.750895 -0.660421 0
     outer loop
       vertex 133.413 19.2175 10.19
@@ -14368,20 +14382,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 136.587 16.7825 10.19
       vertex 136.414 16.5858 4
       vertex 136.414 16.5858 10.19
-    endloop
-  endfacet
-  facet normal 0.896405 0.443235 0
-    outer loop
-      vertex 133.268 17 10.19
-      vertex 133.152 17.2346 4
-      vertex 133.152 17.2346 10.19
-    endloop
-  endfacet
-  facet normal 0.896405 0.443235 0
-    outer loop
-      vertex 133.152 17.2346 4
-      vertex 133.268 17 10.19
-      vertex 133.268 17 4
     endloop
   endfacet
   facet normal 0.660671 -0.750676 0
@@ -14550,20 +14550,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 136.414 19.4142 10.19
       vertex 136.587 19.2175 4
       vertex 136.587 19.2175 10.19
-    endloop
-  endfacet
-  facet normal 0.0653771 0.997861 -0
-    outer loop
-      vertex 135 16 4
-      vertex 134.739 16.0171 10.19
-      vertex 135 16 10.19
-    endloop
-  endfacet
-  facet normal 0.0653771 0.997861 0
-    outer loop
-      vertex 134.739 16.0171 10.19
-      vertex 135 16 4
-      vertex 134.739 16.0171 4
     endloop
   endfacet
   facet normal -0.0653771 -0.997861 0
@@ -14776,6 +14762,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 135.765 19.8478 4
     endloop
   endfacet
+  facet normal 0.896405 0.443235 0
+    outer loop
+      vertex 133.268 17 10.19
+      vertex 133.152 17.2346 4
+      vertex 133.152 17.2346 10.19
+    endloop
+  endfacet
+  facet normal 0.896405 0.443235 0
+    outer loop
+      vertex 133.152 17.2346 4
+      vertex 133.268 17 10.19
+      vertex 133.268 17 4
+    endloop
+  endfacet
   facet normal 0.997887 0.0649716 0
     outer loop
       vertex 133.017 17.7389 10.19
@@ -14802,20 +14802,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 136.732 19 10.19
       vertex 136.848 18.7654 4
       vertex 136.848 18.7654 10.19
-    endloop
-  endfacet
-  facet normal 0.194648 0.980873 -0
-    outer loop
-      vertex 134.739 16.0171 4
-      vertex 134.482 16.0681 10.19
-      vertex 134.739 16.0171 10.19
-    endloop
-  endfacet
-  facet normal 0.194648 0.980873 0
-    outer loop
-      vertex 134.482 16.0681 10.19
-      vertex 134.739 16.0171 4
-      vertex 134.482 16.0681 4
     endloop
   endfacet
   facet normal -0.947066 -0.321039 0
@@ -14846,18 +14832,18 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 135.518 16.0681 4
     endloop
   endfacet
-  facet normal 0.660671 0.750676 -0
+  facet normal 0.194648 0.980873 -0
     outer loop
-      vertex 133.782 16.4133 4
-      vertex 133.586 16.5858 10.19
-      vertex 133.782 16.4133 10.19
+      vertex 134.739 16.0171 4
+      vertex 134.482 16.0681 10.19
+      vertex 134.739 16.0171 10.19
     endloop
   endfacet
-  facet normal 0.660671 0.750676 0
+  facet normal 0.194648 0.980873 0
     outer loop
-      vertex 133.586 16.5858 10.19
-      vertex 133.782 16.4133 4
-      vertex 133.586 16.5858 4
+      vertex 134.482 16.0681 10.19
+      vertex 134.739 16.0171 4
+      vertex 134.482 16.0681 4
     endloop
   endfacet
   facet normal 0.83205 -0.5547 0
@@ -14872,6 +14858,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 133.413 19.2175 4
       vertex 133.268 19 10.19
       vertex 133.268 19 4
+    endloop
+  endfacet
+  facet normal 0.0653771 0.997861 -0
+    outer loop
+      vertex 135 16 4
+      vertex 134.739 16.0171 10.19
+      vertex 135 16 10.19
+    endloop
+  endfacet
+  facet normal 0.0653771 0.997861 0
+    outer loop
+      vertex 134.739 16.0171 10.19
+      vertex 135 16 4
+      vertex 134.739 16.0171 4
     endloop
   endfacet
   facet normal 0.441708 0.897159 -0
@@ -15364,20 +15364,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.41421 43.5858 10.19
     endloop
   endfacet
-  facet normal 0.896845 0.442344 0
-    outer loop
-      vertex 6.26795 44 10.19
-      vertex 6.15224 44.2346 4
-      vertex 6.15224 44.2346 10.19
-    endloop
-  endfacet
-  facet normal 0.896845 0.442344 0
-    outer loop
-      vertex 6.15224 44.2346 4
-      vertex 6.26795 44 10.19
-      vertex 6.26795 44 4
-    endloop
-  endfacet
   facet normal 0.659362 -0.751826 0
     outer loop
       vertex 6.58579 46.4142 4
@@ -15460,6 +15446,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8 43 10.19
       vertex 8.26105 43.0171 4
       vertex 8 43 4
+    endloop
+  endfacet
+  facet normal -0.83145 0.5556 0
+    outer loop
+      vertex 9.58671 43.7825 4
+      vertex 9.73205 44 10.19
+      vertex 9.73205 44 4
+    endloop
+  endfacet
+  facet normal -0.83145 0.5556 0
+    outer loop
+      vertex 9.73205 44 10.19
+      vertex 9.58671 43.7825 4
+      vertex 9.58671 43.7825 10.19
     endloop
   endfacet
   facet normal 0.946961 -0.321348 0
@@ -15658,20 +15658,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.73205 44 10.19
     endloop
   endfacet
-  facet normal -0.83145 0.5556 0
-    outer loop
-      vertex 9.58671 43.7825 4
-      vertex 9.73205 44 10.19
-      vertex 9.73205 44 4
-    endloop
-  endfacet
-  facet normal -0.83145 0.5556 0
-    outer loop
-      vertex 9.73205 44 10.19
-      vertex 9.58671 43.7825 4
-      vertex 9.58671 43.7825 10.19
-    endloop
-  endfacet
   facet normal 0.194947 -0.980814 0
     outer loop
       vertex 7.48236 46.9319 4
@@ -15754,6 +15740,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8.76537 46.8478 10.19
       vertex 8.51764 46.9319 4
       vertex 8.76537 46.8478 4
+    endloop
+  endfacet
+  facet normal 0.896845 0.442344 0
+    outer loop
+      vertex 6.26795 44 10.19
+      vertex 6.15224 44.2346 4
+      vertex 6.15224 44.2346 10.19
+    endloop
+  endfacet
+  facet normal 0.896845 0.442344 0
+    outer loop
+      vertex 6.15224 44.2346 4
+      vertex 6.26795 44 10.19
+      vertex 6.26795 44 4
     endloop
   endfacet
   facet normal 0.99786 0.0653902 0
@@ -16316,20 +16316,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 7.23463 123.152 4
     endloop
   endfacet
-  facet normal 0.66044 0.750879 -0
-    outer loop
-      vertex 6.78248 123.413 4
-      vertex 6.58579 123.586 10.19
-      vertex 6.78248 123.413 10.19
-    endloop
-  endfacet
-  facet normal 0.66044 0.750879 0
-    outer loop
-      vertex 6.58579 123.586 10.19
-      vertex 6.78248 123.413 4
-      vertex 6.58579 123.586 4
-    endloop
-  endfacet
   facet normal 0.750676 -0.660671 0
     outer loop
       vertex 6.41329 126.218 10.19
@@ -16456,6 +16442,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8 123 4
     endloop
   endfacet
+  facet normal -0.832039 0.554718 0
+    outer loop
+      vertex 9.58671 123.782 4
+      vertex 9.73205 124 10.19
+      vertex 9.73205 124 4
+    endloop
+  endfacet
+  facet normal -0.832039 0.554718 0
+    outer loop
+      vertex 9.73205 124 10.19
+      vertex 9.58671 123.782 4
+      vertex 9.58671 123.782 10.19
+    endloop
+  endfacet
   facet normal 0.946644 -0.322281 0
     outer loop
       vertex 6.06815 125.518 10.19
@@ -16526,6 +16526,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.58671 126.218 10.19
     endloop
   endfacet
+  facet normal 0.064984 0.997886 -0
+    outer loop
+      vertex 8 123 4
+      vertex 7.73895 123.017 10.19
+      vertex 8 123 10.19
+    endloop
+  endfacet
+  facet normal 0.064984 0.997886 0
+    outer loop
+      vertex 7.73895 123.017 10.19
+      vertex 8 123 4
+      vertex 7.73895 123.017 4
+    endloop
+  endfacet
   facet normal -0.064984 -0.997886 0
     outer loop
       vertex 8 127 4
@@ -16566,6 +16580,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.58671 126.218 10.19
       vertex 9.73205 126 4
       vertex 9.73205 126 10.19
+    endloop
+  endfacet
+  facet normal -0.554665 -0.832074 0
+    outer loop
+      vertex 9 126.732 4
+      vertex 9.21752 126.587 10.19
+      vertex 9 126.732 10.19
+    endloop
+  endfacet
+  facet normal -0.554665 -0.832074 -0
+    outer loop
+      vertex 9.21752 126.587 10.19
+      vertex 9 126.732 4
+      vertex 9.21752 126.587 4
     endloop
   endfacet
   facet normal 0.321121 -0.947038 0
@@ -16610,20 +16638,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 6 125 4
     endloop
   endfacet
-  facet normal -0.554665 -0.832074 0
-    outer loop
-      vertex 9 126.732 4
-      vertex 9.21752 126.587 10.19
-      vertex 9 126.732 10.19
-    endloop
-  endfacet
-  facet normal -0.554665 -0.832074 -0
-    outer loop
-      vertex 9.21752 126.587 10.19
-      vertex 9 126.732 4
-      vertex 9.21752 126.587 4
-    endloop
-  endfacet
   facet normal -0.44319 0.896428 0
     outer loop
       vertex 9 123.268 4
@@ -16650,20 +16664,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 9.84776 124.235 10.19
       vertex 9.73205 124 4
       vertex 9.73205 124 10.19
-    endloop
-  endfacet
-  facet normal -0.832039 0.554718 0
-    outer loop
-      vertex 9.58671 123.782 4
-      vertex 9.73205 124 10.19
-      vertex 9.73205 124 4
-    endloop
-  endfacet
-  facet normal -0.832039 0.554718 0
-    outer loop
-      vertex 9.73205 124 10.19
-      vertex 9.58671 123.782 4
-      vertex 9.58671 123.782 10.19
     endloop
   endfacet
   facet normal 0.194947 -0.980814 0
@@ -16834,6 +16834,20 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 8.51764 123.068 4
     endloop
   endfacet
+  facet normal 0.66044 0.750879 -0
+    outer loop
+      vertex 6.78248 123.413 4
+      vertex 6.58579 123.586 10.19
+      vertex 6.78248 123.413 10.19
+    endloop
+  endfacet
+  facet normal 0.66044 0.750879 0
+    outer loop
+      vertex 6.58579 123.586 10.19
+      vertex 6.78248 123.413 4
+      vertex 6.58579 123.586 4
+    endloop
+  endfacet
   facet normal 0.832039 -0.554718 0
     outer loop
       vertex 6.26795 126 10.19
@@ -16846,20 +16860,6 @@ solid PROVISIONAL_carcasa_x0_y0
       vertex 6.41329 126.218 4
       vertex 6.26795 126 10.19
       vertex 6.26795 126 4
-    endloop
-  endfacet
-  facet normal 0.064984 0.997886 -0
-    outer loop
-      vertex 8 123 4
-      vertex 7.73895 123.017 10.19
-      vertex 8 123 10.19
-    endloop
-  endfacet
-  facet normal 0.064984 0.997886 0
-    outer loop
-      vertex 7.73895 123.017 10.19
-      vertex 8 123 4
-      vertex 7.73895 123.017 4
     endloop
   endfacet
   facet normal 0.44319 0.896428 -0

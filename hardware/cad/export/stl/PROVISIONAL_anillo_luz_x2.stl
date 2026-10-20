@@ -3961,20 +3961,6 @@ solid PROVISIONAL_anillo_luz_x2
       vertex 19.8015 5.30579 -2
     endloop
   endfacet
-  facet normal -0.999464 0.0327251 0
-    outer loop
-      vertex -20.5 0 -2
-      vertex -20.4561 1.34076 0
-      vertex -20.4561 1.34076 -2
-    endloop
-  endfacet
-  facet normal -0.999464 0.0327251 0
-    outer loop
-      vertex -20.4561 1.34076 0
-      vertex -20.5 0 -2
-      vertex -20.5 0 0
-    endloop
-  endfacet
   facet normal 0.97388 -0.227063 0
     outer loop
       vertex 19.8015 -5.30579 0
@@ -4197,34 +4183,6 @@ solid PROVISIONAL_anillo_luz_x2
       vertex 1.34076 -20.4561 0
       vertex 0 -20.5 -2
       vertex 1.34076 -20.4561 -2
-    endloop
-  endfacet
-  facet normal -0.352291 -0.93589 0
-    outer loop
-      vertex -7.84501 -18.9395 -2
-      vertex -6.58951 -19.4121 0
-      vertex -7.84501 -18.9395 0
-    endloop
-  endfacet
-  facet normal -0.352291 -0.93589 -0
-    outer loop
-      vertex -6.58951 -19.4121 0
-      vertex -7.84501 -18.9395 -2
-      vertex -6.58951 -19.4121 -2
-    endloop
-  endfacet
-  facet normal 0.471414 0.881912 -0
-    outer loop
-      vertex 10.25 17.7535 -2
-      vertex 9.06692 18.3859 0
-      vertex 10.25 17.7535 0
-    endloop
-  endfacet
-  facet normal 0.471414 0.881912 0
-    outer loop
-      vertex 9.06692 18.3859 0
-      vertex 10.25 17.7535 -2
-      vertex 9.06692 18.3859 -2
     endloop
   endfacet
   facet normal 0.910864 -0.412706 0
@@ -6103,20 +6061,6 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -1.34076 -20.4561 -2
     endloop
   endfacet
-  facet normal -0.881912 -0.471414 0
-    outer loop
-      vertex -17.7535 -10.25 -2
-      vertex -18.3859 -9.06692 -0.00999928
-      vertex -18.3859 -9.06692 -2
-    endloop
-  endfacet
-  facet normal -0.881912 -0.471414 0
-    outer loop
-      vertex -18.3859 -9.06692 -0.00999928
-      vertex -17.7535 -10.25 -2
-      vertex -17.7535 -10.25 -0.00999928
-    endloop
-  endfacet
   facet normal 0.634374 -0.773027 0
     outer loop
       vertex 12.4796 -16.2637 -2
@@ -6227,6 +6171,20 @@ solid PROVISIONAL_anillo_luz_x2
       vertex 15.4127 -13.5166 -2
       vertex 14.4957 -14.4957 0
       vertex 14.4957 -14.4957 -2
+    endloop
+  endfacet
+  facet normal 0.471414 0.881912 -0
+    outer loop
+      vertex 10.25 17.7535 -2
+      vertex 9.06692 18.3859 0
+      vertex 10.25 17.7535 0
+    endloop
+  endfacet
+  facet normal 0.471414 0.881912 0
+    outer loop
+      vertex 9.06692 18.3859 0
+      vertex 10.25 17.7535 -2
+      vertex 9.06692 18.3859 -2
     endloop
   endfacet
   facet normal -0.812718 -0.582657 0
@@ -6397,6 +6355,20 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -18.9395 7.84501 0
     endloop
   endfacet
+  facet normal -0.352291 -0.93589 0
+    outer loop
+      vertex -7.84501 -18.9395 -2
+      vertex -6.58951 -19.4121 0
+      vertex -7.84501 -18.9395 0
+    endloop
+  endfacet
+  facet normal -0.352291 -0.93589 -0
+    outer loop
+      vertex -6.58951 -19.4121 0
+      vertex -7.84501 -18.9395 -2
+      vertex -6.58951 -19.4121 -2
+    endloop
+  endfacet
   facet normal -0.0327251 0.999464 0
     outer loop
       vertex 0 20.5 -2
@@ -6411,18 +6383,18 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -1.34076 20.4561 -2
     endloop
   endfacet
-  facet normal 0.352291 0.93589 -0
+  facet normal -0.881912 -0.471414 0
     outer loop
-      vertex 7.84501 18.9395 -2
-      vertex 6.58951 19.4121 0
-      vertex 7.84501 18.9395 0
+      vertex -17.7535 -10.25 -2
+      vertex -18.3859 -9.06692 -0.00999928
+      vertex -18.3859 -9.06692 -2
     endloop
   endfacet
-  facet normal 0.352291 0.93589 0
+  facet normal -0.881912 -0.471414 0
     outer loop
-      vertex 6.58951 19.4121 0
-      vertex 7.84501 18.9395 -2
-      vertex 6.58951 19.4121 -2
+      vertex -18.3859 -9.06692 -0.00999928
+      vertex -17.7535 -10.25 -2
+      vertex -17.7535 -10.25 -0.00999928
     endloop
   endfacet
   facet normal 0.999464 -0.0327251 0
@@ -6437,6 +6409,20 @@ solid PROVISIONAL_anillo_luz_x2
       vertex 20.5 0 -2
       vertex 20.4561 -1.34076 0
       vertex 20.4561 -1.34076 -2
+    endloop
+  endfacet
+  facet normal 0.352291 0.93589 -0
+    outer loop
+      vertex 7.84501 18.9395 -2
+      vertex 6.58951 19.4121 0
+      vertex 7.84501 18.9395 0
+    endloop
+  endfacet
+  facet normal 0.352291 0.93589 0
+    outer loop
+      vertex 6.58951 19.4121 0
+      vertex 7.84501 18.9395 -2
+      vertex 6.58951 19.4121 -2
     endloop
   endfacet
   facet normal -0.528068 -0.849202 0
@@ -6507,6 +6493,20 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -13.5166 15.4127 0
       vertex -12.4796 16.2637 -2
       vertex -13.5166 15.4127 -2
+    endloop
+  endfacet
+  facet normal -0.999464 0.0327251 0
+    outer loop
+      vertex -20.5 0 -2
+      vertex -20.4561 1.34076 0
+      vertex -20.4561 1.34076 -2
+    endloop
+  endfacet
+  facet normal -0.999464 0.0327251 0
+    outer loop
+      vertex -20.4561 1.34076 0
+      vertex -20.5 0 -2
+      vertex -20.5 0 0
     endloop
   endfacet
   facet normal -0.412682 -0.910875 0
@@ -7965,6 +7965,20 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -12.4556 -9.55755 3.6
     endloop
   endfacet
+  facet normal -0.352255 -0.935904 0
+    outer loop
+      vertex 5.0466 14.8668 -2
+      vertex 6.00813 14.5049 3.6
+      vertex 5.0466 14.8668 3.6
+    endloop
+  endfacet
+  facet normal -0.352255 -0.935904 -0
+    outer loop
+      vertex 6.00813 14.5049 3.6
+      vertex 5.0466 14.8668 -2
+      vertex 6.00813 14.5049 -2
+    endloop
+  endfacet
   facet normal 0.91085 0.412738 -0
     outer loop
       vertex -14.2771 -6.51085 -0.00999928
@@ -8049,20 +8063,6 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -10.3517 -11.8039 -2
     endloop
   endfacet
-  facet normal 0.0327046 -0.999465 0
-    outer loop
-      vertex -1.02683 15.6664 -2
-      vertex 0 15.7 -0.00999928
-      vertex -1.02683 15.6664 -0.00999928
-    endloop
-  endfacet
-  facet normal 0.0327046 -0.999465 0
-    outer loop
-      vertex 0 15.7 -0.00999928
-      vertex -1.02683 15.6664 -2
-      vertex 0 15.7 -2
-    endloop
-  endfacet
   facet normal -0.773031 0.634369 0
     outer loop
       vertex 11.8039 -10.3517 -2
@@ -8133,18 +8133,18 @@ solid PROVISIONAL_anillo_luz_x2
       vertex -4.06346 15.165 -2
     endloop
   endfacet
-  facet normal -0.352255 -0.935904 0
+  facet normal 0.0327046 -0.999465 0
     outer loop
-      vertex 5.0466 14.8668 -2
-      vertex 6.00813 14.5049 3.6
-      vertex 5.0466 14.8668 3.6
+      vertex -1.02683 15.6664 -2
+      vertex 0 15.7 -0.00999928
+      vertex -1.02683 15.6664 -0.00999928
     endloop
   endfacet
-  facet normal -0.352255 -0.935904 -0
+  facet normal 0.0327046 -0.999465 0
     outer loop
-      vertex 6.00813 14.5049 3.6
-      vertex 5.0466 14.8668 -2
-      vertex 6.00813 14.5049 -2
+      vertex 0 15.7 -0.00999928
+      vertex -1.02683 15.6664 -2
+      vertex 0 15.7 -2
     endloop
   endfacet
   facet normal 0.995185 0.0980166 0
