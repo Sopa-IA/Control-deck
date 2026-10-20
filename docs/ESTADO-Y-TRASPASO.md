@@ -45,10 +45,12 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `hardware/cad/render.sh` | Renders técnicos de OpenSCAD (no los fotorrealistas). |
 | `hardware/cad/comprobar_interferencias.py` | Cajas envolventes. No es un choque de mallas. |
 | `hardware/cad/comprobar_stl.py` | Cama 256³, margen 10 mm, malla cerrada y volumen. |
-| `hardware/cad/stl_a_step_freecad.py` | STEP facetado opcional. `export/step/LEEME.md`: los STEP no están en el repo. |
-| `hardware/cad/export/stl/` | 20 STL `PROVISIONAL_*` + `LEEME.md`. |
-| `hardware/impresion/base/` | Guía de la base (`LEEME.txt`), vistas, pared trasera de prueba y dos scripts. |
-| `hardware/impresion/plantillas/` | Plantilla de agujeros mini-ITX y plantilla de pivotes. |
+| `hardware/cad/stl_a_step_freecad.py` | STEP facetado opcional de `export/step/`. Esos archivos siguen fuera del repo (ver `export/step/LEEME.md`). Los STEP que sí están versionados viven en `hardware/impresion/`. |
+| `hardware/cad/export/stl/` | 20 STL `PROVISIONAL_*` + `LEEME.md`. No hay copias numeradas en `impresion/`. |
+| `hardware/impresion/base/` | Guía de la base (`LEEME.txt`), vistas, pared trasera de prueba, dos scripts y `STEP/` de esas piezas. |
+| `hardware/impresion/siguientes/` | Orden de lo que se imprime después de la base, STEP AP214 y vistas. Los STL siguen en `export/stl/`. |
+| `hardware/impresion/plantillas/` | Plantilla de agujeros mini-ITX (verificada) y plantilla de pivotes (sin resultado) + `vista_pivotes.png`. |
+| `docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf` | Manual de montaje, 21 páginas, dibujos del CAD. Prototipo. |
 | `hardware/render/` | Pipeline fotorrealista: `escena_blender.py`, `postproceso.py`, `exportar_partes.sh`, `render_fotorrealista.sh`, `descargar_modelos.sh`, `convertir_step.py`, `etiqueta_hdd.py`, `partes_render.scad`, `CREDITOS-MODELOS.md`. |
 | `assets/renders/` | Renders antiguos del diseño (antes de los fotorrealistas). |
 | `assets/renders/prototipo/` | Láminas del PR #5. `06_lo-que-tienes-vs-donde-va_con-fotos.png` es la única imagen con recortes de fotos de Miguel, y él autorizó publicarla. El resto no son fotos. |
@@ -174,9 +176,45 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 
 Vistas de la base: `vista_base.png` y `vista_base_planta.png`. Montada, la guía dice 456,3 × 300,5 mm.
 
+La orientación de carcasa, bisel, guías, anillo, pomo y soporte del Arduino que antes figuraba como no documentada está ahora en `hardware/impresion/siguientes/README.md`. El CAD no ha cambiado.
+
 ---
 
-## 6. Modos de vídeo
+## 6. Después de la base: impresiones, STEP y manual
+
+Añadido el 2026-10-20, encima del `main` `3978879`, sin tocar `hardware/cad/` ni regenerar STL. Sigue siendo un **prototipo**. Ninguna de estas piezas está lista para fabricar ni consta como montada.
+
+Guía de impresión: [`hardware/impresion/siguientes/README.md`](../hardware/impresion/siguientes/README.md). Vista del conjunto: `hardware/impresion/siguientes/vista_siguientes_conjunto.png`.
+
+Orden recomendado, con el STL real (no hay copia numerada):
+
+Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 a 15 están en `hardware/impresion/siguientes/STEP/`, con el mismo nombre de pieza y el prefijo de orden.
+
+| Nº | Pieza | STL | STEP | Notas de estado |
+|---|---|---|---|---|
+| 01 | Plantilla de pivotes C 3,8 / F 3,6 / H 3,4 / J 3,2 | `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl` | `01_PRUEBA_plantilla_pivotes_HP.step` | **Pendiente de resultado.** Hasta entonces la base sigue con insertos M3 |
+| 02 | Bandeja de servicio | `PROVISIONAL_bandeja_servicio.stl` | `02_PROVISIONAL_bandeja_servicio.step` | No impresa, salvo que se haya lanzado como opcional con la base. La STL trae 2 torretas sueltas de la distribución DC |
+| 03 | Carcasa detrás-izquierda | `PROVISIONAL_carcasa_x0_y1.stl` | `03_PROVISIONAL_carcasa_x0_y1.step` (malla) | No impresa. Después de probar la pared I/O |
+| 04 | Carcasa delante-izquierda | `PROVISIONAL_carcasa_x0_y0.stl` | `04_PROVISIONAL_carcasa_x0_y0.step` (malla) | No impresa |
+| 05 | Carcasa delante-derecha | `PROVISIONAL_carcasa_x1_y0.stl` | `05_PROVISIONAL_carcasa_x1_y0.step` (malla, **no válido**) | No impresa. 12 triángulos cruzados en x ≈ 406,3 |
+| 06 | Carcasa detrás-derecha | `PROVISIONAL_carcasa_x1_y1.stl` | `06_PROVISIONAL_carcasa_x1_y1.step` (malla) | No impresa |
+| 07-10 | Bisel, cuatro trozos | `PROVISIONAL_bisel_x0_y0.stl`, `x0_y1`, `x1_y0`, `x1_y1` | `07_` a `10_` (malla) | No impresos |
+| 11-12 | Guías de luz | `PROVISIONAL_guia_luz_frontal_0.stl` y `_1.stl` | `11_` y `12_` (sólido) | No impresas |
+| 13 | Anillo de luz (imprimir 2) | `PROVISIONAL_anillo_luz_x2.stl` | `13_PROVISIONAL_anillo_luz_x2.step` (sólido) | No impreso |
+| 14 | Pomo (imprimir 2) | `PROVISIONAL_pomo_x2.stl` | `14_PROVISIONAL_pomo_x2.step` (sólido) | Ya lanzado antes. Sin resultado |
+| 15 | Soporte Arduino | `PROVISIONAL_soporte_arduino.stl` | `15_PROVISIONAL_soporte_arduino.step` (sólido) | Ya lanzado antes. Sin resultado |
+
+Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla de agujeros) están en `hardware/impresion/base/STEP/` y no hay que reimprimirlos.
+
+**STEP de malla se editan peor en SolidWorks.** Carcasas, biseles, las cuatro bases y la pared I/O salen de la STL: sirven para medir, cortar y añadir operaciones, y los agujeros no son cilindros editables. Los de origen CSG (pivotes, bandeja, guías, anillo, pomo, soporte del Arduino, plantilla de agujeros, pletina y soporte del disco) sí traen cilindros. `05_PROVISIONAL_carcasa_x1_y0` tiene 12 triángulos cruzados; FreeCAD lo marca no válido. La tabla completa, hecha con FreeCAD 1.0 el 2026-10-20, está en `hardware/impresion/siguientes/STEP/COMPROBACION_STEP.txt`. Aquí no se ha reejecutado FreeCAD (no está instalado): solo se ha visto que los 23 STEP son AP214 de FreeCAD.
+
+**Manual:** [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf), 21 páginas, estilo IKEA (inventario, tornillería, 16 pasos y pendientes). Los dibujos salen del CAD, no son fotos del montaje. No certifica que el prototipo esté listo para fabricar.
+
+**Tamaño.** No hay `.gitattributes`. El STEP mayor mide 3,6 MB (`06_PROVISIONAL_carcasa_x1_y1.step`). `hardware/impresion/siguientes/` pesa unos 15 MB. Por debajo del aviso de GitHub (50 MB por archivo) y del rechazo (100 MB). No hace falta Git LFS.
+
+---
+
+## 7. Modos de vídeo
 
 | Modo | Qué hace | Estado |
 |---|---|---|
@@ -188,7 +226,7 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 ---
 
-## 7. Historial de decisiones
+## 8. Historial de decisiones
 
 | PR | Qué se decidió y por qué |
 |---|---|
@@ -197,11 +235,12 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 | **#3** (merge `fc4837b`) | El HP Slimline se saca de la caja y entra la placa desnuda, sin cambiar la envolvente. El adaptador de 65 W se queda fuera y sin modificar. El cambio de sistema pasa a ser automático desde Orbit OS (entonces A y después B). |
 | **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Entra el modo C. El modo B pasa a poco probable porque los manuales de la MSI no documentan DDC/CI. |
 | **#5** (merge `bf6d641`) | Renders del CAD v3, no fotos, con créditos de qué es exacto y qué es aproximado. En un commit aparte, la lámina con recortes de fotos: Miguel autorizó publicar esa imagen. |
-| **Este cambio** | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
+| **#6** (merge `3978879`) | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
+| **Este cambio** | Después de la base: STEP AP214 para SolidWorks, el orden de las 15 piezas siguientes (los STL no se duplican) y el manual de montaje de 21 páginas. La plantilla de pivotes sigue sin resultado. El CAD no se regenera. Los STEP de malla se editan peor; `05_carcasa_x1_y0` tiene 12 triángulos cruzados. |
 
 ---
 
-## 8. Restricciones
+## 9. Restricciones
 
 - No se compra nada sin autorización de Miguel. La capturadora es una propuesta, no un pedido.
 - No se suben credenciales, tokens reales, `.env` ni fotos personales. La única excepción de imagen es la lámina autorizada del PR #5.
@@ -214,10 +253,10 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 ---
 
-## 9. Pendientes, en este orden
+## 10. Pendientes, en este orden
 
 1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`, `soporte_arduino`. El soporte 2,5" ya dio un resultado: salió pequeño.
-2. **Diámetro de pivote** (3,8 / 3,6 / 3,4 / 3,2) cuando Miguel pruebe `PRUEBA_plantilla_pivotes_HP.stl`.
+2. **Diámetro de pivote** (C 3,8 / F 3,6 / H 3,4 / J 3,2) cuando Miguel pruebe `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl`. Sigue **sin resultado**. Es la pieza 01 de `hardware/impresion/siguientes/README.md`.
 3. **Modelo de la Raspberry Pi** y por qué entrada da imagen hoy en la MSI.
 4. **Posiciones de los puertos y teclas del canto del MSI.**
 5. **Medidas de los potenciómetros y de los pulsadores** de Miguel (el eje de 6 mm está acordado y sin medir).
@@ -240,7 +279,7 @@ También siguen abiertos: posición real de cada conector trasero del HP, placa 
 
 ---
 
-## 10. Cómo lo retoma un agente
+## 11. Cómo lo retoma un agente
 
 Desde la raíz del repo. OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
 
