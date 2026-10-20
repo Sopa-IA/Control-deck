@@ -1,6 +1,8 @@
 # ORBIT TERMINAL · Diseño mecánico v1 + HP v3 (Fase 3 preliminar)
 
-> **⚠️ NO APTO PARA FABRICACIÓN.** Volumen de diseño industrial paramétrico para validar proporciones, distribución interna y la estrategia de impresión. Hay varias cotas **PENDIENTES** (medidas de la placa del HP tras desmontarla, posición de puertos y teclas del MSI, potenciómetros, pulsadores, insertos), no se ha impreso ni montado ninguna pieza y las comprobaciones son **simulaciones geométricas sobre cajas envolventes**, no pruebas físicas. Los STL llevan el prefijo `PROVISIONAL_`.
+> **⚠️ NO APTO PARA FABRICACIÓN.** Volumen de diseño industrial paramétrico para validar proporciones, distribución interna y la estrategia de impresión. Hay varias cotas **PENDIENTES** (posición de puertos y teclas del MSI, potenciómetros, pulsadores, insertos), las comprobaciones son **simulaciones geométricas sobre cajas envolventes**, no pruebas físicas, y los STL llevan el prefijo `PROVISIONAL_`.
+>
+> **2026-10-20:** el modelo vigente es `usar_hdd_35 = true` (HDD Toshiba 3,5", cotas SFF-8301 en `hardware/cad/params.scad`). Varios párrafos de este archivo siguen describiendo el preset anterior de SSD 2,5". Para el estado actual, leer [`ESTADO-Y-TRASPASO.md`](ESTADO-Y-TRASPASO.md).
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 
