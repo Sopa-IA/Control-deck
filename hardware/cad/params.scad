@@ -304,8 +304,10 @@ usar_adaptador_video = true;   // [DISEÑO] reserva el hueco del adaptador HDMI-
 // 1080p", 14,69 €, sin URL): tipo "pincho" con cable corto USB-A/USB-C. Medidas NO publicadas.
 // Es una RESERVA DE ESPACIO [DISEÑO], no la medida del aparato: cuerpo + clavija HDMI recta.
 // Va en la bandeja de servicio, por delante del hueco del adaptador (se fija con velcro o brida).
+// La reserva nominal sigue siendo 72 mm. Las dos torretas DC ya impresas (y el riel que
+// se atornilla a ellas) comen el extremo derecho: la caja que se comprueba acaba en riel_x0a.
 usar_capturadora = true;       // [DISEÑO]
-captura = [72, 30, 20];        // [DISEÑO reserva; PENDIENTE de medir el aparato real]
+captura = [72, 30, 20];        // [DISEÑO reserva nominal; PENDIENTE de medir el aparato real]
 cap_x = pi_x;
 cap_y = adap_y - 12 - captura[1];
 cap_z = suelo + 2;
@@ -380,27 +382,46 @@ serv_ala_t = 2;      // [DISEÑO] espesor del ala (queda dentro de la altura de 
 //   (ficha del fabricante, 2020). Un clon tipo LoLin V3 suele ser más largo
 //   (~58 x 31 en fichas de tienda, no usadas aquí): si la placa real es esa,
 //   este marcador se queda corto.
-// Fijación en la bandeja YA impresa: velcro o brida. No se añaden torretas
-// (cambiarían la pieza ya hecha). Taladros opcionales, no van en el STL:
-//   dos Ø3,2 en el centro de los lados largos, a 4 mm del borde de esta caja.
-esp_l = 48.3; esp_w = 25.4; esp_h = 13;   // alto [DISEÑO] con pines hacia arriba; no medido
-esp_x = serv_x + 4;                       // [DISEÑO] [FOTO] la zona delantera izquierda, no la cota
-// y = 66: con el alto de 13 mm, más adelante el marcador entra en la tina de
-// la pantalla (lo dijo comprobar_interferencias.py). En la foto el micro-USB
-// mira al frente; aquí mira atrás para dejar el enchufe fuera de esa tina.
-// Pegarlo como en la foto es [PENDIENTE] de probar con el cable real.
-esp_y = 66;
-esp_z = suelo + 1;                        // [DISEÑO] sobre velcro, sin torreta
-esp_clavija = 10;                         // [DISEÑO] reserva del micro-USB hacia atrás; no medido
+// Van en carros del riel (más abajo), no con velcro. El micro-USB mira a -X.
+esp_l = 48.3; esp_w = 25.4; esp_h = 11;   // alto sobre el carro [DISEÑO]; no medido
+esp_clavija = 10;                         // [DISEÑO] reserva del enchufe; no medido
 
 // Segundo Nano, de PRÁCTICAS (no es el de los mandos). El Uno de la foto no
 // se monta: ver docs/decisiones-prototipo.md. Misma cota de catálogo que el
 // de mandos. Que Miguel tenga ya ese segundo Nano no consta en la foto [PENDIENTE].
-pr_l = ard_l; pr_w = ard_w; pr_h = 13;    // alto [DISEÑO] no medido
-pr_x = esp_x + esp_w + 8;                 // [DISEÑO] a la derecha del ESP, delante de la capturadora
-pr_y = 66;                                // [DISEÑO] misma razón que esp_y: librar la tina
-pr_z = suelo + 1;
-pr_clavija = 12;                          // [DISEÑO] reserva del enchufe mini-USB hacia atrás; no medido
+pr_l = ard_l; pr_w = ard_w; pr_h = 11;    // alto sobre el carro [DISEÑO]; no medido
+pr_clavija = 12;                          // [DISEÑO] reserva del enchufe mini-USB; no medido
+
+// Riel modular (2026-10-21). Miguel: los DOS tornillos a la IZQUIERDA de la
+// canaleta, en la bandeja ya impresa. Son las dos torretas de la distribución
+// DC que caen dentro de la bandeja (x = psu_x + psu_w - 6). Las otras dos,
+// en x = psu_x + 6, quedan fuera de la pieza. No son las torretas del soporte
+// del Nano de mandos (van en el eje del canal, y = 63 y y = 125: ese soporte
+// ya está pasado a imprimir y no se modifica) ni los 4 M3 del ala, que sujetan
+// la bandeja a la base. No mover psu_x/y/w/d: son los agujeros impresos.
+dc_riel_x  = psu_x + psu_w - 6;
+dc_riel_ya = psu_y + 6;
+dc_riel_yb = psu_y + psu_d - 6;
+riel_x0  = dc_riel_x - boss_d/2;                 // a ras de la torreta; el tramo delantero no entra más
+riel_caj_d = boss_d + 0.4;                      // cajeado Ø8,4: 0,2 mm de holgura radial [DISEÑO]
+riel_caj_pared = 1.6;                           // pared alrededor del cajeado [DISEÑO]
+riel_x0a = dc_riel_x - riel_caj_d/2 - riel_caj_pared;  // el tramo de anclaje es más ancho a la izquierda
+riel_x1f = ard_cx - sop_ard_w/2 - 0.9;          // el tramo delantero no toca el soporte de mandos
+riel_x1a = dc_riel_x + 7.2;                     // el tramo de anclaje no llega a la pared del canal
+riel_y0  = 58;                                  // [DISEÑO] punta delantera, sobre el suelo de la bandeja
+riel_yq  = sop_ard_y0 + sop_ard_l + 1;          // 130: a partir de aquí el riel puede ser más ancho
+riel_y1  = dc_riel_yb + boss_d/2 + 3;
+riel_h   = 6;                                   // [DISEÑO]
+riel_hueco_x = (riel_x0 + riel_x1f) / 2;        // eje de los tornillos de los carros
+// Dos puestos que caben a la vez (76 y 105). El central (90) solo si no hay
+// otro carro: con el Nano en 76 o el ESP en 105 se solapan. [DISEÑO]
+riel_est = [76, 90, 105];
+// Qué par está montado en la comprobación. El otro carro existe como STL.
+carro_conjunto = "nano_esp";                    // "nano_esp" | "nano_proto"
+proto_l = 70; proto_w = 30;                     // [DISEÑO] protoboard genérica 30×70, no es una placa medida
+nano_est = 0;                                   // índice en riel_est
+esp_est = 2;
+proto_est = 2;
 
 // Panel de prácticas en la cara TRASERA [DISEÑO]. A la derecha de la costilla
 // del corte X (x = 228) y por encima del bloque de conectores (z ≈ 24–52).

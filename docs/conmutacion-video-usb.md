@@ -98,7 +98,7 @@ Pi ── ddcutil setvcp 60 <entrada> (DDC/CI por el HDMI de la Pi) ──► MS
 
 Desde v3, los cables ilustrativos de los renders muestran el cableado del **modo C** (`usar_capturadora = true`); con `usar_capturadora = false` vuelven a mostrar el del modo B.
 
-- **Modo C:** el HDMI del HP sale por la ventana I/O trasera (el HDMI queda en el lado de la Pi según la foto) y vuelve a entrar por el **pasacables trasero** hasta la capturadora. **Reserva de espacio de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`captura`, `cap_x/y/z`); se fija con velcro o brida (sin pieza impresa nueva). USB corto de la capturadora a la Pi. La Pi va a la Mini-HDMI de la MSI (adaptador Mini-HDMI → HDMI hembra de Miguel + cable HDMI ↔ micro-HDMI si es Pi 4/5).
+- **Modo C:** el HDMI del HP sale por la ventana I/O trasera (el HDMI queda en el lado de la Pi según la foto) y vuelve a entrar por el **pasacables trasero** hasta la capturadora. **Reserva nominal de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`captura`, `cap_x/y/z`); se fija con velcro o brida (sin pieza impresa nueva). Desde el 2026-10-21 la caja que cabe junto al riel mide 67,2 mm de ancho. USB corto de la capturadora a la Pi. La Pi va a la Mini-HDMI de la MSI (adaptador Mini-HDMI → HDMI hembra de Miguel + cable HDMI ↔ micro-HDMI si es Pi 4/5).
 
 - **Modo A:** micro-HDMI de la Pi → Mini-HDMI de la MSI por dentro (sin pasar por el pasacables).
 - **Modo B — HDMI del HP:** sale por la ventana I/O trasera y vuelve a entrar por el **pasacables trasero** (40 × 16 mm) hacia la Mini-HDMI de la MSI. Por el mismo pasacables entra el cable del **cargador USB-C PD** de la MSI (USB-C 2).

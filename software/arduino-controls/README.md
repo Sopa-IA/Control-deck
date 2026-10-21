@@ -42,7 +42,7 @@ Tipo y tensión de la tira: **PENDIENTE**. El plan es WLED en el NodeMCU (ESP-12
 
 Según la [guía de WLED](https://kno.wled.ge/basics/getting-started/), en ESP8266 el pin de datos por defecto es GPIO2, rotulado D4 en la mayoría de NodeMCU. GPIO2 tiene que estar en alto al arrancar; a veces hace falta una pull-up de 3,3–4,7 kΩ a 3,3 V. La masa de la tira va unida a la del ESP. **No** alimentar la tira desde el regulador de 3,3 V del módulo. Si la tira es direccionable de 5 V, el dato a 3,3 V puede quedarse corto (en WS2812 y SK6812 el VIH suele pedir más de 3,3 V): un desplazador de nivel es **PENDIENTE** hasta saber la tira.
 
-El ESP se fija con velcro o brida en la bandeja ya impresa. No hay torretas nuevas en ese STL. Medidas de la placa de la foto: **PENDIENTE**. El marcador usa la envolvente de referencia del NodeMCU DEVKIT 1.0 (25,4 × 48,26 mm) y del Ai-Thinker NodeMCU-8266 V1.2 (25,4 × 48,3 mm ± 0,2). Un clon tipo LoLin V3 suele listarse más largo; si la placa es esa, el marcador se queda corto.
+El ESP va en un carro del riel de la bandeja (`PROVISIONAL_carro_esp`), no con velcro. El riel se atornilla a las dos torretas que ya están impresas a la izquierda de la canaleta. No hay torretas nuevas. Medidas de la placa de la foto: **PENDIENTE**. El marcador usa la envolvente de referencia del NodeMCU DEVKIT 1.0 (25,4 × 48,26 mm) y del Ai-Thinker NodeMCU-8266 V1.2 (25,4 × 48,3 mm ± 0,2). Un clon tipo LoLin V3 suele listarse más largo; si la placa es esa, el carro se queda corto.
 
 ## Configuración (`config.h`)
 

@@ -191,22 +191,128 @@ module arduino_marcador() {
         color([0.1, 0.1, 0.1]) translate([ard_w/2 - 5, ard_l + ard_usb_sale, ard_pcb - 1]) cube([10, ard_clavija, 6]);
     }
 }
-// ESP8266 (NodeMCU) y Nano de prácticas: marcadores, no hay pieza impresa nueva.
-// Van sobre la bandeja con velcro o brida.
-module esp_marcador() {
-    translate([esp_x, esp_y, esp_z]) {
-        color([0.9, 0.9, 0.88]) cube([esp_w, esp_l, 1.6]);
-        color([0.75, 0.62, 0.2]) translate([2, 4, 1.6]) cube([esp_w - 4, 16, 2.5]);            // módulo ESP-12, ilustrativo
-        color([0.15, 0.15, 0.16]) translate([esp_w/2 - 4, esp_l, 0]) cube([8, esp_clavija, 3]); // micro-USB hacia atrás
+// ---------------------------------------------------------------------
+// RIEL MODULAR (2026-10-21). Se atornilla a las 2 torretas DC de la
+// izquierda de la canaleta. No modifica la bandeja ni el soporte de mandos.
+// Agujero de cada torreta: Ø4, ~4 mm de fondo (la torreta mide 4 mm; el
+// inserto de params, 5,7 mm, no cabe entero). Hace falta un inserto M3
+// corto. No se ha probado en la pieza impresa [PENDIENTE].
+// El carro entra por un tetón en el mortise y un tornillo M3 al inserto
+// del riel. La cabeza del tornillo apoya sobre la pestaña: no hay cajeado
+// (el tramo delantero solo mide ~7 mm y un avellanado Ø6,2 se sale).
+// Ajuste del cajeado, del mortise y del inserto: [PENDIENTE].
+// ---------------------------------------------------------------------
+riel_mort_x = 6.2;   // el tramo delantero mide 7,1 mm: el mortise no puede abrirlo por los lados
+riel_mort_y = 4.8;
+riel_mort_z = 2.0;
+carro_holg = 1.0;
+carro_cama_t = 2.4;
+carro_labio_h = 1.6;
+carro_labio_t = 1.4;
+// Pestaña sobre el riel, en coordenadas locales del tornillo del carro.
+carro_pest_x0 = -3.3;
+carro_pest_x1 = 3.3;
+carro_pest_y = 3.6;
+carro_pest_z0 = riel_h + 0.05;
+carro_pest_h = 2.6;
+
+module riel_placas() {
+    difference() {
+        union() {
+            translate([riel_x0, riel_y0, suelo])
+                cube([riel_x1f - riel_x0, riel_yq - riel_y0 + 0.4, riel_h]);
+            translate([riel_x0a, riel_yq - 0.2, suelo])
+                cube([riel_x1a - riel_x0a, riel_y1 - (riel_yq - 0.2), riel_h]);
+        }
+        // cajeado de la torreta, abierto por abajo. El techo (~1,8 mm) lleva el tornillo.
+        // La cabeza M3 queda por encima: no se avellana, para no dejar un techo de 0,5 mm.
+        for (y = [dc_riel_ya, dc_riel_yb]) {
+            translate([dc_riel_x, y, suelo - 0.1]) cylinder(d = riel_caj_d, h = 4.3, $fn = 48);
+            translate([dc_riel_x, y, suelo + 4.0]) cylinder(d = tornillo_d, h = riel_h, $fn = 24);
+        }
+        // puestos de carro: mortise + agujero de inserto M3 (no pasante)
+        for (y = riel_est) {
+            translate([riel_hueco_x - riel_mort_x/2, y - riel_mort_y/2, suelo + riel_h - riel_mort_z])
+                cube([riel_mort_x, riel_mort_y, riel_mort_z + 0.1]);
+            translate([riel_hueco_x, y, suelo + riel_h - riel_mort_z - 3.3])
+                cylinder(d = inserto_d, h = 3.4, $fn = 24);
+        }
     }
 }
-module nano_pruebas_marcador() {
-    translate([pr_x, pr_y, pr_z]) {
-        color([0.05, 0.35, 0.55]) cube([pr_w, pr_l, 1.6]);
-        color([0.15, 0.15, 0.16]) translate([2, 8, 1.6]) cube([pr_w - 4, 18, 3]);
-        color([0.1, 0.1, 0.1]) translate([pr_w/2 - 5, pr_l, 0]) cube([10, pr_clavija, 6]);    // mini-USB hacia atrás
+
+// Carro. Origen local: el tornillo está en (0, 0) y z = 0 es la cara de la bandeja.
+// `largo` corre hacia -X (la placa se aleja del riel). `ancho` es Y.
+module carro_solido(largo, ancho) {
+    x_riel = riel_x0 - riel_hueco_x;          // cara izquierda del riel, en local
+    x1 = x_riel - 0.4;                        // la cama no toca el riel
+    x0 = x1 - (largo + 2*carro_holg);
+    y0 = -(ancho/2 + carro_holg);
+    y1 =  (ancho/2 + carro_holg);
+    hueco = min(12, max(0, y1 - y0 - 2*carro_labio_t));
+    ala = (y1 - y0 - hueco) / 2;
+    union() {
+        translate([x0, y0, 0]) cube([x1 - x0, y1 - y0, carro_cama_t]);
+        // labios en Y, a todo el largo
+        translate([x0, y0, carro_cama_t - 0.01]) cube([x1 - x0, carro_labio_t, carro_labio_h + 0.01]);
+        translate([x0, y1 - carro_labio_t, carro_cama_t - 0.01]) cube([x1 - x0, carro_labio_t, carro_labio_h + 0.01]);
+        // labio del lado del enchufe, abierto en el centro
+        if (ala > 0.4) {
+            translate([x0, y0, carro_cama_t - 0.01]) cube([carro_labio_t, ala, carro_labio_h + 0.01]);
+            translate([x0, y1 - ala, carro_cama_t - 0.01]) cube([carro_labio_t, ala, carro_labio_h + 0.01]);
+        }
+        // nervio junto al riel. No entra en su X: el puente, por encima, une con la pestaña.
+        translate([x1 - 2.6, -3.2, carro_cama_t - 0.2])
+            cube([2.6, 6.4, carro_pest_z0 + carro_pest_h - (carro_cama_t - 0.2)]);
+        translate([x_riel - 0.9, -3.2, carro_pest_z0])
+            cube([carro_pest_x0 - (x_riel - 0.9) + 0.9, 6.4, 2.2]);
+        translate([carro_pest_x0, -carro_pest_y, carro_pest_z0])
+            cube([carro_pest_x1 - carro_pest_x0, 2*carro_pest_y, carro_pest_h]);
+        translate([-riel_mort_x/2 + 0.45, -riel_mort_y/2 + 0.4, riel_h - riel_mort_z + 0.2])
+            cube([riel_mort_x - 0.9, riel_mort_y - 0.8, riel_mort_z + 0.2]);
     }
 }
+
+module carro_imprimible(largo, ancho) {
+    difference() {
+        carro_solido(largo, ancho);
+        translate([0, 0, riel_h - 0.2]) cylinder(d = tornillo_d, h = 8, $fn = 24);
+    }
+}
+
+module carro_en_puesto(i, largo, ancho, clavija) {
+    translate([riel_hueco_x, riel_est[i], suelo]) {
+        carro_imprimible(largo, ancho);
+        // marcador de la placa y del enchufe hacia -X. No forma parte del STL.
+        x_riel = riel_x0 - riel_hueco_x;
+        x1 = x_riel - 0.4;
+        color([0.15, 0.35, 0.55])
+            translate([x1 - carro_holg - largo, -(ancho/2), carro_cama_t]) cube([largo, ancho, 1.6]);
+        if (clavija > 0)
+            color([0.1, 0.1, 0.1])
+                translate([x1 - carro_holg - largo - clavija, -5, carro_cama_t]) cube([clavija, 10, 4]);
+    }
+}
+
+// Caja de la cama, la placa y el enchufe. Queda a la izquierda del riel.
+// La pestaña va en carro_pestana_caja(): empieza por encima del riel, así
+// las dos cajas no se solapan. El tetón vive dentro del mortise (hueco) y
+// no entra en ninguna caja.
+function carro_caja(i, largo, ancho, alto, clavija) =
+    let(
+        x1 = riel_x0 - 0.4,
+        x0 = x1 - (largo + 2*carro_holg + clavija),
+        y0 = riel_est[i] - ancho/2 - carro_holg
+    )
+    [x0, y0, suelo, x1 - x0, ancho + 2*carro_holg, carro_cama_t + alto];
+
+function carro_pestana_caja(i) = [
+    riel_hueco_x + carro_pest_x0,
+    riel_est[i] - carro_pest_y,
+    suelo + carro_pest_z0,
+    carro_pest_x1 - carro_pest_x0,
+    2*carro_pest_y,
+    carro_pest_h
+];
 
 function agujeros_pi() = [for (dx = [0, pi_agujeros[0]], dy = [0, pi_agujeros[1]])
     [pi_x + pi_agujero_borde + dx, pi_y + pi_agujero_borde + dy]];

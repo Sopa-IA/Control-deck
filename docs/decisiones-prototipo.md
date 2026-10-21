@@ -38,7 +38,13 @@ Consecuencias:
 Miguel, ampliación del mismo encargo. El detalle de pines, protecciones y el sketch está en [`../software/arduino-pruebas/README.md`](../software/arduino-pruebas/README.md).
 
 - **Mandos:** Nano clon (ATmega328P, mini-USB, CH340 probable). El soporte se reimprime: el asiento pasa de 48 × 17,7 a 45 × 18. Los tornillos no se mueven (torretas de la bandeja impresa en y = 63 y y = 125, x = 418,26). El canal USB sigue en y = 143,5 y 10 mm de ancho. La bandeja **no** se regenera.
-- **ESP8266 NodeMCU** delante a la izquierda, velcro o brida, sin torretas nuevas. Previsto para WLED. Tira sin identificar.
+- **ESP8266 NodeMCU** delante a la izquierda, sin torretas nuevas. Previsto para WLED. Tira sin identificar. La sujeción con velcro de este párrafo la sustituyen los carros del 2026-10-21.
 - **Prácticas:** segundo Nano, no el Uno. El Uno (68,6 × 53,4, **DE FUENTE**) cabe solo en el hueco de delante de la capturadora y no cabe bien con el ESP y un cable USB-B (margen de 4,2 mm en X y 6,9 mm en Y). Que Miguel ya tenga ese segundo Nano es **PENDIENTE**.
 - **Panel trasero** en `carcasa_x1_y1`: pines del Nano de prácticas, previsión de GPIO de la Pi (el HAT puede taparlos: **PENDIENTE**), 5 V, 3,3 V y GND en el mapa, rótulos de grupo, hueco USB de programación y ventana de una OLED 0,96" SSD1306. La OLED la lleva el Nano de prácticas (ejemplo «monitor de pines»), no la Pi.
 - **Alimentación USB (DISEÑO, sin medir):** los cuatro USB de la Pi 4 quedan repartidos entre el Nano de mandos, el ESP, la capturadora y el puente del conector de programación. No sobra ninguno. No se supone un hub.
+
+## 2026-10-21 · Bahía modular a la izquierda de la canaleta
+
+Miguel aclara que la bahía va a los **dos tornillos de la izquierda de la canaleta**, no a los del soporte de mandos. Esos dos son las torretas DC que ya están en la bandeja impresa: (401,26, 146,492) y (401,26, 194,492). El riel y tres carros (Nano de prácticas, ESP8266, proto 30 × 70 de diseño) son STL nuevos. A la vez caben dos placas, en y = 76 y y = 105. El ESP y la proto comparten puesto.
+
+El soporte `PROVISIONAL_soporte_arduino` **no se modifica**: Miguel ya lo tiene para imprimir, y el Nano de mandos no pasa a ser un carro (su cable sigue en el canal). La frase del 2026-10-20 que sujeta el ESP con velcro queda sustituida por estos carros. El inserto corto, el cajeado y el margen de 2,3 mm de la proto hasta el borde de la bandeja están **PENDIENTES** de probar. Detalle en [`diseno-mecanico.md`](diseno-mecanico.md).

@@ -11,6 +11,14 @@ C_VIDRIO = [0.02, 0.03, 0.05];
 // Potenciómetro y pulsador genéricos: ver params.scad (datos_pot, datos_boton) [PENDIENTE]
 panel_pot = pared + refuerzo_pot;   // espesor de panel en los pomos
 
+// La reserva nominal de capturadora y adaptador es 72 mm. El riel (tramo de
+// anclaje) llega hasta riel_x0a: la caja comprobada acaba ahí. Un aparato de
+// 72 mm ya chocaría con las torretas Ø8 impresas, que empiezan en riel_x0.
+reserva_x1 = riel_x0a;
+cap_dx = min(captura[0], reserva_x1 - cap_x);
+adap_dx = min(adap_video[0], reserva_x1 - adap_x);
+function caja_comp(nombre, b) = [nombre, "", "", [b[0], b[1], b[2]], [b[3], b[4], b[5]]];
+
 // Cajas AABB de cada componente (mundo): [nombre, [x,y,z], [dx,dy,dz]]
 function cajas_componentes() = [
     if (!hp_desnuda) ["HP (" , hp_preset, ")", [hp_x, hp_y, hp_z], [hp_w, hp_d, hp_h]],
@@ -19,8 +27,8 @@ function cajas_componentes() = [
     if (hp_desnuda) [usar_hdd_35 ? "HDD 3,5 + soporte" : "SSD 2,5 + soporte", "", "", [disco_x - 4, disco_y, disco_z - 2], [disco[0] + 8, disco[1], 2 + disco[2]]],
     if (hp_desnuda) ["I/O frontal HP (lateral izq.)", "", "", [pared, io_frontal_y, io_frontal_z], io_frontal],
     if (hp_desnuda) ["Pulsador encendido HP", "", "", [pared, boton_hp_y - boton_hp_d/2 - 2, boton_hp_z - boton_hp_d/2 - 2], [boton_hp_prof, boton_hp_d + 4, boton_hp_d + 4]],
-    if (usar_adaptador_video) ["Adaptador HDMI->USB-C (Pi)", "", "", [adap_x, adap_y, adap_z], adap_video],
-    if (usar_capturadora) ["Capturadora HDMI->USB (reserva)", "", "", [cap_x, cap_y, cap_z], captura],
+    if (usar_adaptador_video) ["Adaptador HDMI->USB-C (Pi)", "", "", [adap_x, adap_y, adap_z], [adap_dx, adap_video[1], adap_video[2]]],
+    if (usar_capturadora) ["Capturadora HDMI->USB (reserva)", "", "", [cap_x, cap_y, cap_z], [cap_dx, captura[1], captura[2]]],
     ["Raspberry Pi", "", "", [pi_x, pi_y, pi_z], [pi_w, pi_d, pi_h]],
     if (usar_kvm) ["KVM", "", "", [kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h]],
     if (usar_distribucion) ["Distribucion DC", "", "", [psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h]],
@@ -29,8 +37,20 @@ function cajas_componentes() = [
     ["Arduino Nano mandos + soporte", "", "", [ard_cx - sop_ard_w/2, sop_ard_y0, sop_ard_z0], [sop_ard_w, ard_y + ard_l + ard_usb_sale - sop_ard_y0, ard_altura_soporte + ard_pcb + ard_arriba]],
     ["Orejeta trasera soporte Nano", "", "", [ard_cx - sop_ard_w/2, ard_y + ard_l + ard_usb_sale, sop_ard_z0], [sop_ard_w, sop_ard_y0 + sop_ard_l - (ard_y + ard_l + ard_usb_sale), 4]],
     ["Clavija mini-USB mandos", "", "", [ard_cx - 5, ard_y + ard_l + ard_usb_sale, ard_pcb_z - 1], [10, ard_clavija, 6]],
-    ["ESP8266 NodeMCU", "", "", [esp_x, esp_y, esp_z], [esp_w, esp_l + esp_clavija, esp_h]],
-    ["Nano practicas + mini-USB", "", "", [pr_x, pr_y, pr_z], [pr_w, pr_l + pr_clavija, pr_h]],
+    ["Riel placas, tramo delantero", "", "", [riel_x0, riel_y0, suelo], [riel_x1f - riel_x0, (riel_yq - 0.2) - riel_y0, riel_h]],
+    ["Riel placas, tramo anclaje", "", "", [riel_x0a, riel_yq - 0.2, suelo], [riel_x1a - riel_x0a, riel_y1 - (riel_yq - 0.2), riel_h]],
+    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
+        caja_comp("Carro Nano practicas", carro_caja(nano_est, pr_l, pr_w, pr_h, pr_clavija)),
+    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
+        caja_comp("Pestana carro Nano", carro_pestana_caja(nano_est)),
+    if (carro_conjunto == "nano_esp")
+        caja_comp("Carro ESP8266", carro_caja(esp_est, esp_l, esp_w, esp_h, esp_clavija)),
+    if (carro_conjunto == "nano_esp")
+        caja_comp("Pestana carro ESP", carro_pestana_caja(esp_est)),
+    if (carro_conjunto == "nano_proto")
+        caja_comp("Carro proto 30x70", carro_caja(proto_est, proto_l, proto_w, pr_h, 0)),
+    if (carro_conjunto == "nano_proto")
+        caja_comp("Pestana carro proto", carro_pestana_caja(proto_est)),
     ["OLED 0,96 SSD1306", "", "", [oled_cx - oled_mod[0]/2, D - pared - 1.5 - oled_mod[1], oled_cz - oled_mod[2]/2], oled_mod],
     ["Clavija USB-A en la Pi", "", "", [pi_x + pi_w, pi_y + 21, pi_z + 1.6], [35, 16, 16]]
 ];
@@ -114,9 +134,9 @@ module caja_marcador(p, s, c, etiqueta = "") { color(c) translate(p) cube(s); }
 // Capturadora HDMI->USB: RESERVA de espacio (cuerpo + clavija HDMI); forma ilustrativa
 module capturadora_marcador() {
     translate([cap_x, cap_y, cap_z]) {
-        color([0.42, 0.45, 0.5]) translate([22, 3, 3]) caja_r([captura[0] - 26, captura[1] - 6, captura[2] - 8], 3);  // cuerpo
+        color([0.42, 0.45, 0.5]) translate([22, 3, 3]) caja_r([min(captura[0] - 26, cap_dx - 24), captura[1] - 6, captura[2] - 8], 3);  // cuerpo, sin entrar en el riel
         color([0.08, 0.08, 0.08]) translate([2, 7, 5]) cube([20, captura[1] - 14, captura[2] - 12]);                   // clavija HDMI
-        color([0.18, 0.2, 0.24, 0.25]) cube(captura);                                                                   // envolvente reservada
+        color([0.18, 0.2, 0.24, 0.25]) cube([cap_dx, captura[1], captura[2]]);                                          // envolvente que cabe junto al riel
     }
 }
 
@@ -139,12 +159,17 @@ module componentes_internos() {
     pi_marcador();
     if (usar_kvm) caja_marcador([kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h], [0.22, 0.22, 0.25]);
     if (usar_distribucion) caja_marcador([psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h], [0.35, 0.18, 0.12]);
-    if (usar_adaptador_video) caja_marcador([adap_x, adap_y, adap_z], adap_video, [0.18, 0.22, 0.35]);   // adaptador HDMI->USB-C [PENDIENTE]
+    if (usar_adaptador_video) caja_marcador([adap_x, adap_y, adap_z], [adap_dx, adap_video[1], adap_video[2]], [0.18, 0.22, 0.35]);   // adaptador HDMI->USB-C [PENDIENTE]
     if (usar_capturadora) capturadora_marcador();
     mandos_marcador();
     arduino_marcador();
-    esp_marcador();
-    nano_pruebas_marcador();
+    color([0.22, 0.22, 0.24]) riel_placas();
+    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
+        carro_en_puesto(nano_est, pr_l, pr_w, pr_clavija);
+    if (carro_conjunto == "nano_esp")
+        carro_en_puesto(esp_est, esp_l, esp_w, esp_clavija);
+    if (carro_conjunto == "nano_proto")
+        carro_en_puesto(proto_est, proto_l, proto_w, 0);
     cables_ilustrativos();
     // tira LED frontal
     color(C_AMBAR) translate([luz_margen, pared + 4.4, luz_z0 + luz_alto/2 - 5]) cube([W - 2*luz_margen, 1.5, 10]);

@@ -97,7 +97,7 @@ Sin compras. La capturadora del modo C **no** está en esta lista: es una refere
 | Arduino Nano (mandos) | Clon ATmega328P, mini-USB, CH340 probable (dato de Miguel, chip no leído). Lee potenciómetros y botones. | PCB 18 × 45 mm: **DE FUENTE** ([tienda oficial](https://store.arduino.cc/products/arduino-nano)). La placa de la foto no se ha medido. Alturas: **PENDIENTE**. |
 | Arduino Uno | El de la foto. No se monta. | 68,6 × 53,4 mm: **DE FUENTE** ([Uno Rev3](https://store.arduino.cc/products/arduino-uno-rev3)). Cabe solo en el hueco delantero y no cabe bien con el ESP y un cable USB-B. |
 | Segundo Nano (prácticas) | Independiente del de mandos. Pines y OLED en la trasera. | Misma cota de catálogo. **PENDIENTE**: la foto no muestra un segundo Nano. Miguel acepta uno si el Uno no cabe. No es una compra hecha. |
-| ESP8266 NodeMCU | Delante a la izquierda de la bandeja. Previsto para WLED. | Envolvente de referencia 25,4 × 48,3 mm (**DE FUENTE**, NodeMCU DEVKIT 1.0 / Ai-Thinker V1.2), no de esta placa. **PENDIENTE** de medir. Fijación: velcro o brida, sin torretas nuevas. |
+| ESP8266 NodeMCU | Carro del riel, puesto y = 105, junto al Nano de prácticas. Previsto para WLED. | Envolvente de referencia 25,4 × 48,3 mm (**DE FUENTE**, NodeMCU DEVKIT 1.0 / Ai-Thinker V1.2), no de esta placa. **PENDIENTE** de medir. El riel usa las dos torretas DC que ya están a la izquierda de la canaleta. |
 | OLED 0,96" SSD1306 | Ventana en la trasera, junto al panel de pines. La controla el Nano de prácticas. | Referencia **DE FUENTE**: [Waveshare 0.96inch OLED (B)](https://www.waveshare.com/0.96inch-oled-b.htm), PCB 33,0 × 33,5, área visible 21,70 × 11,20, 128×64, amarillo/azul. La ficha dice tensión 3,3 V y la [wiki](https://www.waveshare.com/wiki/0.96inch_OLED_(B)) dice 3,3 V/5 V. El módulo no está elegido ni medido. |
 | MSI Pro MP161 E2U | 15,6", 1920×1080, no táctil. Mini-HDMI y 2 USB-C con DP Alt. | Envolvente 362,26 × 233,84 × 18,8 mm y área activa 344,16 × 193,59 mm: **DE FUENTE** (ficha MSI; el manual da 232,92 mm de alto y el CAD usa el mayor). Posición del área activa y de los puertos del canto: **PENDIENTE** (el área se supone centrada). |
 | Potenciómetros y pulsadores | Los suyos. El CAD usa marcadores genéricos de 24 mm y 16 mm. Eje de 6 mm acordado. | **PENDIENTE** de medir. `eje_pot_d` está marcado acordado y sin medir. |
@@ -106,7 +106,7 @@ Sin compras. La capturadora del modo C **no** está en esta lista: es una refere
 | Adaptador UGREEN | Modelo y sentido sin confirmar. Probablemente USB-C → HDMI, que es el sentido contrario al que haría falta para el modo B. | **PENDIENTE**. |
 | Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material del diseño: PETG. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
 
-La capturadora de referencia (marca SUOFEIXIANG, texto "4K30 entrada / 1080p", 14,69 € vistos el 2026-10-18, sin URL) **no se ha comprado**. En el CAD es una reserva de 72 × 30 × 20 mm, marcada diseño, no la medida de un aparato.
+La capturadora de referencia (marca SUOFEIXIANG, texto "4K30 entrada / 1080p", 14,69 € vistos el 2026-10-18, sin URL) **no se ha comprado**. En el CAD la reserva nominal sigue siendo 72 × 30 × 20 mm. Desde el 2026-10-21 la caja que se comprueba mide 67,2 mm de ancho: el riel y las torretas Ø8 ya impresas ocupan el resto. No es la medida de un aparato.
 
 ---
 
@@ -130,13 +130,16 @@ Unidades: milímetros. Ejes: X ancho, Y fondo (frente en 0), Z altura.
 | Nano de mandos | 45 × 18 | FUENTE tienda oficial. Alturas y el mini-USB del clon: PENDIENTE |
 | Soporte del Nano | ancho 26, largo 70, y0 = 59 | El largo y el y0 están congelados a la bandeja impresa (torretas en y = 63 y y = 125). El ancho sí sigue a la placa |
 | Canal USB de la bandeja | boca y = 143,5, ancho 10 | DISEÑO congelado. No se recalcula con el Nano. Si pasa un mini-USB: PENDIENTE |
-| ESP8266 (marcador) | 25,4 × 48,3, alto 13, en x = 326,26 y = 66 | FUENTE de la envolvente de referencia / alto y posición DISEÑO. USB hacia atrás |
-| Nano de prácticas (marcador) | 18 × 45, alto 13, en x = 359,66 y = 66 | Misma cota de catálogo. Enchufe hacia atrás, 12 mm DISEÑO |
+| Riel de placas | Tramo delantero 7,1 × 71,8 × 6 desde (397,26, 58). Anclaje 13,0 × 71,7 × 6 desde (395,46, 129,8) | DISEÑO. Atornillado a (401,26, 146,492) y (401,26, 194,492). Esas cotas salen de `psu_*` y no se mueven |
+| Puestos de carro | y = 76, 90 y 105 | DISEÑO. A la vez solo el 76 y el 105. El 90 va solo |
+| ESP8266 (marcador) | 25,4 × 48,3, alto 11 sobre el carro, puesto y = 105, USB hacia −X | FUENTE de la envolvente. Alto y enchufe (10 mm) DISEÑO. No es la placa de la foto |
+| Nano de prácticas (marcador) | 18 × 45, alto 11 sobre el carro, puesto y = 76, mini-USB hacia −X | Misma cota de catálogo. Enchufe 12 mm DISEÑO |
+| Proto 30 × 70 | Carro aparte, mismo puesto que el ESP | DISEÑO. No es una placa medida. Al borde de la bandeja le quedan 2,3 mm: PENDIENTE |
 | Panel de prácticas | x = 250, z = 68, 74 × 72 | DISEÑO, en la cara trasera de `carcasa_x1_y1` |
 | OLED (marcador) | 33,5 × 12 × 33,0; ventana 24 × 14 | FUENTE de la PCB Waveshare; profundidad y ventana DISEÑO |
 | Potenciómetro / pulsador | genérico 24 mm / 16 mm | PENDIENTE |
 | Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = true` | PENDIENTE. El hueco se conserva aunque el modo B sea poco probable |
-| Capturadora (reserva) | 72 × 30 × 20 | DISEÑO, no un aparato real |
+| Capturadora (reserva) | Nominal 72 × 30 × 20; la caja comprobada es 67,2 × 30 × 20 | DISEÑO, no un aparato real. Los 4,8 mm que faltan los ocupan las torretas y el riel |
 | KVM | `usar_kvm = false` | DISEÑO |
 
 Agujeros HP en coordenadas de la carcasa, los que imprimió `comprobar_base_hdd.py` el 2026-10-20: C (23,35, 284,332), F (180,83, 261,472), H (23,35, 129,392), J (180,83, 129,392). C y F caen en `base_x0_y1`; H y J en `base_x0_y0`. Las bases de la derecha no llevan separadores del HP.
@@ -172,9 +175,13 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_guia_luz_frontal_1` | 201,13 × 9,00 × 6,95 | 9,82 | El otro tramo | No documentado | No probada |
 | `PROVISIONAL_anillo_luz_x2` | 41,00 × 41,00 × 5,60 | 1,82 | Un anillo. Imprimir 2 | No documentado | No probado |
 | `PROVISIONAL_pomo_x2` | 30,00 × 30,00 × 17,00 | 11,02 | Un pomo. Imprimir 2 | No documentado | Impreso o en impresión. Sin resultado comunicado |
-| `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 | Soporte del Nano de mandos. Regenerado el 2026-10-20 (antes 25,70 de ancho y 9,52 cm³, asiento del Micro) | No documentado | El del Micro, si salió, no vale. Este STL no consta impreso |
+| `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 | Soporte del Nano de mandos. Regenerado el 2026-10-20 (antes 25,70 de ancho y 9,52 cm³, asiento del Micro). **El 2026-10-21 no se ha modificado** | No documentado | Pasado a Miguel para imprimir. La geometría de este STL no ha vuelto a cambiar |
+| `PROVISIONAL_riel_placas` | 13,00 × 143,49 × 6,00 | 7,85 | Riel de la bahía. Se atornilla a las dos torretas DC de la izquierda del canal | STL ya boca abajo: mortises contra la cama, cajeado abierto arriba. Sin soporte en ese cajeado | Nuevo el 2026-10-21. Sin imprimir |
+| `PROVISIONAL_carro_nano` | 54,25 × 20,00 × 8,65 | 2,73 | Carro del Nano de prácticas (puesto y = 76) | Cama abajo. Soporte solo bajo el tetón de 2 mm | Nuevo. Sin imprimir |
+| `PROVISIONAL_carro_esp` | 57,55 × 27,40 × 8,65 | 3,81 | Carro del ESP8266 (puesto y = 105) | Igual | Nuevo. Sin imprimir |
+| `PROVISIONAL_carro_proto30x70` | 79,25 × 32,00 × 8,65 | 6,14 | Carro de una proto 30 × 70 (mismo puesto que el ESP; no van a la vez) | Igual | Nuevo. La placa es DISEÑO, no medida |
 
-`comprobar_stl.py` (2026-10-20, después de regenerar soporte y `carcasa_x1_y1`): las 20 caben en 256³ con 10 mm de margen y son mallas cerradas. El script imprime el volumen con un decimal (soporte 9,6; carcasa 242,1). Las cifras de dos decimales de esta tabla salen de los mismos vértices.
+`comprobar_stl.py` (2026-10-21): las 24 caben en 256³ con 10 mm de margen y son mallas cerradas. El script imprime el volumen con un decimal (riel 7,9; carros 2,7, 3,8 y 6,1). Las cifras de dos decimales de esta tabla salen de los mismos vértices. El soporte y la bandeja no se han regenerado en esta pasada.
 
 ### Pruebas (`hardware/impresion/`)
 
@@ -214,13 +221,17 @@ Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 
 | 11-12 | Guías de luz | `PROVISIONAL_guia_luz_frontal_0.stl` y `_1.stl` | `11_` y `12_` (sólido) | No impresas |
 | 13 | Anillo de luz (imprimir 2) | `PROVISIONAL_anillo_luz_x2.stl` | `13_PROVISIONAL_anillo_luz_x2.step` (sólido) | No impreso |
 | 14 | Pomo (imprimir 2) | `PROVISIONAL_pomo_x2.stl` | `14_PROVISIONAL_pomo_x2.step` (sólido) | Ya lanzado antes. Sin resultado |
-| 15 | Soporte del Nano | `PROVISIONAL_soporte_arduino.stl` (regenerado: 26,00 × 70,00 × 19,10, 9,58 cm³) | `15_PROVISIONAL_soporte_arduino.step` (sólido, **desfasado**: sigue el Micro) | Hay que imprimir este STL. Los tornillos coinciden con la bandeja ya impresa |
+| 15 | Soporte del Nano | `PROVISIONAL_soporte_arduino.stl` (26,00 × 70,00 × 19,10, 9,58 cm³). **No modificado el 2026-10-21** | `15_PROVISIONAL_soporte_arduino.step` (sólido, **desfasado**: sigue el Micro) | Ya pasado a Miguel para imprimir. Los tornillos coinciden con la bandeja |
+| 16 | Riel de placas | `PROVISIONAL_riel_placas.stl` (13,00 × 143,49 × 6,00, 7,85 cm³) | No hay STEP | Nuevo. Boca abajo, sobre las dos torretas DC de la izquierda del canal |
+| 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (54,25 × 20,00 × 8,65, 2,73 cm³) | No hay STEP | Puesto y = 76. Soporte bajo el tetón |
+| 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (57,55 × 27,40 × 8,65, 3,81 cm³) | No hay STEP | Puesto y = 105. No a la vez que el 19 |
+| 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (79,25 × 32,00 × 8,65, 6,14 cm³) | No hay STEP | Mismo puesto que el 18. Placa de diseño, no medida |
 
 Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla de agujeros) están en `hardware/impresion/base/STEP/` y no hay que reimprimirlos.
 
 **STEP de malla se editan peor en SolidWorks.** Carcasas, biseles, las cuatro bases y la pared I/O salen de la STL: sirven para medir, cortar y añadir operaciones, y los agujeros no son cilindros editables. Los de origen CSG (pivotes, bandeja, guías, anillo, pomo, soporte del Arduino, plantilla de agujeros, pletina y soporte del disco) sí traen cilindros. `05_PROVISIONAL_carcasa_x1_y0` tiene 12 triángulos cruzados; FreeCAD lo marca no válido. La tabla completa, hecha con FreeCAD 1.0 el 2026-10-20, está en `hardware/impresion/siguientes/STEP/COMPROBACION_STEP.txt`. Aquí no se ha reejecutado FreeCAD (no está instalado): solo se ha visto que los 23 STEP son AP214 de FreeCAD.
 
-**Manual:** [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf), 21 páginas, estilo IKEA (inventario, tornillería, 16 pasos y pendientes). Los dibujos salen del CAD, no son fotos del montaje. **No se ha regenerado** el 2026-10-20: no incluye el Nano, el panel de prácticas ni la OLED. No certifica que el prototipo esté listo para fabricar.
+**Manual:** [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf), 21 páginas, estilo IKEA (inventario, tornillería, 16 pasos y pendientes). Los dibujos salen del CAD, no son fotos del montaje. **No se ha regenerado**: no incluye el Nano, el panel de prácticas, la OLED ni la bahía del 2026-10-21. No certifica que el prototipo esté listo para fabricar.
 
 **Renders y capturas.** `hardware/render/escena_blender.py` sigue dibujando el Arduino Micro. No se ha vuelto a lanzar Blender. Las capturas de `assets/screenshots/` son de antes de cambiar los textos de la interfaz. Las dos cosas quedan desfasadas.
 
@@ -251,7 +262,7 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 | **#5** (merge `bf6d641`) | Renders del CAD v3, no fotos, con créditos de qué es exacto y qué es aproximado. En un commit aparte, la lámina con recortes de fotos: Miguel autorizó publicar esa imagen. |
 | **#6** (merge `3978879`) | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
 | **#7** (merge `05ac19f`) | Después de la base: STEP AP214 para SolidWorks, el orden de las 15 piezas siguientes (los STL no se duplican) y el manual de montaje de 21 páginas. La plantilla de pivotes sigue sin resultado. Los STEP de malla se editan peor; `05_carcasa_x1_y0` tiene 12 triángulos cruzados. |
-| **Este cambio** | Nano de mandos en vez del Micro (sin HID; serie en `/dev/ttyUSB*`, espera de 2 s al abrir el puerto). ESP8266 para WLED, sin torretas nuevas en la bandeja impresa. Segundo Nano de prácticas porque el Uno no cabe bien (margen 4,2 mm en X y 6,9 mm en Y junto al ESP). Panel trasero con pines, 5 V, 3,3 V, GND, hueco USB y OLED 0,96" controlada por ese Nano. La bandeja no se regenera. Sí se regeneran el soporte (9,58 cm³) y `carcasa_x1_y1` (242,11 cm³). STEP 06 y 15, el PDF y los renders no. |
+| **Este cambio** | Nano de mandos en vez del Micro (sin HID; serie en `/dev/ttyUSB*`, espera de 2 s al abrir el puerto). ESP8266 para WLED y segundo Nano de prácticas, en carros de un riel atornillado a las dos torretas DC de la izquierda de la canaleta (el velcro del 2026-10-20 queda sustituido). El Uno no cabe bien (margen 4,2 mm en X y 6,9 mm en Y). Panel trasero con pines, 5 V, 3,3 V, GND, hueco USB y OLED 0,96" controlada por ese Nano. La bandeja no se regenera. El soporte del Nano de mandos se regeneró el 2026-10-20 (9,58 cm³) y **no se ha vuelto a tocar**: Miguel ya lo tiene para imprimir. `carcasa_x1_y1` sigue en 242,11 cm³. STEP 06 y 15, el PDF y los renders no. |
 
 ---
 
@@ -270,7 +281,7 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 ## 10. Pendientes, en este orden
 
-1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`. El soporte del Arduino, si salió, es el del Micro y no vale: hay que imprimir el STL nuevo del Nano. El soporte 2,5" ya dio un resultado: salió pequeño. La bandeja de servicio ya está impresa y no se regenera.
+1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`. El soporte del Nano de mandos ya está pasado a imprimir; el STL no se ha vuelto a cambiar el 2026-10-21. Si llegó a salir el del Micro, no vale. El soporte 2,5" ya dio un resultado: salió pequeño. La bandeja de servicio ya está impresa y no se regenera. El riel y los tres carros son STL nuevos, sin imprimir.
 2. **Diámetro de pivote** (C 3,8 / F 3,6 / H 3,4 / J 3,2) cuando Miguel pruebe `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl`. Sigue **sin resultado**. Es la pieza 01 de `hardware/impresion/siguientes/README.md`.
 3. **HAT VHF:** medidas, y si deja pasar el cabezal de 40 pines. La Pi es una Pi 4 (Miguel, 2026-10-20). Por qué entrada da imagen en la MSI sigue abierto.
 4. **Posiciones de los puertos y teclas del canto del MSI.**
@@ -291,6 +302,8 @@ cd Control-deck
 Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y el visor del modo A o C.
 
 También siguen abiertos: posición real de cada conector trasero del HP, placa I/O impresa, antenas, cables SATA, diámetro del jack, `pi.shutdown`, volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el recorte real del USB de panel (el hueco es 14 × 8, diseño), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
+
+De la bahía (2026-10-21), sin probar en la bandeja impresa: que un inserto M3 corto entre en el agujero Ø4 de ~4 mm de cada torreta DC y en el de ~3,3 mm bajo cada mortise; el ajuste del cajeado Ø8,4 y del tetón; si el carro de 30 × 70 (2,3 mm hasta el borde de la bandeja) cabe con la placa real; las medidas del ESP, del Nano clon y de cualquier otra placa que se quiera montar. El puesto y = 90 no se usa a la vez que los otros dos.
 
 ---
 
@@ -327,9 +340,9 @@ openscad -o /tmp/pared.stl hardware/impresion/base/prueba_pared_trasera_io.scad
 
 | Comprobación | Resultado |
 |---|---|
-| `exportar.sh` | **No** se ha lanzado en este cambio: borra los veinte STL. Solo se regeneraron `PROVISIONAL_soporte_arduino.stl` y `PROVISIONAL_carcasa_x1_y1.stl` (OpenSCAD 2021.01). La bandeja no. |
-| `comprobar_interferencias.py` | Salida 0. **SIN INTERFERENCIAS**, 19 cajas. Envolvente 456,3 × 300,5 × 153,9 mm. KVM no. HDD 3,5" + soporte: holgura ≥ 5 mm (limita la tina). Pi ≥ 3 mm (canal USB). ESP y Nano de prácticas ≥ 3 mm (tina). OLED ≥ 1 mm (fuera del volumen interior, igual clase que el I/O frontal). Adaptador y capturadora ≥ 10 mm. **I/O frontal y pulsador del HP: holgura mínima ≥ 0 mm**. El script los marca OK; 0 mm no es holgura de montaje. |
-| `comprobar_stl.py` | Salida 0, después de sustituir esos dos STL. Las 20 caben y son mallas cerradas. |
+| `exportar.sh` | **No** se ha lanzado: borra todos los STL. El 2026-10-20 se regeneraron el soporte y `carcasa_x1_y1`. El 2026-10-21 solo el riel y los tres carros. La bandeja no. El soporte **no** se ha vuelto a exportar. |
+| `comprobar_interferencias.py` | Salida 0 el 2026-10-21. **SIN INTERFERENCIAS**, 23 cajas, en `carro_conjunto = "nano_esp"` y en `"nano_proto"`. Envolvente 456,3 × 300,5 × 153,9 mm. Carro del Nano ≥ 3 mm (tina). Tramo de anclaje del riel ≥ 3 mm (canal USB). ESP, proto, capturadora y adaptador ≥ 10 mm. La capturadora comprobada mide 67,2 mm de ancho, no 72. **I/O frontal y pulsador del HP: holgura mínima ≥ 0 mm**. OLED ≥ 1 mm. El script los marca OK; 0 mm no es holgura de montaje. |
+| `comprobar_stl.py` | Salida 0 el 2026-10-21. Las 24 caben y son mallas cerradas. |
 | `comprobar_base_hdd.py` | Salida 0. Plancha a 2,0 mm del borde de la placa, pata más cercana a 1,0 mm, pila bajo la plancha con 0,6 mm frente a la cabeza 6-32 (cota de cabeza pendiente). |
 | `verificar_separadores.py` | Salida 0. C y F abiertos en `base_x0_y1`; H y J abiertos en `base_x0_y0` (centro y r = 1,5 huecos en z = 10,27 y z = 7,35; r = 3,5 sólido). Las bases x1 no tienen esos separadores. |
 | `pytest` | **50 passed** (0,64 s). Tres pruebas nuevas del reinicio del Nano y del puerto de ejemplo. |
