@@ -6,13 +6,61 @@
 >
 > **2026-10-20, más tarde:** los mandos pasan de Arduino Micro a **Nano** (PCB de catálogo 18 × 45 mm). Entran un ESP8266, un segundo Nano de prácticas, un panel de pines en la trasera y una OLED 0,96". Las torretas y el canal USB de la bandeja impresa no se mueven. Los párrafos de abajo que dicen «Micro», «48 × 17,7» o «micro-USB del Arduino» describen el diseño anterior. La geometría vigente está en `params.scad`.
 >
-> **2026-10-21:** el ESP y el Nano de prácticas dejan el velcro y pasan a carros de una bahía atornillada a las dos torretas que ya están a la izquierda de la canaleta. El soporte del Nano de mandos no se ha tocado. El detalle está en la sección siguiente.
+> **2026-10-21, bandeja v2:** Miguel reimprime la bandeja entera. La Pi gira (USB y RJ45 hacia +Y, en la mitad izquierda) y la bahía queda integrada en la plancha. La sección «Bahía modular» de más abajo describe el riel suelto de la bandeja v1: **no se imprime**. El STL `PROVISIONAL_riel_placas` se ha retirado.
+
+## Bandeja v2 (2026-10-21)
+
+La base ya está impresa. No se reimprime. El hueco y los 4 M3 siguen en x = 318,26 y 436,26, y = 49 y 278,492. El ala de la bandeja mide 126,00 × 237,49 mm, la misma envolvente que entra por ese hueco.
+
+Foto de Miguel, desde arriba, con la trasera (+Y) en la parte de arriba: la Pi suelta está en la mitad izquierda, los dos USB y el RJ45 miran a +Y (hacia la rejilla), los micro-HDMI y el USB-C miran a +X, la micro-SD al frente (−Y) y la antena SMA del HAT apunta a +X, tumbada. Esa es la orientación del modelo. [FOTO]
+
+La foto deja las clavijas casi en el borde trasero del hueco (y = 274,5). Detrás de ese borde la pared interior está a 23 mm (y = 297,5): una clavija recta no cabe. La placa se adelanta hasta dejar 42 mm entre la cara del conector y la pared (36 mm de clavija USB-A [DISEÑO] + 6 mm). El centro de la placa queda en x = 358, entre el HDD (acaba en x = 294,6) y la canaleta (x = 420).
+
+| Qué | Dónde |
+|---|---|
+| Pi 4, PCB 56 × 85 | x = 330 a 386, y = 167,5 a 252,5. Separadores de 8 mm. Cara de los USB en y = 255,5. Las clavijas de 36 mm acaban en y = 291,5 |
+| GPIO / lado del OLED del HAT | canto −X. El HAT no se modela: no está medido [PENDIENTE] |
+| micro-HDMI y USB-C | canto +X, hacia el frente de ese canto. Reserva de clavija 26 mm, hasta x = 412. La canaleta empieza en x = 420. Un USB-C recto más largo que eso no cabe: hace falta un conector en ángulo [PENDIENTE de medir el cable] |
+| micro-SD | canto −Y. Muesca en el suelo, 18 × 20 mm, delante de la placa. La posición exacta de la ranura en el plano es [PENDIENTE] |
+| Nano de mandos | Cuna impresa en la bandeja, abajo a la derecha (eje x = 418,26, PCB y = 70 a 115). El soporte suelto ya impreso no encaja: la v2 no trae sus torretas |
+| Nano de prácticas | Carro, puesto y = 90. USB hacia +X. Pines hacia abajo, hueco de 17,5 mm |
+| ESP8266 de la tira, o proto 30 × 70 | El otro carro, puesto y = 124. No van los dos a la vez. El ESP es 58 × 31 mm [PENDIENTE], estimación de la foto, no un DEVKIT 1.0 |
+| Capturadora | Nido 26 × 32 × 14 mm en x = 390, y = 220. La reserva de 72 mm no entra. El hueco del adaptador HDMI→USB-C se quita de la bandeja [PENDIENTE] |
+| Cable del Nano de mandos | Canaleta en x = 420, desde y = 142, y giro a −X en y = 258 hasta el USB derecho de la Pi. No sale de la bandeja |
+
+La rejilla de entrada de la base sigue bajo el HP (x = 47 a 157). La bandeja no la tapa. La rejilla de la pared trasera de la carcasa se mueve con la Pi (x = 334 a 382, z = 114 a 140). La tapa abre el techo, no esa pared.
+
+Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco. La placa de la tapa mide 94 × 54 × 2,4 mm. El panel de pines y la OLED no se cortan. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
+
+Retención. Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
+
+La proto de 70 mm acaba en x = 401, a unos 3 mm del retenedor de mandos. [PENDIENTE] medir esa placa antes de imprimir el carro.
+
+`comprobar_interferencias.py` (2026-10-21, bandeja v2): salida 0 con `nano_esp` (23 cajas) y con `nano_proto` (22 cajas). Las clavijas USB-A de la Pi quedan a ≥ 5 mm de la pared. El carro del Nano de prácticas, a ≥ 1 mm de la tina. `comprobar_stl.py`: todas las mallas del directorio caben en la cama y están cerradas. No es un montaje.
+
+### Qué se imprime (bandeja v2)
+
+OpenSCAD 2021.01. No se ha lanzado `exportar.sh`. Cajas al centésima, de los vértices.
+
+| STL | Caja (mm) | Volumen | Nota |
+|---|---|---|---|
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 171,64 cm³ | Sustituye a la bandeja ya impresa. Mismos 4 M3 |
+| `PROVISIONAL_carro_nano` | 53,00 × 16,40 × 25,10 | 6,36 cm³ | Cama abajo. Un solo sólido |
+| `PROVISIONAL_carro_esp` | 66,00 × 29,60 × 25,10 | 3,99 cm³ | Igual |
+| `PROVISIONAL_carro_proto30x70` | 78,00 × 28,40 × 25,10 | 10,40 cm³ | Igual. Placa de diseño |
+| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos. Pieza aparte |
+| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 11,90 cm³ | Tapa del techo, dos M3 |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 235,38 cm³ | Regenerada: hueco de la tapa y rejilla. Las otras tres carcasas no |
+
+No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El `PROVISIONAL_soporte_arduino` ya impreso no se monta en esta bandeja.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 
-## Bahía modular (2026-10-21)
+## Bahía modular de la bandeja v1 (2026-10-21, sustituida)
 
-Miguel pide una bahía para ir cambiando placas de programación y de prueba, atornillada a los **dos tornillos que quedan a la izquierda de la canaleta** en la bandeja ya impresa. No se reimprime la bandeja. El soporte del Nano de mandos (`PROVISIONAL_soporte_arduino`) ya está pasado a imprimir: **no se ha modificado** ni su módulo ni su STL.
+Esta sección describe el riel suelto de la bandeja que Miguel ya tiene impresa. **La bandeja v2 lo deja fuera.** No imprimir `PROVISIONAL_riel_placas`: el archivo se ha retirado del directorio de STL. Lo que se imprime ahora está en «Bandeja v2», arriba.
+
+Miguel pidió una bahía atornillada a los **dos tornillos que quedan a la izquierda de la canaleta** en la bandeja v1. El soporte del Nano de mandos (`PROVISIONAL_soporte_arduino`) se imprimió para esa bandeja. En la v2 la cuna va en la propia plancha y ese soporte no tiene donde atornillar.
 
 ### Qué tornillos son
 

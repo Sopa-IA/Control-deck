@@ -24,9 +24,17 @@ module carcasa_superior() {
                     refuerzos_mandos();
                 }
             }
+            // Postes de la tapa de la Pi. Entran 0,4 mm en el techo para quedar unidos a la piel.
+            for (y = [tapa_y0 + 12, tapa_y1 - 12])
+                translate([tapa_x1 + 8, y, H - pared - 7.6]) cylinder(d = 10, h = 8, $fn = 28);
         }
         // --- vaciados ---
         alojamiento_pantalla();
+        // Hueco de la tapa, solo en el lomo plano, a la derecha de la pantalla.
+        translate([tapa_x0, tapa_y0, H - pared - 1])
+            cube([tapa_x1 - tapa_x0, tapa_y1 - tapa_y0, pared + 4]);
+        for (y = [tapa_y0 + 12, tapa_y1 - 12])
+            translate([tapa_x1 + 8, y, H - 6]) cylinder(d = inserto_d, h = 12, $fn = 20);
         mandos_vaciado();
         canal_luz_frontal();
         ventilacion();
@@ -229,6 +237,20 @@ conectores = let(z0 = usar_kvm ? pi_z + pi_h + 12 : suelo + 20,
     ["dc_in",  x0 + 68,  z0 + 20, 11.5, 11.5, "c"]
 ];
 echo(str("PANEL_CONECTORES;", conectores[0][1] - 3.25, ";", conectores[8][1] + 5.75, ";PI_X;", pi_x, ";", conectores[0][2] - 4, ";", pi_z + pi_h));
+
+// Tapa de acceso a los USB y al RJ45. Placa plana: el hueco está en el lomo,
+// que es horizontal. Dos tornillos M3 al inserto del techo, en la oreja derecha.
+// Una muesca delantera para abrirla con el dedo.
+module tapa_pi() {
+    ancho = tapa_x1 - tapa_x0 + tapa_sol + 16;
+    fondo = tapa_y1 - tapa_y0 + 2*tapa_sol;
+    difference() {
+        translate([tapa_x0 - tapa_sol, tapa_y0 - tapa_sol, 0]) cube([ancho, fondo, tapa_t]);
+        translate([(tapa_x0 + tapa_x1)/2 - 7, tapa_y0 - tapa_sol - 1, -1]) cube([14, 8, tapa_t + 2]);
+        for (y = [tapa_y0 + 12, tapa_y1 - 12])
+            translate([tapa_x1 + 8, y, -1]) cylinder(d = tornillo_d, h = tapa_t + 2, $fn = 20);
+    }
+}
 module cortes_traseros() {
     translate([ventana_hp_x, D - pared - 1, ventana_hp_z]) rotate([-90, 0, 0])
         translate([0, -ventana_hp[1], 0]) caja_r([ventana_hp[0], ventana_hp[1], pared + 2], 2);

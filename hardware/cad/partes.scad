@@ -3,7 +3,7 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto | retenedor_nano | tapa_pi
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
 
@@ -38,9 +38,11 @@ else if (parte == "riel")
     translate([1, riel_y1 - riel_y0 + 1, riel_h]) rotate([180, 0, 0])
         translate([-riel_x0a, -riel_y0, -suelo]) riel_placas();
 // Carros con la cama sobre la base de impresión. El tetón (2 mm) queda en voladizo.
-else if (parte == "carro_nano") translate([pr_l + 8, pr_w/2 + 4, 0]) carro_imprimible(pr_l, pr_w);
-else if (parte == "carro_esp") translate([esp_l + 8, esp_w/2 + 4, 0]) carro_imprimible(esp_l, esp_w);
-else if (parte == "carro_proto") translate([proto_l + 8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w);
+else if (parte == "carro_nano") translate([8, pr_w/2 + 4, 0]) carro_imprimible(pr_l, pr_w, pr_pcb_z, "bordes");
+else if (parte == "carro_esp") translate([8, esp_w/2 + 4, 0]) carro_imprimible(esp_l, esp_w, esp_pcb_z, "columnas");
+else if (parte == "carro_proto") translate([8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w, proto_pcb_z, "bordes");
+else if (parte == "retenedor_nano") translate([-(ard_cx - ard_w/2 - 6), -(ard_y - 4), -(ard_pcb_z + ard_pcb - 4.2)]) retenedor_nano();
+else if (parte == "tapa_pi") translate([-tapa_x0 + tapa_sol + 2, -tapa_y0 + tapa_sol + 2, 0]) tapa_pi();
 else if (parte == "pletina") pletina_empalme();
 else if (parte == "soporte_disco") translate([-disco_x, -disco_y, -suelo - 2]) soporte_disco();
 else if (parte == "info") {

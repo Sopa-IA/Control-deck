@@ -262,15 +262,36 @@ boton_hp_z = 112;
 // Encima va un HAT VHF con OLED y antena SMA que se pliega sobre la Pi.
 // Miguel dice que la carcasa cierra de sobra: es una observación, no una cota.
 // El HAT no se modela: sus medidas no se han tomado [PENDIENTE]. pi_h NO incluye el HAT.
-// Placa 85 x 56 mm, agujeros M2.5 a 58 x 49 mm [FUENTE]
-// (dibujo mecánico oficial Pi 4: https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf ; agujeros Ø2.7)
-pi_w = 85; pi_d = 56; pi_h = 20;      // altura de la placa con conectores, SIN el HAT [PENDIENTE]
-pi_agujeros = [58, 49];
-pi_agujero_borde = 3.5;               // [FUENTE] agujeros a 3.5 mm del borde
-pi_usb_hueco = 40;                    // [DISEÑO] espacio libre ante los USB de la Pi para clavijas (Arduino, ratón)
-pi_x = W - pared - pi_usb_hueco - pi_w;  // atrás a la derecha; USB hacia la pared derecha
-pi_y = D - pared - 27 - pi_d;         // v1: la bandeja (con su ala) termina antes de las orejetas traseras
+// Placa 85 x 56 mm, agujeros M2.5 a 58 x 49 mm, a 3,5 mm del borde [FUENTE]
+//   https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf
+//   agujeros Ø2,7. El dibujo (y el modelo de process1183/openscad-library, rpi_4b.scad,
+//   que cita ese plano) pone USB-A y RJ45 en el canto ox = 85 (el de 56 mm),
+//   micro-HDMI y USB-C en el canto oy = 0, micro-SD junto a ox = 0 y el GPIO en oy = 56.
+// Bandeja v2, orientación de la foto de Miguel (2026-10-21) [FOTO].
+// La Pi suelta queda en la mitad izquierda del hueco, pegada a la trasera:
+//   USB-A y RJ45 hacia +Y (la rejilla / la trasera), clavija del Nano por arriba;
+//   micro-HDMI y USB-C hacia +X (la canaleta);
+//   micro-SD hacia −Y; GPIO y el lado del OLED del HAT hacia −X;
+//   la antena SMA del HAT apunta a +X y se tumba sobre la bandeja [PENDIENTE medir].
+// El eje largo (85 mm) va en Y. En X el hueco mide 110 mm: 85 + una clavija
+// no caben, así que los USB no pueden mirar a ±X.
+// La foto los deja casi en el borde trasero del hueco (y = 274,5). Detrás de
+// ese borde la pared interior está a 23 mm (y = 297,5): una clavija recta no
+// cabe. La placa se adelanta hasta dejar 42 mm entre la cara del conector y
+// la pared (36 mm de clavija + 6 mm). Sigue siendo la orientación de Miguel.
+pi_w = 56; pi_d = 85; pi_h = 20;      // X, Y. Altura de la placa con conectores, SIN el HAT [PENDIENTE]
+pi_x0 = 330;                          // [DISEÑO] borde GPIO (oy = 56), a −X. Centro de la placa en x = 358,
+                                      // entre el HDD (acaba en x = 294,6) y la canaleta (x ≈ 420)
+pi_y0 = 167.5;                        // [DISEÑO] borde de la micro-SD (ox = 0). Cara de los USB en y = 255,5
+pi_x = pi_x0; pi_y = pi_y0;
+pi_agujeros = [58, 49];               // [FUENTE] en ejes de la placa (ox, oy), no en X/Y de la bandeja
+pi_agujero_borde = 3.5;               // [FUENTE]
 pi_z = suelo + 8;                     // separadores de 8 mm
+// Clavija USB-A. La carcasa metálica mide unos 12 mm (USB-IF, tipo A). El
+// sobremolde de un cable normal no está normalizado: en cables cortos suele
+// quedar entre 30 y 40 mm desde la punta. [DISEÑO] se reservan 36 mm desde
+// la cara del conector (el conector de la Pi sale ~3 mm de la PCB, misma fuente).
+pi_clavija = 36;
 
 // KVM: TESmart HKS201-P23-V2 recomendado, dimensiones NO publicadas.
 // Marcador [PENDIENTE] 140 x 90 x 30 mm.
@@ -297,7 +318,10 @@ adap_x = pi_x;
 adap_y = pi_y - 12 - adap_video[1];
 adap_z = suelo + 2;
 // Modo B ahora poco probable (los manuales de la MSI no documentan DDC/CI): el hueco se conserva.
-usar_adaptador_video = true;   // [DISEÑO] reserva el hueco del adaptador HDMI->USB-C
+// Bandeja v2: el hueco de 72 mm del adaptador no cabe junto a la Pi girada,
+// los carros y la capturadora. Se quita de la bandeja. Recolocar cuando se
+// mida el aparato. [PENDIENTE]
+usar_adaptador_video = false;
 
 // Capturadora HDMI->USB (UVC) para el modo C (RECOMENDADO): HDMI del HP -> capturadora -> USB
 // de la Pi. Referencia vista en Amazon.es el 2026-10-18 (marca SUOFEIXIANG, "4K30 entrada /
@@ -307,9 +331,13 @@ usar_adaptador_video = true;   // [DISEÑO] reserva el hueco del adaptador HDMI-
 // La reserva nominal sigue siendo 72 mm. Las dos torretas DC ya impresas (y el riel que
 // se atornilla a ellas) comen el extremo derecho: la caja que se comprueba acaba en riel_x0a.
 usar_capturadora = true;       // [DISEÑO]
-captura = [72, 30, 20];        // [DISEÑO reserva nominal; PENDIENTE de medir el aparato real]
-cap_x = pi_x;
-cap_y = adap_y - 12 - captura[1];
+captura = [72, 30, 20];        // [DISEÑO] reserva nominal; PENDIENTE de medir el aparato real
+// Con la Pi a la izquierda el hueco de 72 mm no entra. El nido es el bolsillo
+// que queda a +X de la Pi, entre los micro-HDMI y el giro de la canaleta.
+// [PENDIENTE] medir el aparato: si no cabe aquí, el nido se mueve.
+cap_hueco = [26, 32, 14];
+cap_x = 390;
+cap_y = 220;
 cap_z = suelo + 2;
 
 // Arduino Nano de MANDOS (2026-10-20). Sustituye al Micro. Clon ATmega328P,
@@ -364,33 +392,52 @@ ny_cortes = ceil(D / (cama_y - margen_cama));
 function corte_x(i) = W * i / nx_cortes;
 function corte_y(j) = D * j / ny_cortes;
 
-// Bandeja de servicio inferior extraíble (lleva la Pi y la distribución
-// de alimentación; se desmonta desde abajo sin abrir la carcasa) [DISEÑO]
-serv_x = (usar_distribucion ? min(psu_x, pi_x) : pi_x) - 6;
-serv_y = (usar_distribucion ? min(psu_y, sop_ard_y0) : sop_ard_y0) - 6;   // v1: la bandeja incluye el soporte del Arduino
-serv_w = (W - pared - 21) - serv_x;     // v1: deja libres las orejetas del lateral derecho
-serv_d = (pi_y + pi_d + 4) - serv_y;
+// Bandeja de servicio. La BASE ya está impresa: el hueco y los 4 M3 no se
+// mueven. Estas cuatro cotas son las de la bandeja v1 (salían de la Pi y del
+// soporte cuando el USB miraba a +X). Congeladas el 2026-10-21. No volver a
+// derivarlas de pi_x/pi_y.
+// Tornillos (centro del ala): x = 318,26 y 436,26; y = 49 y 278,492.
+serv_x = 322.26;
+serv_y = 53;
+serv_w = 110;
+serv_d = 221.492;
 serv_ala = 8;        // [DISEÑO] ala de atornillado alrededor
 serv_ala_t = 2;      // [DISEÑO] espesor del ala (queda dentro de la altura de los pies)
 
-// ESP8266 tipo NodeMCU (módulo ESP-12, micro-USB). Foto 2026-10-20: delante,
-// a la izquierda de la bandeja. La placa de la foto no se ha medido [PENDIENTE].
-// Envolvente de referencia [FUENTE], no de esta placa:
-//   NodeMCU DEVKIT V1.0, 25,4 x 48,26 mm (NODEMCU_DEVKIT_V1.0.PDF en
-//   https://github.com/nodemcu/nodemcu-devkit-v1.0)
-//   Ai-Thinker NodeMCU-8266 V1.2, 25,4 x 48,3 mm ± 0,2
-//   (ficha del fabricante, 2020). Un clon tipo LoLin V3 suele ser más largo
-//   (~58 x 31 en fichas de tienda, no usadas aquí): si la placa real es esa,
-//   este marcador se queda corto.
-// Van en carros del riel (más abajo), no con velcro. El micro-USB mira a -X.
-esp_l = 48.3; esp_w = 25.4; esp_h = 11;   // alto sobre el carro [DISEÑO]; no medido
+// ESP8266 de la foto del 2026-10-21 (módulo ESP-12, micro-USB, cuatro agujeros
+// de esquina, pines macho hacia abajo). Puede no ser un NodeMCU DEVKIT 1.0.
+// Escala de la foto: una fila de 15 pines a 2,54 mm son 35,6 mm entre centros
+// extremos. La placa se ve más larga que esa fila y más ancha que el Nano
+// (18 mm). Estimación 58 x 31 mm, del orden de un clon tipo LoLin. No es un
+// calibre. [PENDIENTE] de medir. Referencia que NO se usa como cota de esta
+// placa: DEVKIT 1.0, 25,4 x 48,26 (NODEMCU_DEVKIT_V1.0.PDF).
+// En el carro de la bandeja v2 el micro-USB mira a +X (hacia el centro de la bandeja).
+esp_l = 58;                               // [PENDIENTE] estimación de la foto
+esp_w = 31;                               // [PENDIENTE] estimación de la foto
 esp_clavija = 10;                         // [DISEÑO] reserva del enchufe; no medido
+esp_pcb = 1.6;                            // [DISEÑO] PCB típico
+esp_pcb_z = 17.5;                         // cara inferior de la PCB sobre la bandeja [DISEÑO]
+esp_mod = [24, 16, 3];                    // ESP-12 sobre la PCB, x y z [DISEÑO]; no medido
+esp_ag_inset = 3.5;                       // centro del agujero a la esquina [DISEÑO]; no medido
+// Carcasa Dupont hembra de 2,54 mm, en el eje del pin. Cota habitual de ese
+// conector; los cables de Miguel no se han medido. El separador negro del
+// pin macho (≈ 2,5 mm) queda entre la PCB y la carcasa: el hueco bajo la PCB
+// tiene que ser ≈ 14,5 + 2,5 = 17 mm para enchufar a fondo.
+dupont_carcasa = 14.5;                    // [DISEÑO] no medido en los cables de Miguel
+dupont_separador = 2.5;                   // [DISEÑO] plástico negro bajo la PCB; no medido
 
-// Segundo Nano, de PRÁCTICAS (no es el de los mandos). El Uno de la foto no
-// se monta: ver docs/decisiones-prototipo.md. Misma cota de catálogo que el
-// de mandos. Que Miguel tenga ya ese segundo Nano no consta en la foto [PENDIENTE].
-pr_l = ard_l; pr_w = ard_w; pr_h = 11;    // alto sobre el carro [DISEÑO]; no medido
+// Segundo Nano, de PRÁCTICAS. Foto 2026-10-21: pines macho largos hacia abajo,
+// separador negro bajo la PCB, ICSP de 6 pines hacia arriba en el extremo
+// contrario al mini-USB. PCB de catálogo 18 x 45. Alturas de pin e ICSP
+// [PENDIENTE]. En el carro el mini-USB mira a +X. El ICSP, en el otro extremo, hacia arriba.
+pr_l = ard_l; pr_w = ard_w;
+pr_pcb = 1.6;
+pr_pcb_z = 17.5;                          // cara inferior sobre la bandeja [DISEÑO]
+pr_icsp = [7.6, 5.1, 8];                  // 2x3 hacia arriba [DISEÑO]; no medido
 pr_clavija = 12;                          // [DISEÑO] reserva del enchufe mini-USB; no medido
+// 14,5 + 2,5 = 17 mm bajo la PCB. Los dos puestos de la bahía v2 están
+// detrás de y = 80, donde la tina deja pasar esa altura. El puesto delantero
+// de la bahía vieja (y = 76, PCB a 12 mm) ya no se usa.
 
 // Riel modular (2026-10-21). Miguel: los DOS tornillos a la IZQUIERDA de la
 // canaleta, en la bandeja ya impresa. Son las dos torretas de la distribución
@@ -419,9 +466,33 @@ riel_est = [76, 90, 105];
 // Qué par está montado en la comprobación. El otro carro existe como STL.
 carro_conjunto = "nano_esp";                    // "nano_esp" | "nano_proto"
 proto_l = 70; proto_w = 30;                     // [DISEÑO] protoboard genérica 30×70, no es una placa medida
-nano_est = 0;                                   // índice en riel_est
-esp_est = 2;
-proto_est = 2;
+proto_pcb_z = 17.5;                             // mismo puesto que el ESP
+// Bahía v2, integrada en la bandeja, delante de la Pi. El tornillo del carro
+// está en bay_x. La placa crece hacia +X y el USB mira a +X. Puestos:
+// Nano de prácticas en y = 90; ESP de la tira o proto 30×70 en y = 124.
+// No van los tres a la vez: ESP y proto comparten puesto.
+// La proto de 70 mm acaba en x = 401, a 3 mm del retenedor del Nano de mandos.
+bay_x = 328;
+bay_est = [90, 124];
+nano_est = 0;
+esp_est = 1;
+proto_est = 1;
+// Tapa del techo, encima de los USB/RJ45. Solo en el lomo plano (y > 246,5),
+// dentro de carcasa_x1_y1. No corta el panel de pines, la OLED ni la rejilla
+// de la pared trasera (esa rejilla va en z = 114–140; la tapa abre el techo).
+tapa_x0 = 324; tapa_x1 = 396;
+tapa_y0 = 252; tapa_y1 = 294;
+tapa_sol = 6;                                 // solape de la tapa sobre el techo [DISEÑO]
+tapa_t = 2.4;
+// Canaleta del mini-USB de mandos. Sube por +X (x = 420) y gira a −X delante
+// de las clavijas de la Pi. El cable no sale de la bandeja. Ribete 1,6 mm,
+// paso 8 mm, alto 5 mm. [DISEÑO]
+canal_x0 = 420;
+canal_paso = 8;
+canal_rib = 1.6;
+canal_y0 = 142;
+canal_giro_x0 = 390;
+canal_giro_y0 = 258;
 
 // Panel de prácticas en la cara TRASERA [DISEÑO]. A la derecha de la costilla
 // del corte X (x = 228) y por encima del bloque de conectores (z ≈ 24–52).

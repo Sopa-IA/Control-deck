@@ -24,13 +24,16 @@ Ese mismo día, más tarde, se regeneraron solo dos STL (OpenSCAD 2021.01), sin 
 
 `PROVISIONAL_bandeja_servicio` no se ha tocado: las torretas siguen en y = 63 y y = 125 y el canal en y = 143,5. El manual PDF y los STEP de `hardware/impresion/` no se han regenerado.
 
-El 2026-10-21 se añadieron cuatro STL, también sin `exportar.sh`. `PROVISIONAL_soporte_arduino` no se ha vuelto a exportar.
+El 2026-10-21 por la tarde se regeneraron la bandeja, `carcasa_x1_y1` y los carros, y se añadieron el clip y la tapa. Sin `exportar.sh`. `PROVISIONAL_riel_placas` se ha quitado: era el riel de la bandeja v1.
 
 | STL | Caja (mm) | Volumen | Qué es |
 |---|---|---|---|
-| `PROVISIONAL_riel_placas` | 13,00 × 143,49 × 6,00 | 7,85 cm³ | Riel boca abajo, sobre las dos torretas DC de la izquierda del canal |
-| `PROVISIONAL_carro_nano` | 54,25 × 20,00 × 8,65 | 2,73 cm³ | Carro del Nano de prácticas |
-| `PROVISIONAL_carro_esp` | 57,55 × 27,40 × 8,65 | 3,81 cm³ | Carro del ESP8266 |
-| `PROVISIONAL_carro_proto30x70` | 79,25 × 32,00 × 8,65 | 6,14 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 171,64 cm³ | Bandeja v2. Mismos 4 M3 |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 235,38 cm³ | Tapa de la Pi en el techo (antes 242,11 cm³) |
+| `PROVISIONAL_carro_nano` | 53,00 × 16,40 × 25,10 | 6,36 cm³ | Carro del Nano de prácticas, pines abajo |
+| `PROVISIONAL_carro_esp` | 66,00 × 29,60 × 25,10 | 3,99 cm³ | Carro del ESP8266 |
+| `PROVISIONAL_carro_proto30x70` | 78,00 × 28,40 × 25,10 | 10,40 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
+| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos |
+| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 11,90 cm³ | Tapa del techo, dos M3 |
 
-`comprobar_stl.py` el 2026-10-21: las 24 caben y son mallas cerradas. `comprobar_interferencias.py`: sin interferencias, 23 cajas, con el par Nano+ESP y con el par Nano+proto.
+`comprobar_stl.py` el 2026-10-21: las 25 mallas caben y están cerradas. `comprobar_interferencias.py`: sin interferencias, con el par Nano+ESP y con el par Nano+proto.
