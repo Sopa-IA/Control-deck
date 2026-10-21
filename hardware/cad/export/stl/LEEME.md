@@ -13,4 +13,24 @@ Hay cotas PENDIENTES. La referencia de estado es `docs/ESTADO-Y-TRASPASO.md`. `d
 
 Los archivos `*_x2` / `*_x4` indican cuántas copias imprimir. El prefijo `PROVISIONAL_` se mantiene.
 
-Comprobado el 2026-10-20 sobre estos STL (cajas y mallas, no un montaje real): `comprobar_stl.py` (las 20 caben en la cama y son mallas cerradas) y `comprobar_interferencias.py` (sin interferencias entre 15 cajas; el I/O frontal y el pulsador del HP quedan con holgura mínima de 0 mm porque limitan contra la pared). Sigue sin ser una autorización de fabricación.
+Comprobado el 2026-10-20 sobre estos STL (cajas y mallas, no un montaje real): `comprobar_stl.py` (las 20 caben en la cama y son mallas cerradas) y `comprobar_interferencias.py` (sin interferencias entre 19 cajas; el I/O frontal y el pulsador del HP quedan con holgura mínima de 0 mm porque limitan contra la pared; la OLED queda en 1 mm por la misma razón). Sigue sin ser una autorización de fabricación.
+
+Ese mismo día, más tarde, se regeneraron solo dos STL (OpenSCAD 2021.01), sin pasar `exportar.sh` (ese script borra los veinte):
+
+| STL | Caja (mm) | Volumen | Qué cambió |
+|---|---|---|---|
+| `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 cm³ | Asiento del Nano (antes 25,70 de ancho y 9,52 cm³, Micro) |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 242,11 cm³ | Panel de prácticas en la trasera (antes 243,84 cm³). La caja no cambia |
+
+`PROVISIONAL_bandeja_servicio` no se ha tocado: las torretas siguen en y = 63 y y = 125 y el canal en y = 143,5. El manual PDF y los STEP de `hardware/impresion/` no se han regenerado.
+
+El 2026-10-21 se añadieron cuatro STL, también sin `exportar.sh`. `PROVISIONAL_soporte_arduino` no se ha vuelto a exportar.
+
+| STL | Caja (mm) | Volumen | Qué es |
+|---|---|---|---|
+| `PROVISIONAL_riel_placas` | 13,00 × 143,49 × 6,00 | 7,85 cm³ | Riel boca abajo, sobre las dos torretas DC de la izquierda del canal |
+| `PROVISIONAL_carro_nano` | 54,25 × 20,00 × 8,65 | 2,73 cm³ | Carro del Nano de prácticas |
+| `PROVISIONAL_carro_esp` | 57,55 × 27,40 × 8,65 | 3,81 cm³ | Carro del ESP8266 |
+| `PROVISIONAL_carro_proto30x70` | 79,25 × 32,00 × 8,65 | 6,14 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
+
+`comprobar_stl.py` el 2026-10-21: las 24 caben y son mallas cerradas. `comprobar_interferencias.py`: sin interferencias, 23 cajas, con el par Nano+ESP y con el par Nano+proto.

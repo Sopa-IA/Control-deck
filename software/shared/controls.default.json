@@ -1,5 +1,5 @@
 {
-  "$comment": "Asignación por defecto de controles (Arduino Micro: potenciómetros P1..Pn, botones B1..Bn). Editable desde Controles; orbitd la guarda en su directorio de estado (no en el repo).",
+  "$comment": "Asignación por defecto de controles (Arduino Nano de mandos: potenciómetros P1..Pn, botones B1..Bn). Editable desde Controles; orbitd la guarda en su directorio de estado (no en el repo).",
   "version": 1,
   "pots": { "P1": "hp.volume_set", "P2": "ui.scroll" },
   "buttons": { "B1": "ui.power_menu", "B2": "pi.switch_visible" }

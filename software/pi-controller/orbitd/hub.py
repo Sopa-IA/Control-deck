@@ -15,7 +15,7 @@ from aiohttp import WSMsgType, web
 import orbit_protocol as P
 
 from . import __version__
-from .serial_events import Hello, SerialReader, SimControls, parse_line
+from .serial_events import NANO_RESET_WAIT_S, Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
 from .video import VideoConfig, VideoSwitcher
 
@@ -35,6 +35,7 @@ class Config:
     sim_buttons: bool = False   # pulsaciones aleatorias de botones simulados (desactivado: abren diálogos)
     serial_port: Optional[str] = None
     serial_baud: int = 115200
+    serial_reset_wait_s: float = NANO_RESET_WAIT_S
     heartbeat_s: float = P.HEARTBEAT_S
     heartbeat_timeout_s: float = P.HEARTBEAT_TIMEOUT_S
     telemetry_period_s: float = 2.0
@@ -299,7 +300,8 @@ class Hub:
             return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "orbitd responde"}
         if action == "pi.led_mode":
             return {"action": action, "ok": True, "dry_run": True, "simulated": False,
-                    "message": f"Modo LED «{params['mode']}» registrado; tira LED sin identificar (PENDIENTE): no se envía nada."}
+                    "message": (f"Modo LED «{params['mode']}» registrado. La tira sigue sin identificar "
+                                "(PENDIENTE) y la llevará el ESP8266 con WLED, no el Nano de mandos: no se envía nada.")}
         if action == "pi.restart_ui":
             asyncio.get_event_loop().create_task(self.broadcast_ui("state", self.state_payload()))
             return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recarga solicitada"}
@@ -381,7 +383,8 @@ class Hub:
         elif self.cfg.serial_port:
             def on_line(line: str) -> None:
                 loop.create_task(self.on_serial_line(line))
-            self._serial = SerialReader(self.cfg.serial_port, self.cfg.serial_baud, loop, on_line, self._serial_status)
+            self._serial = SerialReader(self.cfg.serial_port, self.cfg.serial_baud, loop, on_line, self._serial_status,
+                                         reset_wait_s=self.cfg.serial_reset_wait_s)
             self._serial.start()
 
     async def stop(self, app: web.Application) -> None:

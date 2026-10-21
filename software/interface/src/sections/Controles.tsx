@@ -18,7 +18,7 @@ export function Controles() {
 
   return (
     <div className="controles">
-      <Panel title="Potenciómetros" right={<span className="muted">Arduino Micro · A0–A1 · 0–1023</span>}>
+      <Panel title="Potenciómetros" right={<span className="muted">Arduino Nano · A0–A1 · 0–1023</span>}>
         <div className="pot-grid">
           {potIds.map((id) => {
             const c = state.controls[id];
@@ -68,7 +68,7 @@ export function Controles() {
             <li key={e.control}><b>{e.control}</b> {e.kind === 'pot' ? `= ${e.value}` : e.event} <span className="muted">{ago(e.ts)}</span> <SimTag show={e.simulated} /></li>
           ))}
         </ul>
-        <p className="muted small-note">Los encoders se han sustituido por potenciómetros + botones leídos por un Arduino Micro. El volumen del HP lo aplica orbitd a través de hp-agent.</p>
+        <p className="muted small-note">Los encoders se han sustituido por potenciómetros + botones leídos por un Arduino Nano. El Nano no tiene USB nativo: no hay volumen HID. El volumen del HP lo aplica orbitd a través de hp-agent.</p>
       </Panel>
     </div>
   );

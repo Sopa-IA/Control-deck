@@ -28,10 +28,10 @@ if (parte == "io_frontal") translate([pared, io_frontal_y, io_frontal_z]) cube(i
 if (parte == "boton_hp") translate([pared - 2.5, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d, h = boton_hp_prof + 2.5, $fn = 48);
 if (parte == "cables") cables_ilustrativos();
 if (parte == "pies") for (p = pies()) translate([p[0], p[1], -alto_pies]) cylinder(d = 12, h = alto_pies + 1);
-if (parte == "captura_cuerpo") translate([cap_x, cap_y, cap_z]) translate([22, 3, 3]) caja_r([captura[0] - 26, captura[1] - 6, captura[2] - 8], 3);
+if (parte == "captura_cuerpo") translate([cap_x, cap_y, cap_z]) translate([22, 3, 3]) caja_r([min(captura[0] - 26, cap_dx - 24), captura[1] - 6, captura[2] - 8], 3);
 if (parte == "captura_clavija") translate([cap_x, cap_y, cap_z]) translate([2, 7, 5]) cube([20, captura[1] - 14, captura[2] - 12]);
-if (parte == "captura_reserva") translate([cap_x, cap_y, cap_z]) cube(captura);
-if (parte == "adaptador") if (usar_adaptador_video) translate([adap_x, adap_y, adap_z]) cube(adap_video);
+if (parte == "captura_reserva") translate([cap_x, cap_y, cap_z]) cube([cap_dx, captura[1], captura[2]]);
+if (parte == "adaptador") if (usar_adaptador_video) translate([adap_x, adap_y, adap_z]) cube([adap_dx, adap_video[1], adap_video[2]]);
 // Valores para la escena de Blender (vista="params")
 if (parte == "params") {
     echo(str("P;W;", W)); echo(str("P;D;", D)); echo(str("P;H;", H));

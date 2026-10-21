@@ -3,8 +3,68 @@
 > **⚠️ NO APTO PARA FABRICACIÓN.** Volumen de diseño industrial paramétrico para validar proporciones, distribución interna y la estrategia de impresión. Hay varias cotas **PENDIENTES** (posición de puertos y teclas del MSI, potenciómetros, pulsadores, insertos), las comprobaciones son **simulaciones geométricas sobre cajas envolventes**, no pruebas físicas, y los STL llevan el prefijo `PROVISIONAL_`.
 >
 > **2026-10-20:** el modelo vigente es `usar_hdd_35 = true` (HDD Toshiba 3,5", cotas SFF-8301 en `hardware/cad/params.scad`). Varios párrafos de este archivo siguen describiendo el preset anterior de SSD 2,5". Para el estado actual, leer [`ESTADO-Y-TRASPASO.md`](ESTADO-Y-TRASPASO.md).
+>
+> **2026-10-20, más tarde:** los mandos pasan de Arduino Micro a **Nano** (PCB de catálogo 18 × 45 mm). Entran un ESP8266, un segundo Nano de prácticas, un panel de pines en la trasera y una OLED 0,96". Las torretas y el canal USB de la bandeja impresa no se mueven. Los párrafos de abajo que dicen «Micro», «48 × 17,7» o «micro-USB del Arduino» describen el diseño anterior. La geometría vigente está en `params.scad`.
+>
+> **2026-10-21:** el ESP y el Nano de prácticas dejan el velcro y pasan a carros de una bahía atornillada a las dos torretas que ya están a la izquierda de la canaleta. El soporte del Nano de mandos no se ha tocado. El detalle está en la sección siguiente.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
+
+## Bahía modular (2026-10-21)
+
+Miguel pide una bahía para ir cambiando placas de programación y de prueba, atornillada a los **dos tornillos que quedan a la izquierda de la canaleta** en la bandeja ya impresa. No se reimprime la bandeja. El soporte del Nano de mandos (`PROVISIONAL_soporte_arduino`) ya está pasado a imprimir: **no se ha modificado** ni su módulo ni su STL.
+
+### Qué tornillos son
+
+En la bandeja hay cuatro familias de agujero junto a esa zona. Los que cuadran con la foto (a la izquierda del canal, sobre la plancha) son las dos torretas de la distribución DC que caen dentro de la pieza:
+
+| Torreta | X | Y |
+|---|---|---|
+| Delantera | 401,26 | 146,492 |
+| Trasera | 401,26 | 194,492 |
+
+Salen de `psu_x + psu_w - 6` y de `psu_y + 6` / `psu_y + psu_d - 6`. No se mueven: son los agujeros impresos. Van separadas 48 mm en Y. La pared izquierda del canal está en x = 411,66, así que estas torretas quedan 10 mm a su izquierda. Cada una es un cilindro Ø8 y 4 mm de alto, con un agujero Ø4 abierto por arriba. El agujero del modelo mide unos 4 mm de fondo (la torreta es de 4 mm y el inserto de catálogo del CAD, 5,7 mm, no cabe). No es una rosca M3: un tornillo solo no agarra. Hace falta un inserto M3 corto. **PENDIENTE** de probarlo en la pieza impresa.
+
+No son estos otros:
+
+- Las torretas del soporte de mandos están en el **eje** del canal (x = 418,26), en y = 63 y y = 125, por delante de la boca (y = 143,5). El cable del Nano de mandos tiene que seguir en ese canal, y el soporte ya está en impresión.
+- Los 4 M3 del ala sujetan la bandeja a la base. Usarlos dejaría la bandeja suelta.
+- Las grapas del canal no son agujeros de tornillo.
+- Las otras dos torretas DC (x = 303,26) quedan fuera de la bandeja. El STL las trae flotando y la guía de impresión dice que se borren en el laminador.
+
+### Qué se imprime
+
+Cuatro STL nuevos. OpenSCAD 2021.01, sin pasar `exportar.sh` (ese script borra los veinte anteriores). Cajas medidas en los vértices, igual que `comprobar_stl.py`.
+
+| STL | Caja (mm) | Volumen | Cómo va en la cama |
+|---|---|---|---|
+| `PROVISIONAL_riel_placas` | 13,00 × 143,49 × 6,00 | 7,85 cm³ | El STL ya está boca abajo: los mortises contra la cama y el cajeado de las torretas abierto hacia arriba. No hace falta puentear ese cajeado |
+| `PROVISIONAL_carro_nano` | 54,25 × 20,00 × 8,65 | 2,73 cm³ | Cama del carro abajo. El tetón (2 mm) queda en el aire: soporte solo ahí |
+| `PROVISIONAL_carro_esp` | 57,55 × 27,40 × 8,65 | 3,81 cm³ | Igual |
+| `PROVISIONAL_carro_proto30x70` | 79,25 × 32,00 × 8,65 | 6,14 cm³ | Igual. La placa de 30 × 70 es **DISEÑO**, no una placa medida |
+
+El riel tiene dos tramos. El delantero (y = 58 a 130) mide 7,1 mm de ancho y acaba 0,9 mm antes del soporte de mandos. El de anclaje (desde y = 129,8 hasta y = 201,492, delante de la Pi en y = 214,492) es el que abraza las dos torretas: cajeado Ø8,4 (0,2 mm de holgura radial, **DISEÑO**) y 1,6 mm de pared. Su cara derecha queda a 3,2 mm de la pared del canal. La cabeza del M3 apoya encima; no hay avellanado, porque un cajeado Ø6,2 dejaba un techo de medio milímetro.
+
+Cada carro lleva la placa hacia −X (el enchufe se aleja del canal y de la capturadora), un tetón que entra en el mortise y un tornillo M3 a un inserto del riel. La cabeza apoya en la pestaña. Bajo cada mortise el agujero del inserto tiene unos 3,3 mm de fondo: el inserto de 5,7 mm tampoco cabe ahí. **PENDIENTE.**
+
+### Cuántas placas caben
+
+Hay tres puestos, en y = 76, 90 y 105. A la vez caben **dos**, en el 76 y en el 105. El del medio solo sirve si no hay otro carro.
+
+| Montaje | Qué lleva | Holgura entre carros |
+|---|---|---|
+| `nano_esp` (el del ensamblaje) | Nano de prácticas en y = 76 y ESP en y = 105 | 5,3 mm |
+| `nano_proto` | El mismo Nano y el carro de 30 × 70 en y = 105 | 3,0 mm |
+| ESP + proto | No entra: los dos usan el puesto 105 | — |
+| Los tres a la vez | No | — |
+
+El Nano de mandos no es un carro. Sigue en su soporte, con el cable en el canal que ya existe.
+
+La reserva de la capturadora y la del adaptador siguen escritas como 72 mm en `params.scad`. La caja que se comprueba acaba en x = 395,46 (donde empieza el riel): **67,2 mm** útiles. Un aparato de 72 mm ya chocaría con las torretas Ø8 impresas, que empiezan en x = 397,26. No se ha medido la capturadora.
+
+El carro de 30 × 70, con su margen de 1 mm por lado, acaba en x = 324,86. El suelo de la bandeja empieza en x = 322,56. Quedan **2,3 mm**. **PENDIENTE** con la placa real: si es más ancha, o si el cable sale por ese lado, no cabe.
+
+`comprobar_interferencias.py` (2026-10-21): sin interferencias, 23 cajas, en `nano_esp` y en `nano_proto`. El carro del Nano queda a ≥ 3 mm de la tina. El tramo de anclaje queda a ≥ 3 mm del canal. `comprobar_stl.py`: las 24 mallas caben en la cama y están cerradas. Nada de esto se ha montado.
 
 ## 0c. HP v3: primeras medidas reales y capturadora (2026-10-18)
 

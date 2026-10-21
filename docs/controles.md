@@ -1,6 +1,8 @@
 # Controles físicos e iluminación ámbar
 
 > Documento: `docs/controles.md` · Fuentes comprobadas el **2026-10-18** · Lo no verificado figura como **pendiente de verificar**.
+>
+> **2026-10-20.** El prototipo no usa encoders. Usa potenciómetros y botones leídos por un **Arduino Nano** (antes, un Micro). La tira, cuando se identifique, va a un ESP8266 con WLED, no a un pin del Nano. Este archivo es el estudio de la fase 1; donde no coincida, mandan [`decisiones-prototipo.md`](decisiones-prototipo.md) y [`../software/arduino-controls/README.md`](../software/arduino-controls/README.md).
 
 ## 1. Inventario de controles (según el brief y los renders)
 

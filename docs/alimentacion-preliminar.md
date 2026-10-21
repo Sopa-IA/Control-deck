@@ -16,8 +16,13 @@ Regleta comercial certificada (fuera de Orbit)
  └─ Cargador USB-C PD certificado (> 15 W según el manual MSI) ─► USB-C 2 de la MSI (obligatorio si recibe vídeo por HDMI)
      (alternativa: un único cargador USB-C PD multipuerto certificado para Pi + MSI, si Miguel tiene uno y
       reparte potencia suficiente por puerto: PENDIENTE de comprobar su etiqueta)
-Arduino Micro ◄─ USB de la Pi · Adaptador HDMI→USB-C (modo B) ◄─ USB, si lo necesita (PENDIENTE)
+Nano de mandos ◄─ USB de la Pi (serie, siempre conectado)
+ESP8266 ◄─ otro USB de la Pi (corriente; WLED se graba una vez)
+Capturadora del modo C ◄─ otro USB de la Pi, si se compra
+Nano de prácticas ◄─ prolongador al panel trasero; si no hay portátil, puente a un cuarto USB de la Pi
+Adaptador HDMI→USB-C (modo B) ◄─ USB, si lo necesita (PENDIENTE)
 ```
+- **2026-10-20.** La Pi es una Pi 4 (Miguel). Tiene cuatro USB de tipo A. El reparto de arriba los ocupa todos: es **DISEÑO**, el presupuesto de corriente no se ha medido y no se supone un hub. La tira LED no se alimenta del pin de 3,3 V del ESP. Dentro de la cuña sigue sin haber red eléctrica.
 - **Dentro de Orbit no hay red eléctrica**: el adaptador del HP queda fuera y su cable DC entra directamente en la placa por la ventana I/O trasera (datos del propietario 2026-10-18; HP: adaptador externo 19,5 V 3,3 A y entrada DC en el I/O trasero de las placas hermanas Iris-E2/Iris-A8, ver `datos-pendientes-hp.md`).
 - **No hace falta distribución DC interna** (la caja "Distribución DC" del CAD v1 se desactiva: `usar_distribucion = false`). Cada equipo usa su fuente certificada.
 - La placa del HP alimenta ella misma su disco SATA y su ventilador (cables originales). Un SSD de 2,5" consume menos que el HDD de 3,5" (valor real: ficha del SSD elegido, PENDIENTE).

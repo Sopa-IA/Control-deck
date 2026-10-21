@@ -9,6 +9,7 @@ from pathlib import Path
 from aiohttp import web
 
 from .hub import Config, build_app
+from .serial_events import NANO_RESET_WAIT_S
 from .video import VideoConfig
 
 
@@ -18,8 +19,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--port", type=int, default=int(os.environ.get("ORBIT_PORT", "8765")))
     ap.add_argument("--static", type=Path, default=None, help="carpeta dist/ de la interfaz")
     ap.add_argument("--state-dir", type=Path, default=None)
-    ap.add_argument("--serial", default=os.environ.get("ORBIT_SERIAL"), help="p.ej. /dev/ttyACM0 (Arduino Micro)")
+    ap.add_argument("--serial", default=os.environ.get("ORBIT_SERIAL"),
+                    help="Nano de mandos con CH340: /dev/ttyUSB0 (confirmar con /dev/serial/by-id; el conversor no crea un puerto CDC)")
     ap.add_argument("--baud", type=int, default=115200)
+    ap.add_argument("--serial-reset-wait", type=float,
+                    default=float(os.environ.get("ORBIT_SERIAL_RESET_WAIT", NANO_RESET_WAIT_S)),
+                    help="segundos tras abrir el puerto antes de pedir el saludo (el Nano se reinicia al abrir)")
     ap.add_argument("--sim", action="store_true", help="simula HP y controles")
     ap.add_argument("--sim-hp", action="store_true")
     ap.add_argument("--sim-controls", action="store_true")
@@ -28,6 +33,7 @@ def main(argv: list[str] | None = None) -> None:
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if a.verbose else logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
     cfg = Config(host=a.host, port=a.port, static_dir=a.static, serial_port=a.serial, serial_baud=a.baud,
+                 serial_reset_wait_s=a.serial_reset_wait,
                  hp_token=os.environ.get("ORBIT_HP_TOKEN") or None, ui_token=os.environ.get("ORBIT_UI_TOKEN") or None,
                  sim_hp=a.sim or a.sim_hp, sim_controls=a.sim or a.sim_controls, sim_buttons=a.sim_buttons,
                  video=VideoConfig.from_env())

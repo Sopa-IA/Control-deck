@@ -1,15 +1,17 @@
-// Orbit Terminal · orbit_controls v1 · Arduino Micro (ATmega32U4)
+// Orbit Terminal · orbit_controls v1 · Arduino Nano (ATmega328P)
 // Lee N potenciómetros (EMA + histéresis) y M botones (antirrebote + pulsación larga) y emite
 // eventos serie compactos (ver software/shared/PROTOCOLO.md §7):
 //   H orbit-controls 1 P2 B2    saludo (al arrancar y al recibir '?'; los números salen de config.h)
 //   P1 512                      potenciómetro 1 = 512 (0..1023)
 //   B2 1 / B2 0 / B2 L          botón 2 pulsado / soltado / pulsación larga
-// Opcional: teclas multimedia de volumen por USB HID (ENABLE_HID_VOLUME en config.h).
-// PROVISIONAL: compila con arduino-cli (FQBN arduino:avr:micro, con y sin HID); NO probado en hardware real.
+// El USB lo pone el conversor serie (en el clon de Miguel, probablemente CH340): no hay USB CDC
+// ni HID. PROVISIONAL: pensado para compilar con arduino-cli (FQBN arduino:avr:nano y
+// arduino:avr:nano:cpu=atmega328old). NO probado en la placa.
 
 #include "config.h"
+
 #if ENABLE_HID_VOLUME
-#include <HID-Project.h>
+#error "ENABLE_HID_VOLUME no es posible en el Arduino Nano: el ATmega328P no tiene USB nativo"
 #endif
 
 struct PotState { uint16_t ema_x8; int16_t sent; };
@@ -18,9 +20,6 @@ struct ButtonState { uint8_t stable; uint8_t last_raw; uint32_t changed_ms; uint
 static PotState pots[NUM_POTS];
 static ButtonState buttons[NUM_BUTTONS];
 static uint32_t last_sample_ms = 0;
-#if ENABLE_HID_VOLUME
-static int16_t hid_ref = -1;
-#endif
 
 static void sendHello() {
   Serial.print(F("H " FW_NAME " " FW_VERSION " P"));
@@ -57,13 +56,6 @@ static void updatePots() {
       p.sent = v;
       sendPot(i, v);
     }
-#if ENABLE_HID_VOLUME
-    if (i == HID_VOLUME_POT) {
-      if (hid_ref < 0) hid_ref = v;
-      while (v - hid_ref >= HID_VOLUME_STEP) { Consumer.write(MEDIA_VOLUME_UP); hid_ref += HID_VOLUME_STEP; }
-      while (hid_ref - v >= HID_VOLUME_STEP) { Consumer.write(MEDIA_VOLUME_DOWN); hid_ref -= HID_VOLUME_STEP; }
-    }
-#endif
   }
 }
 
@@ -95,6 +87,9 @@ static void handleSerialInput() {
 }
 
 void setup() {
+  // En el Nano, Serial es el UART de hardware. Tras begin() ya está listo: no hay
+  // que esperar a un USB CDC. Quien abre el puerto (orbitd) es el que debe contar
+  // con el reinicio del bootloader; ver serial_events.py.
   Serial.begin(SERIAL_BAUD);
   for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
     pinMode(BUTTON_PINS[i], INPUT_PULLUP);
@@ -105,11 +100,6 @@ void setup() {
     pots[i].ema_x8 = raw << 3;
     pots[i].sent = -1;
   }
-#if ENABLE_HID_VOLUME
-  Consumer.begin();
-#endif
-  uint32_t t0 = millis();
-  while (!Serial && millis() - t0 < 1500) { }   // espera breve al puerto USB CDC (no bloquea sin USB)
   sendHello();
 }
 
