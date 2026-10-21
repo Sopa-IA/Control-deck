@@ -28,11 +28,26 @@ La foto deja las clavijas casi en el borde trasero del hueco (y = 274,5). Detrá
 | Capturadora | Nido 26 × 32 × 14 mm en x = 390, y = 220. La reserva de 72 mm no entra. El hueco del adaptador HDMI→USB-C se quita de la bandeja [PENDIENTE] |
 | Cable del Nano de mandos | Canaleta en x = 420, desde y = 142, y giro a −X en y = 258 hasta el USB derecho de la Pi. No sale de la bandeja |
 
-La rejilla de entrada de la base sigue bajo el HP (x = 47 a 157). La bandeja no la tapa. La rejilla de la pared trasera de la carcasa se mueve con la Pi (x = 334 a 382, z = 114 a 140). La tapa abre el techo, no esa pared.
+La rejilla de entrada de la base sigue bajo el HP (x = 47 a 157). La bandeja no la tapa. El ventilador que hay en el modelo es el del disipador del HP: un marcador de 50 × 50 × 10 mm sobre esa placa, en x = 75 a 125 e y = 202 a 252. Es ilustrativo; el sentido real sigue en H-5 [PENDIENTE]. El HDD (x = 193 a 294,6) queda entre ese ventilador y la Pi. Esas ranuras alimentan la zona del HP.
+
+La Pi tiene su propio camino. El HAT tapa la cara de arriba, así que el aire entra por debajo y sale por detrás:
+
+| Tramo | Dónde |
+|---|---|
+| Entrada | Ranuras en el suelo de la bandeja, bajo el SoC. Ocho columnas de 2,0 mm, paso 3,6 mm, de x = 343 a 370. Dos tramos en Y: 183 a 197 y 199 a 215, con un nervio de 2 mm. Atraviesan el ala y el suelo (6 mm). En la cama son agujeros verticales |
+| SoC | 15 × 15 mm, x = 346 a 361, y = 189,25 a 204,25. [FUENTE] plano mecánico de la Pi 4, vía el modelo process1183 que lo cita. La RAM y el PMIC no están en ese plano: la banda los cubre alrededor del SoC. La cota del PMIC es [PENDIENTE] |
+| Bajo la PCB | Separadores de 8 mm. El cuerpo de un ventilador de 10 mm no cabe ahí |
+| Entre placas | Lo deja el separador del HAT. La altura del HAT no está medida [PENDIENTE] |
+| Salida alta | Ranuras en `tapa_pi`, dentro del hueco de 72 × 42 mm. La rejilla trasera de `carcasa_x1_y1`, alineada en X con la Pi (x = 334 a 382), baja hasta z = H−64 (z ≈ 90) y sigue hasta z ≈ 140. Queda por encima de las clavijas (z ≈ 30) y no corta el panel de pines |
+| Ventilador opcional | En la tapa, sin montarlo: cuatro agujeros Ø3,2 a 32 mm (ventilador 40 × 40) y otros cuatro a 24 mm (30 × 30). [DISEÑO] Patrón habitual; el ventilador no está elegido |
+
+Los postes M2.5 (Ø6, ejes en x = 333,5 y 382,5, y = 171 y 229) quedan a más de 9 mm de las ranuras. La muesca de la micro-SD acaba en y = 171,5. Los pies de la base miden 1 mm: el aire de la rejilla entra por debajo del chasis, por esa holgura [PENDIENTE de ver si basta]. La base no se reimprime.
 
 Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco. La placa de la tapa mide 94 × 54 × 2,4 mm. El panel de pines y la OLED no se cortan. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
 
-Retención. Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
+Retención de la placa. Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
+
+Sujeción del carro a la bandeja. Cada puesto (y = 90 y y = 124, sin moverlos) lleva un cajeado de 6,4 × 14 mm en el riel y dos insertos M3 en diagonal, a 9 mm en Y y 1,6 mm en X: en (327,2, 85,5) y (328,8, 94,5) para el Nano, y en (327,2, 119,5) y (328,8, 128,5) para el ESP o la proto. La zapata del carro entra con 0,15 mm por lado [DISEÑO]. Los dos tornillos M3×12 [DISEÑO] la aprietan al suelo: el cuello de la zapata mide 7 mm y el inserto (Ø4 × 5,7 mm, el del resto del CAD) queda debajo. Hacen falta cuatro insertos en la bandeja, dos por puesto, y dos tornillos por carro. El ESP y la proto comparten el puesto y = 124: se cambia uno por el otro soltando esos dos tornillos. Las uñas, la pestaña y los 17,5 mm bajo la PCB siguen igual. El ajuste del cajeado y del inserto es [PENDIENTE] de probar.
 
 La proto de 70 mm acaba en x = 401, a unos 3 mm del retenedor de mandos. [PENDIENTE] medir esa placa antes de imprimir el carro.
 
@@ -44,13 +59,13 @@ OpenSCAD 2021.01. No se ha lanzado `exportar.sh`. Cajas al centésima, de los v�
 
 | STL | Caja (mm) | Volumen | Nota |
 |---|---|---|---|
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 171,64 cm³ | Sustituye a la bandeja ya impresa. Mismos 4 M3 |
-| `PROVISIONAL_carro_nano` | 53,00 × 16,40 × 25,10 | 6,36 cm³ | Cama abajo. Un solo sólido |
-| `PROVISIONAL_carro_esp` | 66,00 × 29,60 × 25,10 | 3,99 cm³ | Igual |
-| `PROVISIONAL_carro_proto30x70` | 78,00 × 28,40 × 25,10 | 10,40 cm³ | Igual. Placa de diseño |
-| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos. Pieza aparte |
-| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 11,90 cm³ | Tapa del techo, dos M3 |
-| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 235,38 cm³ | Regenerada: hueco de la tapa y rejilla. Las otras tres carcasas no |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 167,36 cm³ | Sustituye a la bandeja ya impresa. Mismos 4 M3. Rejilla bajo la Pi y cajeado de los carros (antes 171,64 cm³) |
+| `PROVISIONAL_carro_nano` | 51,45 × 16,40 × 25,10 | 6,54 cm³ | Cama abajo. Dos M3. La caja en X es más corta por el lado del riel; la PCB y el USB no se mueven |
+| `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 cm³ | Igual. Mismos dos agujeros que la proto |
+| `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 cm³ | Igual. Placa de diseño. Mismo puesto y = 124 |
+| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos. Sin cambios |
+| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 cm³ | Tapa del techo, dos M3, ranuras y agujeros de ventilador (antes 11,90 cm³) |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,65 cm³ | Hueco de la tapa y rejilla trasera de la Pi más baja (antes 235,38 cm³). Las otras tres carcasas no |
 
 No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El `PROVISIONAL_soporte_arduino` ya impreso no se monta en esta bandeja.
 

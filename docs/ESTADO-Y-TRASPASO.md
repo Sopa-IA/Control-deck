@@ -162,11 +162,11 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_base_x1_y1` | 228,13 × 150,13 × 8,99 | 81,02 | Detrás-derecha: hueco de la bandeja (Pi), una pata del disco | Igual | Igual |
 | `PROVISIONAL_pletina_empalme_x4` | 30,00 × 10,00 × 3,00 | 0,84 | Una pletina. Hay que imprimir 4 | Cara plana, sin soportes (misma guía) | No consta impresión de este STL |
 | `PROVISIONAL_soporte_disco` | 111,60 × 147,00 × 17,99 | 18,64 | Bandeja del HDD 3,5" (patas 14 mm, colisos a 3,18 mm del lateral) | Única pieza de la guía que pide soportes: boca abajo, bandeja contra la cama, soportes solo en la cama | El soporte **2,5"** (SSD) se imprimió y salió pequeño. Este STL 3,5" no consta como impreso |
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 171,64 | Bandeja v2. Mismos 4 M3 y la misma ala. Pi girada, cuna del Nano, riel de carros y canaleta. Regenerada el 2026-10-21 | Plancha abajo. La cuna sube a 30 mm: mirar soportes en el slicer | La v1 está impresa. Esta la sustituye. Sin imprimir |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 167,36 | Bandeja v2. Mismos 4 M3 y la misma ala. Rejilla bajo la Pi y dos insertos M3 por puesto de carro (antes 171,64). Regenerada el 2026-10-21 | Plancha abajo. La cuna sube a 30 mm: mirar soportes en el slicer. Las ranuras del suelo no piden soporte | La v1 está impresa. Esta la sustituye. Sin imprimir |
 | `PROVISIONAL_carcasa_x0_y0` | 228,13 × 150,25 × 95,36 | 104,65 | Delante-izquierda | `diseno-mecanico.md` recomienda la cara de corte sobre la cama. Soportes: no documentado | No probada |
 | `PROVISIONAL_carcasa_x0_y1` | 228,13 × 150,25 × 150,93 | 213,68 | Detrás-izquierda: ventana I/O del HP, pasacables, I/O frontal, pulsador y LED | Igual | No probada. Volumen 213,68 cm³ |
 | `PROVISIONAL_carcasa_x1_y0` | 228,13 × 150,25 × 95,36 | 115,54 | Delante-derecha | Igual | No probada |
-| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 235,38 | Detrás-derecha. El 2026-10-21 se abre la tapa de la Pi en el techo (antes 242,11 cm³). Panel de pines y OLED siguen | Igual | No probada. Hay que imprimir este STL, no el de 242,11 cm³ |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,65 | Detrás-derecha. Tapa de la Pi en el techo y rejilla trasera de la Pi desde z ≈ 90 (antes 235,38 cm³; el 2026-10-20, 242,11). Panel de pines y OLED siguen | Igual | No probada. Hay que imprimir este STL, no el de 242,11 ni el de 235,38 cm³ |
 | `PROVISIONAL_bisel_x0_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Plano, cara vista abajo (`diseno-mecanico.md`). Soportes: no documentado | No probado |
 | `PROVISIONAL_bisel_x0_y1` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
 | `PROVISIONAL_bisel_x1_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
@@ -176,11 +176,11 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_anillo_luz_x2` | 41,00 × 41,00 × 5,60 | 1,82 | Un anillo. Imprimir 2 | No documentado | No probado |
 | `PROVISIONAL_pomo_x2` | 30,00 × 30,00 × 17,00 | 11,02 | Un pomo. Imprimir 2 | No documentado | Impreso o en impresión. Sin resultado comunicado |
 | `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 | Soporte de la bandeja v1. El STL no se ha vuelto a exportar. En la bandeja v2 no tiene torretas: no se monta | — | Ya impreso o en impresión para la v1. No vale en la v2 |
-| `PROVISIONAL_carro_nano` | 53,00 × 16,40 × 25,10 | 6,36 | Carro del Nano de prácticas, bandeja v2, puesto y = 90. Pines abajo y uñas de retención | Cama abajo | Sustituye al carro del riel. Sin imprimir |
-| `PROVISIONAL_carro_esp` | 66,00 × 29,60 × 25,10 | 3,99 | Carro del ESP8266, puesto y = 124, cuatro columnas | Igual | Sin imprimir. La placa es [PENDIENTE] 58 × 31 |
-| `PROVISIONAL_carro_proto30x70` | 78,00 × 28,40 × 25,10 | 10,40 | Carro de la proto 30 × 70, mismo puesto que el ESP | Igual | Sin imprimir. Placa de diseño |
+| `PROVISIONAL_carro_nano` | 51,45 × 16,40 × 25,10 | 6,54 | Carro del Nano de prácticas, puesto y = 90. Zapata en el cajeado y dos M3. Pines abajo y uñas | Cama abajo | Sustituye al carro del riel. Sin imprimir |
+| `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 | Carro del ESP8266, puesto y = 124, cuatro columnas. Mismos dos M3 que la proto | Igual | Sin imprimir. La placa es [PENDIENTE] 58 × 31 |
+| `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 | Carro de la proto 30 × 70, mismo puesto y mismos tornillos que el ESP | Igual | Sin imprimir. Placa de diseño |
 | `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 | Clip del Nano de mandos: esquinas, ganchos y tope del mini-USB | Cama abajo | Nuevo. Sin imprimir |
-| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 11,90 | Tapa del techo sobre los USB y el RJ45. Dos M3 | Plana | Nueva. Sin imprimir |
+| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 | Tapa del techo sobre los USB y el RJ45. Dos M3, ranuras de salida y agujeros para un ventilador de 30 o 40 mm (antes 11,90) | Plana | Nueva. Sin imprimir |
 
 `comprobar_stl.py` (2026-10-21, bandeja v2): las 25 mallas caben en 256³ con 10 mm de margen y están cerradas. El script imprime el volumen con un decimal. Las cifras de dos decimales de la bandeja, los carros, el clip, la tapa y `carcasa_x1_y1` salen de los vértices de esta pasada. `PROVISIONAL_riel_placas` ya no está.
 
@@ -213,21 +213,21 @@ Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 
 | Nº | Pieza | STL | STEP | Notas de estado |
 |---|---|---|---|---|
 | 01 | Plantilla de pivotes C 3,8 / F 3,6 / H 3,4 / J 3,2 | `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl` | `01_PRUEBA_plantilla_pivotes_HP.step` | **Pendiente de resultado.** Hasta entonces la base sigue con insertos M3 |
-| 02 | Bandeja de servicio v2 | `PROVISIONAL_bandeja_servicio.stl` (126,00 × 237,49 × 30,20, 171,64 cm³) | `02_…step` **desfasado** (sigue siendo la v1) | Reimprimir. Mismos 4 M3. La v1 impresa no vale. El STEP no se ha regenerado |
+| 02 | Bandeja de servicio v2 | `PROVISIONAL_bandeja_servicio.stl` (126,00 × 237,49 × 30,20, 167,36 cm³) | `02_…step` **desfasado** (sigue siendo la v1) | Reimprimir. Mismos 4 M3 a la base. Cuatro insertos más, dos por puesto de carro. El STEP no se ha regenerado |
 | 03 | Carcasa detrás-izquierda | `PROVISIONAL_carcasa_x0_y1.stl` | `03_PROVISIONAL_carcasa_x0_y1.step` (malla) | No impresa. Después de probar la pared I/O |
 | 04 | Carcasa delante-izquierda | `PROVISIONAL_carcasa_x0_y0.stl` | `04_PROVISIONAL_carcasa_x0_y0.step` (malla) | No impresa |
 | 05 | Carcasa delante-derecha | `PROVISIONAL_carcasa_x1_y0.stl` | `05_PROVISIONAL_carcasa_x1_y0.step` (malla, **no válido**) | No impresa. 12 triángulos cruzados en x ≈ 406,3 |
-| 06 | Carcasa detrás-derecha | `PROVISIONAL_carcasa_x1_y1.stl` (235,38 cm³: tapa de la Pi en el techo) | `06_…step` (malla, **desfasado**) | Reimprimir este STL. Las otras tres carcasas no cambian. El STEP no incluye la tapa |
+| 06 | Carcasa detrás-derecha | `PROVISIONAL_carcasa_x1_y1.stl` (233,65 cm³: tapa de la Pi y rejilla más baja) | `06_…step` (malla, **desfasado**) | Reimprimir este STL. Las otras tres carcasas no cambian. El STEP no incluye la tapa |
 | 07-10 | Bisel, cuatro trozos | `PROVISIONAL_bisel_x0_y0.stl`, `x0_y1`, `x1_y0`, `x1_y1` | `07_` a `10_` (malla) | No impresos |
 | 11-12 | Guías de luz | `PROVISIONAL_guia_luz_frontal_0.stl` y `_1.stl` | `11_` y `12_` (sólido) | No impresas |
 | 13 | Anillo de luz (imprimir 2) | `PROVISIONAL_anillo_luz_x2.stl` | `13_PROVISIONAL_anillo_luz_x2.step` (sólido) | No impreso |
 | 14 | Pomo (imprimir 2) | `PROVISIONAL_pomo_x2.stl` | `14_PROVISIONAL_pomo_x2.step` (sólido) | Ya lanzado antes. Sin resultado |
 | 15 | Soporte del Nano (v1) | `PROVISIONAL_soporte_arduino.stl` (26,00 × 70,00 × 19,10, 9,58 cm³) | `15_…step` (sólido, **desfasado**) | No se monta en la bandeja v2. Sirve solo si se sigue con la bandeja ya impresa |
 | 16 | Retenedor del Nano de mandos | `PROVISIONAL_retenedor_nano.stl` (29,40 × 51,20 × 10,40, 1,38 cm³) | No hay STEP | Clip de la cuna v2. El riel suelto ya no está |
-| 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (53,00 × 16,40 × 25,10, 6,36 cm³) | No hay STEP | Puesto y = 90. Pines abajo |
-| 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (66,00 × 29,60 × 25,10, 3,99 cm³) | No hay STEP | Puesto y = 124. No a la vez que el 19 |
-| 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (78,00 × 28,40 × 25,10, 10,40 cm³) | No hay STEP | Mismo puesto que el 18 |
-| 20 | Tapa de la Pi | `PROVISIONAL_tapa_pi.stl` (94,00 × 54,00 × 2,40, 11,90 cm³) | No hay STEP | Dos M3 al techo de `carcasa_x1_y1` |
+| 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (51,45 × 16,40 × 25,10, 6,54 cm³) | No hay STEP | Puesto y = 90. Dos M3 al cajeado. Pines abajo |
+| 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (64,45 × 29,60 × 25,10, 3,94 cm³) | No hay STEP | Puesto y = 124. Dos M3. No a la vez que el 19 |
+| 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (76,45 × 28,40 × 25,10, 10,79 cm³) | No hay STEP | Mismos tornillos que el 18 |
+| 20 | Tapa de la Pi | `PROVISIONAL_tapa_pi.stl` (94,00 × 54,00 × 2,40, 9,70 cm³) | No hay STEP | Dos M3 al techo. Ranuras y agujeros para un ventilador de 30 o 40 mm |
 
 Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla de agujeros) están en `hardware/impresion/base/STEP/` y no hay que reimprimirlos.
 

@@ -28,12 +28,12 @@ El 2026-10-21 por la tarde se regeneraron la bandeja, `carcasa_x1_y1` y los carr
 
 | STL | Caja (mm) | Volumen | Qué es |
 |---|---|---|---|
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 171,64 cm³ | Bandeja v2. Mismos 4 M3 |
-| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 235,38 cm³ | Tapa de la Pi en el techo (antes 242,11 cm³) |
-| `PROVISIONAL_carro_nano` | 53,00 × 16,40 × 25,10 | 6,36 cm³ | Carro del Nano de prácticas, pines abajo |
-| `PROVISIONAL_carro_esp` | 66,00 × 29,60 × 25,10 | 3,99 cm³ | Carro del ESP8266 |
-| `PROVISIONAL_carro_proto30x70` | 78,00 × 28,40 × 25,10 | 10,40 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 167,36 cm³ | Bandeja v2. Rejilla de la Pi y cajeado de los carros |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,65 cm³ | Tapa de la Pi y rejilla trasera más baja (antes 242,11 cm³) |
+| `PROVISIONAL_carro_nano` | 51,45 × 16,40 × 25,10 | 6,54 cm³ | Carro del Nano de prácticas, dos M3 |
+| `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 cm³ | Carro del ESP8266, dos M3 |
+| `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
 | `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos |
-| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 11,90 cm³ | Tapa del techo, dos M3 |
+| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 cm³ | Tapa del techo, ranuras y agujeros de ventilador |
 
 `comprobar_stl.py` el 2026-10-21: las 25 mallas caben y están cerradas. `comprobar_interferencias.py`: sin interferencias, con el par Nano+ESP y con el par Nano+proto.

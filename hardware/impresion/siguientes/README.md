@@ -43,8 +43,9 @@ La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. La cu
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl) · regenerado el 2026-10-21
 - STEP: [`STEP/02_PROVISIONAL_bandeja_servicio.step`](STEP/02_PROVISIONAL_bandeja_servicio.step) · **desfasado**, sigue siendo la v1
-- Medidas: 126,00 × 237,49 × 30,20. Volumen 171,64 cm³.
-- Cama: plancha abajo. La cuna llega a 30 mm: revisar soportes en el laminador. Ya no trae las dos torretas sueltas de la distribución DC.
+- Medidas: 126,00 × 237,49 × 30,20. Volumen 167,36 cm³.
+- Cama: plancha abajo. La cuna llega a 30 mm: revisar soportes en el laminador. Las ranuras bajo la Pi no piden soporte. Ya no trae las dos torretas sueltas de la distribución DC.
+- Cada puesto de carro (y = 90 y y = 124) lleva un cajeado y dos insertos M3. En total, cuatro insertos Ø4 × 5,7 mm y dos tornillos M3×12 por carro.
 - Comprueba que entra por el hueco, que los 4 M3 caen en las torretas de la base y que los cuatro separadores de la Pi coinciden con la placa girada.
 
 ### 03 · `PROVISIONAL_carcasa_x0_y1` (detrás-izquierda) · provisional
@@ -86,9 +87,9 @@ Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi, el panel de 
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl) · **regenerado el 2026-10-21** (tapa de la Pi). Si había una copia anterior en la cola de impresión, no vale.
 - STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**, **desfasado**: no incluye la tapa ni el panel
-- Medidas: 228,13 × 150,25 × 150,93. Volumen 235,38 cm³ (el 2026-10-20, con el panel y sin la tapa, eran 242,11).
+- Medidas: 228,13 × 150,25 × 150,93. Volumen 233,65 cm³ (con la tapa y la rejilla de la Pi más baja; el 2026-10-20, con el panel y sin la tapa, eran 242,11).
 - Cama: cara del corte delantero sobre la cama, 150 mm de alto. Soportes: sí. El hueco de la tapa está en el lomo, que queda arriba en esa orientación.
-- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 11,90 cm³), dos M3. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue, desplazada con la Pi.
+- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³), dos M3, con ranuras de salida. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue alineada con la Pi y baja hasta z ≈ 90.
 - Comprueba que el hueco cae sobre los USB de la Pi y que se puede pasar una clavija USB-A con la tapa quitada.
 
 ### 07 a 10 · biseles · provisional
@@ -150,10 +151,10 @@ Clip del Nano de mandos. Engancha los rebordes de la cuna, pisa las cuatro esqui
 
 ### 17 · `PROVISIONAL_carro_nano` · provisional
 
-Carro del Nano de prácticas. Puesto y = 90. El mini-USB mira a +X. Pines hacia abajo, uñas en las esquinas y pestaña sobre el conector.
+Carro del Nano de prácticas. Puesto y = 90. El mini-USB mira a +X. Pines hacia abajo, uñas en las esquinas y pestaña sobre el conector. La zapata entra en el cajeado y se aprieta con dos M3.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_carro_nano.stl`](../../cad/export/stl/PROVISIONAL_carro_nano.stl)
-- Medidas: 53,00 × 16,40 × 25,10. Volumen 6,36 cm³.
+- Medidas: 51,45 × 16,40 × 25,10. Volumen 6,54 cm³.
 - Cama: la base del carro abajo. Va a la vez que el del ESP o el de la proto, no con los dos.
 
 ### 18 · `PROVISIONAL_carro_esp` · provisional
@@ -161,7 +162,7 @@ Carro del Nano de prácticas. Puesto y = 90. El mini-USB mira a +X. Pines hacia 
 Carro del ESP8266 de la tira. Puesto y = 124. Cuatro columnas en los agujeros de esquina. No a la vez que la proto.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_carro_esp.stl`](../../cad/export/stl/PROVISIONAL_carro_esp.stl)
-- Medidas: 66,00 × 29,60 × 25,10. Volumen 3,99 cm³.
+- Medidas: 64,45 × 29,60 × 25,10. Volumen 3,94 cm³. Dos M3, los mismos agujeros que la proto.
 - La placa de la foto se estima en 58 × 31 mm. **PENDIENTE** de medir: si es otra, las columnas no coinciden.
 
 ### 19 · `PROVISIONAL_carro_proto30x70` · provisional
@@ -169,7 +170,7 @@ Carro del ESP8266 de la tira. Puesto y = 124. Cuatro columnas en los agujeros de
 Carro de una protoboard de 30 × 70 mm. Medida de diseño, no de una placa medida. Mismo puesto que el ESP.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_carro_proto30x70.stl`](../../cad/export/stl/PROVISIONAL_carro_proto30x70.stl)
-- Medidas: 78,00 × 28,40 × 25,10. Volumen 10,40 cm³.
+- Medidas: 76,45 × 28,40 × 25,10. Volumen 10,79 cm³. Se cambia por el ESP soltando los dos M3 del puesto y = 124.
 - El extremo de 70 mm queda a unos 3 mm del retenedor del Nano de mandos. **PENDIENTE** medir la placa.
 
 ### 20 · `PROVISIONAL_tapa_pi` · provisional
@@ -177,8 +178,8 @@ Carro de una protoboard de 30 × 70 mm. Medida de diseño, no de una placa medid
 Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3 a insertos de `carcasa_x1_y1`.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_tapa_pi.stl`](../../cad/export/stl/PROVISIONAL_tapa_pi.stl)
-- Medidas: 94,00 × 54,00 × 2,40. Volumen 11,90 cm³.
-- Cama: plana. El hueco que tapa mide 72 × 42 mm.
+- Medidas: 94,00 × 54,00 × 2,40. Volumen 9,70 cm³.
+- Cama: plana. El hueco que tapa mide 72 × 42 mm. Lleva ranuras de salida y agujeros para un ventilador opcional de 30 × 30 o 40 × 40.
 
 ## Lo que no existe en el repo
 
@@ -199,7 +200,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-21 por la tarde se regeneraron la bandeja v2, `carcasa_x1_y1`, los tres carros, el retenedor y la tapa. Los STEP, el manual PDF y las otras tres carcasas no.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-21 se regeneraron la bandeja v2 (rejilla de la Pi y cajeado de los carros), `carcasa_x1_y1`, los tres carros y la tapa. Los STEP, el manual PDF y las otras tres carcasas no.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

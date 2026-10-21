@@ -477,6 +477,16 @@ bay_est = [90, 124];
 nano_est = 0;
 esp_est = 1;
 proto_est = 1;
+// Sujeción del carro (2026-10-21). El puesto sigue centrado en bay_est.
+// Dos M3 en diagonal, a 9 mm en Y y 1,6 mm en X, y un cajeado de 6,4 × 14 mm
+// en el riel. La zapata entra con 0,15 mm por lado [DISEÑO]: no gira. Los dos
+// tornillos impiden que se levante. ESP y proto comparten el puesto y = 124:
+// se cambian soltando esos dos M3. Los insertos son los del CAD (Ø4 × 5,7 mm)
+// [PENDIENTE] de probar en esta plancha.
+bay_caj_x = 6.4;
+bay_caj_y = 14;
+bay_holg = 0.15;
+bay_torn = [[-0.8, -4.5], [0.8, 4.5]];
 // Tapa del techo, encima de los USB/RJ45. Solo en el lomo plano (y > 246,5),
 // dentro de carcasa_x1_y1. No corta el panel de pines, la OLED ni la rejilla
 // de la pared trasera (esa rejilla va en z = 114–140; la tapa abre el techo).
@@ -484,6 +494,32 @@ tapa_x0 = 324; tapa_x1 = 396;
 tapa_y0 = 252; tapa_y1 = 294;
 tapa_sol = 6;                                 // solape de la tapa sobre el techo [DISEÑO]
 tapa_t = 2.4;
+// Ventilación de la Pi (2026-10-21). El HAT tapa la cara de arriba: el aire
+// entra por el suelo, recorre los 8 mm que hay bajo la PCB y sale por las
+// ranuras de la tapa y por la rejilla de la pared trasera.
+// SoC BCM2711, 15 × 15 mm. Esquina (ox, oy) = (21,75, 25); centro oy = 32,5
+// y ox = 3,5 + 25,75 = 29,25.
+// [FUENTE] plano mecánico de la Pi 4 y el modelo que lo cita:
+//   https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf
+//   https://github.com/process1183/openscad-library/blob/master/rpi/rpi_4b.scad
+// En la bandeja (x = pi_x0 + 56 − oy, y = pi_y0 + ox): x = 346 a 361,
+// y = 189,25 a 204,25. La RAM y el PMIC (MxL7704, 5 × 5) no salen en ese
+// plano. La rejilla es una banda alrededor del SoC, hacia el USB-C y hacia
+// los USB. [PENDIENTE] la cota del PMIC en la placa de Miguel.
+// Ranuras de 2,0 mm a lo largo de Y, paso 3,6 (nervio 1,6). Ocho columnas.
+// Quedan a más de 9 mm del eje de los postes M2.5 (Ø6) y la muesca de la
+// micro-SD acaba en y = 171,5: las ranuras empiezan en y = 183.
+pi_rej_x0 = 343;
+pi_rej_paso = 3.6;
+pi_rej_ancho = 2.0;
+pi_rej_n = 8;
+// Ventilador de 5 V opcional, atornillado a la tapa. No va en el modelo.
+// Patrón habitual: 40 × 40 con agujeros a 32 mm, o 30 × 30 con agujeros a
+// 24 mm. Paso Ø3,2 para un M3. [DISEÑO] El cuerpo de 10 mm no cabe en los
+// 8 mm que hay bajo la PCB.
+vent_paso_40 = 32;
+vent_paso_30 = 24;
+vent_ag_d = 3.2;
 // Canaleta del mini-USB de mandos. Sube por +X (x = 420) y gira a −X delante
 // de las clavijas de la Pi. El cable no sale de la bandeja. Ribete 1,6 mm,
 // paso 8 mm, alto 5 mm. [DISEÑO]

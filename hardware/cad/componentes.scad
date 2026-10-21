@@ -120,7 +120,11 @@ module hp_caja_marcador() {
 module pi_marcador() {
     // ox a lo largo de +Y, oy = 0 en el canto +X. El HAT no se dibuja: no está medido.
     translate([pi_x0, pi_y0, pi_z]) {
-        color([0.05, 0.42, 0.18]) cube([56, 85, 1.5]);
+        difference() {
+            color([0.05, 0.42, 0.18]) cube([56, 85, 1.5]);
+            // ventana sobre la rejilla del suelo, para verla en la planta
+            translate([13.2, 15.8, -0.4]) cube([27.4, 32.4, 2.4]);
+        }
         color([0.12, 0.12, 0.12]) translate([0.4, 17, 1.5]) cube([5, 51, 8.5]);   // GPIO, canto −X
         color([0.75, 0.75, 0.78]) {
             translate([56 - 16.25, 70.5, 1.5]) cube([14.5, 17.5, 16]);             // USB junto al HDMI

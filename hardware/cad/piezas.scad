@@ -131,12 +131,22 @@ module bandeja_servicio() {
         // dedo para la micro-SD, que sale hacia −Y. La ranura exacta es [PENDIENTE]:
         // el plano la sitúa junto a ox = 0; la muesca cubre oy ≈ 20–38.
         translate([pi_x0 + 18, pi_y0 - 16, -1]) cube([18, 20, suelo + 2]);
+        // Rejilla bajo el SoC. Atraviesa el ala (z = −2) y el suelo (z = 0 a 4).
+        // En la cama son agujeros verticales: no piden soporte. Dos tramos en Y
+        // con un nervio de 2 mm en medio, para que la plancha no quede en tiras.
+        for (i = [0 : pi_rej_n - 1], tramo = [[183, 14], [199, 16]])
+            translate([pi_rej_x0 + i * pi_rej_paso, tramo[0], -2.4])
+                cube([pi_rej_ancho, tramo[1], 7]);
         // asiento de la PCB del Nano de mandos y paso del mini-USB
         translate([ard_cx - ard_w/2 - 0.4, ard_y - 0.4, ard_pcb_z]) cube([ard_w + 0.8, ard_l + 0.8, 30]);
         translate([ard_cx - 7, ard_y + ard_l - 6, ard_pcb_z - 1]) cube([14, 28, 30]);
         for (y = bay_est) {
-            translate([bay_x + 3.0, y - 2.2, suelo + 4.2]) cube([4.6, 4.4, 6]);
-            translate([bay_x, y, suelo + 2.2]) cylinder(d = inserto_d, h = 8, $fn = 24);
+            // Cajeado abierto por arriba. El fondo es el suelo de la bandeja.
+            translate([bay_x - bay_caj_x/2, y - bay_caj_y/2, suelo - 0.02])
+                cube([bay_caj_x, bay_caj_y, 6.5]);
+            for (p = bay_torn)
+                translate([bay_x + p[0], y + p[1], -1.5])
+                    cylinder(d = inserto_d, h = suelo + 1.7, $fn = 24);
         }
     }
 }
@@ -159,15 +169,12 @@ module cuna_nano_mandos() {
         }
     }
 }
-// Riel de los carros. Un tetón y un inserto M3 por puesto. El inserto de
-// 5,7 mm cabe en el poste de 8 mm; en la bandeja v1 no cabía. [PENDIENTE] de probar.
+// Riel de los carros. En cada puesto, un cajeado para la zapata. Los dos
+// insertos M3 van en el suelo, bajo el cajeado. [PENDIENTE] probar el inserto.
 module riel_bahia() {
     y0 = bay_est[0] - 22;
     y1 = bay_est[1] + 22;
-    union() {
-        translate([bay_x - 5, y0, suelo - 0.2]) cube([10, y1 - y0, 6.2]);
-        for (y = bay_est) translate([bay_x, y, suelo - 0.2]) cylinder(d = 9, h = 8.2, $fn = 32);
-    }
+    translate([bay_x - 5, y0, suelo - 0.2]) cube([10, y1 - y0, 6.2]);
 }
 // Canaleta del mini-USB de mandos. Ribetes de 1,6 mm, paso 8 mm, 5 mm de alto.
 // Sube por x = 420 y gira hacia el USB derecho de la Pi. No sale de la bandeja.
@@ -294,10 +301,12 @@ module carro_solido(largo, ancho, pcb_z, modo = "bordes") {
     x0 = bay_pcb0;
     x1 = bay_pcb0 + largo;
     yb = ancho/2;
+    zap_x = bay_caj_x - 2*bay_holg;
+    zap_y = bay_caj_y - 2*bay_holg;
     union() {
-        translate([-4.6, -4, 0]) cube([bay_pcb0 + 6.2, 8, 4]);
-        translate([-3.6, -4.2, 3.8]) cube([8, 8.4, 4.4]);
-        translate([3.1, -1.8, 4.3]) cube([4.2, 3.6, 2.1]);
+        // Zapata: entra en el cajeado. El collar deja plano para la cabeza M3.
+        translate([-zap_x/2, -zap_y/2, 0]) cube([zap_x, zap_y, 4]);
+        translate([-2.6, -6.6, 3.8]) cube([5.2, 13.2, 3.2]);
         if (modo == "columnas") {
             for (sx = [-1, 1], sy = [-1, 1]) {
                 cx = (x0 + x1)/2 + sx * (largo/2 - esp_ag_inset);
@@ -305,13 +314,13 @@ module carro_solido(largo, ancho, pcb_z, modo = "bordes") {
                 translate([cx, cy, 0]) cylinder(d = 5.6, h = pcb_z, $fn = 24);
                 translate([cx, cy, pcb_z - 0.2]) cylinder(d = 2.4, h = 2.4, $fn = 18);
             }
-            translate([x0 - 0.2, -(yb - 2.4), 0]) cube([6, 2*(yb - 2.4), 3.2]);
+            translate([x0 - 1, -(yb - 2.4), 0]) cube([6.8, 2*(yb - 2.4), 3.2]);
             translate([x1 - 5.8, -(yb - 2.4), 0]) cube([6, 2*(yb - 2.4), 3.2]);
             translate([x0, -2.2, 0]) cube([largo, 4.4, 2.8]);
         } else {
             for (sy = [-1, 1])
                 translate([x0, sy * (yb - 3.2) - 1.3, 0]) cube([largo, 2.6, pcb_z]);
-            translate([x0, -(yb - 0.8), 0]) cube([4.2, 2*(yb - 0.8), pcb_z]);
+            translate([x0 - 1, -(yb - 0.8), 0]) cube([5.2, 2*(yb - 0.8), pcb_z]);
             translate([x1 - 4.2, -(yb - 0.8), 0]) cube([4.2, 2*(yb - 0.8), pcb_z]);
         }
         for (sx = [0, 1], sy = [-1, 1]) {
@@ -327,7 +336,8 @@ module carro_solido(largo, ancho, pcb_z, modo = "bordes") {
 module carro_imprimible(largo, ancho, pcb_z, modo = "bordes") {
     difference() {
         carro_solido(largo, ancho, pcb_z, modo);
-        translate([0, 0, -0.2]) cylinder(d = tornillo_d, h = 12, $fn = 24);
+        for (p = bay_torn)
+            translate([p[0], p[1], -0.2]) cylinder(d = tornillo_d, h = 12, $fn = 24);
     }
 }
 module carro_en_puesto(i, largo, ancho, pcb_z, modo = "bordes", icsp = false) {

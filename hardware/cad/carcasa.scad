@@ -158,8 +158,13 @@ module _ventilacion() {
     for (z = [H - 40 : 6 : H - 14]) {
         translate([22, D - pared - 1, z]) cube([hp_w - 10, pared + 2, 3]);
         if (usar_kvm) translate([kvm_x + 4, D - pared - 1, z]) cube([kvm_w - 8, pared + 2, 3]);
-        else translate([pi_x + 4, D - pared - 1, z]) cube([pi_w - 8, pared + 2, 3]);   // sobre la Pi
     }
+    // Salida de la Pi, alineada en X con la placa (x = pi_x+4, ancho pi_w−8).
+    // Baja hasta z = H−64 (con H ≈ 154, z ≈ 90), por encima de las clavijas
+    // (z ≈ 30) y de las orejetas (z ≈ 15). El techo de la rejilla sigue en
+    // z = H−14: no llega al hueco de la tapa.
+    for (z = [H - 64 : 6 : H - 14])
+        translate([pi_x + 4, D - pared - 1, z]) cube([pi_w - 8, pared + 2, 3]);
 }
 
 // --- Panel de prácticas (cara trasera) -------------------------------
@@ -244,11 +249,27 @@ echo(str("PANEL_CONECTORES;", conectores[0][1] - 3.25, ";", conectores[8][1] + 5
 module tapa_pi() {
     ancho = tapa_x1 - tapa_x0 + tapa_sol + 16;
     fondo = tapa_y1 - tapa_y0 + 2*tapa_sol;
+    cx = (tapa_x0 + tapa_x1) / 2;
+    cy = (tapa_y0 + tapa_y1) / 2;
     difference() {
         translate([tapa_x0 - tapa_sol, tapa_y0 - tapa_sol, 0]) cube([ancho, fondo, tapa_t]);
-        translate([(tapa_x0 + tapa_x1)/2 - 7, tapa_y0 - tapa_sol - 1, -1]) cube([14, 8, tapa_t + 2]);
+        translate([cx - 7, tapa_y0 - tapa_sol - 1, -1]) cube([14, 8, tapa_t + 2]);
         for (y = [tapa_y0 + 12, tapa_y1 - 12])
             translate([tapa_x1 + 8, y, -1]) cylinder(d = tornillo_d, h = tapa_t + 2, $fn = 20);
+        // Ranuras de salida, dentro del hueco (el solape apoya sobre el techo
+        // macizo). Dejan islas alrededor de los agujeros del ventilador.
+        for (b = [[328, 11], [354, 13], [382, 10]])
+            for (x = [b[0] : 3.2 : b[0] + b[1]])
+                translate([x, 258, -1]) cube([1.6, 32, tapa_t + 2]);
+        for (x = [342 : 3.2 : 376])
+            translate([x, 266, -1]) cube([1.6, 14, tapa_t + 2]);
+        // 40 × 40 (paso 32) y 30 × 30 (paso 24). Opcional: sin ventilador, siguen siendo agujeros.
+        for (sx = [-1, 1], sy = [-1, 1]) {
+            translate([cx + sx * vent_paso_40 / 2, cy + sy * vent_paso_40 / 2, -1])
+                cylinder(d = vent_ag_d, h = tapa_t + 2, $fn = 16);
+            translate([cx + sx * vent_paso_30 / 2, cy + sy * vent_paso_30 / 2, -1])
+                cylinder(d = vent_ag_d, h = tapa_t + 2, $fn = 16);
+        }
     }
 }
 module cortes_traseros() {
