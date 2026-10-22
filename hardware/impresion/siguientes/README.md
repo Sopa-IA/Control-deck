@@ -41,11 +41,11 @@ La bandeja v1 ya está impresa. Esta la sustituye. El hueco de la base y los 4 M
 
 La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. La cuna del Nano de mandos va en la plancha (el soporte suelto de la v1 no encaja). Delante de la Pi hay un riel para dos carros. Una canaleta en x = 420 sube el mini-USB hasta los USB de la Pi sin salir de la bandeja.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl) · regenerado el 2026-10-21
+- STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl) · regenerado el 2026-10-22
 - STEP: [`STEP/02_PROVISIONAL_bandeja_servicio.step`](STEP/02_PROVISIONAL_bandeja_servicio.step) · **desfasado**, sigue siendo la v1
-- Medidas: 126,00 × 237,49 × 30,20. Volumen 167,36 cm³.
+- Medidas: 126,00 × 237,49 × 30,20. Volumen 167,53 cm³.
 - Cama: plancha abajo. La cuna llega a 30 mm: revisar soportes en el laminador. Las ranuras bajo la Pi no piden soporte. Ya no trae las dos torretas sueltas de la distribución DC.
-- Cada puesto de carro (y = 90 y y = 124) lleva un cajeado y dos insertos M3. En total, cuatro insertos Ø4 × 5,7 mm y dos tornillos M3×12 por carro.
+- Cada puesto de carro (y = 90 y y = 124) lleva un cajeado y dos guías Ø2,5 × 5,2 mm. El carro trae paso libre Ø3,4. Tornillo M3×10 de cabeza cilíndrica, dos por carro. No lleva insertos. Los 4 M3 del ala, a la base, no cambian.
 - Comprueba que entra por el hueco, que los 4 M3 caen en las torretas de la base y que los cuatro separadores de la Pi coinciden con la placa girada.
 
 ### 03 · `PROVISIONAL_carcasa_x0_y1` (detrás-izquierda) · provisional
@@ -85,11 +85,12 @@ Trozo delantero derecho: frente, un potenciómetro y los 2 pulsadores.
 
 Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi, el panel de conectores de Orbit (audio, 2 USB-A, 2 USB-C, 2 HDMI, RJ45, DC) y, desde el 2026-10-20, el panel de prácticas (pines del Nano, previsión de GPIO de la Pi, ventana OLED y hueco USB rotulado PRG).
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl) · **regenerado el 2026-10-21** (tapa de la Pi). Si había una copia anterior en la cola de impresión, no vale.
+- STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x1_y1.stl) · **regenerado el 2026-10-22** (guías autorroscantes). Si había una copia anterior en la cola de impresión, no vale.
 - STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**, **desfasado**: no incluye la tapa ni el panel
-- Medidas: 228,13 × 150,25 × 150,93. Volumen 233,65 cm³ (con la tapa y la rejilla de la Pi más baja; el 2026-10-20, con el panel y sin la tapa, eran 242,11).
+- Medidas: 228,13 × 150,25 × 150,93. Volumen 233,81 cm³ (antes 233,65, con agujeros de inserto).
 - Cama: cara del corte delantero sobre la cama, 150 mm de alto. Soportes: sí. El hueco de la tapa está en el lomo, que queda arriba en esa orientación.
-- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³), dos M3, con ranuras de salida. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue alineada con la Pi y baja hasta z ≈ 90.
+- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³). Sus dos agujeros siguen siendo paso libre Ø3,4. En la carcasa, cada poste Ø10 lleva una guía Ø2,5 × 9 mm: tornillo M3×10 de cabeza cilíndrica. Las tres orejetas de esta pieza llevan la misma guía y un M3×10 avellanado desde la base. Las otras tres carcasas no se regeneran.
+- La tapa trae ranuras de salida. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue alineada con la Pi y baja hasta z ≈ 90.
 - Comprueba que el hueco cae sobre los USB de la Pi y que se puede pasar una clavija USB-A con la tapa quitada.
 
 ### 07 a 10 · biseles · provisional
@@ -175,7 +176,7 @@ Carro de una protoboard de 30 × 70 mm. Medida de diseño, no de una placa medid
 
 ### 20 · `PROVISIONAL_tapa_pi` · provisional
 
-Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3 a insertos de `carcasa_x1_y1`.
+Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3×10 a las guías Ø2,5 de `carcasa_x1_y1`. El paso de la tapa sigue en Ø3,4.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_tapa_pi.stl`](../../cad/export/stl/PROVISIONAL_tapa_pi.stl)
 - Medidas: 94,00 × 54,00 × 2,40. Volumen 9,70 cm³.
@@ -200,7 +201,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-21 se regeneraron la bandeja v2 (rejilla de la Pi y cajeado de los carros), `carcasa_x1_y1`, los tres carros y la tapa. Los STEP, el manual PDF y las otras tres carcasas no.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneraron la bandeja v2 y `carcasa_x1_y1`: las guías de los carros, de los postes de la tapa y de las orejetas de esa pieza pasan a Ø2,5 (`fijacion = "autorroscante"`). Los carros, la tapa, las otras tres carcasas, la base, el soporte y los biseles no se han vuelto a exportar. Los STEP y el manual PDF tampoco.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

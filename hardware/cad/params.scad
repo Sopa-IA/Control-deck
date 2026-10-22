@@ -380,8 +380,16 @@ material = "PETG";            // [DISEÑO] recomendado para A1 (marco abierto)
 margen_cama = 10;             // [DISEÑO] margen de seguridad
 inserto_d  = 4.0;   // [PENDIENTE] agujero para inserto M3 térmico (según fabricante del inserto)
 inserto_l  = 5.7;   // [PENDIENTE]
+// Miguel no usa insertos: el tornillo autorroscante entra en el PETG.
+// "inserto" recupera el Ø4 × 5,7. Las piezas YA impresas (base, carcasas
+// x0_y0 / x0_y1 / x1_y0, soporte, biseles) no leen este parámetro.
+fijacion   = "autorroscante";   // [DISEÑO] "autorroscante" | "inserto"
+rosca_d    = 2.5;   // [DISEÑO] guía para autorroscante M3 en PETG
+rosca_prof = 8;     // [DISEÑO] profundidad mínima cuando el plástico llega
+rosca_pared = 2.5;  // [DISEÑO] pared mínima alrededor de la guía, para que no raje
 boss_d     = 8.0;   // [DISEÑO]
-tornillo_d = 3.4;   // [DISEÑO] paso libre M3
+tornillo_d = 3.4;   // [DISEÑO] paso libre M3 (la cabeza no rosca: carros, tapa, base)
+echo(str("FIJACION;", fijacion, ";d;", rosca_d, ";prof_min;", rosca_prof, ";paso_libre;", tornillo_d));
 pasador_d  = 3.2;   // [DISEÑO] alojamiento para pasador Ø3 (varilla acero o filamento)
 pasador_l  = 16;    // [DISEÑO] longitud total (8 mm por lado)
 costilla   = 8;     // [DISEÑO] profundidad de costillas de unión internas
@@ -481,8 +489,10 @@ proto_est = 1;
 // Dos M3 en diagonal, a 9 mm en Y y 1,6 mm en X, y un cajeado de 6,4 × 14 mm
 // en el riel. La zapata entra con 0,15 mm por lado [DISEÑO]: no gira. Los dos
 // tornillos impiden que se levante. ESP y proto comparten el puesto y = 124:
-// se cambian soltando esos dos M3. Los insertos son los del CAD (Ø4 × 5,7 mm)
-// [PENDIENTE] de probar en esta plancha.
+// se cambian soltando esos dos M3. Con fijacion = "autorroscante" cada
+// puesto lleva dos guías Ø rosca_d. En esta plancha solo hay 6 mm de
+// plástico (suelo 4 + ala 2): la guía se queda en 5,2 mm y deja 0,8 mm
+// de piel, por debajo de rosca_prof. [PENDIENTE] de probar el agarre.
 bay_caj_x = 6.4;
 bay_caj_y = 14;
 bay_holg = 0.15;

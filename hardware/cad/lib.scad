@@ -49,12 +49,21 @@ function pend_a_mundo(p) = [p[0],
     y_pend0 + p[1]*cos(inclinacion) - p[2]*sin(inclinacion),
     alto_frontal + p[1]*sin(inclinacion) + p[2]*cos(inclinacion)];
 
-// Torreta para inserto térmico M3
+// Torreta para inserto térmico M3. La usan piezas ya impresas: no sigue `fijacion`.
 module torreta(h, d = boss_d) {
     difference() {
         cylinder(d = d, h = h);
         translate([0, 0, -0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
     }
+}
+
+// Cilindro de fijación desde z = 0 hacia arriba. `disponible` es el plástico
+// útil (ya descontada la piel). En modo inserto ignora ese tope y usa Ø4 × 5,7.
+module cilindro_fijacion(disponible) {
+    if (fijacion == "autorroscante")
+        cylinder(d = rosca_d, h = min(rosca_prof, disponible), $fn = 24);
+    else
+        cylinder(d = inserto_d, h = inserto_l + 0.5, $fn = 24);
 }
 
 // Caja redondeada en planta (XY)

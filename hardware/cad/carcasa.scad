@@ -33,8 +33,14 @@ module carcasa_superior() {
         // Hueco de la tapa, solo en el lomo plano, a la derecha de la pantalla.
         translate([tapa_x0, tapa_y0, H - pared - 1])
             cube([tapa_x1 - tapa_x0, tapa_y1 - tapa_y0, pared + 4]);
+        // Postes de la tapa. Solo existen en carcasa_x1_y1 (x = 404).
+        // Autorroscante: guía Ø rosca_d, 9 mm desde la cara exterior, dentro
+        // de un poste Ø10 (pared 3,75 mm). Quedan 1,6 mm de fondo cerrado.
         for (y = [tapa_y0 + 12, tapa_y1 - 12])
-            translate([tapa_x1 + 8, y, H - 6]) cylinder(d = inserto_d, h = 12, $fn = 20);
+            if (fijacion == "autorroscante")
+                translate([tapa_x1 + 8, y, H - 9]) cylinder(d = rosca_d, h = 10, $fn = 20);
+            else
+                translate([tapa_x1 + 8, y, H - 6]) cylinder(d = inserto_d, h = 12, $fn = 20);
         mandos_vaciado();
         canal_luz_frontal();
         ventilacion();
@@ -42,8 +48,17 @@ module carcasa_superior() {
         cortes_panel_practicas();
         ranura_pod();
         pasadores_union();
-        // insertos de orejetas (desde abajo)
-        for (p = orejetas) translate([p[0], p[1], suelo - 0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
+        // Orejetas. El tornillo entra desde la base, que ya está impresa
+        // con paso Ø3,4. Solo las de carcasa_x1_y1 (aún sin imprimir)
+        // siguen `fijacion`. El taco mide 11 mm: guía de 9 mm y 2 mm de tapa.
+        // Las otras tres carcasas conservan el inserto Ø4 × 5,7 con el que se imprimieron.
+        for (p = orejetas)
+            if (fijacion == "autorroscante" && p[0] >= corte_x(1) && p[1] >= corte_y(1)) {
+                echo(str("ROSCA_OREJETA;", p[0], ";", p[1], ";d;", rosca_d, ";h;9"));
+                translate([p[0], p[1], suelo - 0.01]) cylinder(d = rosca_d, h = 9.01, $fn = 24);
+            }
+            else
+                translate([p[0], p[1], suelo - 0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
     }
 }
 

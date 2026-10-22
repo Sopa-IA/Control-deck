@@ -145,8 +145,17 @@ module bandeja_servicio() {
             translate([bay_x - bay_caj_x/2, y - bay_caj_y/2, suelo - 0.02])
                 cube([bay_caj_x, bay_caj_y, 6.5]);
             for (p = bay_torn)
-                translate([bay_x + p[0], y + p[1], -1.5])
-                    cylinder(d = inserto_d, h = suelo + 1.7, $fn = 24);
+                // Autorroscante: de z = −1,2 a z = 4,2 (abre al cajeado).
+                // 5,2 mm de guía y 0,8 mm de piel sobre la cara inferior del ala.
+                // Inserto: el agujero anterior, Ø4 desde z = −1,5, 5,7 mm.
+                if (fijacion == "autorroscante") {
+                    echo(str("ROSCA_CARRO;", bay_x + p[0], ";", y + p[1], ";d;", rosca_d, ";z0;", -serv_ala_t + 0.8, ";h;", suelo + 0.2 - (-serv_ala_t + 0.8)));
+                    translate([bay_x + p[0], y + p[1], -serv_ala_t + 0.8])
+                        cylinder(d = rosca_d, h = suelo + 0.2 - (-serv_ala_t + 0.8), $fn = 24);
+                }
+                else
+                    translate([bay_x + p[0], y + p[1], -1.5])
+                        cylinder(d = inserto_d, h = suelo + 1.7, $fn = 24);
         }
     }
 }
@@ -170,7 +179,8 @@ module cuna_nano_mandos() {
     }
 }
 // Riel de los carros. En cada puesto, un cajeado para la zapata. Los dos
-// insertos M3 van en el suelo, bajo el cajeado. [PENDIENTE] probar el inserto.
+// tornillos roscan en el suelo, bajo el cajeado (guía o inserto, según
+// fijacion). [PENDIENTE] probar el agarre del autorroscante.
 module riel_bahia() {
     y0 = bay_est[0] - 22;
     y1 = bay_est[1] + 22;
