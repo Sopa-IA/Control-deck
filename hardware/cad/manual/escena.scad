@@ -335,22 +335,38 @@ if (sub == "check") {
     color(RES) translate([ventana_hp_x + ventana_hp[0] / 2, D - 8, ventana_hp_z + ventana_hp[1] / 2])
         rotate([90, 0, 0]) cylinder(d1 = 10, d2 = 2, h = 16, $fn = 12);
 } else if (sub == "6.1") {
+    // En el banco. La placa imita la pared: 3 mm, Ø12,2 y Ø3,1 a 14 mm.
+    color(GRIS) prueba_boton();
+    color(RES) translate([0, 0, 5.5]) boton_encendido();
+} else if (sub == "6.2") {
+    color(GRIS) cuadrante_carcasa(0, 1);
+    color(RES) boton_encendido_montado(0);
+} else if (sub == "6.3") {
+    color(GRIS) cuadrante_carcasa(0, 1);
+    color(GRIS) boton_encendido_montado(0);
+    color(RES) soporte_boton();
+} else if (sub == "6.4") {
+    color(GRIS) cuadrante_carcasa(0, 1);
+    color(GRIS) soporte_boton();
+    color(GRIS) boton_encendido_montado(0);
+    // Pulsador y LED, solo en el dibujo: no forman parte del STL.
+    color(RES) translate([x_sw0(), boton_hp_y - sw_lado() / 2, boton_hp_z - sw_lado() / 2])
+        cube([sw_cuerpo_h(), sw_lado(), sw_lado()]);
+    color(RES) translate([x_punta_sw(), boton_hp_y, boton_hp_z])
+        rotate([0, 90, 0]) cylinder(d = sw_vastago_d(), h = sw_vastago_h(), $fn = 18);
+    color(RES) translate([pared + sop_t + 1.2, boton_hp_y, boton_hp_z + led_hp_dz])
+        rotate([0, 90, 0]) cylinder(d = 3, h = 5, $fn = 16);
+    color(RES) translate([x_sw1() + 1.6, boton_hp_y - 2.2, boton_hp_z - 1])
+        rotate([0, 68, 0]) cylinder(d = 1.15, h = 16, $fn = 8);
+    color(RES) translate([x_sw1() + 1.6, boton_hp_y + 2.2, boton_hp_z - 1])
+        rotate([0, 74, 0]) cylinder(d = 1.15, h = 16, $fn = 8);
+    n_en(x_sw1() + 10, boton_hp_y - 6, boton_hp_z + 6, 1);
+    n_en(x_sw1() + 12, boton_hp_y + 8, boton_hp_z + 4, 2);
+} else if (sub == "6.5") {
     color(GRIS) cuadrante_carcasa(0, 1);
     losa(-40, io_frontal_y, io_frontal_z, io_frontal[0], io_frontal[1], io_frontal[2]);
     color(RES) translate([-18, io_frontal_y + io_frontal[1] / 2, io_frontal_z + io_frontal[2] / 2])
         rotate([0, 90, 0]) cylinder(d1 = 8, d2 = 2, h = 14, $fn = 12);
-} else if (sub == "6.2") {
-    color(GRIS) cuadrante_carcasa(0, 1);
-    color(RES) translate([-36, boton_hp_y, boton_hp_z])
-        rotate([0, 90, 0]) cylinder(d = boton_hp_d, h = boton_hp_prof, $fn = 24);
-    color(RES) translate([-12, boton_hp_y, boton_hp_z])
-        rotate([0, 90, 0]) cylinder(d1 = 7, d2 = 2, h = 10, $fn = 12);
-} else if (sub == "6.3") {
-    color(GRIS) cuadrante_carcasa(0, 1);
-    color(RES) translate([-32, boton_hp_y, boton_hp_z + 14])
-        rotate([0, 90, 0]) cylinder(d = 5, h = 14, $fn = 16);
-    color(RES) translate([-14, boton_hp_y, boton_hp_z + 14])
-        rotate([0, 90, 0]) cylinder(d1 = 6, d2 = 1.6, h = 10, $fn = 12);
 } else if (sub == "7.1") {
     color(GRIS) bandeja_servicio();
     losa(pi_x0, pi_y0, pi_z + 10, pi_w, pi_d, 1.6);

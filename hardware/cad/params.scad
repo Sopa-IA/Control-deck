@@ -275,6 +275,37 @@ boton_hp_d = 12;            // [DISEÑO] pulsador de panel Ø12 [PENDIENTE model
 boton_hp_prof = 22;         // [PENDIENTE]
 boton_hp_y = D - pared - 25;
 boton_hp_z = 112;
+// El Ø12,2 y el Ø3,1 están cortados en carcasa.scad (literal 14 mm). No se regenera.
+led_hp_dz = 14;             // el mismo 14 mm del agujero ya impreso
+// Capuchón impreso. Holgura radial en el Ø12,2: 0,3 mm por lado → vástago Ø11,6. [DISEÑO]
+// En PETG, 0,15 mm por lado suele agarrotar. La PRUEBA_boton lo comprueba.
+cap_holg = 0.30;
+cap_brida_d = 16;           // no pasa el Ø12,2
+cap_brida_t = 1.6;
+cap_sale = 2.4;             // asoma en reposo, por fuera de la pared
+cap_recorrido = 1.5;        // hasta el tope duro. El clic del táctil va al final.
+cap_simbolo_h = 0.45;       // símbolo de encendido hundido
+cap_vastago_d = boton_hp_d + 0.2 - 2 * cap_holg;
+cap_vastago_l = pared + cap_sale;
+// Táctil de catálogo, en paralelo al botón original. sw_tipo = "12x12" | "6x6".
+// Carrera 0,25 mm [FUENTE] CUI TS13-1212-73 y serie Omron B3F.
+// El reparto cuerpo / vástago es [DISEÑO], no un calibre: 5,0 + 2,3 = 7,3 y 3,0 + 1,3 = 4,3.
+sw_tipo = "12x12";
+sw_carrera = 0.25;
+sw_holg = 0.25;             // por lado, en el cajeado
+function sw_lado() = sw_tipo == "6x6" ? 6 : 12;
+function sw_cuerpo_h() = sw_tipo == "6x6" ? 3.0 : 5.0;
+function sw_vastago_h() = sw_tipo == "6x6" ? 1.3 : 2.3;
+function sw_vastago_d() = sw_tipo == "6x6" ? 2.4 : 3.6;
+// Soporte. Se pega a la cara interior. Los Ø2,7 son el plan B, no el montaje.
+sop_t = 1.8;
+sop_ala = 16;               // semiancho de la placa de pegado
+sop_suelo_t = 2.0;
+sop_bajo = cap_brida_d / 2 + 0.6 + sop_suelo_t;   // bajo el eje: deja pasar la pestaña
+guia_diag = 2.40;           // entra en el Ø3,1
+guia_entra = 1.25;          // cuánto entra en la pared, desde la cara interior
+taladro_b_y = 14;           // plan B: a cada lado del eje
+taladro_b_d = 2.7;          // paso del Ø2,5 en el soporte (la pared se taladra a Ø2,0)
 
 // Raspberry Pi 4 (Miguel, 2026-10-20, con la placa delante: es una Pi 4).
 // Encima va un HAT VHF con OLED y antena SMA que se pliega sobre la Pi.

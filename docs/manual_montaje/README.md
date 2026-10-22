@@ -25,10 +25,25 @@ La cantidad incluye un 10 % de repuesto, redondeado hacia arriba. El recuento de
 
 Herramienta: destornillador Phillips PH1 (todos los M3 de cabeza cruciforme), Phillips PH2 (los Ø4,5 y los 6-32), llave Allen de 1,5 mm, broca de Ø3,4 mm y broca de Ø4,6 mm.
 
+## Para el botón de encendido
+
+No son tornillos. No llevan el 10 % de repuesto. La carcasa no se taladra.
+
+| Pieza | Compras | Nota |
+|---|---:|---|
+| Pulsador táctil 12×12×7,3 mm, 4 patillas, unos 100 gf | 1 | De catálogo. El recorrido del clic es 0,25 mm. Si el tuyo es de 6×6, cambia sw_tipo y reexporta solo el soporte. |
+| LED de 3 mm (T-1), cualquier color | 1 | La brida no pasa el Ø3,1. La luz sale por la guía. El cuerpo es Ø3,0. |
+| Resistencia 1 kΩ, 1/4 W | 1 | Solo si el cabezal del HP no limita ya el LED. No la pongas hasta medirlo. |
+| Cable fino, 30 cm | 4 | Dos del pulsador y dos del LED. El largo es de diseño: el recorrido real no está medido. |
+| Cianoacrilato | 1 | El soporte se pega a la cara interior. No taladres la carcasa. |
+
 ## Piezas
 
 | Pieza | STL | Qué hacer |
 |---|---|---|
+| Prueba del botón | PRUEBA_boton | Imprimir hoy, plana, sin soportes. No se monta. |
+| Capuchón de encendido | PROVISIONAL_boton_encendido | Imprimir hoy. Pestaña abajo, símbolo arriba. Sin soportes. |
+| Soporte del botón | PROVISIONAL_soporte_boton | Imprimir hoy. Suelo abajo, placa de canto. Sin soportes. Se pega por dentro. |
 | Base, 4 trozos | PROVISIONAL_base_x0_y0 … x1_y1 | Ya impresa. No reimprimir. Plana, sin soportes. |
 | Carcasas izquierda y delantera derecha | PROVISIONAL_carcasa_x0_y0, x0_y1, x1_y0 | Ya impresas. No reimprimir. |
 | Carcasa trasera derecha | PROVISIONAL_carcasa_x1_y1 | Imprimir. Boca del corte delantero en la cama. Con soportes. |
@@ -236,37 +251,55 @@ Tornillos usados en este paso: ninguno.
 
 ## Paso 6. Frente izquierdo del HP
 
-La ventana, el pulsador y el LED ya están cortados. No los agrandes.
+Los dos agujeros ya están en la carcasa impresa. No los agrandes. Primero el capuchón, en el banco.
 
-### 6.1 Placa frontal
+### 6.1 Prueba el capuchón
 
 ![6.1](img/s6_1.png)
 
-**NECESITAS:** Nada. Este paso no lleva tornillo.
+**NECESITAS:** 1× capuchón PROVISIONAL_boton_encendido  ·  1× placa PRUEBA_boton
 
-Mete la placa frontal por la ventana del lateral izquierdo, desde fuera, hasta que los conectores asomen.
+Imprime la placa de prueba plana y el capuchón con la pestaña en la cama y el símbolo arriba. Sin soportes. Mete el vástago en el agujero grande. Tiene que entrar y salir solo. La pestaña no debe pasar. Si rasca, lija el vástago. No toques la carcasa.
 
-**PENDIENTE DE MEDIR.** La placa de verdad no está medida. El dibujo usa 16×70×26 mm. Si la tuya no entra, para: no limes la carcasa impresa.
+**PENDIENTE DE MEDIR.** La holgura es 0,3 mm por lado: vástago Ø11,6 en agujero Ø12,2. Es de diseño. El agujero impreso puede haber quedado más estrecho.
 
-### 6.2 Pulsador
+### 6.2 Mete el capuchón
 
 ![6.2](img/s6_2.png)
 
-**NECESITAS:** Nada. Este paso no lleva tornillo.
+**NECESITAS:** 1× capuchón PROVISIONAL_boton_encendido
 
-Mete el pulsador en el agujero redondo, desde fuera, y fija su tuerca por dentro.
+Desde dentro de la carcasa, mete el vástago en el Ø12,2. La pestaña se queda dentro y apoya en la pared. El símbolo queda fuera. Al pulsarlo recorre 1,5 mm y sigue asomando.
 
-**PENDIENTE DE MEDIR.** El agujero es Ø12,2 mm, de diseño. El pulsador real no está medido.
-
-### 6.3 LED
+### 6.3 Pega el soporte
 
 ![6.3](img/s6_3.png)
 
+**NECESITAS:** 1× soporte PROVISIONAL_soporte_boton  ·  1× pulsador táctil 12×12×7,3 mm, 4 patillas, unos 100 gf  ·  1× LED de 3 mm, el color que quieras  ·  1× cianoacrilato
+
+Imprime el soporte con el suelo en la cama. Sin soportes. La guía entra en el agujero pequeño, 14 mm por encima del pulsador. La cara plana apoya en la pared, por dentro. Pon cola en esa cara, alrededor de los dos agujeros, y aprieta un minuto. No pegues el capuchón. Mete el pulsador por arriba, vástago hacia el capuchón, hasta que pase los tetones. Mete el LED por arriba, cúpula hacia la guía y brida contra el escalón.
+
+**PENDIENTE DE MEDIR.** El 12×12×7,3 y el reparto 5,0 mm de cuerpo más 2,3 mm de vástago son de catálogo, no un calibre. El capuchón vale también para un 6×6; el soporte, no: hay que reexportarlo.
+
+### 6.4 Dos hilos al cabezal
+
+![6.4](img/s6_4.png)
+
+**NECESITAS:** 4× cable fino, 30 cm
+
+Suelda dos hilos en el pulsador. Van en paralelo al botón original del HP, al cabezal del panel frontal. Mide antes con el polímetro qué patillas se unen al pulsar. Otros dos hilos, del LED al mismo cabezal. La resistencia de 1 kΩ solo si ese cabezal no trae ya una.
+
+**PENDIENTE DE MEDIR.** El cabezal es H-6. El conector, las patillas y el largo del cable no están medidos. No hay mapa de pines.
+
+### 6.5 Placa frontal
+
+![6.5](img/s6_5.png)
+
 **NECESITAS:** Nada. Este paso no lleva tornillo.
 
-Mete el LED en el agujero de encima del pulsador.
+Mete la placa frontal por la ventana del lateral izquierdo, desde fuera, hasta que los conectores asomen. El soporte del botón queda por encima de esa ventana: no lo uses de anclaje.
 
-**PENDIENTE DE MEDIR.** El agujero es Ø3,1 mm. El LED real no está medido.
+**PENDIENTE DE MEDIR.** La placa de verdad no está medida. El dibujo usa 16×70×26 mm. Si la tuya no entra, para: no limes la carcasa impresa.
 
 Tornillos usados en este paso: ninguno.
 
@@ -538,7 +571,16 @@ No hacen falta para montar. Están por si hay que reimprimir una pieza.
 
 ### Lo que sigue sin medir
 
-Placa frontal del HP, pulsador y LED. Step-down real. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+Placa frontal del HP (el marcador sigue en 16×70×26). Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Step-down real. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+
+### Botón de encendido
+
+La carcasa x0_y1 ya está impresa y no se regenera. El capuchón usa el Ø12,2 (eje a z = 112) y la guía el Ø3,1, 14 mm más arriba, en el lateral izquierdo. Holgura del vástago: 0,3 mm por lado. La pestaña es Ø16 × 1,6 mm y no sale. En reposo asoma 2,4 mm. El recorrido es 1,5 mm, hasta un tope; el clic del táctil, de 0,25 mm, ocurre al final. Dos láminas de 0,8 mm lo devuelven. Esa fuerza no se ha medido.
+
+El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø2,0 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un autorroscante de Ø2,5×4, que pasa por el Ø2,7 del soporte y muerde la pared. Esos dos tornillos no están en la lista. No uses el Ø4,5.
+
+El soporte queda por encima del marcador de la placa frontal (16×70×26, aún sin medir). No entra en esa caja ni la usa de anclaje.
+
 
 Los huecos de la placa I/O salen de una foto del 2026-10-22, no de un calibre. La placa se imprime con esa tabla y se prueba con el marco `PRUEBA_placa_io_hp` antes de darla por buena.
 

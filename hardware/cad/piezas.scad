@@ -688,3 +688,219 @@ module prueba_placa_io_hp() {
                        min(1.2, h[3]/2 - 0.4, h[4]/2 - 0.4));
     }
 }
+
+// ---------------------------------------------------------------------
+// BOTÓN DE ENCENDIDO (provisional, 2026-10-22)
+// La carcasa x0_y1 ya está impresa: estos módulos no la modifican.
+// Capuchón por el Ø12,2, soporte pegado por dentro, prueba de ajuste.
+// ---------------------------------------------------------------------
+
+function x_empuje() = pared + cap_brida_t;
+function x_tope_boton() = x_empuje() + cap_recorrido;
+function x_punta_sw() = x_empuje() + cap_recorrido - sw_carrera;
+function x_sw0() = x_punta_sw() + sw_vastago_h();
+function x_sw1() = x_sw0() + sw_cuerpo_h();
+function sop_z0() = boton_hp_z - sop_bajo;
+function sop_y0() = boton_hp_y - sop_ala;
+function guia_x0() = pared - guia_entra;
+
+// Símbolo IEC 60417-5009 hundido. El palo va en +X de la pieza de impresión:
+// al montar, ese +X mira hacia arriba.
+module _simbolo_encendido() {
+    h = cap_simbolo_h + 0.5;
+    difference() {
+        cylinder(d = 7.2, h = h, $fn = 48);
+        translate([0, 0, -0.2]) cylinder(d = 4.9, h = h + 0.4, $fn = 48);
+        translate([1.45, -1.75, -0.2]) cube([3.6, 3.5, h + 0.4]);
+    }
+    translate([0.15, -0.65, 0]) cube([3.9, 1.3, h]);
+}
+
+// Impresión: pestaña en z = 0, vástago hacia arriba, símbolo en la cara de arriba.
+module boton_encendido() {
+    echo(str("CAP;vastago;", cap_vastago_d, ";brida;", cap_brida_d,
+             ";alto;", cap_brida_t + cap_vastago_l, ";recorrido;", cap_recorrido,
+             ";sale;", cap_sale));
+    difference() {
+        union() {
+            cylinder(d = cap_brida_d, h = cap_brida_t + 0.02, $fn = 64);
+            translate([0, 0, cap_brida_t - 0.02])
+                cylinder(d = cap_vastago_d, h = cap_vastago_l + 0.02, $fn = 64);
+        }
+        translate([0, 0, cap_brida_t + cap_vastago_l - cap_simbolo_h])
+            _simbolo_encendido();
+    }
+}
+
+// En la carcasa, en reposo (pulsado = 0) o hundido. +X es hacia dentro.
+module boton_encendido_montado(pulsado = 0) {
+    translate([x_empuje() + pulsado, boton_hp_y, boton_hp_z])
+        rotate([0, -90, 0]) boton_encendido();
+}
+
+// Agujero horizontal con lágrima a 45°: pasa un disco de diámetro d y se imprime sin soportes.
+// La punta queda hacia +Z. El eje del agujero es +X.
+module gota_x(d, h) {
+    r = d / 2;
+    s = sin(45);
+    rotate([0, 90, 0]) linear_extrude(h, convexity = 4) {
+        circle(d = d, $fn = 48);
+        polygon([[-r / s, 0], [-r * s, r * s], [-r * s, -r * s]]);
+    }
+}
+
+// Rombo centrado, extruido de x0 a x1. Cabe en el Ø3,1 si diag <= 2,5.
+module rombo_x(x0, x1, y, z, diag) {
+    r = diag / 2;
+    translate([x0, y, z]) rotate([0, 90, 0])
+        linear_extrude(x1 - x0, convexity = 4)
+            polygon([[0, r], [r, 0], [0, -r], [-r, 0]]);
+}
+
+module _hoja_boton(signo) {
+    w = 2.0;
+    y0 = boton_hp_y + (signo > 0 ? 3.4 : -3.4 - w);
+    z0 = sop_z0() + sop_suelo_t;
+    z1 = boton_hp_z + 1.0;
+    x_libre = x_empuje() + 0.15;
+    x_raiz = x_libre + 1.30;
+    hull() {
+        translate([x_libre, y0, z1]) cube([0.8, w, 0.35]);
+        translate([x_raiz, y0, z0 - 0.35]) cube([0.8, w, 0.7]);
+    }
+}
+
+module _guia_led() {
+    ay = boton_hp_y;
+    lz = boton_hp_z + led_hp_dz;
+    // Tramo recto por la placa, y cuña a 50° que entra 1,25 mm en la pared.
+    rombo_x(guia_x0() + 0.85, pared + sop_t + 0.4, ay, lz, guia_diag);
+    hull() {
+        rombo_x(guia_x0() + 0.85, guia_x0() + 1.15, ay, lz, guia_diag);
+        translate([guia_x0(), ay - 0.32, lz + 0.15]) cube([0.45, 0.64, 0.64]);
+    }
+    // Abocardado dentro de la placa: une la guía con las paredes del portalámparas.
+    rombo_x(pared + sop_t - 0.4, pared + sop_t + 0.55, ay, lz, 4.2);
+}
+
+module _portaled() {
+    ay = boton_hp_y;
+    lz = boton_hp_z + led_hp_dz;
+    x0 = pared + sop_t - 0.3;
+    ancho = 3.30;                 // cuerpo Ø3,0 [FUENTE T-1] + 0,3
+    brida = 4.40;                 // brida ~Ø4 [DISEÑO] + holgura
+    pt = 1.35;
+    // De la punta a la brida, 5,0 mm [DISEÑO]. La punta queda junto a la guía.
+    x_hombro = x0 + 0.7 + 5.0;
+    zf = lz - ancho / 2;
+    difference() {
+        union() {
+            translate([x0, ay - ancho / 2 - pt, zf - pt])
+                cube([x_hombro - x0 + 1.6, ancho + 2 * pt, ancho / 2 + pt + 2.4]);
+            translate([x_hombro - 0.3, ay - brida / 2 - pt, lz - brida / 2 - pt])
+                cube([2.4, brida + 2 * pt, brida / 2 + pt + 2.2]);
+        }
+        // Canal abierto por arriba. No llega a comerse la guía.
+        translate([x0 + 0.55, ay - ancho / 2, zf - 0.2])
+            cube([x_hombro - x0, ancho, 8]);
+        translate([x_hombro - 0.05, ay - brida / 2, lz - brida / 2 - 0.2])
+            cube([6, brida, 8]);
+    }
+}
+
+module _jaula_sw() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    semi = sw_lado() / 2 + sw_holg;
+    x0 = x_sw0();
+    x1 = x_sw1();
+    t = 1.5;
+    z0 = sop_z0() + sop_suelo_t;
+    z_piso = az - semi;
+    z1 = az + semi + 0.4;
+    y0 = ay - semi;
+    // Piso del cajeado, por encima del suelo, para no rozar la pestaña.
+    translate([x0 - 0.4, y0 - t, z0 - 0.2])
+        cube([x1 - x0 + t + 1.4, 2 * semi + 2 * t, z_piso - z0 + 0.2]);
+    // Laterales. Salen 1,2 mm por delante del cuerpo para hacer de tope.
+    translate([x0 - 1.2, y0 - t, z_piso]) cube([x1 - x0 + 1.2 + t, t, z1 - z_piso]);
+    translate([x0 - 1.2, y0 + 2 * semi, z_piso]) cube([x1 - x0 + 1.2 + t, t, z1 - z_piso]);
+    // Labio inferior: el cuerpo no pasa, el vástago sí.
+    translate([x0 - 1.2, y0, z_piso])
+        cube([1.2, 2 * semi, az - sw_vastago_d() / 2 - 0.55 - z_piso]);
+    // Marco trasero con ventana para las patillas (salen por la cara opuesta al vástago).
+    difference() {
+        translate([x1, y0 - t, z_piso])
+            cube([t, 2 * semi + 2 * t, z1 - z_piso]);
+        translate([x1 - 0.2, ay - (sw_lado() - 3.2) / 2, az - (sw_lado() - 3.2) / 2])
+            cube([t + 0.6, sw_lado() - 3.2, sw_lado() - 3.2]);
+    }
+    // Tetones: el pulsador entra por arriba y no se sale. 0,4 mm.
+    for (s = [-1, 1])
+        translate([x0 + 1.2, ay + s * (semi - 0.15) - (s > 0 ? 0 : 0.4), z1 - 2.2])
+            cube([2.2, 0.4, 1.1]);
+}
+
+module _topes_boton() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    z0 = sop_z0() + sop_suelo_t;
+    for (s = [-1, 1])
+        translate([x_tope_boton(), ay + s * 7.35 - (s > 0 ? 0 : 1.5), z0 - 0.2])
+            cube([1.5, 1.5, az + cap_brida_d / 2 + 0.8 - z0]);
+}
+
+module _placa_boton() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    z0 = sop_z0();
+    y0 = sop_y0();
+    // Hasta detrás de las patillas, para que el suelo sea la base de impresión.
+    x_fin = x_sw1() + 1.5 + 8;
+    difference() {
+        union() {
+            translate([pared, y0, z0])
+                cube([sop_t, 2 * sop_ala, az + led_hp_dz + 6 - z0]);
+            translate([pared, y0, z0])
+                cube([x_fin - pared, 2 * sop_ala, sop_suelo_t]);
+        }
+        // Paso de la pestaña Ø16, con 0,3 mm por lado. Lágrima para no poner soportes.
+        translate([pared - 0.4, ay, az]) gota_x(cap_brida_d + 0.6, sop_t + 1.2);
+        // Plan B. El tornillo atraviesa el soporte y muerde la pared.
+        for (s = [-1, 1])
+            translate([pared - 0.4, ay + s * taladro_b_y, az])
+                gota_x(taladro_b_d, sop_t + 1.2);
+    }
+}
+
+// En coordenadas de la carcasa. Cara de pegar en x = pared.
+module soporte_boton() {
+    echo(str("SOP;tipo;", sw_tipo, ";z0;", sop_z0(), ";y0;", sop_y0(),
+             ";guia_x;", guia_x0(), ";tope_x;", x_tope_boton(),
+             ";sw_x;", x_sw0(), ";", x_sw1()));
+    union() {
+        _placa_boton();
+        _jaula_sw();
+        _topes_boton();
+        _hoja_boton(1);
+        _hoja_boton(-1);
+        _guia_led();
+        _portaled();
+    }
+}
+
+// Suelo en la cama. La guía queda horizontal; su cara inferior sube a ~50°.
+module soporte_boton_impresion() {
+    translate([-guia_x0(), -sop_y0(), -sop_z0()]) soporte_boton();
+}
+
+// Placa del espesor de la pared, con los dos agujeros a 14 mm.
+// Impresión: plana. Comprueba el capuchón; la guía, en el agujero pequeño.
+module prueba_boton() {
+    echo(str("PRUEBA_BOTON;agujero;", boton_hp_d + 0.2, ";led;3.1;sep;", led_hp_dz));
+    difference() {
+        translate([-14, -16, 0]) cube([28, 46, pared]);
+        translate([0, 0, -0.5]) cylinder(d = boton_hp_d + 0.2, h = pared + 1, $fn = 48);
+        translate([0, led_hp_dz, -0.5]) cylinder(d = 3.1, h = pared + 1, $fn = 24);
+    }
+}
