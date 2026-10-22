@@ -357,6 +357,9 @@ cap_hueco = [26, 32, 14];
 cap_x = 390;
 cap_y = 220;
 cap_z = suelo + 2;
+// El nido cae donde ahora va el Nano de mandos. No se dibuja ni se comprueba.
+// [PENDIENTE] dónde queda la capturadora.
+usar_nido_captura = false;
 
 // Arduino Nano de MANDOS (2026-10-20). Sustituye al Micro. Clon ATmega328P,
 // mini-USB, conversor USB-serie probablemente CH340 (dato de Miguel, no leído
@@ -493,11 +496,11 @@ riel_est = [76, 90, 105];
 carro_conjunto = "nano_esp";                    // "nano_esp" | "nano_proto"
 proto_l = 70; proto_w = 30;                     // [DISEÑO] protoboard genérica 30×70, no es una placa medida
 proto_pcb_z = 17.5;                             // mismo puesto que el ESP
-// Bahía v2, integrada en la bandeja, delante de la Pi. El tornillo del carro
-// está en bay_x. La placa crece hacia +X y el USB mira a +X. Puestos:
-// Nano de prácticas en y = 90; ESP de la tira o proto 30×70 en y = 124.
-// No van los tres a la vez: ESP y proto comparten puesto.
-// La proto de 70 mm acaba en x = 401, a 3 mm del retenedor del Nano de mandos.
+// OBSOLETO (2026-10-22). La bahía de carros ya no va en la bandeja.
+// Estas cotas se quedan para que los módulos de carro sigan compilando.
+// No imprimir carros ni el retenedor. Los huecos vigentes son b3_*.
+// Bahía v2: tornillo del carro en bay_x, placa hacia +X, USB hacia +X.
+// Nano de prácticas en y = 90; ESP o proto 30×70 en y = 124.
 bay_x = 328;
 bay_est = [90, 124];
 nano_est = 0;
@@ -515,6 +518,44 @@ bay_caj_x = 6.4;
 bay_caj_y = 14;
 bay_holg = 0.15;
 bay_torn = [[-0.8, -4.5], [0.8, 4.5]];
+
+// ---------------------------------------------------------------------
+// Huecos fijos de la bandeja (2026-10-22). Sustituyen a la bahía de carros
+// y a la cuna del Nano de mandos. Cada placa en su bolsillo, a lo largo
+// (dos columnas, no tres). La Pi no se mueve. Holgura 0,5 mm por lado.
+// Origen de cada vector: esquina −X −Y de la PCB, luego ancho (X) y largo (Y).
+// ---------------------------------------------------------------------
+b3_holg = 0.5;          // [DISEÑO] aire entre la PCB y la pared
+b3_pared = 2.2;         // [DISEÑO] pared del bolsillo
+b3_apoyo = 2.0;         // [DISEÑO] apoyo en el canto corto. Los pines salen a 2,4 mm [PENDIENTE]
+b3_pin_z = 17.5;        // [DISEÑO] cara inferior de la PCB sobre el suelo. Dupont 14,5 + separador 2,5
+b3_usb = 10;            // [DISEÑO] hueco del conector, centrado en el canto. El clon no se ha medido
+b3_torn_lx = 1.5;       // [DISEÑO] eje del tornillo, fuera del canto largo (X)
+b3_torn_ly = 3.0;       // [DISEÑO] eje del tornillo, fuera del canto corto (Y)
+b3_boss = 7.6;          // [DISEÑO] poste. Pared (7,6 − 2,5) / 2 = 2,55 ≥ rosca_pared
+b3_rosca = 10;          // [DISEÑO] guía en los postes que suben hasta la PCB
+b3_rosca_baja = 8;      // [DISEÑO] guía de las bridas del buck (el poste es bajo)
+b3_buck_rosca = 7;      // [DISEÑO] guía bajo el agujero del módulo. No atraviesa el ala
+
+// Tabla de placas. lx en X, ly en Y.
+b3_prac = [399, 66, 18, 45];     // Nano de prácticas. USB hacia −Y. [FUENTE] 18 × 45
+b3_buck = [399, 124, 21, 43];    // step-down. lx = buck_w, ly = buck_l
+b3_esp  = [346, 86, 31, 58];     // ESP8266. USB hacia +Y. 58 × 31 [PENDIENTE] [FOTO]
+b3_man  = [400, 222, 18, 45];    // Nano de mandos. USB hacia +Y. [FUENTE] 18 × 45
+
+// Pisada de la Pi. Fuera de la PCB, lejos de los postes M2.5 (Ø6 en
+// (333,5, 171) y (382,5, 171)). Arandela ancha M3 (Ø9, DIN 9021).
+b3_pi_torn = [[328.0, 165.2], [388.0, 165.2], [327.8, 254.2], [388.6, 254.2]];
+
+// Convertidor step-down. Módulo típico con LM2596, 43 × 21 mm, agujeros
+// de 3 mm en esquinas opuestas. No es el módulo de Miguel. [PENDIENTE]
+buck_l = 43;
+buck_w = 21;
+buck_pcb = 1.6;         // [DISEÑO] PCB típico
+buck_ag_d = 3.2;        // [PENDIENTE] paso del tornillo. El usuario cita agujeros de 3 mm
+buck_ag_ins = 3.5;      // [PENDIENTE] centro del agujero a la esquina. Cifra típica, no medida
+buck_suelda = 3;        // [DISEÑO] hueco bajo la PCB para las soldaduras
+buck_h = 14;            // [PENDIENTE] alto del inductor, solo el marcador. No es una pared
 // Tapa del techo, encima de los USB/RJ45. Solo en el lomo plano (y > 246,5),
 // dentro de carcasa_x1_y1. No corta el panel de pines, la OLED ni la rejilla
 // de la pared trasera (esa rejilla va en z = 114–140; la tapa abre el techo).

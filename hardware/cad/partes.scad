@@ -3,7 +3,8 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto | retenedor_nano | tapa_pi | placa_io_hp | prueba_placa_io_hp
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp
+// OBSOLETO, no imprimir: carro_nano | carro_esp | carro_proto | retenedor_nano (bahía v2)
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
 
@@ -37,7 +38,7 @@ else if (parte == "soporte_arduino") translate([-ard_cx, -sop_ard_y0, -sop_ard_z
 else if (parte == "riel")
     translate([1, riel_y1 - riel_y0 + 1, riel_h]) rotate([180, 0, 0])
         translate([-riel_x0a, -riel_y0, -suelo]) riel_placas();
-// Carros con la cama sobre la base de impresión. El tetón (2 mm) queda en voladizo.
+// OBSOLETO. Carros de la bahía v2: la bandeja ya no tiene cajeado. No imprimir.
 else if (parte == "carro_nano") translate([8, pr_w/2 + 4, 0]) carro_imprimible(pr_l, pr_w, pr_pcb_z, "bordes");
 else if (parte == "carro_esp") translate([8, esp_w/2 + 4, 0]) carro_imprimible(esp_l, esp_w, esp_pcb_z, "columnas");
 else if (parte == "carro_proto") translate([8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w, proto_pcb_z, "bordes");

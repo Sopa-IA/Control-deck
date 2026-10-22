@@ -46,3 +46,11 @@ El mismo día, después, se añadieron la placa I/O del HP y su prueba. Ninguna 
 | `PRUEBA_placa_io_hp` | 159,75 × 45,45 × 1,40 | 3,36 cm³ | Marco de la misma ventana, para ver qué hueco falla |
 
 `comprobar_stl.py` con estas dos: 27 mallas, cerradas, dentro de la cama. `comprobar_interferencias.py` sigue sin interferencias (la placa no entra en el ensamblaje).
+
+El mismo día, después, la bandeja pasa a huecos fijos. Se regeneró solo `PROVISIONAL_bandeja_servicio`. Los carros y el retenedor no se han vuelto a exportar y quedan obsoletos: no imprimirlos.
+
+| STL | Caja (mm) | Volumen | Qué es |
+|---|---|---|---|
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 25,10 | 190,72 cm³ | Huecos de la Pi, dos Nano, el ESP y el step-down. Misma ala. Antes 30,20 mm y 167,53 cm³ |
+
+`comprobar_stl.py`: las 27 mallas siguen cerradas y dentro de la cama (el lado largo de la bandeja mide 237,49; con margen de 10 mm el límite es 246). `comprobar_interferencias.py`: salida 0, 23 cajas, también con `carro_conjunto="nano_proto"`. Un solo sólido (Volumes: 2, Simple: yes).

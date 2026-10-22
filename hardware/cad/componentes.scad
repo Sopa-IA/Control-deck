@@ -25,14 +25,14 @@ function cajas_componentes() = [
     if (hp_desnuda) ["I/O frontal HP (lateral izq.)", "", "", [pared, io_frontal_y, io_frontal_z], io_frontal],
     if (hp_desnuda) ["Pulsador encendido HP", "", "", [pared, boton_hp_y - boton_hp_d/2 - 2, boton_hp_z - boton_hp_d/2 - 2], [boton_hp_prof, boton_hp_d + 4, boton_hp_d + 4]],
     if (usar_adaptador_video) ["Adaptador HDMI->USB-C (Pi)", "", "", [adap_x, adap_y, adap_z], [adap_dx, adap_video[1], adap_video[2]]],
-    if (usar_capturadora) ["Capturadora (nido en bandeja)", "", "", [cap_x, cap_y, cap_z], cap_hueco],
+    if (usar_capturadora && usar_nido_captura) ["Capturadora (nido en bandeja)", "", "", [cap_x, cap_y, cap_z], cap_hueco],
     // La Pi va partida en PCB, conectores y clavijas (mas abajo) para no inflar una sola caja.
     if (usar_kvm) ["KVM", "", "", [kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h]],
     if (usar_distribucion) ["Distribucion DC", "", "", [psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h]],
     // La orejeta trasera del soporte es baja (no llega a la clavija). Van en cajas distintas
     // para no marcar un solape que en la pieza no existe.
-    ["Nano mandos, cuna y retenedor", "", "", [ard_cx - ard_w/2 - 5.3, ard_y - 4, suelo], [ard_w + 11.3, ard_l + 4, ard_pcb_z - suelo + ard_pcb + 8]],
-    ["Clavija mini-USB mandos", "", "", [ard_cx - 5, ard_y + ard_l + 1, ard_pcb_z + 1], [10, ard_clavija, 6]],
+    ["Nano mandos", "", "", [b3_man[0], b3_man[1], suelo + b3_pin_z - ard_pines], [b3_man[2], b3_man[3], ard_pines + ard_pcb + ard_arriba]],
+    ["Clavija mini-USB mandos", "", "", [b3_man[0] + 4, b3_man[1] + b3_man[3], suelo + b3_pin_z + 1], [10, ard_clavija, 6]],
     // PCB hasta donde empieza el RJ45 (ox = 66,8). Los conectores van en sus cajas.
     ["Pi PCB", "", "", [pi_x0, pi_y0, pi_z], [pi_w, 66.8, 1.5]],
     ["Pi USB-A", "", "", [pi_x0 + 21.75, pi_y0 + 70.5, pi_z + 1.5], [32.5, 17.5, 16]],
@@ -40,16 +40,11 @@ function cajas_componentes() = [
     ["Clavijas USB-A Pi", "", "", [pi_x0 + 21.75, pi_y0 + 88, pi_z + 1.5], [32.5, pi_clavija, 16]],
     ["Clavija RJ45 Pi", "", "", [pi_x0 + 2.25, pi_y0 + 88, pi_z + 1.5], [16, 30, 14]],
     ["Pi HDMI y USB-C", "", "", [pi_x0 + pi_w, pi_y0 + 4, pi_z + 2], [26, 42, 8]],
-    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
-        caja_comp("Carro Nano practicas", carro_caja(nano_est, pr_l, pr_w, pr_pcb_z)),
-    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
-        caja_comp("USB Nano practicas", carro_usb_caja(nano_est, pr_w, pr_pcb_z, pr_clavija, pr_l)),
-    if (carro_conjunto == "nano_esp")
-        caja_comp("Carro ESP8266", carro_caja(esp_est, esp_l, esp_w, esp_pcb_z)),
-    if (carro_conjunto == "nano_esp")
-        caja_comp("USB ESP8266", carro_usb_caja(esp_est, esp_w, esp_pcb_z, esp_clavija, esp_l)),
-    if (carro_conjunto == "nano_proto")
-        caja_comp("Carro proto 30x70", carro_caja(proto_est, proto_l, proto_w, proto_pcb_z)),
+    ["Nano practicas", "", "", [b3_prac[0], b3_prac[1], suelo + b3_pin_z - ard_pines], [b3_prac[2], b3_prac[3], ard_pines + ard_pcb + pr_icsp[2]]],
+    ["USB Nano practicas", "", "", [b3_prac[0] + 4, b3_prac[1] - pr_clavija, suelo + b3_pin_z + 1], [10, pr_clavija, 6]],
+    ["ESP8266", "", "", [b3_esp[0], b3_esp[1], suelo + b3_pin_z - ard_pines], [b3_esp[2], b3_esp[3], ard_pines + esp_pcb + esp_mod[2]]],
+    ["USB ESP8266", "", "", [b3_esp[0] + b3_esp[2]/2 - 5, b3_esp[1] + b3_esp[3], suelo + b3_pin_z + 1], [10, esp_clavija, 6]],
+    ["Buck LM2596", "", "", [b3_buck[0], b3_buck[1], suelo + buck_suelda], [b3_buck[2], b3_buck[3], buck_pcb + buck_h]],
     ["OLED 0,96 SSD1306", "", "", [oled_cx - oled_mod[0]/2, D - pared - 1.5 - oled_mod[1], oled_cz - oled_mod[2]/2], oled_mod]
 ];
 // Cajas en coordenadas de la pendiente (x, v, n): cuerpo bajo el panel
@@ -165,16 +160,10 @@ module componentes_internos() {
     if (usar_kvm) caja_marcador([kvm_x, kvm_y, kvm_z], [kvm_w, kvm_d, kvm_h], [0.22, 0.22, 0.25]);
     if (usar_distribucion) caja_marcador([psu_x, psu_y, psu_z], [psu_w, psu_d, psu_h], [0.35, 0.18, 0.12]);
     if (usar_adaptador_video) caja_marcador([adap_x, adap_y, adap_z], [adap_dx, adap_video[1], adap_video[2]], [0.18, 0.22, 0.35]);   // adaptador HDMI->USB-C [PENDIENTE]
-    if (usar_capturadora) capturadora_marcador();
+    if (usar_capturadora && usar_nido_captura) capturadora_marcador();
     mandos_marcador();
     arduino_marcador();
-    color([0.25, 0.22, 0.18]) retenedor_nano();
-    if (carro_conjunto == "nano_esp" || carro_conjunto == "nano_proto")
-        carro_en_puesto(nano_est, pr_l, pr_w, pr_pcb_z, "bordes", true);
-    if (carro_conjunto == "nano_esp")
-        carro_en_puesto(esp_est, esp_l, esp_w, esp_pcb_z, "columnas");
-    if (carro_conjunto == "nano_proto")
-        carro_en_puesto(proto_est, proto_l, proto_w, proto_pcb_z, "bordes");
+    placas_fantasma(false, false);
     cables_ilustrativos();
     // tira LED frontal
     color(C_AMBAR) translate([luz_margen, pared + 4.4, luz_z0 + luz_alto/2 - 5]) cube([W - 2*luz_margen, 1.5, 10]);
@@ -202,15 +191,37 @@ module mandos_montados() {
 module cable(pts, d = 4, c = [0.08, 0.08, 0.08]) {
     color(c) for (i = [0 : len(pts) - 2]) hull() { translate(pts[i]) sphere(d = d, $fn = 10); translate(pts[i+1]) sphere(d = d, $fn = 10); }
 }
+// Placas de los huecos, translúcidas. La Pi y el Nano de mandos tienen
+// su propio marcador en el ensamblaje; aquí se pueden omitir.
+module placas_fantasma(con_pi = true, con_mandos = true) {
+    a = 0.4;
+    if (con_pi) {
+        color([0.15, 0.62, 0.32, a]) translate([pi_x0, pi_y0, pi_z]) cube([pi_w, pi_d, 1.5]);
+        color([0.75, 0.75, 0.8, 0.55]) translate([pi_x0 + 21.75, pi_y0 + 70.5, pi_z + 1.5]) cube([32.5, 14, 12]);
+        color([0.75, 0.75, 0.8, 0.55]) translate([pi_x0 + 2.25, pi_y0 + 66.8, pi_z + 1.5]) cube([16, 16, 10]);
+    }
+    if (con_mandos)
+        color([0.2, 0.48, 0.72, a]) translate([b3_man[0], b3_man[1], suelo + b3_pin_z]) cube([b3_man[2], b3_man[3], ard_pcb]);
+    color([0.2, 0.48, 0.72, a]) translate([b3_prac[0], b3_prac[1], suelo + b3_pin_z]) cube([b3_prac[2], b3_prac[3], ard_pcb]);
+    color([0.15, 0.22, 0.55, a]) translate([b3_esp[0], b3_esp[1], suelo + b3_pin_z]) cube([b3_esp[2], b3_esp[3], esp_pcb]);
+    color([0.15, 0.15, 0.16, 0.45])
+        translate([b3_esp[0] + b3_esp[2]/2 - esp_mod[0]/2, b3_esp[1] + b3_esp[3]/2 - esp_mod[1]/2, suelo + b3_pin_z + esp_pcb])
+            cube(esp_mod);
+    color([0.55, 0.28, 0.12, a]) translate([b3_buck[0], b3_buck[1], suelo + buck_suelda]) cube([b3_buck[2], b3_buck[3], buck_pcb]);
+    color([0.25, 0.25, 0.28, 0.35])
+        translate([b3_buck[0] + 4, b3_buck[1] + 8, suelo + buck_suelda + buck_pcb]) cube([12, 12, buck_h]);
+}
+
 module cables_ilustrativos() {
-    zc = ard_pcb_z + 1.5;
-    // USB derecho de la Pi (oy = 9): el más cercano a la canaleta.
+    zc = suelo + b3_pin_z + 3;
+    // USB derecho de la Pi. El cable de mandos baja por el canto +X de la bandeja.
     usb_x = pi_x0 + 47;
     jack_y = pi_y0 + 88;
-    cx = canal_x0 + canal_rib + canal_paso/2;
-    gy = canal_giro_y0 + canal_rib + canal_paso/2;
-    cable([[ard_cx, ard_y + ard_l + ard_usb_sale + ard_clavija, zc], [ard_cx, canal_y0, suelo + 3],
-           [cx, canal_y0 + 4, suelo + 3], [cx, gy, suelo + 3], [usb_x, gy, pi_z + 8], [usb_x, jack_y + 2, pi_z + 8]], 3.5);
+    mx = b3_man[0] + b3_man[2]/2;
+    my = b3_man[1] + b3_man[3] + ard_usb_sale;
+    rx = 428;
+    cable([[mx, my, zc], [rx, my, suelo + 6], [rx, 200, suelo + 6],
+           [rx, 200, pi_z + 10], [usb_x, 210, pi_z + 10], [usb_x, jack_y + 2, pi_z + 8]], 3.5);
     pm = pend_a_mundo([aloj_x0 + aloj_w + 8, aloj_y0 + aloj_h*(puertos_v0 + 0.08), -aloj_t/2]);
     pc = pend_a_mundo([aloj_x0 + aloj_w + 8, aloj_y0 + aloj_h*(puertos_v0 + 0.28), -aloj_t/2]);
     pp = [pasacables_x + pasacables[0]/2 - 8, D - pared - 1, pasacables_z + 7];
@@ -218,9 +229,13 @@ module cables_ilustrativos() {
     if (usar_capturadora) {
         // Modo C: Mini-HDMI MSI <- micro-HDMI de la Pi (canto +X)
         cable([pm, [pm[0] - 10, pm[1] + 10, pm[2] - 30], [hdmi[0] + 18, hdmi[1] - 10, hdmi[2] + 8], hdmi], 5, [0.12, 0.12, 0.3]);
-        // HDMI del HP (sale por la ventana I/O, vuelve por el pasacables) -> capturadora -> USB de la Pi
-        cable([pp, [pp[0], D - 40, pp[2]], [cap_x + cap_hueco[0]/2, cap_y - 6, cap_z + cap_hueco[2]], [cap_x + 4, cap_y + cap_hueco[1]/2, cap_z + cap_hueco[2]/2]], 5, [0.3, 0.2, 0.08]);
-        cable([[cap_x + cap_hueco[0], cap_y + cap_hueco[1]/2, cap_z + 6], [cx, cap_y + cap_hueco[1]/2, suelo + 3], [cx, gy, suelo + 3], [pi_x0 + 29, jack_y + 2, pi_z + 8]], 3.5, [0.12, 0.3, 0.3]);
+        // El nido de la capturadora salió de la bandeja. Sin hueco no se dibuja el cable.
+        if (usar_nido_captura) {
+            cx = canal_x0 + canal_rib + canal_paso/2;
+            gy = canal_giro_y0 + canal_rib + canal_paso/2;
+            cable([pp, [pp[0], D - 40, pp[2]], [cap_x + cap_hueco[0]/2, cap_y - 6, cap_z + cap_hueco[2]], [cap_x + 4, cap_y + cap_hueco[1]/2, cap_z + cap_hueco[2]/2]], 5, [0.3, 0.2, 0.08]);
+            cable([[cap_x + cap_hueco[0], cap_y + cap_hueco[1]/2, cap_z + 6], [cx, cap_y + cap_hueco[1]/2, suelo + 3], [cx, gy, suelo + 3], [pi_x0 + 29, jack_y + 2, pi_z + 8]], 3.5, [0.12, 0.3, 0.3]);
+        }
     } else {
         cable([pm, [pm[0] - 10, pm[1] + 20, pm[2] - 30], [pp[0], D - 40, pp[2]], pp], 5, [0.12, 0.12, 0.3]);
     }

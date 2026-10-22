@@ -35,18 +35,19 @@ Pivotes en vez de tornillos, uno por agujero de la placa HP. Diámetros: **C 3,8
 - Cama: tal cual viene (barras abajo, pivotes hacia arriba). Soportes: no (voladizo 0).
 - Comprueba qué pivote entra justo, sin holgura ni forzar. Hasta entonces la base sigue con insertos M3. **Aún no hay resultado.**
 
-### 02 · `PROVISIONAL_bandeja_servicio` · provisional · reimprimir (bandeja v2)
+### 02 · `PROVISIONAL_bandeja_servicio` · provisional · reimprimir (huecos fijos)
 
-La bandeja v1 ya está impresa. Esta la sustituye. El hueco de la base y los 4 M3 no se mueven (centros x = 318,26 y 436,26; y = 49 y 278,492). La base no se reimprime.
+La bandeja v1 ya está impresa. Esta la sustituye. El hueco de la base y los 4 M3 no se mueven (centros x = 318,26 y 436,26; y = 49 y 278,492). La base no se reimprime. La bahía de carros y la cuna ya no van en la plancha.
 
-La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. La cuna del Nano de mandos va en la plancha (el soporte suelto de la v1 no encaja). Delante de la Pi hay un riel para dos carros. Una canaleta en x = 420 sube el mini-USB hasta los USB de la Pi sin salir de la bandeja.
+La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. Delante, el ESP (USB hacia +Y). A la derecha, el Nano de prácticas (USB hacia el frente), el step-down y, junto a la Pi, el Nano de mandos (USB hacia la trasera). Cada uno en su bolsillo, pisado por cuatro tornillos. Los canales son los huecos entre paredes, con siete puentes.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl) · regenerado el 2026-10-22
 - STEP: [`STEP/02_PROVISIONAL_bandeja_servicio.step`](STEP/02_PROVISIONAL_bandeja_servicio.step) · **desfasado**, sigue siendo la v1
-- Medidas: 126,00 × 237,49 × 30,20. Volumen 167,53 cm³.
-- Cama: plancha abajo. La cuna llega a 30 mm: revisar soportes en el laminador. Las ranuras bajo la Pi no piden soporte. Ya no trae las dos torretas sueltas de la distribución DC.
-- Cada puesto de carro (y = 90 y y = 124) lleva un cajeado y dos guías Ø2,5 × 5,2 mm. El carro trae paso libre Ø3,4. Tornillo M3×10 de cabeza cilíndrica, dos por carro. No lleva insertos. Los 4 M3 del ala, a la base, no cambian.
-- Comprueba que entra por el hueco, que los 4 M3 caen en las torretas de la base y que los cuatro separadores de la Pi coinciden con la placa girada.
+- Medidas: 126,00 × 237,49 × 25,10. Volumen 190,72 cm³. Cabe en la A1: 237,49 mm frente a 246 mm con el margen de 10.
+- Cama: plancha abajo. Las paredes acaban en z = 23,1. Los puentes salvan unos 6 mm. Las ranuras bajo la Pi no piden soporte.
+- Tornillos autorroscantes, guía Ø2,5, sin insertos. Pi, ESP y los dos Nano: M3×10 con arandela ancha Ø9, guía de 10 mm. El buck: dos M3×8 por sus agujeros (guía de 7 mm) y dos M3×8 con arandela en las otras esquinas (guía de 8 mm). Los 4 M3 del ala, a la base, no cambian (paso libre Ø3,4).
+- No imprimir los carros ni el retenedor (piezas 16 a 19): están obsoletos.
+- Comprueba que entra por el hueco, que los 4 M3 caen en las torretas de la base y que los cuatro separadores de la Pi coinciden con la placa girada. El step-down del CAD es un LM2596 típico de 43 × 21 mm: **PENDIENTE** hasta el módulo de Miguel.
 
 ### 03 · `PROVISIONAL_carcasa_x0_y1` (detrás-izquierda) · provisional
 
@@ -139,40 +140,31 @@ Ya se imprimió o estaba en cola. Se repite solo si no encaja. Pomo Ø30 moletea
 
 ### 15 · `PROVISIONAL_soporte_arduino` · de la bandeja v1 · no montar en la v2
 
-Pieza de la bandeja ya impresa (tornillos en y = 63 y y = 125). El STL no se ha vuelto a exportar (26,00 × 70,00 × 19,10, 9,58 cm³). La bandeja v2 lleva la cuna en la plancha y no tiene esas torretas: este soporte no se atornilla ahí.
+Pieza de la bandeja ya impresa (tornillos en y = 63 y y = 125). El STL no se ha vuelto a exportar (26,00 × 70,00 × 19,10, 9,58 cm³). La bandeja con huecos fijos no tiene esas torretas ni la cuna: este soporte no se atornilla ahí.
 
-### 16 · `PROVISIONAL_retenedor_nano` · provisional
+### 16 · `PROVISIONAL_retenedor_nano` · obsoleto · no imprimir
 
-Clip del Nano de mandos. Engancha los rebordes de la cuna, pisa las cuatro esquinas de la PCB y lleva un tope sobre el mini-USB. No tapa los pines.
+Era el clip de la cuna del Nano de mandos. La bandeja nueva pisa esa placa con cuatro M3. El STL se queda en el directorio para no perder la malla; no va en esta bandeja.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_retenedor_nano.stl`](../../cad/export/stl/PROVISIONAL_retenedor_nano.stl)
-- Medidas: 29,40 × 51,20 × 10,40. Volumen 1,38 cm³.
-- Cama: tal cual (la cara baja ya está en z = 0).
-- El riel suelto `PROVISIONAL_riel_placas` ya no está en el directorio. No imprimirlo si queda una copia antigua.
+- STL que se conserva, sin regenerar: [`hardware/cad/export/stl/PROVISIONAL_retenedor_nano.stl`](../../cad/export/stl/PROVISIONAL_retenedor_nano.stl) · 29,40 × 51,20 × 10,40 · 1,38 cm³. No imprimir.
 
-### 17 · `PROVISIONAL_carro_nano` · provisional
+### 17 · `PROVISIONAL_carro_nano` · obsoleto · no imprimir
 
-Carro del Nano de prácticas. Puesto y = 90. El mini-USB mira a +X. Pines hacia abajo, uñas en las esquinas y pestaña sobre el conector. La zapata entra en el cajeado y se aprieta con dos M3.
+Era el carro del Nano de prácticas (puesto y = 90 de la bahía v2). Esa placa va ahora en el hueco x = 399, y = 66, USB hacia el frente. No hay cajeado donde atornillar el carro.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_carro_nano.stl`](../../cad/export/stl/PROVISIONAL_carro_nano.stl)
-- Medidas: 51,45 × 16,40 × 25,10. Volumen 6,54 cm³.
-- Cama: la base del carro abajo. Va a la vez que el del ESP o el de la proto, no con los dos.
+- STL que se conserva, sin regenerar: [`hardware/cad/export/stl/PROVISIONAL_carro_nano.stl`](../../cad/export/stl/PROVISIONAL_carro_nano.stl) · 51,45 × 16,40 × 25,10 · 6,54 cm³. No imprimir.
 
-### 18 · `PROVISIONAL_carro_esp` · provisional
+### 18 · `PROVISIONAL_carro_esp` · obsoleto · no imprimir
 
-Carro del ESP8266 de la tira. Puesto y = 124. Cuatro columnas en los agujeros de esquina. No a la vez que la proto.
+Era el carro del ESP8266 (puesto y = 124). El ESP va en el hueco x = 346, y = 86. No a la vez que una proto: la proto ya no tiene puesto.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_carro_esp.stl`](../../cad/export/stl/PROVISIONAL_carro_esp.stl)
-- Medidas: 64,45 × 29,60 × 25,10. Volumen 3,94 cm³. Dos M3, los mismos agujeros que la proto.
-- La placa de la foto se estima en 58 × 31 mm. **PENDIENTE** de medir: si es otra, las columnas no coinciden.
+- STL que se conserva, sin regenerar: [`hardware/cad/export/stl/PROVISIONAL_carro_esp.stl`](../../cad/export/stl/PROVISIONAL_carro_esp.stl) · 64,45 × 29,60 × 25,10 · 3,94 cm³. No imprimir. La cota 58 × 31 sigue [PENDIENTE], ahora en el hueco de la bandeja.
 
-### 19 · `PROVISIONAL_carro_proto30x70` · provisional
+### 19 · `PROVISIONAL_carro_proto30x70` · obsoleto · no imprimir
 
-Carro de una protoboard de 30 × 70 mm. Medida de diseño, no de una placa medida. Mismo puesto que el ESP.
+Era el carro de una protoboard de 30 × 70 mm. Esa placa ya no tiene hueco en la bandeja.
 
-- STL: [`hardware/cad/export/stl/PROVISIONAL_carro_proto30x70.stl`](../../cad/export/stl/PROVISIONAL_carro_proto30x70.stl)
-- Medidas: 76,45 × 28,40 × 25,10. Volumen 10,79 cm³. Se cambia por el ESP soltando los dos M3 del puesto y = 124.
-- El extremo de 70 mm queda a unos 3 mm del retenedor del Nano de mandos. **PENDIENTE** medir la placa.
+- STL que se conserva, sin regenerar: [`hardware/cad/export/stl/PROVISIONAL_carro_proto30x70.stl`](../../cad/export/stl/PROVISIONAL_carro_proto30x70.stl) · 76,45 × 28,40 × 25,10 · 10,79 cm³. No imprimir.
 
 ### 20 · `PROVISIONAL_tapa_pi` · provisional
 
@@ -211,7 +203,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneraron la bandeja v2 y `carcasa_x1_y1`: las guías de los carros, de los postes de la tapa y de las orejetas de esa pieza pasan a Ø2,5 (`fijacion = "autorroscante"`). Los carros, la tapa, las otras tres carcasas, la base, el soporte y los biseles no se han vuelto a exportar. Los STEP y el manual PDF tampoco. Ese mismo día se añadieron `PROVISIONAL_placa_io_hp` y `PRUEBA_placa_io_hp`; `carcasa_x0_y1` no se ha vuelto a generar.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneró la bandeja con los huecos fijos (126,00 × 237,49 × 25,10, 190,72 cm³). `carcasa_x1_y1` se había regenerado antes, el mismo día, con guías Ø2,5, y no se ha vuelto a exportar con este cambio. Los carros, el retenedor, la tapa, las otras tres carcasas, la base, el soporte y los biseles tampoco. Los STEP y el manual PDF tampoco. La placa I/O y su prueba siguen como se añadieron ese día; `carcasa_x0_y1` no se ha vuelto a generar.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

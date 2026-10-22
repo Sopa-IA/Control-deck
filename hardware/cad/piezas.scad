@@ -108,23 +108,171 @@ module pletina_empalme() { difference() { caja_r([30, 10, 3], 2);
     for (x = [6, 24]) translate([x, 5, -1]) cylinder(d = tornillo_d, h = 5); } }
 
 // ---------------------------------------------------------------------
-// BANDEJA DE SERVICIO: lleva la Raspberry Pi y la distribución de energía
+// BANDEJA DE SERVICIO. Huecos fijos (2026-10-22): Pi, dos Nano, ESP8266
+// y el step-down. Sin carros. El contorno, el ala y los 4 M3 a la base
+// no se mueven. La rejilla bajo el SoC tampoco.
 // ---------------------------------------------------------------------
+function tornillos_placa(b) = [
+    for (sx = [-1, 1], sy = [-1, 1])
+        [sx < 0 ? b[0] - b3_torn_lx : b[0] + b[2] + b3_torn_lx,
+         sy < 0 ? b[1] - b3_torn_ly : b[1] + b[3] + b3_torn_ly]
+];
+// Agujeros del módulo, en esquinas opuestas. El centro a la esquina es
+// buck_ag_ins [PENDIENTE]. Los otros dos cantos llevan brida.
+function agujeros_buck() = [
+    [b3_buck[0] + buck_ag_ins, b3_buck[1] + buck_ag_ins],
+    [b3_buck[0] + b3_buck[2] - buck_ag_ins, b3_buck[1] + b3_buck[3] - buck_ag_ins]
+];
+// La brida trasera no puede salir por detrás: el sobremolde HDMI empieza
+// en y = 171,5. Va en el canto −X, 1 mm antes del borde trasero de la PCB.
+function bridas_buck() = [
+    [b3_buck[0] + b3_buck[2] + b3_torn_lx, b3_buck[1] - b3_torn_ly],
+    [b3_buck[0] - b3_torn_lx, b3_buck[1] + b3_buck[3] - 1]
+];
+
+module guia_m3(x, y, z_techo, prof) {
+    if (fijacion == "autorroscante")
+        translate([x, y, z_techo - prof])
+            cylinder(d = rosca_d, h = prof + 0.6, $fn = 24);
+    else
+        translate([x, y, z_techo - inserto_l])
+            cylinder(d = inserto_d, h = inserto_l + 0.6, $fn = 24);
+}
+// Puente de cable: dos postes y una barra. El cable entra por debajo.
+// La barra salva unos 6 mm; en la cama es un puente corto, sin soporte.
+module puente_cable(x, y, dx, dy) {
+    z0 = suelo - 0.2;
+    zb = suelo + 4.2;
+    translate([x, y, z0]) cube([2, 2, zb + 1.6 - z0]);
+    translate([x + dx, y + dy, z0]) cube([2, 2, zb + 1.6 - z0]);
+    hull() {
+        translate([x, y, zb]) cube([2, 2, 1.6]);
+        translate([x + dx, y + dy, zb]) cube([2, 2, 1.6]);
+    }
+}
+// Bolsillo de una placa con pines hacia abajo. Apoyo solo en los cantos
+// cortos (2 mm: dentro de los 2,4 mm sin pines). El centro queda libre
+// hasta el suelo. usb_sy = −1 el conector mira a −Y; +1 mira a +Y.
+module bolsillo_pines(b, usb_sy, pcb_t) {
+    x0 = b[0]; y0 = b[1]; lx = b[2]; ly = b[3];
+    z0 = suelo - 0.2;
+    z_pcb = suelo + b3_pin_z;
+    z1 = z_pcb + pcb_t;
+    h = z1 - z0;
+    difference() {
+        union() {
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 + lx + b3_holg, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            // canto −Y. El apoyo entra 0,3 mm en la pared para no quedar suelto.
+            if (usb_sy < 0)
+                apoyo_partido(x0, y0 - b3_holg - 0.3, lx, z0, z_pcb);
+            else
+                translate([x0 - 0.3, y0 - b3_holg - 0.3, z0])
+                    cube([lx + 0.6, b3_apoyo + b3_holg + 0.3, z_pcb - z0]);
+            // canto +Y
+            if (usb_sy > 0)
+                apoyo_partido(x0, y0 + ly - b3_apoyo, lx, z0, z_pcb);
+            else
+                translate([x0 - 0.3, y0 + ly - b3_apoyo, z0])
+                    cube([lx + 0.6, b3_apoyo + b3_holg + 0.3, z_pcb - z0]);
+            for (p = tornillos_placa(b))
+                translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+        }
+        // La PCB entra desde arriba. El poste no pisa la placa.
+        translate([x0 - 0.01, y0 - 0.01, z_pcb - 0.01]) cube([lx + 0.02, ly + 0.02, 40]);
+        // Paso del conector, en el canto usb_sy. El apoyo de ese canto ya está partido.
+        translate([x0 + lx/2 - b3_usb/2,
+                   usb_sy < 0 ? y0 - b3_holg - b3_pared - 0.4 : y0 + ly + b3_holg - 0.2,
+                   z_pcb - 0.6])
+            cube([b3_usb, b3_pared + 0.8, 20]);
+    }
+}
+module apoyo_partido(x0, yb, lx, z0, z_pcb) {
+    xa = x0 + lx/2 - b3_usb/2;
+    dy = b3_apoyo + b3_holg + 0.3;
+    translate([x0 - 0.3, yb, z0]) cube([xa - (x0 - 0.3), dy, z_pcb - z0]);
+    translate([xa + b3_usb, yb, z0]) cube([x0 + lx + 0.3 - (xa + b3_usb), dy, z_pcb - z0]);
+}
+// Step-down. No lleva pines. Reborde perimetral, dos tornillos por los
+// agujeros del módulo y dos bridas en los otros cantos.
+module bolsillo_buck() {
+    x0 = b3_buck[0]; y0 = b3_buck[1]; lx = b3_buck[2]; ly = b3_buck[3];
+    z0 = suelo - 0.2;
+    z_pcb = suelo + buck_suelda;
+    z1 = z_pcb + buck_pcb;
+    h = z1 - z0;
+    lab = 2.2;
+    sol = b3_holg + 0.3;
+    difference() {
+        union() {
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 + lx + b3_holg, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - sol, y0 - sol, z0]) cube([lx + 2*sol, lab + sol, z_pcb - z0]);
+            translate([x0 - sol, y0 + ly - lab, z0]) cube([lx + 2*sol, lab + sol, z_pcb - z0]);
+            translate([x0 - sol, y0, z0]) cube([lab + sol, ly, z_pcb - z0]);
+            translate([x0 + lx - lab, y0, z0]) cube([lab + sol, ly, z_pcb - z0]);
+            for (p = agujeros_buck())
+                translate([p[0], p[1], z0]) cylinder(d = 8, h = z_pcb - z0, $fn = 24);
+            for (p = bridas_buck())
+                translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+        }
+        translate([x0 - 0.01, y0 - 0.01, z_pcb - 0.01]) cube([lx + 0.02, ly + 0.02, 30]);
+    }
+}
+// Paredes de la Pi. Bajas, a ras de la PCB: el HAT no está medido.
+// Sin reborde sobre la rejilla. El canto +Y (USB/RJ45) queda abierto.
+// El canto +X solo por detrás de los HDMI.
+module paredes_pi() {
+    z0 = suelo - 0.2;
+    z1 = pi_z + 1.5;
+    h = z1 - z0;
+    translate([pi_x0 - b3_holg - b3_pared, pi_y0 - b3_holg - b3_pared, z0])
+        cube([b3_pared, pi_d + 2*b3_holg + 2*b3_pared, h]);
+    // −Y partido: la muesca de la micro-SD queda libre (x = 346 a 368).
+    translate([pi_x0 - b3_holg - b3_pared, pi_y0 - b3_holg - b3_pared, z0])
+        cube([346 - (pi_x0 - b3_holg - b3_pared), b3_pared, h]);
+    translate([368, pi_y0 - b3_holg - b3_pared, z0])
+        cube([pi_x0 + pi_w + b3_holg + b3_pared - 368, b3_pared, h]);
+    translate([pi_x0 + pi_w + b3_holg, 216, z0])
+        cube([b3_pared, 34, h]);
+    for (p = b3_pi_torn)
+        translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+}
+
 module bandeja_servicio() {
     difference() {
         union() {
-            translate([serv_x + 0.3, serv_y + 0.3, 0]) cube([serv_w - 0.6, serv_d - 0.6, suelo]);
+            // 0,2 mm dentro del ala: si no, el suelo y el ala solo se tocan.
+            translate([serv_x + 0.3, serv_y + 0.3, -0.2]) cube([serv_w - 0.6, serv_d - 0.6, suelo + 0.2]);
             translate([serv_x - serv_ala, serv_y - serv_ala, -serv_ala_t])
                 caja_r([serv_w + 2*serv_ala, serv_d + 2*serv_ala, serv_ala_t], 3);
-            for (p = agujeros_pi()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = 6, h = pi_z - suelo);
-            cuna_nano_mandos();
-            riel_bahia();
-            canal_bandeja_v2();
-            // nido de la capturadora: marco bajo, sin tapa. La medida real es [PENDIENTE].
-            translate([cap_x, cap_y, suelo - 0.2]) difference() {
-                cube([cap_hueco[0], cap_hueco[1], 6]);
-                translate([1.6, 1.6, 2]) cube([cap_hueco[0] - 3.2, cap_hueco[1] - 3.2, 6]);
-            }
+            for (p = agujeros_pi())
+                translate([p[0], p[1], suelo - 0.2]) cylinder(d = 6, h = pi_z - (suelo - 0.2));
+            paredes_pi();
+            bolsillo_pines(b3_esp, +1, esp_pcb);
+            bolsillo_pines(b3_prac, -1, ard_pcb);
+            bolsillo_pines(b3_man, +1, ard_pcb);
+            bolsillo_buck();
+            // Canales: el hueco entre paredes es el canal. Estos puentes lo sujetan.
+            puente_cable(402, 115.2, 0, 6);
+            puente_cable(409, 115.2, 0, 6);
+            puente_cable(383, 100, 6, 0);
+            puente_cable(383, 132, 6, 0);
+            puente_cable(423.5, 148, 6, 0);
+            puente_cable(423.5, 198, 6, 0);
+            puente_cable(423.5, 238, 6, 0);
         }
         for (p = agujeros_pi()) translate([p[0], p[1], 1.5]) cylinder(d = 2.7, h = 20);
         for (p = torretas_bandeja()) translate([p[0], p[1], -5]) cylinder(d = tornillo_d, h = 10);
@@ -137,28 +285,30 @@ module bandeja_servicio() {
         for (i = [0 : pi_rej_n - 1], tramo = [[183, 14], [199, 16]])
             translate([pi_rej_x0 + i * pi_rej_paso, tramo[0], -2.4])
                 cube([pi_rej_ancho, tramo[1], 7]);
-        // asiento de la PCB del Nano de mandos y paso del mini-USB
-        translate([ard_cx - ard_w/2 - 0.4, ard_y - 0.4, ard_pcb_z]) cube([ard_w + 0.8, ard_l + 0.8, 30]);
-        translate([ard_cx - 7, ard_y + ard_l - 6, ard_pcb_z - 1]) cube([14, 28, 30]);
-        for (y = bay_est) {
-            // Cajeado abierto por arriba. El fondo es el suelo de la bandeja.
-            translate([bay_x - bay_caj_x/2, y - bay_caj_y/2, suelo - 0.02])
-                cube([bay_caj_x, bay_caj_y, 6.5]);
-            for (p = bay_torn)
-                // Autorroscante: de z = −1,2 a z = 4,2 (abre al cajeado).
-                // 5,2 mm de guía y 0,8 mm de piel sobre la cara inferior del ala.
-                // Inserto: el agujero anterior, Ø4 desde z = −1,5, 5,7 mm.
-                if (fijacion == "autorroscante") {
-                    echo(str("ROSCA_CARRO;", bay_x + p[0], ";", y + p[1], ";d;", rosca_d, ";z0;", -serv_ala_t + 0.8, ";h;", suelo + 0.2 - (-serv_ala_t + 0.8)));
-                    translate([bay_x + p[0], y + p[1], -serv_ala_t + 0.8])
-                        cylinder(d = rosca_d, h = suelo + 0.2 - (-serv_ala_t + 0.8), $fn = 24);
-                }
-                else
-                    translate([bay_x + p[0], y + p[1], -1.5])
-                        cylinder(d = inserto_d, h = suelo + 1.7, $fn = 24);
+        // Los postes no entran en la PCB: la arandela es quien la pisa.
+        translate([pi_x0, pi_y0, pi_z]) cube([pi_w, pi_d, 30]);
+        for (p = b3_pi_torn) {
+            echo(str("ROSCA_BOLSILLO;Pi;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x10;arandela;9"));
+            guia_m3(p[0], p[1], pi_z + 1.5, b3_rosca);
+        }
+        for (nom = [["ESP", b3_esp], ["Practicas", b3_prac], ["Mandos", b3_man]])
+            for (p = tornillos_placa(nom[1])) {
+                echo(str("ROSCA_BOLSILLO;", nom[0], ";", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x10;arandela;9"));
+                guia_m3(p[0], p[1], suelo + b3_pin_z + ard_pcb, b3_rosca);
+            }
+        for (p = agujeros_buck()) {
+            echo(str("ROSCA_BOLSILLO;Buck-pasante;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_buck_rosca, ";tornillo;M3x8"));
+            guia_m3(p[0], p[1], suelo + buck_suelda, b3_buck_rosca);
+        }
+        for (p = bridas_buck()) {
+            echo(str("ROSCA_BOLSILLO;Buck-brida;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca_baja, ";tornillo;M3x8;arandela;9"));
+            guia_m3(p[0], p[1], suelo + buck_suelda + buck_pcb, b3_rosca_baja);
         }
     }
 }
+// OBSOLETO (2026-10-22). La cuna, el riel y la canaleta de la bahía v2
+// ya no se llaman desde bandeja_servicio(). No imprimirlos. El código se
+// queda para que las piezas viejas sigan compilando.
 // Cuna del Nano de mandos, impresa con la bandeja. La PCB apoya en los dos
 // extremos; los pines cuelgan hasta el suelo (20 mm: entra un Dupont de 17).
 // Cada poste tiene un reborde hacia fuera para el retenedor.
@@ -244,7 +394,8 @@ module soporte_arduino() {
 // Marcador del Arduino Nano de mandos (PCB + pines + clavija mini-USB).
 // Filas de pines a 15,24 mm: cota de protoboard, no medida en el clon [PENDIENTE].
 module arduino_marcador() {
-    translate([ard_cx - ard_w/2, ard_y, ard_pcb_z]) {
+    // Hueco de mandos (b3_man). La cuna vieja, en ard_cx / ard_y, ya no se usa.
+    translate([b3_man[0], b3_man[1], suelo + b3_pin_z]) {
         color([0.05, 0.35, 0.55]) cube([ard_w, ard_l, ard_pcb]);
         color([0.15, 0.15, 0.16]) translate([2, 8, ard_pcb]) cube([ard_w - 4, 22, ard_arriba]);
         color([0.8, 0.75, 0.3]) for (sx = [ard_w/2 - 7.62, ard_w/2 + 7.62]) translate([sx - 1.25, 2.4, -ard_pines]) cube([2.5, ard_l - 4.8, ard_pines]);
@@ -301,7 +452,8 @@ module riel_placas() {
     }
 }
 
-// Carro de la bahía v2. Origen local: tornillo en (0, 0), z = 0 sobre la bandeja.
+// OBSOLETO (2026-10-22). Carro de la bahía v2. No imprimir: la bandeja
+// ya no tiene cajeado. Origen local: tornillo en (0, 0), z = 0 sobre la bandeja.
 // La placa crece hacia +X y su USB mira a +X. modo "bordes" (Nano y proto) o
 // "columnas" (ESP, cuatro postes en los agujeros de esquina). Bajo la PCB hay
 // pcb_z = 17,5 mm: cabe un Dupont de 17 mm. Cuatro uñas pisan las esquinas de
@@ -381,7 +533,8 @@ function carro_usb_caja(i, ancho, pcb_z, clavija, largo) = [
     10,
     6
 ];
-// Retenedor del Nano de mandos. Pieza aparte: engancha los rebordes de la
+// OBSOLETO (2026-10-22). Retenedor del Nano de mandos. No imprimir:
+// el hueco nuevo lo pisan cuatro tornillos. Enganchaba los rebordes de la
 // cuna, pisa las cuatro esquinas de la PCB y lleva un tope sobre el mini-USB.
 module retenedor_nano() {
     x0 = ard_cx - ard_w/2;

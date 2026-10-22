@@ -30,7 +30,7 @@ module conjunto(e = 0) {
 
 if (vista == "bandeja") {
     color([0.12, 0.12, 0.13]) bandeja_servicio();
-    componentes_internos();
+    placas_fantasma();
 }
 else if (vista == "montado") conjunto(0);
 else if (vista == "explosionado") conjunto(expl);
@@ -64,8 +64,8 @@ else if (vista == "check") {
     // bandeja de servicio con ala (para comprobar que no pisa orejetas)
     echo(str("SOPORTE_EN_BANDEJA;", (ard_cx - sop_ard_w/2 >= serv_x && ard_cx + sop_ard_w/2 <= serv_x + serv_w && sop_ard_y0 >= serv_y && sop_ard_y0 + sop_ard_l <= serv_y + serv_d) ? 1 : 0));
     echo(str("TRAY;", serv_x - serv_ala, ";", serv_y - serv_ala, ";", serv_w + 2*serv_ala, ";", serv_d + 2*serv_ala));
-    echo(str("OBST;Canal bandeja;", canal_x0, ";", canal_y0, ";", suelo, ";", canal_rib + canal_paso + canal_rib, ";", canal_giro_y0 + canal_paso + 2*canal_rib - canal_y0, ";", 5));
-    echo(str("OBST;Canal bandeja giro;", canal_giro_x0, ";", canal_giro_y0, ";", suelo, ";", canal_x0 + canal_paso + 2*canal_rib - canal_giro_x0, ";", canal_paso + 2*canal_rib, ";", 5));
+    // La canaleta de la bahía v2 ya no está. No se emite como obstáculo:
+    // cruzaría los huecos nuevos.
     for (p = orejetas) echo(str("OBST;Orejeta;", p[0] - 6, ";", p[1] - 6, ";", suelo, ";", 12, ";", 12, ";", (p[1] > pared + 10 && p[1] < 40) ? H : 11));
     for (p = empalmes()) echo(str("OBST;Torreta empalme;", p[0] - boss_d/2, ";", p[1] - boss_d/2, ";", suelo, ";", boss_d, ";", boss_d, ";", 5));
     if (hp_desnuda) echo(str("PARAM;hp_io;", ventana_hp_x, ";", ventana_hp_z, ";", ventana_hp[0], ";", ventana_hp[1]));

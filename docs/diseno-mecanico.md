@@ -7,6 +7,8 @@
 > **2026-10-20, más tarde:** los mandos pasan de Arduino Micro a **Nano** (PCB de catálogo 18 × 45 mm). Entran un ESP8266, un segundo Nano de prácticas, un panel de pines en la trasera y una OLED 0,96". Las torretas y el canal USB de la bandeja impresa no se mueven. Los párrafos de abajo que dicen «Micro», «48 × 17,7» o «micro-USB del Arduino» describen el diseño anterior. La geometría vigente está en `params.scad`.
 >
 > **2026-10-21, bandeja v2:** Miguel reimprime la bandeja entera. La Pi gira (USB y RJ45 hacia +Y, en la mitad izquierda) y la bahía queda integrada en la plancha. La sección «Bahía modular» de más abajo describe el riel suelto de la bandeja v1: **no se imprime**. El STL `PROVISIONAL_riel_placas` se ha retirado.
+>
+> **2026-10-22, huecos fijos:** la bahía de carros, la cuna y el retenedor salen de la bandeja. Cada placa va en un bolsillo. La Pi, la rejilla, la tapa y `carcasa_x1_y1` no se mueven. Los párrafos de carros de «Bandeja v2» describen esa bahía: **no se imprimen**. Lo vigente está en «Huecos fijos».
 
 ## Bandeja v2 (2026-10-21)
 
@@ -45,7 +47,7 @@ Los postes M2.5 (Ø6, ejes en x = 333,5 y 382,5, y = 171 y 229) quedan a más de
 
 Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco, con paso libre Ø3,4 en la tapa y guía Ø2,5 × 9 mm en cada poste Ø10 (pared 3,75 mm). Tornillo M3×10 de cabeza cilíndrica [DISEÑO]: la tapa mide 2,4 mm y la rosca entra unos 7,6 mm, sin llegar al fondo. Las tres orejetas de esta pieza que apoyan en la base (325, 292,5), (420, 292,5) y (448,3, 205) llevan la misma guía, de 9 mm, en un taco de 12 × 12 × 11 mm (pared 4,75 mm). El tornillo entra desde abajo por el paso ya impreso de la base: M3×10 avellanado [DISEÑO]. Las otras tres carcasas, la base, el soporte y los biseles conservan el agujero de inserto con el que se imprimieron. El panel de pines y la OLED no se cortan. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
 
-Retención de la placa. Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
+Retención de la placa, de la bahía v2 (sustituida por los huecos fijos). Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
 
 Sujeción del carro a la bandeja. Cada puesto (y = 90 y y = 124, sin moverlos) lleva un cajeado de 6,4 × 14 mm en el riel y dos tornillos en diagonal, a 9 mm en Y y 1,6 mm en X: en (327,2, 85,5) y (328,8, 94,5) para el Nano, y en (327,2, 119,5) y (328,8, 128,5) para el ESP o la proto. La zapata del carro entra con 0,15 mm por lado [DISEÑO]. El carro sigue con paso libre Ø3,4. Miguel no usa insertos (`fijacion = "autorroscante"`): cada tornillo rosca en una guía Ø2,5. En esta plancha solo hay 6 mm de plástico (suelo 4 + ala 2), así que la guía mide 5,2 mm y deja 0,8 mm de piel; no llega a los 8 mm pedidos. El tornillo es un M3×10 de cabeza cilíndrica [DISEÑO]: 7 mm de paso en la zapata y unos 3 mm de rosca. Un M3×12 tocaría el fondo. La pared hasta el borde del suelo, en el agujero de x = 327,2, queda en 3,4 mm. El ESP y la proto comparten el puesto y = 124: se cambia uno por el otro soltando esos dos tornillos. Los cuatro M3 que atan la bandeja a la base no se tocan. Las uñas, la pestaña y los 17,5 mm bajo la PCB siguen igual. El agarre del autorroscante es [PENDIENTE] de probar.
 
@@ -67,7 +69,49 @@ OpenSCAD 2021.01. No se ha lanzado `exportar.sh`. Cajas al centésima, de los v�
 | `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 cm³ | Tapa del techo, dos M3, ranuras y agujeros de ventilador (antes 11,90 cm³) |
 | `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,81 cm³ | Guías Ø2,5 en los dos postes de la tapa y en las tres orejetas de esta pieza (antes 233,65 cm³). Las otras tres carcasas no |
 
-No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El `PROVISIONAL_soporte_arduino` ya impreso no se monta en esta bandeja.
+No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El `PROVISIONAL_soporte_arduino` ya impreso no se monta en esta bandeja. La fila de `PROVISIONAL_bandeja_servicio` de la tabla es la exportación de la bahía de carros (30,20 mm, 167,53 cm³). La vigente está abajo.
+
+## Huecos fijos (2026-10-22)
+
+Miguel aprueba el concepto de un bolsillo por placa, con paredes bajas y un tornillo en cada esquina. La foto de referencia no está a escala y tiene tres columnas: aquí los huecos van a lo largo, en dos columnas. El contorno no cambia (ala 126,00 × 237,49 mm). Los 4 M3 a la base siguen en x = 318,26 y 436,26, y = 49 y 278,492, con paso libre Ø3,4. Roscan en la base ya impresa. La carcasa y `tapa_pi` no se han tocado: las paredes nuevas acaban en z = 23,1 y la tapa está en el techo.
+
+La Pi no se mueve. Sigue en x = 330 a 386, y = 167,5 a 252,5, USB y RJ45 hacia +Y, a 12 mm del suelo sobre los cuatro postes Ø6 (agujero Ø2,7, paso del M2,5). La rejilla bajo el SoC y la muesca de la micro-SD siguen igual. Las paredes de la Pi llegan a ras de la PCB (z = 13,5), sin reborde sobre la rejilla. El canto +Y queda abierto. El canto +X solo lleva pared de y = 216 a 250, por detrás de los HDMI. El HAT sigue sin modelar [PENDIENTE].
+
+| Hueco | Esquina −X −Y de la PCB | PCB | USB | Cara inferior |
+|---|---|---|---|---|
+| Pi 4 | 330, 167,5 | 56 × 85 [FUENTE] | +Y | z = 12, postes de 8 mm |
+| ESP8266 | 346, 86 | 31 × 58 [PENDIENTE] [FOTO] | +Y | z = 21,5 |
+| Nano de prácticas | 399, 66 | 18 × 45 [FUENTE] | −Y | z = 21,5 |
+| Step-down | 399, 124 | 21 × 43 [PENDIENTE] | — | z = 7 |
+| Nano de mandos | 400, 222 | 18 × 45 [FUENTE] | +Y | z = 21,5 |
+
+Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm. En las tres placas con pines hacia abajo el apoyo es un escalón de 2,0 mm en los cantos cortos: los pines, en el marcador, empiezan a 2,4 mm del canto [PENDIENTE]. El centro del bolsillo queda vacío hasta el suelo (z = 4). No hay taladro pasante. El canto del USB está partido 10 mm para el conector. El step-down no lleva pines: reborde de 2,2 mm y un hueco de 3 mm para las soldaduras [DISEÑO].
+
+La columna derecha (x = 399) queda fuera de la tina. El ESP, debajo de la pantalla, queda a ≥ 5 mm de la tina en la comprobación de cajas. Delante de y ≈ 85 y a la izquierda de x ≈ 380 el suelo se queda bajo: ahí la tina no deja pared alta.
+
+Tornillos. `fijacion = "autorroscante"`, guía Ø2,5, poste Ø7,6 (pared 2,55 mm). La cabeza sola no llega al borde: hace falta arandela ancha M3, Ø9 (DIN 9021). El tornillo va fuera de la PCB y la arandela pisa la esquina.
+
+| Sitio | Dónde (ejes) | Guía | Tornillo |
+|---|---|---|---|
+| Pi, cuatro esquinas | (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2) | Ø2,5 × 10 mm, desde z = 13,5 | M3×10 cilíndrico + arandela Ø9 |
+| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 10 mm, desde z = 23,1 | M3×10 + arandela Ø9 |
+| Nano de prácticas | (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
+| Nano de mandos | (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
+| Buck, agujeros del módulo | (402,5, 127,5) y (416,5, 163,5), a 3,5 mm de la esquina [PENDIENTE] | Ø2,5 × 7 mm, desde la cara inferior (z = 7) hasta z = 0. No atraviesa el ala | M3×8. Atraviesa la PCB (1,6 mm) y rosca unos 6 mm |
+| Buck, las otras dos esquinas | (421,5, 121) y (397,5, 166). Esta última va en el canto −X: por detrás chocaría con el HDMI | Ø2,5 × 8 mm, desde z = 8,6 | M3×8 + arandela Ø9 |
+| Bandeja a la base | (318,26, 49), (436,26, 49), (318,26, 278,492), (436,26, 278,492) | Paso libre Ø3,4. No es guía | Los mismos M3 de la base ya impresa. El largo no se ha vuelto a elegir |
+
+Los postes M2.5 de la Pi no son la pisada: un M3 no entra en el agujero de 2,7 mm. Los dos tornillos delanteros de la Pi quedan a unos 1,2 mm de esos postes.
+
+Canales. Las paredes de los bolsillos hacen de canal. Siete puentes (dos postes y una barra a 4,2 mm del suelo, luz de unos 4 mm) sujetan el cable: entre prácticas y buck (x = 402 y 409), en el corredor entre el ESP y la columna derecha (y = 100 y 132), y en el canto derecho (x = 423,5, y = 148, 198 y 238), por fuera del sobremolde HDMI (acaba en x = 412).
+
+La proto 30 × 70 se queda sin puesto. La capturadora también: su nido (x = 390, y = 220) caía encima del Nano de mandos. `usar_nido_captura = false`. Dónde va el aparato es [PENDIENTE].
+
+`PROVISIONAL_bandeja_servicio`: 126,00 × 237,49 × 25,10 mm, 190,72 cm³, un solo sólido, malla cerrada, z de −2 a 23,1. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. `comprobar_interferencias.py` (2026-10-22): salida 0, 23 cajas, también con `carro_conjunto="nano_proto"` (ese par ya no cambia las cajas: no hay carros en el ensamblaje). El ESP queda a ≥ 5 mm de la tina, la clavija del Nano de prácticas a ≥ 8 mm del interior, la del Nano de mandos a ≥ 5 mm de una orejeta, la del RJ45 de la Pi a ≥ 1 mm. No es un montaje.
+
+No se han regenerado la carcasa, la tapa, los carros ni el retenedor. Esos cuatro STL siguen en el directorio y quedan **obsoletos**: no imprimir `PROVISIONAL_carro_nano`, `PROVISIONAL_carro_esp`, `PROVISIONAL_carro_proto30x70` ni `PROVISIONAL_retenedor_nano`.
+
+[PENDIENTE] de esta bandeja: el módulo real del step-down (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas, no el aparato de Miguel); el ESP de la foto (58 × 31, y si el micro-USB va centrado); cuántos milímetros del canto corto están libres de pines (el apoyo es de 2,0 mm); el largo real de las clavijas (mandos 22 mm, acaba en y = 289 y sale unos 15 mm del suelo de la bandeja; prácticas 12 mm, acaba en y = 54); el HAT; y dónde se guarda la capturadora. El agarre del autorroscante no se ha probado en una pieza.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 
