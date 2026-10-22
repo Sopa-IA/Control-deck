@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { Message } from '@shared/ts/protocol';
 import { OrbitProvider, useOrbit } from './data/OrbitContext';
 import { simulatedParts } from './data/state';
-import { Clock, OrbitLogo, SimBadge, StatusDot } from './components/ui';
+import { Marco } from './components/Marco';
+import { Clock, OrbitLogo, SimBadge, StatusDot, useIdleCursor } from './components/ui';
 import { ConfirmDialog, OsdHelp, PowerMenu } from './components/Dialogs';
 import { route } from './lib/controlRouter';
 import { SECTIONS, nextSection, type SectionId } from './sections';
@@ -19,6 +20,7 @@ function initialSection(): SectionId {
 }
 
 function Shell() {
+  useIdleCursor();
   const orbit = useOrbit();
   const { state, simulated } = orbit;
   const [section, setSection] = useState<SectionId>(initialSection);
@@ -55,6 +57,9 @@ function Shell() {
   }), [orbit]);
 
   const title = SECTIONS.find((s) => s.id === section)?.label ?? '';
+  const forzarMarco = new URLSearchParams(window.location.search).get('vista') === 'integrado';
+  const hpAbierto = state.visible?.system === 'hp';
+  if (forzarMarco || hpAbierto) return <Marco />;
   return (
     <div className="app" data-section={section}>
       <aside className="sidebar">
@@ -87,7 +92,7 @@ function Shell() {
           </div>
         </header>
         <main className="content">
-          {section === 'inicio' && <Inicio go={setSection} openOsd={() => setOsd(true)} openPower={() => setPower(true)} />}
+          {section === 'inicio' && <Inicio go={setSection} openPower={() => setPower(true)} />}
           {section === 'sistemas' && <Sistemas openOsd={() => setOsd(true)} />}
           {section === 'hardware' && <Hardware />}
           {section === 'controles' && <Controles />}

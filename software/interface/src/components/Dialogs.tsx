@@ -38,14 +38,15 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="osd-title" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2 id="osd-title">Cómo cambia Orbit de sistema</h2>
-        <p>El botón <b>Cambiar sistema visible</b> (B2 por defecto) lo hace todo desde Orbit OS; no hace falta tocar el menú del monitor.</p>
+        <h2 id="osd-title">Cómo se ve el HP</h2>
+        <p>La MSI muestra siempre la Pi. El botón <b>Cambiar sistema</b> (el B2 del Nano) abre Moonlight contra el HP en 10.0.0.1 y, si Moonlight ya está abierto, lo cierra y devuelve Orbit OS al frente.</p>
         <ol className="steps">
-          <li><b>Modo remoto</b> (base, siempre disponible): la pantalla muestra siempre la Pi y el escritorio del HP aparece en un visor (p. ej. Moonlight con Sunshine en el HP) por el cable Ethernet interno.</li>
-          <li><b>Modo capturadora</b> (recomendado junto al remoto): el HDMI del HP entra en una capturadora HDMI→USB conectada a la Pi y Orbit OS muestra su imagen a pantalla completa. La pantalla sigue siempre en la Pi; teclado y ratón van al HP por separado. Si la capturadora no está, Orbit vuelve solo al modo remoto.</li>
-          <li><b>Modo DDC/CI</b> (opcional, poco probable): si está configurado y el monitor lo acepta, la Pi cambia la entrada del MSI (HP por Mini-HDMI, Pi por USB-C con adaptador HDMI→USB-C). Los manuales del MSI no documentan DDC/CI. Si falla, Orbit pasa a la capturadora o al modo remoto.</li>
+          <li><b>Vista integrada</b> (la de por defecto): la barra de Orbit OS se queda arriba y Moonlight entra, sin bordes, en el hueco de 1920×1040 a 60 fps. El ratón pasa de la barra a Windows porque Moonlight no captura el puntero. El teclado va a Windows cuando esa ventana tiene el foco.</li>
+          <li><b>Pantalla completa</b>: el botón «Pantalla completa» o <b>Ctrl+Alt+Mayús+X</b> pasan a 1920×1080 a 60 fps. El mismo atajo vuelve a la vista integrada.</li>
+          <li><b>Salir de Moonlight:</b> otra vez el botón B2, el botón «Orbit OS», o <b>Ctrl+Alt+Mayús+Q</b> (atajo del propio Moonlight).</li>
         </ol>
-        <p className="muted">PENDIENTE de verificar: soporte DDC/CI del MSI MP161 E2U, adaptador HDMI→USB-C (DP Alt), latencia y fps de la capturadora (sin medir) y rendimiento del visor remoto en el HP (AMD A6-7310).</p>
+        <p className="callout">Si Moonlight y Sunshine aún no están emparejados, el escritorio del HP no se abre. Hay que emparejarlos una vez. Si Windows no tiene monitor, puede hacer falta un enchufe HDMI falso para que ofrezca 1920×1080; la vista integrada pide 1920×1040.</p>
+        <p className="muted">Moonlight es una aplicación nativa: no se puede meter dentro de la página. La integración es colocar esa ventana encima del marco. Sin probar en la Pi ni en el HP.</p>
         <div className="modal-actions"><button className="btn btn-primary" onClick={onClose} autoFocus>Entendido</button></div>
       </div>
     </div>

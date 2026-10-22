@@ -28,7 +28,7 @@ export function SystemCard({ host, onOpen }: { host: 'hp' | 'pi'; onOpen?: () =>
   );
 }
 
-export function Inicio({ go, openOsd, openPower }: { go: (s: SectionId) => void; openOsd: () => void; openPower: () => void }) {
+export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPower: () => void }) {
   const { state, requestAction } = useOrbit();
   const now = useNow(1000);
   const conn = state.conn;
@@ -52,7 +52,7 @@ export function Inicio({ go, openOsd, openPower }: { go: (s: SectionId) => void;
         </Panel>
         <Panel title="Acceso rápido">
           <div className="quick-grid">
-            <button className="quick" onClick={openOsd}><span className="qi">⇄</span>Cambiar sistema</button>
+            <button className="quick" onClick={() => requestAction('pi.switch_visible')}><span className="qi">⇄</span>Cambiar sistema</button>
             <button className="quick" onClick={() => requestAction('hp.volume_mute')}><span className="qi">♪</span>Silenciar HP</button>
             <button className="quick" onClick={() => requestAction('hp.lock_screen')}><span className="qi">⌧</span>Bloquear HP</button>
             <button className="quick" onClick={() => go('controles')}><span className="qi">◎</span>Controles</button>
@@ -79,7 +79,7 @@ export function Inicio({ go, openOsd, openPower }: { go: (s: SectionId) => void;
             <li><StatusDot ok={conn === 'conectado'} sim={state.source === 'sim'} /> Orbit hub <span>{state.source === 'sim' ? 'simulador local' : conn}</span></li>
             <li><StatusDot ok={state.nodes.hp?.connected} sim={state.nodes.hp?.simulated} /> Enlace HP <span>{state.nodes.hp?.detail ?? '—'}</span></li>
             <li><StatusDot ok={state.nodes.arduino?.connected} sim={state.nodes.arduino?.simulated} /> Controles <span>{state.nodes.arduino?.connected ? 'Arduino Nano' : (state.nodes.arduino?.detail ?? '—')}</span></li>
-            <li><StatusDot ok={null} /> Vídeo MSI <span>entrada: desconocida (OSD)</span></li>
+            <li><StatusDot ok={state.visible?.pairing === 'hecho'} /> Vídeo <span>{state.visible?.pairing === 'hecho' ? 'MSI en la Pi · Moonlight listo' : 'MSI en la Pi · sin emparejar'}</span></li>
           </ul>
         </Panel>
       </div>

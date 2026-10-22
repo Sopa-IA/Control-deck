@@ -77,11 +77,24 @@
         "video_input": { "enum": ["hp", "pi", "desconocida"], "description": "Entrada física activa de la MSI: 'pi' en modos remoto y captura (la MSI muestra siempre la Pi); en modo ddc, la última fijada por DDC/CI; 'desconocida' si no se sabe." },
         "visible": {
           "type": "object", "required": ["system", "mode"], "additionalProperties": false,
-          "description": "Sistema que el usuario ve y cómo se consigue. remoto = escritorio del HP en un visor de la Pi (modo A); ddc = entrada de la MSI cambiada por DDC/CI (modo B); captura = imagen del HDMI del HP por una capturadora HDMI->USB (UVC) en la Pi (modo C).",
+          "description": "Sistema que el usuario ve. remoto = Moonlight contra Sunshine en el HP (vista integrada por defecto, o pantalla completa). ddc y captura siguen en el código si se configuran; no son el montaje de la Pi.",
           "properties": {
             "system": { "enum": ["hp", "pi"] },
             "mode": { "enum": ["remoto", "ddc", "captura"] },
-            "detail": { "type": "string", "maxLength": 200 }
+            "detail": { "type": "string", "maxLength": 200 },
+            "pairing": { "enum": ["pendiente", "hecho"], "description": "Emparejamiento de Moonlight con Sunshine en el HP. Solo en modo remoto." },
+            "layout": { "enum": ["integrado", "completa"], "description": "integrado = ventana sin bordes en el hueco del marco; completa = 1920×1080 a pantalla completa." },
+            "sidebar": { "enum": ["cerrado", "abierto"] },
+            "hole": {
+              "type": "object", "additionalProperties": false, "required": ["x", "y", "w", "h"],
+              "description": "Hueco en píxeles donde labwc coloca Moonlight en vista integrada.",
+              "properties": {
+                "x": { "type": "integer", "minimum": 0 },
+                "y": { "type": "integer", "minimum": 0 },
+                "w": { "type": "integer", "minimum": 1 },
+                "h": { "type": "integer", "minimum": 1 }
+              }
+            }
           }
         }
       }

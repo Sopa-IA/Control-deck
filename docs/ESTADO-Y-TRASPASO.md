@@ -21,7 +21,9 @@ Dentro de la cuña conviven:
 - un **ESP8266** previsto para la tira LED, y un **segundo Nano** de prácticas con pines y una OLED en la trasera (el segundo Nano no consta en la foto: **PENDIENTE** de tenerlo);
 - luces ámbar.
 
-**Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente. En los modos A y C la MSI se queda en la entrada de la Pi.
+**Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
+
+Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es solo Moonlight: la MSI va a la Pi y el HP se ve por el Ethernet interno. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
 
 Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
 
@@ -36,7 +38,8 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `docs/ESTADO-Y-TRASPASO.md` | Este archivo. |
 | `docs/decisiones-prototipo.md` | Decisiones del 2026-10-18. El disco ya no es el SSD recomendado: ver la nota del 2026-10-20 en esa tabla. |
 | `docs/diseno-mecanico.md` | Diseño v1 + HP v3. **Varios párrafos siguen hablando del SSD 2,5".** La geometría vigente está en `params.scad`, no en ese texto. |
-| `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). |
+| `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). El montaje de la Pi es el de `instalacion-pi.md`. |
+| `docs/instalacion-pi.md` | Arranque directo a Orbit OS, kiosco, Moonlight y el marco integrado. |
 | `docs/datos-pendientes-hp.md` | Ficha del HP, fuentes y lista H-1…H-12. Parte de H-2 y H-8 ha avanzado; el archivo no se ha reescrito entero. |
 | `docs/informe-fase1.md`, `pantallas.md`, `controles.md`, `raspberry-pi.md`, `alimentacion-preliminar.md`, `incertidumbres-hardware.md` | Investigación de la fase 1. Prevalecen las decisiones del prototipo cuando no coinciden. |
 | `hardware/cad/params.scad` | Todas las cotas, con etiqueta de origen. |
@@ -235,7 +238,7 @@ Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla 
 
 **Manual vigente:** [`docs/manual_montaje/Orbit_manual_montaje.pdf`](manual_montaje/Orbit_manual_montaje.pdf), generado desde el CAD de esta rama. Va por subpasos, con la pieza de cada kit en cada unión. La fuente del inventario es el repo `inventario-taller` (`tornilleria/inventario.csv`); este cambio no escribe ahí. Incluye el botón de encendido provisional y el corte de los pines bajo la PCB: 51 subpasos, 31 páginas. `carcasa_x0_y1` no se regenera. Las figuras las regenera `hardware/cad/manual/render_manual.py` y el PDF `hardware/cad/manual/escribir_manual.py`. Sigue siendo provisional: los tornillos están elegidos y no probados en el plástico, salvo el M3 con el que ya se cerró la carcasa. El PDF antiguo [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf) (21 páginas) **no se ha regenerado** y no incluye el Nano, el panel ni la bandeja de huecos.
 
-**Renders y capturas.** `hardware/render/escena_blender.py` sigue dibujando el Arduino Micro. No se ha vuelto a lanzar Blender. Las capturas de `assets/screenshots/` son de antes de cambiar los textos de la interfaz. Las dos cosas quedan desfasadas.
+**Renders y capturas.** `hardware/render/escena_blender.py` sigue dibujando el Arduino Micro. No se ha vuelto a lanzar Blender. Las capturas de `assets/screenshots/` incluyen la vista integrada simulada (la zona del HP no es Windows).
 
 **Tamaño.** No hay `.gitattributes`. El STEP mayor mide 3,6 MB (`06_PROVISIONAL_carcasa_x1_y1.step`). `hardware/impresion/siguientes/` pesa unos 15 MB. Por debajo del aviso de GitHub (50 MB por archivo) y del rechazo (100 MB). No hace falta Git LFS.
 

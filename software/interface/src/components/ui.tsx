@@ -2,6 +2,25 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { clamp, formatClock } from '../lib/format';
 import { ESTADO_LABEL, type Estado } from '../lib/hardware';
 
+/** Oculta el cursor tras unos segundos sin movimiento. Vuelve al mover el ratón. */
+export function useIdleCursor(ms = 2000) {
+  useEffect(() => {
+    let t = 0;
+    const show = () => {
+      document.documentElement.classList.remove('cursor-idle');
+      window.clearTimeout(t);
+      t = window.setTimeout(() => document.documentElement.classList.add('cursor-idle'), ms);
+    };
+    show();
+    window.addEventListener('mousemove', show);
+    return () => {
+      window.removeEventListener('mousemove', show);
+      window.clearTimeout(t);
+      document.documentElement.classList.remove('cursor-idle');
+    };
+  }, [ms]);
+}
+
 export function useNow(periodMs = 1000): Date {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), periodMs); return () => clearInterval(t); }, [periodMs]);

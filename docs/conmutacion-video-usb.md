@@ -5,6 +5,8 @@
 
 ## V. Plan vigente: la Pi lo controla todo, cambio automático desde Orbit OS
 
+**Montaje del 2026-10-22.** Lo que se instala en la Pi está en [`instalacion-pi.md`](instalacion-pi.md): la MSI va solo a la Pi y el HP se ve con Moonlight. Este archivo conserva los modos A, B y C. La capturadora y el cambio de entrada no forman parte de ese montaje.
+
 **Requisito de Miguel (el más importante):** la Pi lo controla todo y el cambio entre la Pi y el HP es **automático, desde Orbit OS**. Miguel **nunca** toca el menú OSD de la MSI. El HP y la Pi funcionan **a la vez y de forma independiente** (el HP con su Windows 10 Home); cambiar de sistema visible no reinicia ni apaga nada.
 
 ### V.1 Datos de partida (verificados o pendientes)

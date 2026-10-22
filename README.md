@@ -19,10 +19,10 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 - **Solo piezas que Miguel ya tiene.**
 - **Pantalla:** MSI PRO MP161 E2U 15,6", 1920×1080, **no táctil**. Se usa con ratón y controles; la interfaz sigue preparada para táctil.
 - **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
-- **Vídeo: la Pi lo controla todo y el cambio HP ↔ Pi es automático desde Orbit OS** (Miguel nunca toca el OSD de la MSI). La MSI muestra siempre la Pi y el HP sigue funcionando por su cuenta con su Windows. **Modo C (recomendado, imagen real del HP):** el HDMI del HP entra en una **capturadora HDMI→USB** conectada a la Pi y Orbit OS muestra su imagen (latencia y fps sin medir; teclado y ratón al HP aparte). **Modo A (recomendado, sin compras):** el escritorio del HP se ve en un visor (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. **Modo B (poco probable):** Pi → adaptador HDMI→USB-C → USB-C y cambio de entrada por DDC/CI, que los manuales de la MSI no documentan. El botón "Cambiar sistema visible" usa el modo disponible.
+- **Vídeo:** la MSI va solo a la Pi (micro-HDMI a mini-HDMI). El HP se ve con Moonlight contra Sunshine en `10.0.0.1`. La vista por defecto es integrada (barra de Orbit OS y Moonlight sin bordes en el hueco). La pantalla completa es la alternativa. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md). Sin probar en la Pi.
 - **Controles:** potenciómetros y botones leídos por un **Arduino Nano** (clon ATmega328P, mini-USB). Sustituye al Micro: el Nano no tiene USB nativo y no puede hacer de teclado HID.
-- **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. El Uno de la foto no se monta (no cabe bien junto al ESP y la capturadora). Va en un carro intercambiable. Detalle en [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
-- **ESP8266 NodeMCU** en otro carro del mismo riel, previsto para la tira LED con WLED. La tira sigue sin identificar. El riel se atornilla a las dos torretas que ya están a la izquierda de la canaleta; la bandeja no se reimprime.
+- **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. Miguel tiene 4 OLED; Orbit usa una. El Uno de la foto no se monta: se había pensado para la capturadora, y esa vía no se usa. Detalle en [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
+- **ESP8266 NodeMCU** en su hueco de la bandeja, previsto para la tira LED con WLED. La tira sigue sin identificar.
 - **Raspberry Pi 4** con HAT VHF (OLED y antena SMA). Medidas del HAT: pendientes. Si el HAT no deja pasar el GPIO, el conector de la Pi en el panel queda sin cablear.
 
 ## Estructura
@@ -64,12 +64,7 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
 ### Con los equipos reales (pendiente de validar)
 
 1. **Token:** `./scripts/gen-token.sh` lo guarda en `.env` (ignorado por git). Hay que copiarlo al HP por un canal seguro.
-2. **Raspberry Pi:**
-   ```bash
-   set -a; . ./.env; set +a
-   python -m orbitd --host 0.0.0.0 --serial /dev/ttyUSB0 --static software/interface/dist
-   ```
-   Fuera de localhost exige `ORBIT_HP_TOKEN` y `ORBIT_UI_TOKEN`. Después se abre Chromium en modo kiosco en `http://127.0.0.1:8765/`.
+2. **Raspberry Pi:** en la Pi, con Wi-Fi, `sudo bash scripts/instalar-pi.sh` y reinicia. El detalle, el emparejamiento y cómo salir del kiosco están en [`docs/instalacion-pi.md`](docs/instalacion-pi.md).
 3. **HP:**
    ```bash
    pip install -e software/shared/python -e software/hp-agent

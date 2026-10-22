@@ -22,6 +22,13 @@ from .video import VideoConfig, VideoSwitcher
 log = logging.getLogger("orbitd")
 
 
+def is_loopback(host: str | None) -> bool:
+    if not host:
+        return False
+    h = host.split("%", 1)[0]
+    return h in {"127.0.0.1", "::1", "localhost"} or h.startswith("::ffff:127.")
+
+
 @dataclass
 class Config:
     host: str = "127.0.0.1"
@@ -70,6 +77,7 @@ class Hub:
         self.pending_results: dict[str, Client] = {}
         self.mapping = self._load_mapping()
         self.video = VideoSwitcher(cfg.video)
+        self.video.on_exit = self._video_exited
         self._last_volume_sent = 0.0
         self._volume_pending: Optional[int] = None
         self._tasks: list[asyncio.Task] = []
@@ -166,7 +174,8 @@ class Hub:
                     raise P.ProtocolError("auth_failed", "orbitd sin ORBIT_HP_TOKEN configurado: no acepta hp-agent")
                 if not P.tokens_equal(token, self.cfg.hp_token):
                     raise P.ProtocolError("auth_failed", "token incorrecto")
-            elif self.cfg.ui_token and not P.tokens_equal(token, self.cfg.ui_token):
+            elif (role == "ui" and self.cfg.ui_token and not is_loopback(request.remote)
+                  and not P.tokens_equal(token, self.cfg.ui_token)):
                 raise P.ProtocolError("auth_failed", "token de interfaz incorrecto")
         except P.ProtocolError as exc:
             log.warning("conexión rechazada: %s", exc.message)
@@ -290,6 +299,12 @@ class Hub:
         elif action == "pi.switch_visible":
             res = await self.video.switch()
             await self.broadcast_ui("state", self.state_payload())
+        elif action == "pi.stream_layout":
+            res = await self.video.set_layout(str(params.get("layout", "")))
+            await self.broadcast_ui("state", self.state_payload())
+        elif action == "pi.marco_sidebar":
+            res = await self.video.set_sidebar(params.get("sidebar") == "abierto")
+            await self.broadcast_ui("state", self.state_payload())
         else:
             res = self._pi_action(action, params, spec)
         if c is not None:
@@ -374,6 +389,9 @@ class Hub:
             for line in self.sim_controls.step():
                 await self.on_serial_line(line, simulated=True)
 
+    async def _video_exited(self) -> None:
+        await self.broadcast_ui("state", self.state_payload())
+
     async def start(self, app: web.Application) -> None:
         loop = asyncio.get_event_loop()
         self._tasks = [loop.create_task(self._heartbeat_loop()), loop.create_task(self._telemetry_loop()),
@@ -410,6 +428,38 @@ def build_app(cfg: Config) -> web.Application:
         return web.json_response({"ok": True, "version": __version__, "mode": hub.mode})
 
     app.router.add_get("/api/health", health)
+
+    def _local(request: web.Request) -> bool:
+        return is_loopback(request.remote)
+
+    async def local_layout(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        res = await hub.video.toggle_layout()
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    async def local_sidebar(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        try:
+            body = await request.json()
+        except json.JSONDecodeError:
+            body = {}
+        res = await hub.video.set_sidebar(body.get("sidebar") == "abierto")
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    async def local_switch(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        res = await hub.video.switch()
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    app.router.add_post("/api/local/layout", local_layout)
+    app.router.add_post("/api/local/sidebar", local_sidebar)
+    app.router.add_post("/api/local/switch", local_switch)
     if cfg.static_dir and (cfg.static_dir / "index.html").exists():
         index = cfg.static_dir / "index.html"
 

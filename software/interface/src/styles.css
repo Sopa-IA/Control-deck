@@ -8,6 +8,7 @@
   --touch: 56px;
 }
 * { box-sizing: border-box; }
+html.cursor-idle, html.cursor-idle * { cursor: none !important; }
 html, body, #root { height: 100%; margin: 0; }
 body {
   background: radial-gradient(1200px 700px at 58% 40%, #1a1008 0%, #0a0909 45%, var(--bg) 100%);
@@ -179,6 +180,25 @@ table.inv { width: 100%; border-collapse: collapse; font-size: 15px; }
 .modal h2 { margin: 0 0 12px; font-weight: 500; letter-spacing: 0.06em; color: #ffe2b8; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 .steps { line-height: 1.7; }
+.callout { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 90, 60, 0.55); background: rgba(255, 90, 60, 0.1); color: #ffd0c4; }
+
+.marco { position: fixed; inset: 0; background: #07070a; color: var(--text); z-index: 5; }
+.marco-bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #0c0b10; border-bottom: 1px solid rgba(255, 165, 58, 0.35); overflow: hidden; }
+.marco-clock { font-family: var(--mono); font-weight: 500; color: #ffe2b8; font-size: 13px; }
+.marco-stat { font-size: 12px; color: #d9d0c4; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.marco-vol { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
+.marco-vol input { width: 72px; accent-color: var(--amber); }
+.marco-gap { flex: 1; }
+.marco-simtag { font-size: 10px; letter-spacing: 0.12em; color: #1a0d00; background: var(--sim); border-radius: 6px; padding: 2px 5px; }
+.marco-btn { height: 28px; min-height: 28px; padding: 0 8px; border-radius: 8px; border: 1px solid rgba(255, 165, 58, 0.35); background: transparent; color: #ffe2b8; font-size: 12px; cursor: pointer; }
+.marco-btn-amber { background: linear-gradient(180deg, #ffb347, #ff8a00); color: #1a0d00; border: none; font-weight: 600; }
+.marco-side { position: absolute; top: 40px; left: 0; bottom: 0; width: 48px; display: flex; flex-direction: column; gap: 8px; align-items: center; padding-top: 8px; background: #0c0b10; border-right: 1px solid rgba(255, 165, 58, 0.35); z-index: 2; }
+.marco-hueco { position: absolute; overflow: hidden; }
+.marco-fake { height: 100%; display: grid; place-content: center; gap: 8px; padding: 28px; text-align: center;
+  background: repeating-linear-gradient(-45deg, #120e09, #120e09 14px, #1a140c 14px, #1a140c 28px); border: 1px dashed rgba(255, 165, 58, 0.45); }
+.marco-fake b { letter-spacing: 0.14em; color: #ffe2b8; }
+.marco-fake p { margin: 0; max-width: 640px; color: #d9d0c4; }
+.marco-warn { color: #ffd0c4 !important; }
 .dimmer { position: fixed; inset: 0; background: #000; pointer-events: none; z-index: 30; transition: opacity 0.3s; }
 
 /* ---------- 1920×720 (pantalla panorámica baja) ---------- */

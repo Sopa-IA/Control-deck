@@ -127,6 +127,99 @@ def test_captura_visor_inexistente_vuelve_a_remoto(monkeypatch):
     assert sw._viewer is None
 
 
+def test_hueco_integrado_y_barra():
+    from orbitd.video import marco_hole
+    assert marco_hole(False) == (0, 40, 1920, 1040)
+    assert marco_hole(True) == (48, 40, 1872, 1040)
+
+
+def test_argv_integrado_1080p60_y_completa():
+    sw = VideoSwitcher(VideoConfig(moonlight_bin="moonlight-qt", hp_host="10.0.0.1", moonlight_app="Desktop"))
+    argv = sw.stream_argv()
+    assert argv[:4] == ["moonlight-qt", "stream", "10.0.0.1", "Desktop"]
+    assert argv[argv.index("--fps") + 1] == "60"
+    assert "--absolute-mouse" in argv and "--no-game-optimization" in argv
+    assert argv[argv.index("--display-mode") + 1] == "windowed"
+    assert argv[argv.index("--resolution") + 1] == "1920x1040"
+    sw.layout = "completa"
+    completa = sw.stream_argv()
+    assert completa[completa.index("--display-mode") + 1] == "fullscreen"
+    assert "--1080" in completa and "--resolution" not in completa
+    assert completa[completa.index("--fps") + 1] == "60"
+
+
+def test_sin_emparejar_no_abre_moonlight(monkeypatch, tmp_path):
+    monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(tmp_path / "no.conf"))
+    sw = VideoSwitcher(VideoConfig(moonlight_bin="moonlight-qt", hp_host="10.0.0.1"))
+    r = run(sw.switch("hp"))
+    assert r["ok"] and r["dry_run"] and sw.visible == "pi" and sw._viewer is None
+    assert "emparejado" in r["message"]
+    assert sw.state()["pairing"] == "pendiente" and sw.state()["layout"] == "integrado"
+
+
+def test_emparejado_abre_y_el_boton_cierra(monkeypatch, tmp_path):
+    conf = tmp_path / "Moonlight.conf"
+    conf.write_text("[computers]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
+    monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(conf))
+    sw = VideoSwitcher(VideoConfig(moonlight_bin=sys.executable, hp_host="10.0.0.1", moonlight_app="Desktop"))
+    # El binario de prueba no se llama moonlight: la orden fija evita el emparejamiento.
+    sw.cfg.moonlight_bin = ""
+    sw.cfg.remote_cmd = [sys.executable, "-c", "import time; time.sleep(30)"]
+
+    async def go():
+        r1 = await sw.switch("hp")
+        proc = sw._viewer
+        r2 = await sw.switch("pi")
+        return r1, proc, r2
+    r1, proc, r2 = run(go())
+    assert r1["ok"] and not r1["dry_run"] and proc is not None and proc.returncode is not None
+    assert r2["ok"] and sw.visible == "pi" and "Orbit OS" in r2["message"]
+
+
+def test_al_cerrar_moonlight_vuelve_a_orbit(monkeypatch, tmp_path):
+    conf = tmp_path / "Moonlight.conf"
+    conf.write_text("[computers]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
+    monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(conf))
+    assert VideoSwitcher(VideoConfig(moonlight_bin="moonlight-qt", hp_host="10.0.0.1")).is_paired()
+    sw = VideoSwitcher(VideoConfig(remote_cmd=[sys.executable, "-c", ""], hp_host="10.0.0.1"))
+
+    async def go():
+        r = await sw.switch("hp")
+        if sw._watch is not None:
+            await asyncio.wait_for(sw._watch, 2)
+        return r
+    r = run(go())
+    assert r["ok"] and sw.visible == "pi"
+    assert "Orbit OS" in sw.detail
+
+
+def test_regla_labwc_posicion_y_sin_bordes(tmp_path):
+    from orbitd.video import labwc_rc_text, write_labwc_rc
+    text = labwc_rc_text("integrado", False)
+    assert 'identifier="*moonlight*"' in text
+    assert "<serverDecoration>no</serverDecoration>" in text
+    assert 'name="MoveTo" x="0" y="40"' in text
+    assert 'name="ResizeTo" width="1920" height="1040"' in text
+    assert 'name="ToggleAlwaysOnTop"' in text
+    assert 'key="C-A-S-x"' in text
+    assert "orbit-atajo layout" in text
+    completa = labwc_rc_text("completa", False)
+    assert "MoveTo" not in completa
+    path = tmp_path / "rc.xml"
+    path.write_text("<labwc_config></labwc_config>", encoding="utf-8")
+    write_labwc_rc(path, "integrado", True)
+    written = path.read_text(encoding="utf-8")
+    assert 'width="1872"' in written and 'x="48"' in written
+    assert (tmp_path / "rc.xml.orbit-bak").exists()
+
+
+def test_parser_emparejamiento():
+    from orbitd.video import conf_paired_with
+    assert conf_paired_with("1\\manualAddress=10.0.0.1\n1\\pairState=1\n", "10.0.0.1")
+    assert not conf_paired_with("1\\manualAddress=10.0.0.1\n1\\pairState=0\n", "10.0.0.1")
+    assert not conf_paired_with("1\\manualAddress=10.0.0.9\n1\\pairState=1\n", "10.0.0.1")
+
+
 def test_ddc_falla_usa_captura(monkeypatch):
     monkeypatch.setattr("orbitd.video.shutil.which", lambda _: "/usr/bin/ddcutil")
     monkeypatch.setattr("orbitd.video.os.path.exists", lambda p: True)

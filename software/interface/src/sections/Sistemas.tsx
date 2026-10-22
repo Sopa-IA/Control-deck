@@ -41,16 +41,22 @@ export function Sistemas({ openOsd }: { openOsd: () => void }) {
     <div className="sistemas">
       <div className="col"><SystemCard host="hp" /><Detail host="hp" /></div>
       <div className="col"><SystemCard host="pi" /><Detail host="pi" /></div>
-      <Panel title="Pantalla compartida" className="span-2">
-        <p>Orbit OS cambia de sistema por ti; nunca hace falta tocar el menú del <b>MSI PRO MP161 E2U</b>.
-          Modo <b>remoto</b> (base): el escritorio del HP se ve en un visor de la Pi por el Ethernet interno.
-          Modo <b>capturadora</b> (recomendado): el HDMI del HP entra en una capturadora USB de la Pi y Orbit OS muestra su imagen (latencia sin medir).
-          Modo <b>DDC/CI</b> (poco probable): la Pi cambia la entrada del monitor (sin documentar en los manuales de la MSI; sin verificar).</p>
+      <Panel title="Pantalla" className="span-2">
+        <p>La MSI va solo a la Pi, por el cable micro-HDMI a mini-HDMI. El HP no entra en el monitor: se ve con <b>Moonlight</b> contra Sunshine en <b>10.0.0.1</b>, por el Ethernet interno.</p>
+        <p>La vista por defecto es la <b>integrada</b>: Orbit OS se queda de fondo con una barra de 40 px y Moonlight ocupa el hueco
+          {visible?.hole ? <> ({visible.hole.w}×{visible.hole.h})</> : null}, sin bordes.
+          La pantalla completa (1920×1080 a 60 fps) es la alternativa.</p>
+        {visible?.pairing !== 'hecho' && (
+          <p className="callout">El emparejamiento de Moonlight con Sunshine aún no se ha hecho. Hasta hacerlo, Cambiar sistema no abre el escritorio del HP.</p>
+        )}
         <p>Visible ahora: <b>{visible ? (visible.system === 'hp' ? 'HP' : 'Raspberry Pi (Orbit OS)') : 'desconocido'}</b>
-          {visible ? <> · modo <b>{videoModeLabel(visible.mode)}</b></> : null}
+          {visible ? <> · <b>{videoModeLabel(visible.mode)}</b>{visible.layout ? <> · vista <b>{visible.layout === 'integrado' ? 'integrada' : 'completa'}</b></> : null}</> : null}
           {visible?.detail ? <span className="muted"> · {visible.detail}</span> : null}</p>
         <div className="row-actions">
-          <button className="btn btn-primary" onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema visible</button>
+          <button className="btn btn-primary" onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema</button>
+          <button className="btn" onClick={() => requestAction('pi.stream_layout', { layout: visible?.layout === 'completa' ? 'integrado' : 'completa' })}>
+            {visible?.layout === 'completa' ? 'Vista integrada' : 'Pantalla completa'}
+          </button>
           <button className="btn" onClick={openOsd}>Cómo funciona</button>
         </div>
       </Panel>
