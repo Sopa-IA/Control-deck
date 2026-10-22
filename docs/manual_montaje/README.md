@@ -2,32 +2,71 @@
 
 Un subpaso, una acción, una figura. La pieza que se añade va en naranja y lo ya montado en gris. El número marca el agujero. La silueta del tornillo, a escala 1:1, está en el PDF.
 
-Los tornillos están elegidos a partir del espesor del CAD y **no se han probado** en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El largo ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.
+Lo que sale de cada kit está contado contra el bote, **sin repuesto**. No se ha apretado en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.
 
 Fecha del CAD: 2026-10-22. No es un montaje probado.
 
-## Lista de la compra
+## Qué sale de cada kit
 
-La cantidad incluye un 10 % de repuesto, redondeado hacia arriba. El recuento de cada paso suma la cantidad **sin** repuesto.
+Fuente del inventario: [inventario-taller](https://github.com/Sopa-IA/inventario-taller), archivo `tornilleria/inventario.csv`. Este manual no escribe en ese repo. Las reservas van en `consumo.md`, cuando Miguel las apunte con estas cuentas.
 
-| Tornillo | En el aparato | Compras | Para qué | Estado |
+El CSV no se ha podido leer desde aquí (el acceso al repo privado devolvió 404). Las existencias de la tabla son las de los tres kits, tal como están en el encargo. Conviene contrastarlas con el CSV al escribir `consumo.md`.
+
+JINZEYOU 840: cabeza de botón ISO 7380, acero negro, Allen. El largo es **bajo la cabeza**.
+
+wugongshan 860: avellanado Phillips. El largo **incluye la cabeza**.
+
+Insertos de latón 360. La cota es largo × Ø exterior. El agujero Ø4,0 (M3, OD 5) y el Ø3,0 (M2.5, OD 3,5) son fallback, sin ficha del fabricante y sin probar.
+
+| Pieza | En el aparato | En el kit | Para qué | Estado |
 |---|---:|---:|---|---|
-| M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza | 21 | 24 | 9 pasadores, 8 pletinas, 4 de la bandeja | Elegido, sin probar. En los pasadores Miguel ya cerró con un M3; este largo llena el agujero de 16 mm. |
-| Tuerca M3 DIN 934 | 12 | 14 | 8 pletinas y 4 de la bandeja | Elegida, sin probar. |
-| M3×10 avellanado DIN 965, Phillips PH1 | 3 | 4 | 3 orejetas de la carcasa nueva | Elegido, sin probar. La guía es Ø2,5. |
-| Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2 | 26 | 29 | 10 orejetas ya impresas, 4 del soporte del disco, 12 del bisel | Elegido, sin probar. El paso impreso es Ø3,4: se abre a Ø4,6 antes de meterlo. |
-| M3×6 cilíndrico, Phillips PH1 (tornillo de placa base) | 4 | 5 | Placa HP, en sus cuatro separadores | Elegido, sin probar. El agujero impreso es Ø4. |
-| M3×10 cilíndrico, Phillips PH1 | 18 | 20 | 16 presillas de placas y 2 de la tapa | Elegido, sin probar. Guía Ø2,5. |
-| Arandela ancha M3 Ø9, DIN 9021 | 18 | 20 | 16 presillas de placas y 2 bridas del step-down | Elegida, sin probar. |
-| M3×8 cilíndrico, Phillips PH1 | 4 | 5 | Step-down: 2 que lo atraviesan y 2 que lo pisan | Elegido, sin probar. |
-| Prisionero M3×16 DIN 916 (Allen 1,5 mm) | 2 | 3 | Los dos pomos | Elegido, sin probar. |
-| 6-32 UNC × 1/4" (6,4 mm), Phillips PH2 | 4 | 5 | Disco Toshiba de 3,5", por debajo | Tornillo de disco. Elegido, sin probar. No es M3. |
+| M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840 | 17 | 20 | 9 pasadores (ya puestos) y 8 pletinas | Del kit. Sin probar, salvo el M3 con el que ya se cerró la carcasa. |
+| Tuerca M3, del kit JINZEYOU | 8 | 100 | 8 pletinas, por debajo | Del kit. Sin probar. |
+| M3×8 avellanado negro, Phillips, wugongshan 860 | 29 | 40 | 13 orejetas, 4 del disco y 12 del bisel | Del kit. El largo incluye la cabeza. Sin probar. |
+| M3×6 avellanado negro, Phillips, wugongshan 860 | 4 | 40 | Placa HP, sobre los separadores | Del kit. Sin probar. La cabeza apoya en la PCB. |
+| M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840 | 10 | 30 | 4 del step-down, 4 de la bandeja a la base y 2 de la tapa | Del kit. Largo bajo la cabeza. Sin probar. |
+| M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840 | 14 | 30 | 12 grapas de ESP y Nanos, y 2 pomos | Del kit. Largo bajo la cabeza. Sin probar. |
+| M2.5×8 cabeza de botón, Allen 1,5 mm, JINZEYOU 840 | 4 | 40 | Los cuatro agujeros reales de la Pi | Del kit. Largo bajo la cabeza. Sin probar. |
+| Inserto de latón M3, 5×5 mm (largo × Ø exterior) | 26 | 30 | 10 orejetas, 12 postes del bisel y 4 del soporte del disco | Kit de latón 360. Agujero Ø4,0, sin ficha y sin probar. |
+| Inserto de latón M3, 4×5 mm | 6 | 30 | 4 separadores HP y 2 pomos | Kit de latón 360. Agujero Ø4,0, sin probar. El 5×5 no cabe en el separador. |
+| Inserto de latón M3, 6×5 mm | 4 | 30 | 4 torretas de la bandeja | Kit de latón 360. Agujero Ø4,0, sin probar. |
+| Inserto de latón M2.5, 4×3,5 mm | 4 | 40 | 4 postes de la Pi | Kit de latón 360. Agujero Ø3,0, sin ficha y sin probar. |
 
-Herramienta: destornillador Phillips PH1 (todos los M3 de cabeza cruciforme), Phillips PH2 (los Ø4,5 y los 6-32), llave Allen de 1,5 mm, broca de Ø3,4 mm y broca de Ø4,6 mm.
+| FALTA: comprar | Cantidad | En el kit | Para qué | Estado |
+|---|---:|---:|---|---|
+| 6-32 UNC × 1/4" (6,4 mm), Phillips PH2 | 4 | 0 | Disco Toshiba de 3,5", por debajo | No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí. |
+
+El plan B del botón, si la cola no aguanta, son 2× M2×3 de cabeza plana (wugongshan, plata). No entran en la cuenta. El bote trae 50.
+
+Quedan sin usar, entre otros: el resto de M2, M2.5 y M4–M6, los insertos 1/4-20, y los avellanados M3×4 y M3×5. No se reservan.
+
+Herramienta: Allen de 2 mm (M3 de botón), Allen de 1,5 mm (M2.5 de botón), Phillips del kit wugongshan, Phillips PH2 para los 6-32, soldador para los insertos, broca de Ø4,0 mm, broca de Ø3,0 mm y broca de Ø2,5 mm. El plan B del botón pide además una broca de Ø1,6 mm.
+
+## Adaptar lo ya impreso
+
+No se reimprime la base, ni las tres carcasas viejas, ni `carcasa_x1_y1` (se está imprimiendo), ni la placa I/O, ni el botón de prueba, ni los carros. El inserto de la orejeta va en la orejeta. No abras el suelo a Ø4.
+
+| Pieza | Qué hacer | Broca | Tornillo o inserto |
+|---|---|---|---|
+| Pasadores, 9 | Si ya está cerrada, salta el paso 2. Esos nueve M3×16 se cuentan como gastados. | Nada | M3×16 botón |
+| Pletinas, 8 | Tornillo desde arriba, tuerca debajo. | Nada | M3×16 botón + tuerca M3 |
+| Diez orejetas ya impresas | Inserto en el agujero Ø4 × 5,7 de la orejeta. El suelo se queda en Ø3,4, que ya deja pasar un M3. | Nada. Si el Ø4 se abrió a Ø4,6, el inserto no agarra. | M3 5×5 y M3×8 avellanado |
+| Tres orejetas de x1_y1 | No toques el STL. Guía Ø2,5 × 9 mm. | Nada | M3×8 avellanado, sin inserto |
+| Soporte del disco | El agujero ya es Ø4. El STL no cambia. Duda de si ya está impreso. | Nada | M3 5×5 y M3×8 avellanado |
+| Separadores HP | Agujero Ø4 × 6,2 en la base impresa. Un 6×5 no cabe. | Nada | M3 4×5 y M3×6 avellanado |
+| Bisel, 12 | El inserto va en el poste de la carcasa. El bisel ya tiene paso y avellanado. | No abras a Ø4,6 | M3 5×5 y M3×8 avellanado |
+| Torretas de la bandeja, 4 | Abre el techo macizo a Ø4,0. Si ya está a Ø3,4, ábrelo a Ø4,0. | Ø4,0 | M3 6×5 y M3×8 botón. No otro M3×16 |
+| Bandeja, ESP y dos Nano | Si ya está impresa, alarga cada guía Ø2,5 de 10 mm en 3 mm. | Ø2,5 | M3×12 botón + grapa de 1,6 mm |
+| Bandeja, Pi | Si ya está impresa, abre el Ø2,7 a Ø3,0 en los 7 mm de arriba. | Ø3,0 | M2.5 4×3,5 y M2.5×8 botón |
+| Pomos | Si el impreso solo tiene el radial Ø2,5, reimprime. | Nada | M3 4×5 y M3×12 botón |
+| Tapa de la Pi | El STL no cambia. Los postes están en x1_y1. | Nada | M3×8 botón |
+| Disco Toshiba | La rosca del disco es 6-32. | Nada | FALTA: 4× 6-32 UNC × 1/4" |
+
+Los capuchones de punta que ya cubren un M3 siguen valiendo en las pletinas: el tornillo sigue siendo M3 y asoman unos 4 mm bajo la tuerca. Los cuatro de la bandeja no salen por debajo de la base.
 
 ## Para el botón de encendido
 
-No son tornillos. No llevan el 10 % de repuesto. La carcasa no se taladra.
+No son tornillos del kit. La carcasa no se taladra.
 
 | Pieza | Compras | Nota |
 |---|---:|---|
@@ -49,14 +88,15 @@ No son tornillos. No llevan el 10 % de repuesto. La carcasa no se taladra.
 | Carcasa trasera derecha | PROVISIONAL_carcasa_x1_y1 | Imprimir. Boca del corte delantero en la cama. Con soportes. |
 | Pletinas ×4 | PROVISIONAL_pletina_empalme_x4 | Imprimir planas, sin soportes. |
 | Soporte de disco 3,5" | PROVISIONAL_soporte_disco | Imprimir con el plato abajo. |
-| Bandeja | PROVISIONAL_bandeja_servicio | Imprimir con el ala abajo. Cabe en la A1. |
+| Bandeja | PROVISIONAL_bandeja_servicio | Pieza de noche si aún no está impresa. Ala abajo. Si ya lo está, no la reimprimas: taladra como dice el paso 7. |
+| Grapas de esquina ×16 | PROVISIONAL_grapa_esquina | Pieza de día. Plana, sin soportes. 14 en el aparato y 2 de más, por si una se parte. No es tornillo del kit. |
 | Placa I/O | PROVISIONAL_placa_io_hp | Imprimir con la pestaña abajo. |
 | Marco de prueba de la placa | PRUEBA_placa_io_hp | Opcional. Se sujeta por fuera. No se monta. |
 | Tapa de la Pi | PROVISIONAL_tapa_pi | Imprimir plana. |
-| Biseles ×4 | PROVISIONAL_bisel_x0_y0 … x1_y1 | Si ya están impresos, no reimprimir. Se taladran en el 10.2. |
+| Biseles ×4 | PROVISIONAL_bisel_x0_y0 … x1_y1 | Si ya están impresos, no reimprimir. El agujero ya es paso M3 con avellanado. No se taladran. |
 | Guías ×2 | PROVISIONAL_guia_luz_frontal_0 y _1 | Imprimir boca abajo, PETG translúcido. |
 | Anillos ×2 | PROVISIONAL_anillo_luz_x2 | Imprimir como salen, PETG translúcido. |
-| Pomos ×2 | PROVISIONAL_pomo_x2 | Imprimir de tapa abajo. |
+| Pomos ×2 | PROVISIONAL_pomo_x2 | Pieza de día. Tapa abajo. Llevan el bolsillo del inserto. Si el viejo solo tiene Ø2,5 radial, no sirve. |
 | Carros, retenedor, soporte de Arduino | sus STL provisionales | No imprimir y no montar. |
 
 ## Paso 1. Une la base
@@ -75,35 +115,35 @@ Pon las cuatro piezas en cruz, con las torretas hacia arriba. Aún no las atorni
 
 ![1.2](img/s1_2.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× Tuerca M3, del kit JINZEYOU
 
-Pon la pletina sobre las dos torretas del cruce delantero. Tornillo desde arriba. Tuerca debajo. Aprieta hasta que no se mueva.
+Pon la pletina sobre las dos torretas del cruce delantero. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo. Aprieta hasta que no se mueva. La pila mide 12 mm: salen unos 4 mm para la tuerca.
 
 ### 1.3 Pletina trasera del mismo corte
 
 ![1.3](img/s1_3.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× Tuerca M3, del kit JINZEYOU
 
-Haz lo mismo en el cruce de atrás. Tornillo desde arriba. Tuerca debajo.
+Haz lo mismo en el cruce de atrás. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.
 
 ### 1.4 Pletina izquierda
 
 ![1.4](img/s1_4.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× Tuerca M3, del kit JINZEYOU
 
-Pon la pletina del corte largo, en el lado izquierdo. Tornillo desde arriba. Tuerca debajo.
+Pon la pletina del corte largo, en el lado izquierdo. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.
 
 ### 1.5 Pletina derecha
 
 ![1.5](img/s1_5.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× Tuerca M3, del kit JINZEYOU
 
-Cierra el último cruce, a la derecha. Tornillo desde arriba. Tuerca debajo.
+Cierra el último cruce, a la derecha. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.
 
-Tornillos usados en este paso: 8× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza, 8× Tuerca M3 DIN 934.
+De los kits, en este paso: 8× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840, 8× Tuerca M3, del kit JINZEYOU.
 
 ## Paso 2. Une la carcasa
 
@@ -113,39 +153,41 @@ Si la carcasa ya está unida con M3, salta al paso 3.1.
 
 ![2.1](img/s2_1.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Junta las dos piezas de la izquierda. Mete un tornillo en cada agujero del corte. Aprieta hasta que las caras se toquen.
+Junta las dos piezas de la izquierda. Mete un M3×16 de cabeza de botón en cada agujero del corte. Aprieta hasta que las caras se toquen.
 
 ### 2.2 Par derecho
 
 ![2.2](img/s2_2.png)
 
-**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
+**NECESITAS:** 2× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Junta las dos piezas de la derecha. Dos tornillos, igual que antes.
+Junta las dos piezas de la derecha. Dos M3×16 de cabeza de botón, igual que antes.
 
 ### 2.3 Las dos piezas de atrás
 
 ![2.3](img/s2_3.png)
 
-**NECESITAS:** 5× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
+**NECESITAS:** 5× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Junta las dos piezas traseras. Cinco tornillos en los cinco agujeros del corte. Aprieta en cruz.
+Junta las dos piezas traseras. Cinco M3×16 de cabeza de botón en los cinco agujeros del corte. Aprieta en cruz. Estos nueve, con los ocho de las pletinas, dejan tres M3×16 en el bote.
 
-Tornillos usados en este paso: 9× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza.
+De los kits, en este paso: 9× M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840.
 
 ## Paso 3. Carcasa sobre la base
 
-El tornillo de la orejeta entra siempre desde abajo.
+El tornillo de la orejeta entra siempre desde abajo. El inserto va en la orejeta, no en el suelo: el suelo solo tiene 4 mm y un inserto de 5 mm no cabe ahí.
 
-### 3.1 Abre diez pasos
+### 3.1 Diez insertos en las orejetas ya impresas
 
 ![3.1](img/s3_1.png)
 
-**NECESITAS:** 1× broca de Ø4,6 mm
+**NECESITAS:** 10× Inserto de latón M3, 5×5 mm (largo × Ø exterior)
 
-Con la broca de Ø4,6, abre los diez agujeros Ø3,4 de la base. Desde abajo. Para en cuanto salgas del suelo. No agrandes la orejeta.
+Con el soldador, mete un inserto M3 de 5×5 en el agujero Ø4 de cada una de las diez orejetas viejas. Entra desde abajo, a ras de la cara que apoya en la base. El agujero mide unos 5,7 mm: el de 5 mm cabe y el de 6 mm no. No abras el Ø3,4 de la base.
+
+**PENDIENTE DE MEDIR.** El Ø4,0 es el fallback para un inserto de Ø exterior 5. No hay ficha y no se ha probado. Si esa orejeta ya se abrió a Ø4,6, el inserto no agarra: pasa un M3 y pon tuerca arriba. En las cuatro columnas del frente la tuerca no tiene sitio: esas tienen que quedar con el inserto.
 
 ### 3.2 Baja la carcasa
 
@@ -159,81 +201,97 @@ Apoya la carcasa sobre la base. Cada orejeta cae sobre su agujero.
 
 ![3.3](img/s3_3.png)
 
-**NECESITAS:** 3× M3×10 avellanado DIN 965, Phillips PH1
+**NECESITAS:** 3× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla las tres orejetas de la carcasa nueva, la de atrás a la derecha. Desde abajo. Para cuando la cabeza entre en el avellanado.
+Atornilla las tres orejetas de la carcasa de atrás a la derecha. Desde abajo, con M3×8 avellanado. Esa pieza se está imprimiendo: la guía es Ø2,5 × 9 mm y no lleva inserto. La cabeza entra en el avellanado del suelo. Entran unos 4 mm en la guía.
 
 ### 3.4 Cuatro orejetas del frente
 
 ![3.4](img/s3_4.png)
 
-**NECESITAS:** 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 4× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla las cuatro del frente. Desde abajo. El tornillo es el de Ø4,5.
+Atornilla las cuatro del frente. Desde abajo, M3×8 avellanado, al inserto del 3.1.
 
 ### 3.5 Tres orejetas de la izquierda
 
 ![3.5](img/s3_5.png)
 
-**NECESITAS:** 3× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 3× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla las tres del lateral izquierdo. Desde abajo.
+Atornilla las tres del lateral izquierdo. Desde abajo, M3×8 avellanado.
 
 ### 3.6 Orejeta trasera que queda
 
 ![3.6](img/s3_6.png)
 
-**NECESITAS:** 1× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 1× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla la orejeta trasera de la pieza izquierda. Desde abajo.
+Atornilla la orejeta trasera de la pieza izquierda. Desde abajo, M3×8 avellanado.
 
 ### 3.7 Dos orejetas de la derecha
 
 ![3.7](img/s3_7.png)
 
-**NECESITAS:** 2× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 2× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla las dos del lateral derecho. Desde abajo.
+Atornilla las dos del lateral derecho. Desde abajo, M3×8 avellanado.
 
-Tornillos usados en este paso: 3× M3×10 avellanado DIN 965, Phillips PH1, 10× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2.
+De los kits, en este paso: 10× Inserto de latón M3, 5×5 mm (largo × Ø exterior), 13× M3×8 avellanado negro, Phillips, wugongshan 860.
 
 ## Paso 4. Disco y placa HP
 
 La carcasa sigue puesta. En el dibujo no está, para que se vea el interior.
 
-### 4.1 Abre los cuatro pasos del disco
+### 4.1 Cuatro insertos en el soporte del disco
 
 ![4.1](img/s4_1.png)
 
-**NECESITAS:** 1× broca de Ø4,6 mm
+**NECESITAS:** 4× Inserto de latón M3, 5×5 mm (largo × Ø exterior)
 
-Desde abajo, abre a Ø4,6 los cuatro agujeros del soporte del disco. Para al salir del suelo.
+Con el soldador, mete un inserto M3 de 5×5 en cada pata del soporte, desde arriba, a ras del plato. El agujero ya es Ø4 y mide unos 6,7 mm. No abras el Ø3,4 de la base.
+
+**PENDIENTE DE MEDIR.** No consta si este soporte 3,5" ya está impreso. El STL no cambia: el agujero ya vale para el inserto. El Ø4,0 no se ha probado.
 
 ### 4.2 Soporte del disco
 
 ![4.2](img/s4_2.png)
 
-**NECESITAS:** 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 4× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Apoya el soporte en sus cuatro postes. Atornilla desde abajo con los Ø4,5. La cabeza entra en el avellanado.
+Apoya el soporte en sus cuatro postes. Desde abajo, M3×8 avellanado. La cabeza entra en el avellanado de la base.
 
 ### 4.3 Disco Toshiba
 
 ![4.3](img/s4_3.png)
 
-**NECESITAS:** 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2
+**NECESITAS:** 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2. FALTA: comprar
 
-Apoya el disco en el soporte, conectores hacia la ventana trasera. Los cuatro tornillos entran desde abajo, por el coliso, a la rosca del disco.
+Apoya el disco en el soporte, conectores hacia la ventana trasera. Los cuatro tornillos entran desde abajo, por el coliso, a la rosca del disco. Ningún kit trae 6-32.
 
-### 4.4 Placa HP
+**PENDIENTE DE MEDIR.** FALTA: comprar 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2. Si aún tienes los tornillos originales de la torre HP, valen esos. Un inserto 1/4-20 no entra en esa rosca.
+
+### 4.4 Cuatro insertos en los separadores HP
 
 ![4.4](img/s4_4.png)
 
-**NECESITAS:** 4× M3×6 cilíndrico, Phillips PH1 (tornillo de placa base)
+**NECESITAS:** 4× Inserto de latón M3, 4×5 mm
 
-Apoya la placa en los cuatro separadores. Los conectores miran a la ventana trasera. Atornilla los cuatro M3×6.
+Con el soldador, mete un inserto M3 de 4×5 en cada separador, desde arriba, a ras. El agujero es Ø4 y mide unos 6,2 mm: el de 5×5 entra justo y el de 6×5 no. No atravieses el suelo.
 
-Tornillos usados en este paso: 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2, 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2, 4× M3×6 cilíndrico, Phillips PH1 (tornillo de placa base).
+**PENDIENTE DE MEDIR.** El Ø4,0 no se ha probado. La base ya está impresa: no se regenera.
+
+### 4.5 Placa HP
+
+![4.5](img/s4_5.png)
+
+**NECESITAS:** 4× M3×6 avellanado negro, Phillips, wugongshan 860
+
+Apoya la placa en los cuatro separadores. Los conectores miran a la ventana trasera. Atornilla cuatro M3×6 avellanados. La cabeza queda sobre la PCB, en la esquina. Entran unos 2,6 mm en el inserto y no llegan al fondo.
+
+**PENDIENTE DE MEDIR.** El dibujo no pone ningún componente sobre esos cuatro agujeros. Si la cabeza toca una pieza, para.
+
+De los kits, en este paso: 4× Inserto de latón M3, 5×5 mm (largo × Ø exterior), 4× M3×8 avellanado negro, Phillips, wugongshan 860, 4× Inserto de latón M3, 4×5 mm, 4× M3×6 avellanado negro, Phillips, wugongshan 860. Fuera de los kits: 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2. FALTA: comprar.
 
 ## Paso 5. Placa de conectores traseros
 
@@ -305,15 +363,25 @@ Tornillos usados en este paso: ninguno.
 
 ## Paso 7. Bandeja de placas
 
-Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final.
+Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final. La grapa sustituye a la arandela: la lengüeta mira a la placa.
+
+### 7.0 Cuatro insertos en la Pi
+
+![7.0](img/s7_0.png)
+
+**NECESITAS:** 4× Inserto de latón M2.5, 4×3,5 mm
+
+Con el soldador, mete un inserto M2.5 de 4×3,5 en cada poste de la Pi, desde arriba, a ras del poste. El agujero es Ø3,0 y mide 7 mm. No uses los cuatro postes de fuera: esos son el plan B.
+
+**PENDIENTE DE MEDIR.** El Ø3,0 es el fallback para un inserto de Ø exterior 3,5. Sin ficha y sin probar. Si la bandeja ya está impresa, el agujero es Ø2,7 pasante: ábrelo a Ø3,0 en los 7 mm de arriba y deja el resto.
 
 ### 7.1 Raspberry Pi
 
 ![7.1](img/s7_1.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M2.5×8 cabeza de botón, Allen 1,5 mm, JINZEYOU 840
 
-Pon la Pi en su hueco, con USB y RJ45 hacia atrás. La arandela pisa la esquina. El tornillo entra en el poste, fuera de la placa. Aprieta hasta que la arandela apoye.
+Pon la Pi en su hueco, con USB y RJ45 hacia atrás. Cuatro M2.5×8 de cabeza de botón, por los agujeros reales de la placa, al inserto. La PCB mide 1,6 mm: entran 6,4 mm, 4 en el inserto y 2,4 de punta.
 
 ### 7.2 Mira el canal de los pines
 
@@ -329,57 +397,59 @@ El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos fil
 
 ![7.3](img/s7_3.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro tornillos M3×10 con arandela Ø9. La guía es Ø2,5 y mide 10 mm.
+Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro M3×12 de cabeza de botón. La grapa, de 1,6 mm, pisa la esquina. La guía es Ø2,5 y mide 13 mm.
 
-**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces.
+**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces. Si la bandeja ya está impresa, la guía mide 10 mm: alárgala 3 mm con la broca de Ø2,5. El fondo baja de z = 8,6 a z = 5,6 y sigue cerrado.
 
 ### 7.4 Nano de prácticas
 
 ![7.4](img/s7_4.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro arandelas. Tornillo M3×10, guía Ø2,5 de 10 mm.
+Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.
 
-**PENDIENTE DE MEDIR.** La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre.
+**PENDIENTE DE MEDIR.** La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre. La lengüeta entra unos 2,8 mm en esa esquina.
 
 ### 7.5 Step-down
 
 ![7.5](img/s7_5.png)
 
-**NECESITAS:** 4× M3×8 cilíndrico, Phillips PH1  ·  2× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× grapa de esquina impresa, 1,6 mm
 
-Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan. Los 3 y 4 lo pisan con arandela, por fuera de la placa. Debajo hay 3 mm para la soldadura.
+Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan: M3×8 de cabeza de botón, sin grapa. Los 3 y 4 lo pisan con grapa, por fuera de la placa, el mismo M3×8. Debajo hay 3 mm para la soldadura.
 
-**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo.
+**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo. En el pasante entran 6,4 mm en una guía de 7 mm: quedan 0,6 mm hasta el fondo.
 
 ### 7.6 Nano de mandos
 
 ![7.6](img/s7_6.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las arandelas. M3×10, guía Ø2,5 de 10 mm.
+Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.
 
-### 7.7 Abre las cuatro torretas
+### 7.7 Inserto en las cuatro torretas
 
 ![7.7](img/s7_7.png)
 
-**NECESITAS:** 1× broca de Ø3,4 mm
+**NECESITAS:** 1× broca de Ø4,0 mm  ·  4× Inserto de latón M3, 6×5 mm
 
-Con la broca de Ø3,4, abre el techo de las cuatro torretas de la base. Para en cuanto la broca caiga.
+Con la broca de Ø4,0, abre el techo macizo de las cuatro torretas de la base hasta encontrar el agujero Ø4 que ya sube desde abajo. Con el soldador, mete un inserto M3 de 6×5 desde arriba, a ras de la torreta. No lo empujes hasta que asome por debajo.
+
+**PENDIENTE DE MEDIR.** Si el techo ya se abrió a Ø3,4, ábrelo a Ø4,0. El kit trae 20 M3×16 y 17 ya están contados: estas cuatro torretas no pueden llevar otro M3×16.
 
 ### 7.8 Atornilla la bandeja
 
 ![7.8](img/s7_8.png)
 
-**NECESITAS:** 4× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  4× Tuerca M3 DIN 934
+**NECESITAS:** 4× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Apoya el ala en las cuatro torretas. Tornillo desde arriba. Tuerca debajo. Aprieta en cruz.
+Apoya el ala en las cuatro torretas. M3×8 de cabeza de botón desde arriba, al inserto. Aprieta en cruz. La punta queda a ras del inserto, dentro de la base: no sale por debajo y no lleva tuerca.
 
-Tornillos usados en este paso: 16× M3×10 cilíndrico, Phillips PH1, 18× Arandela ancha M3 Ø9, DIN 9021, 4× M3×8 cilíndrico, Phillips PH1, 4× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza, 4× Tuerca M3 DIN 934.
+De los kits, en este paso: 4× Inserto de latón M2.5, 4×3,5 mm, 4× M2.5×8 cabeza de botón, Allen 1,5 mm, JINZEYOU 840, 12× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840, 8× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840, 4× Inserto de latón M3, 6×5 mm.
 
 ## Paso 8. Tapa de la Pi
 
@@ -389,11 +459,11 @@ Dos tornillos. No hace falta ventilador.
 
 ![8.1](img/s8_1.png)
 
-**NECESITAS:** 2× M3×10 cilíndrico, Phillips PH1
+**NECESITAS:** 2× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Apoya la tapa en el techo. Atornilla los dos tornillos del canto derecho.
+Apoya la tapa en el techo. Dos M3×8 de cabeza de botón en el canto derecho. La tapa mide 2,4 mm: entran unos 5,6 mm en la guía de 9 mm. Los postes están en la carcasa que se está imprimiendo: no los toques.
 
-Tornillos usados en este paso: 2× M3×10 cilíndrico, Phillips PH1.
+De los kits, en este paso: 2× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840.
 
 ## Paso 9. Pantalla del Nano de prácticas
 
@@ -423,13 +493,15 @@ El monitor entra en la tina. El bisel lo sujeta. Quitar esos tornillos lo suelta
 
 Mete el monitor en la tina, con los conectores hacia la derecha.
 
-### 10.2 Abre los biseles
+### 10.2 Doce insertos en el marco
 
 ![10.2](img/s10_2.png)
 
-**NECESITAS:** 1× broca de Ø4,6 mm
+**NECESITAS:** 12× Inserto de latón M3, 5×5 mm (largo × Ø exterior)
 
-En el banco, abre a Ø4,6 los doce agujeros de los cuatro biseles. No taladres la carcasa.
+Con el soldador, mete un inserto M3 de 5×5 en cada poste del marco, en la carcasa, desde fuera. El agujero ya es Ø4. No abras los biseles: ya tienen paso Ø3,4 y avellanado.
+
+**PENDIENTE DE MEDIR.** No consta si los biseles ya están impresos. El STL del bisel no cambia. El Ø4,0 del inserto no se ha probado. La carcasa no se regenera.
 
 ### 10.3 Coloca los cuatro biseles
 
@@ -443,9 +515,9 @@ Apoya los cuatro biseles sobre el marco. La muesca del canto derecho deja libres
 
 ![10.4](img/s10_4.png)
 
-**NECESITAS:** 12× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+**NECESITAS:** 12× M3×8 avellanado negro, Phillips, wugongshan 860
 
-Atornilla los doce, desde fuera. Ve saltando de un canto a otro.
+Atornilla los doce desde fuera, con M3×8 avellanado. Ve saltando de un canto a otro. La cabeza entra en el avellanado del bisel.
 
 ### 10.5 Guías de luz
 
@@ -463,13 +535,23 @@ Encaja las dos guías en el canal delantero. Sin tornillo.
 
 Mete un anillo desde dentro, bajo cada sitio de pomo. Sin tornillo.
 
+### 10.7a Inserto en cada pomo
+
+![10.7a](img/s10_7a.png)
+
+**NECESITAS:** 2× Inserto de latón M3, 4×5 mm
+
+En el banco, con el soldador, mete un inserto M3 de 4×5 en el bolsillo radial de cada pomo. Queda a ras del agujero del eje, no dentro del eje. El bolsillo es Ø4,0.
+
+**PENDIENTE DE MEDIR.** Si un pomo ya impreso solo tiene el agujero radial de Ø2,5, el inserto no entra: imprime el STL nuevo. De la piel al eje hay 12 mm y un avellanado M3×4 o ×5 no llega.
+
 ### 10.7 Pomos
 
 ![10.7](img/s10_7.png)
 
-**NECESITAS:** 2× Prisionero M3×16 DIN 916 (Allen 1,5 mm)
+**NECESITAS:** 2× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840
 
-Encaja cada pomo. Aprieta el prisionero contra el eje. Si el eje no entra, para y mira el anexo.
+Encaja cada pomo. Mete un M3×12 de cabeza de botón en el cajeado y apriétalo contra el eje. La cabeza queda casi a ras. Si el eje no entra, para y mira el anexo.
 
 ### 10.8 Pulsadores del panel
 
@@ -479,7 +561,7 @@ Encaja cada pomo. Aprieta el prisionero contra el eje. Si el eje no entra, para 
 
 Mete los dos pulsadores desde fuera y cierra su tuerca por dentro.
 
-Tornillos usados en este paso: 12× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2, 2× Prisionero M3×16 DIN 916 (Allen 1,5 mm).
+De los kits, en este paso: 12× Inserto de latón M3, 5×5 mm (largo × Ø exterior), 12× M3×8 avellanado negro, Phillips, wugongshan 860, 2× Inserto de latón M3, 4×5 mm, 2× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840.
 
 ## Paso 11. Cables que ya están decididos
 
@@ -531,32 +613,37 @@ Tornillos usados en este paso: ninguno.
 
 ### Por qué este tornillo
 
-El largo de un cilíndrico se mide bajo la cabeza. El del avellanado incluye la cabeza. Nada de esto se ha apretado en una pieza impresa, salvo el M3 de los pasadores.
+El largo de una cabeza de botón se mide bajo la cabeza. El del avellanado incluye la cabeza. Nada de esto se ha apretado en una pieza impresa, salvo el M3 de los pasadores.
 
 | Unión | Qué atraviesa | Tornillo |
 |---|---|---|
-| Pasador | Agujero Ø3,2 × 16 mm, las dos costillas | M3×16 cilíndrico. La cabeza se queda fuera. |
-| Pletina | Pletina 3 mm + torreta 5 mm + suelo 4 mm = 12 mm | M3×16. Salen unos 4 mm bajo la base, para la tuerca. |
-| Bandeja | Ala 2 mm + torreta 5 mm + suelo 4 mm = 11 mm | M3×16. Antes se abre el techo macizo, de unos 3 mm. Salen unos 5 mm para la tuerca. |
-| Orejeta de la carcasa nueva | Suelo 4 mm + guía Ø2,5 de 9 mm | M3×10 avellanado. La punta no llega al fondo. |
-| Orejeta ya impresa, bisel y soporte del disco | Paso Ø3,4 y, detrás, agujero ciego Ø4 | Ø4,5×10 avellanado, después de abrir el paso a Ø4,6. El ×10 no hace tope en el Ø4. |
-| Placa HP | PCB 1,6 mm + agujero de 6,2 mm en el separador | M3×6 de placa base. No llega al fondo. El agujero es Ø4. |
-| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | 6-32 × 6,4 mm. No es un M3. |
-| Placas de la bandeja | Guía Ø2,5 de 10 mm, poste de 14,8 mm y arandela de 0,8 mm | M3×10. Entran 9,2 mm y quedan 0,8 mm hasta el fondo. La arandela Ø9 pisa la esquina 1,1 mm. |
-| Step-down, tornillo pasante | Guía de 7 mm | M3×8. |
-| Step-down, brida | Guía de 8 mm y arandela | M3×8. |
-| Tapa | Tapa 2,4 mm + guía de 9 mm | M3×10. Entran unos 8 mm. |
-| Pomo | De la piel al eje hay 12 mm | Prisionero M3×16. Un ×12 solo rozaría el eje. |
+| Pasador | Agujero Ø3,2 × 16 mm, las dos costillas | M3×16 botón. La cabeza se queda fuera. Ya gastados si la carcasa está cerrada. |
+| Pletina | Pletina 3 mm + torreta 5 mm + suelo 4 mm = 12 mm | M3×16 botón. Salen unos 4 mm bajo la base, para la tuerca. |
+| Bandeja a la base | Ala 2 mm + inserto de 6 mm en la torreta | M3×8 botón. La punta queda a ras del inserto, en z = 3, dentro del suelo. |
+| Orejeta de x1_y1 | Suelo 4 mm + guía Ø2,5 de 9 mm | M3×8 avellanado. Entran unos 4 mm. No llega al fondo. |
+| Orejeta ya impresa | Paso Ø3,4 del suelo e inserto 5×5 en la orejeta (agujero Ø4 × 5,7) | M3×8 avellanado. El inserto no va en el suelo. |
+| Bisel | Bisel de 3 mm, con avellanado, e inserto 5×5 en el poste | M3×8 avellanado. |
+| Soporte del disco | Paso Ø3,4 del suelo e inserto 5×5 en la pata | M3×8 avellanado. |
+| Placa HP | PCB 1,6 mm + inserto 4×5 en un agujero de 6,2 mm | M3×6 avellanado. Entran unos 2,6 mm. La cabeza apoya en la PCB. |
+| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | FALTA: 6-32 × 6,4 mm. No es un M3 ni un 1/4-20. |
+| ESP y dos Nano | Grapa 1,6 mm + guía Ø2,5 de 13 mm | M3×12 botón. Entran 10,4 mm y quedan 2,6 mm hasta el fondo. |
+| Pi | PCB 1,6 mm + inserto M2.5 de 4 mm en un agujero de 7 mm | M2.5×8 botón. Entran 6,4 mm. |
+| Step-down, tornillo pasante | PCB 1,6 mm + guía de 7 mm | M3×8 botón. Quedan 0,6 mm hasta el fondo. |
+| Step-down, brida | Grapa 1,6 mm + guía de 8 mm | M3×8 botón. |
+| Tapa | Tapa 2,4 mm + guía de 9 mm | M3×8 botón. Entran unos 5,6 mm. |
+| Pomo | De la piel al eje hay 12 mm. Cajeado 1,8 mm + inserto 4×5 | M3×12 botón. La punta entra unos 1,9 mm en el eje. |
 
-### Por qué se taladra
+### Por qué este agujero
 
-Un autorroscante de Ø4,5 no pasa por el agujero impreso de Ø3,4. Por eso el paso 3.1, el 4.1 y el 10.2 lo abren a Ø4,6, y solo el paso: el agujero Ø4 de la orejeta, del soporte o de la carcasa se queda como está, que es donde el Ø4,5 muerde.
+El inserto de las diez orejetas viejas entra en el agujero que ya tienen, Ø4 × 5,7 mm. Un inserto de 6 mm no cabe. El suelo, de 4 mm, tampoco admite un inserto de 5 mm: el tornillo pasa por el Ø3,4 que ya está, y la cabeza avellanada se sienta en el avellanado que ya está. No se abre a Ø4,6.
 
-La tuerca no cabe en esos agujeros: son ciegos y de Ø4. Si el Ø4,5 gira en vacío, para. No lo cambies por un M4. La otra salida es abrir ese agujero de lado a lado y poner una tuerca M3, y eso es otro taladro, no el de este manual.
+Si ese Ø4 de la orejeta ya se agrandó a Ø4,6, el inserto no muerde. Ahí sí: M3 pasante y tuerca por arriba. En las columnas del frente no hay sitio para esa tuerca.
 
-Las torretas de la bandeja no tienen el paso de Ø3,4 que sí tienen las de las pletinas. El techo, de unos 3 mm, está macizo. El 7.7 lo abre con Ø3,4 para que el M3×16 llegue a la tuerca. Un M3 no muerde el Ø4 que hay debajo: por eso lleva tuerca y no autorroscante.
+Las torretas de la bandeja tienen el techo macizo, de unos 3 mm, y debajo un Ø4 que ya sale por la cara inferior de la base. El 7.7 abre el techo a Ø4,0 y el inserto de 6×5 se queda a ras, sin asomar. No van con M3×16: 9 pasadores + 8 pletinas son 17, y el bote trae 20.
 
-El M3×6 de la placa HP es el tornillo de placa base. Si gira en vacío, el agujero del separador es Ø4, el del inserto que ya no se usa. No cabe un tornillo más gordo en el agujero de la PCB. No se ha elegido otra pieza.
+La Pi usa sus cuatro agujeros M2.5. Los postes de fuera se quedan en el STL, con guía de 13 mm, por si el inserto no agarra: entonces M3×12 y grapa, y esos cuatro no están en la cuenta.
+
+La grapa mide 1,6 mm y la lengüeta llega a 6,2 mm del eje del tornillo. La esquina de la PCB está a unos 3,4 mm, así que la lengüeta entra unos 2,8 mm. Una arandela de Ø9 solo pisaba 1,1 mm y no está en los kits.
 
 ### Si algo no entra
 
@@ -566,7 +653,7 @@ Tres pletinas quedan debajo del soporte del disco: las dos del corte largo y la 
 
 El corte corto delantero de la carcasa no lleva tornillo. Los cinco del paso 2.3 están todos en la mitad de atrás. Los de los pasos 2.1 y 2.2 unen cada par de delante con atrás.
 
-Si el eje del potenciómetro está estriado, el pomo impreso no entra. Hace falta un pomo comercial para eje estriado. El eje de 6 mm está acordado y sin medir.
+Si el eje del potenciómetro está estriado y el M3×12 no lo frena, hace falta un pomo comercial para eje estriado. El eje de 6 mm está acordado y sin medir. El plano en D sigue en el parámetro pomo_eje_D y no es la única retención.
 
 ### Coordenadas que usa el dibujo
 
@@ -577,7 +664,7 @@ No hacen falta para montar. Están por si hay que reimprimir una pieza.
 - Pasadores laterales: dos en x = 7 y dos en x = 449, a z = 25 y z = 55.
 - Orejetas con guía Ø2,5, las de la carcasa nueva: (325; 292,5), (420; 292,5) y (448,3; 205).
 - Las otras diez orejetas conservan el agujero Ø4 de cuando se imprimieron.
-- Hueco de la Pi: origen (330; 167,5), 56 × 85 mm, USB hacia +Y. Presillas en (328; 165,2), (388; 165,2), (327,8; 254,2) y (388,6; 254,2).
+- Hueco de la Pi: origen (330; 167,5), 56 × 85 mm, USB hacia +Y. Los tornillos van en los agujeros reales. Postes de plan B en (328; 165,2), (388; 165,2), (327,8; 254,2) y (388,6; 254,2).
 - ESP, de la foto: (346; 86), 31 × 58 mm. Nano de prácticas: (399; 66), 18 × 45. Step-down: (399; 124), 21 × 43. Nano de mandos: (400; 222), 18 × 45.
 - Torretas de la bandeja: (318,3; 49), (436,3; 49), (318,3; 278,5) y (436,3; 278,5).
 
@@ -589,9 +676,9 @@ Placa frontal del HP (el marcador sigue en 16×70×26). Patillaje del cabezal H-
 
 Nano de prácticas, Nano de mandos y ESP8266. La cara inferior de la PCB queda a 13 mm del suelo de la bandeja. Ese 13 es 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire. [PENDIENTE] de medir. El pin corto que cita Miguel, unos 6 mm más el separador, queda holgado dentro de ese canal.
 
-Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro arandelas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.
+Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro grapas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.
 
-La guía de la esquina sigue en Ø2,5 × 10 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la arandela de 0,8 mm, el M3×10 entra 9,2 mm y le quedan 0,8 mm hasta el fondo. El tornillo no cambia. La lista de la compra tampoco. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto: la arandela Ø9 pasa 1,1 mm de la esquina de la PCB.
+La guía de la esquina es Ø2,5 × 13 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la grapa de 1,6 mm, el M3×12 entra 10,4 mm y le quedan 2,6 mm hasta el fondo. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto. Si la bandeja ya impresa trae la guía de 10 mm, el 7.3 dice cómo alargarla.
 
 Con la bandeja en sus torretas, el ala queda a z = 11 y la cara inferior de estas tres PCB a z = 28. La carcasa y la tapa no se han tocado.
 
@@ -601,13 +688,13 @@ El ESP queda debajo de la tina de la pantalla. En el borde delantero, la PCB (1,
 
 El Nano de mandos queda bajo el techo plano de la carcasa x1_y1. Hasta ese techo interior hay 117 mm. El hueco de la tapa acaba en x = 396 y la placa empieza en x = 400. La tapa apoya sobre el techo macizo, así que el límite es el techo.
 
-La Pi sigue a 8 mm del suelo, con su rejilla. Los 4 M3 de la bandeja a la base no cambian. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.
+La Pi sigue a 8 mm del suelo, con su rejilla, y se atornilla por sus agujeros M2.5. Los cuatro tornillos de la bandeja a la base son M3×8 de botón sobre un inserto de 6×5. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.
 
 ### Botón de encendido
 
 La carcasa x0_y1 ya está impresa y no se regenera. El capuchón usa el Ø12,2 (eje a z = 112) y la guía el Ø3,1, 14 mm más arriba, en el lateral izquierdo. Holgura del vástago: 0,3 mm por lado. La pestaña es Ø16 × 1,6 mm y no sale. En reposo asoma 2,4 mm. El recorrido es 1,5 mm, hasta un tope; el clic del táctil, de 0,25 mm, ocurre al final. Dos láminas de 0,8 mm lo devuelven. Esa fuerza no se ha medido.
 
-El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø2,0 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un autorroscante de Ø2,5×4, que pasa por el Ø2,7 del soporte y muerde la pared. Esos dos tornillos no están en la lista. No uses el Ø4,5.
+El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø1,6 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un M2×3 de cabeza plana (wugongshan, plata): pasa por el Ø2,7 del soporte y muerde la pared. Esos dos no están en la cuenta. El bote trae 50. No uses un M3.
 
 El soporte queda por encima del marcador de la placa frontal (16×70×26, aún sin medir). No entra en esa caja ni la usa de anclaje.
 

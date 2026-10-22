@@ -45,7 +45,7 @@ La Pi tiene su propio camino. El HAT tapa la cara de arriba, así que el aire en
 
 Los postes M2.5 (Ø6, ejes en x = 333,5 y 382,5, y = 171 y 229) quedan a más de 9 mm de las ranuras. La muesca de la micro-SD acaba en y = 171,5. Los pies de la base miden 1 mm: el aire de la rejilla entra por debajo del chasis, por esa holgura [PENDIENTE de ver si basta]. La base no se reimprime.
 
-Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco, con paso libre Ø3,4 en la tapa y guía Ø2,5 × 9 mm en cada poste Ø10 (pared 3,75 mm). Tornillo M3×10 de cabeza cilíndrica [DISEÑO]: la tapa mide 2,4 mm y la rosca entra unos 7,6 mm, sin llegar al fondo. Las tres orejetas de esta pieza que apoyan en la base (325, 292,5), (420, 292,5) y (448,3, 205) llevan la misma guía, de 9 mm, en un taco de 12 × 12 × 11 mm (pared 4,75 mm). El tornillo entra desde abajo por el paso ya impreso de la base: M3×10 avellanado [DISEÑO]. Las otras tres carcasas, la base, el soporte y los biseles conservan el agujero de inserto con el que se imprimieron. El panel de pines y la OLED no se cortan. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
+Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco, con paso libre Ø3,4 en la tapa y guía Ø2,5 × 9 mm en cada poste Ø10 (pared 3,75 mm). Tornillo M3×8 de cabeza de botón, JINZEYOU [DISEÑO]: la tapa mide 2,4 mm y entran unos 5,6 mm en la guía, sin llegar al fondo. Las tres orejetas de esta pieza que apoyan en la base (325, 292,5), (420, 292,5) y (448,3, 205) llevan la misma guía, de 9 mm, en un taco de 12 × 12 × 11 mm (pared 4,75 mm). El tornillo entra desde abajo por el paso ya impreso de la base: M3×8 avellanado wugongshan [DISEÑO]. Las otras tres carcasas, la base, el soporte y los biseles conservan el agujero de inserto con el que se imprimieron: ahora se les mete el inserto de latón, sin reimprimirlos. El panel de pines y la OLED no se cortan. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
 
 Retención de la placa, de la bahía v2 (sustituida por los huecos fijos). Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
 
@@ -85,33 +85,34 @@ La Pi no se mueve. Sigue en x = 330 a 386, y = 167,5 a 252,5, USB y RJ45 hacia +
 | Step-down | 399, 124 | 21 × 43 [PENDIENTE] | — | z = 7 |
 | Nano de mandos | 400, 222 | 18 × 45 [FUENTE] | +Y | z = 17 |
 
-Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm. En las tres placas con pines macho hacia abajo, cada fila tiene un canal de `pin_fila_w` = 3,2 mm desde el canto largo, vaciado hasta el suelo. Desde la cara inferior de la PCB hasta ese suelo hay `pin_bajo_pcb` = 13 mm: 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire [PENDIENTE] de medir. El apoyo es un escalón de 2,0 mm en la banda central del canto corto, fuera del último pin (`pin_extremo` = 2,5 mm, el dibujo empieza a 2,4 mm). En el canto del mini-USB de los Nano ese escalón no llega a 1,6 mm y no se imprime: sujetan las arandelas. El ESP sí lo lleva a los dos lados del conector. El canto del USB sigue partido 10 mm. El step-down no lleva regleta en el modelo: reborde de 2,2 mm y un hueco de 3 mm para las soldaduras [DISEÑO].
+Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm. En las tres placas con pines macho hacia abajo, cada fila tiene un canal de `pin_fila_w` = 3,2 mm desde el canto largo, vaciado hasta el suelo. Desde la cara inferior de la PCB hasta ese suelo hay `pin_bajo_pcb` = 13 mm: 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire [PENDIENTE] de medir. El apoyo es un escalón de 2,0 mm en la banda central del canto corto, fuera del último pin (`pin_extremo` = 2,5 mm, el dibujo empieza a 2,4 mm). En el canto del mini-USB de los Nano ese escalón no llega a 1,6 mm y no se imprime: sujetan las grapas. El ESP sí lo lleva a los dos lados del conector. El canto del USB sigue partido 10 mm. El step-down no lleva regleta en el modelo: reborde de 2,2 mm y un hueco de 3 mm para las soldaduras [DISEÑO].
 
 La columna derecha (x = 399) queda fuera de la tina. El ESP queda debajo de la pantalla: con la bandeja en las torretas, el borde delantero de su PCB tiene 4,8 mm hasta el suelo de la tina, y el módulo dibujado (3 mm, centrado) tiene 14 mm. Delante de y ≈ 85 y a la izquierda de x ≈ 380 el suelo se queda bajo: ahí la tina no deja pared alta.
 
-Tornillos. `fijacion = "autorroscante"`, guía Ø2,5, poste Ø7,6 (pared 2,55 mm). La cabeza sola no llega al borde: hace falta arandela ancha M3, Ø9 (DIN 9021). El tornillo va fuera de la PCB y la arandela pisa la esquina.
+Tornillos de los kits. Guía Ø2,5 en los postes de fuera, poste Ø7,6 (pared 2,55 mm). La Pi se atornilla por sus agujeros reales, con inserto M2.5. La grapa de 1,6 mm sustituye a la arandela Ø9, que no está en los kits. `fijacion` sigue en `autorroscante` solo para no cambiar un futuro export de `carcasa_x1_y1`.
 
 | Sitio | Dónde (ejes) | Guía | Tornillo |
 |---|---|---|---|
-| Pi, cuatro esquinas | (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2) | Ø2,5 × 10 mm, desde z = 13,5 | M3×10 cilíndrico + arandela Ø9 |
-| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 10 mm, desde z = 18,6 | M3×10 + arandela Ø9 |
-| Nano de prácticas | (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
-| Nano de mandos | (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
-| Buck, agujeros del módulo | (402,5, 127,5) y (416,5, 163,5), a 3,5 mm de la esquina [PENDIENTE] | Ø2,5 × 7 mm, desde la cara inferior (z = 7) hasta z = 0. No atraviesa el ala | M3×8. Atraviesa la PCB (1,6 mm) y rosca unos 6 mm |
-| Buck, las otras dos esquinas | (421,5, 121) y (397,5, 166). Esta última va en el canto −X: por detrás chocaría con el HDMI | Ø2,5 × 8 mm, desde z = 8,6 | M3×8 + arandela Ø9 |
-| Bandeja a la base | (318,26, 49), (436,26, 49), (318,26, 278,492), (436,26, 278,492) | Paso libre Ø3,4. No es guía | Los mismos M3 de la base ya impresa. El largo no se ha vuelto a elegir |
+| Pi, agujeros reales | (333,5, 171), (382,5, 171), (333,5, 229), (382,5, 229) | Ø3,0 × 7 mm, ciego, desde la cara del poste. [sin probar] | Inserto M2.5 4×3,5 y M2.5×8 botón |
+| Pi, plan B | (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2) | Ø2,5 × 13 mm | M3×12 botón + grapa. No entra en la cuenta |
+| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 13 mm, desde z = 18,6 | M3×12 botón + grapa 1,6 mm |
+| Nano de prácticas | (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114) | Ø2,5 × 13 mm | M3×12 botón + grapa |
+| Nano de mandos | (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270) | Ø2,5 × 13 mm | M3×12 botón + grapa |
+| Buck, agujeros del módulo | (402,5, 127,5) y (416,5, 163,5), a 3,5 mm de la esquina [PENDIENTE] | Ø2,5 × 7 mm, desde la cara inferior (z = 7). No atraviesa el ala | M3×8 botón. Atraviesa la PCB (1,6 mm) y entran 6,4 mm |
+| Buck, las otras dos esquinas | (421,5, 121) y (397,5, 166). Esta última va en el canto −X: por detrás chocaría con el HDMI | Ø2,5 × 8 mm, desde z = 8,6 | M3×8 botón + grapa |
+| Bandeja a la base | (318,26, 49), (436,26, 49), (318,26, 278,492), (436,26, 278,492) | Inserto M3 6×5 en la torreta, agujero Ø4,0 | M3×8 botón. No es M3×16: el kit trae 20 y 17 ya están contados |
 
-Los postes M2.5 de la Pi no son la pisada: un M3 no entra en el agujero de 2,7 mm. Los dos tornillos delanteros de la Pi quedan a unos 1,2 mm de esos postes.
+Los postes M2.5 de la Pi son la fijación: inserto M2.5 4×3,5 en un agujero Ø3,0 × 7 mm, y tornillo M2.5×8 de cabeza de botón. Los cuatro postes de fuera se quedan como plan B.
 
 Canales. Las paredes de los bolsillos hacen de canal. Siete puentes (dos postes y una barra a 4,2 mm del suelo, luz de unos 4 mm) sujetan el cable: entre prácticas y buck (x = 402 y 409), en el corredor entre el ESP y la columna derecha (y = 100 y 132), y en el canto derecho (x = 423,5, y = 148, 198 y 238), por fuera del sobremolde HDMI (acaba en x = 412).
 
 La proto 30 × 70 se queda sin puesto. La capturadora también: su nido (x = 390, y = 220) caía encima del Nano de mandos. `usar_nido_captura = false`. Dónde va el aparato es [PENDIENTE].
 
-`PROVISIONAL_bandeja_servicio`: 126,00 × 237,49 × 20,60 mm, 181,89 cm³, un solo sólido, malla cerrada, z de −2 a 18,6. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. `comprobar_interferencias.py` (2026-10-22, tras bajar las tres PCB a 13 mm): salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas. Con la bandeja montada, el Nano de prácticas (USB de 4 mm, y = 66) queda a 12,6 mm del techo interior; el ESP, bajo la tina, tiene 4,8 mm en el borde delantero de la PCB y 14 mm en el módulo dibujado; el Nano de mandos queda a 117 mm del techo de x1_y1. La carcasa no se ha tocado. No es un montaje.
+`PROVISIONAL_bandeja_servicio`: 126,00 × 237,49 × 20,60 mm, 181,71 cm³, un solo sólido, malla cerrada, z de −2 a 18,6. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. `comprobar_interferencias.py` (2026-10-22, tras bajar las tres PCB a 13 mm): salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas. Con la bandeja montada, el Nano de prácticas (USB de 4 mm, y = 66) queda a 12,6 mm del techo interior; el ESP, bajo la tina, tiene 4,8 mm en el borde delantero de la PCB y 14 mm en el módulo dibujado; el Nano de mandos queda a 117 mm del techo de x1_y1. La carcasa no se ha tocado. No es un montaje.
 
 No se han regenerado la carcasa, la tapa, los carros ni el retenedor. Esos cuatro STL siguen en el directorio y quedan **obsoletos**: no imprimir `PROVISIONAL_carro_nano`, `PROVISIONAL_carro_esp`, `PROVISIONAL_carro_proto30x70` ni `PROVISIONAL_retenedor_nano`.
 
-[PENDIENTE] de esta bandeja: el largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm); cuántos milímetros del canto corto y del canto largo están libres de pines (el canal usa 3,2 mm y deja 2,5 mm en el extremo); el módulo real del step-down y si lleva pines (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas); el ESP de la foto (58 × 31, y si el micro-USB va centrado); el largo real de las clavijas; el HAT; y dónde se guarda la capturadora. El agarre del autorroscante no se ha probado en una pieza.
+[PENDIENTE] de esta bandeja: el largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm); cuántos milímetros del canto corto y del canto largo están libres de pines (el canal usa 3,2 mm y deja 2,5 mm en el extremo); el módulo real del step-down y si lleva pines (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas); el ESP de la foto (58 × 31, y si el micro-USB va centrado); el largo real de las clavijas; el HAT; y dónde se guarda la capturadora. El agarre del M3 en la guía Ø2,5 y el del inserto en el Ø4,0 no se han probado.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 
@@ -362,11 +363,7 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 - **2 potenciómetros de eje de 6 mm**.
 - **2 pulsadores de panel**.
 - Tira LED (tipo **PENDIENTE**).
-- Tornillería:
-  - Insertos térmicos M3 y tornillos M3: unos 12 para el bisel, unos 13 orejetas carcasa-base, 4 para la bandeja, 8 para las pletinas, 2 para el soporte del Arduino y 4 para la distribución.
-  - 1 prisionero M3 por pomo.
-  - Pasadores de acero Ø3 × 16.
-  - 1 brida de 3,6 mm.
+- Tornillería: la cuenta vigente está en el manual (`docs/manual_montaje/`), contra los tres kits. No hay prisioneros ni arandelas Ø9. El disco pide 4× 6-32 UNC × 1/4\", que no están en los kits.
 - 4 pies de goma Ø12.
 - Cables:
   - Mini-HDMI (de serie, en L).
@@ -379,7 +376,7 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 2. **Base en 4 trozos**, unida por dentro con 4 pletinas atornilladas a torretas con inserto M3. La base se atornilla desde abajo, con tornillos avellanados, a orejetas con inserto M3 de la carcasa. Las orejetas frontales son columnas hasta el techo, detrás del carril LED.
 3. **Bisel en 4 trozos**, cada uno con 3 tornillos M3 avellanados propios a insertos de la carcasa. No necesita uniones entre trozos.
 4. **Bandeja de servicio:** la Pi (separadores M2.5 con el patrón de 58 × 49 mm), la distribución DC y, en v1, el **soporte del Arduino Micro** y el **canal del cable micro-USB** van montados en la bandeja, que se quita desde abajo con 4 tornillos M3 sin abrir la carcasa (la comprobación verifica que el soporte pasa por la abertura). Hay que dejar holgura en los cables dupont entre el Arduino y los mandos, o usar un conector, para poder bajar la bandeja.
-5. **Potenciómetros:** atornillados con su tuerca desde fuera. Panel de 3 mm + refuerzo automático (`refuerzo_pot`, 1,5 mm con el genérico de 24 mm y 0 mm con el de 16 mm) para dejar ≥ 4,5 mm de rosca libre. Hueco anti-giro ciego a `pot_antigiro_r` (**PENDIENTE**). Los pomos llevan agujero de 6 mm, plano en D opcional (`pomo_eje_D`) y **prisionero M3 radial**, así que valen para eje liso o en D. Con eje estriado conviene un pomo comercial.
+5. **Potenciómetros:** atornillados con su tuerca desde fuera. Panel de 3 mm + refuerzo automático (`refuerzo_pot`, 1,5 mm con el genérico de 24 mm y 0 mm con el de 16 mm) para dejar ≥ 4,5 mm de rosca libre. Hueco anti-giro ciego a `pot_antigiro_r` (**PENDIENTE**). Los pomos llevan agujero de 6 mm, plano en D opcional (`pomo_eje_D`) e inserto M3 4×5 radial con un M3×12 de cabeza de botón. Con eje estriado, si ese tornillo no frena, conviene un pomo comercial.
 6. **Pulsadores de panel:** se fijan con su tuerca en la pared de 3 mm.
 7. **Arduino Micro:**
    - La PCB apoya por sus extremos en dos bloques con labios de centrado y se sujeta con una brida.

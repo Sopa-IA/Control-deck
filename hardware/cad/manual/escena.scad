@@ -160,6 +160,15 @@ module tornillos_de(pts, z, arandela) {
     for (i = [0 : len(pts) - 1])
         torn_arriba(pts[i][0], pts[i][1], z, i + 1, arandela);
 }
+// La lengüeta de la grapa apunta al centro de la placa.
+module tornillos_grapa(pts, z, cx, cy, desde = 1) {
+    for (i = [0 : len(pts) - 1]) {
+        torn_arriba(pts[i][0], pts[i][1], z, i + desde, false);
+        color(ARAND) translate([pts[i][0], pts[i][1], z + 11])
+            rotate([0, 0, atan2(cy - pts[i][1], cx - pts[i][0])])
+                grapa_esquina();
+    }
+}
 
 module ficha(x, y, w, h, c, lineas) {
     color(c) translate([x, y, 0]) cube([w, h, 2.2]);
@@ -305,9 +314,9 @@ if (sub == "check") {
     der = [for (p = orej_resto()) if (p[0] > corte_x(1)) p];
     atornilla_orejas(der);
 } else if (sub == "4.1") {
-    color(GRIS) base();
+    color(GRIS) soporte_disco();
     td = torretas_disco();
-    for (i = [0 : len(td) - 1]) anillo(td[i][0], td[i][1], 8, i + 1);
+    for (i = [0 : len(td) - 1]) anillo(td[i][0], td[i][1], disco_z + 2, i + 1);
 } else if (sub == "4.2") {
     color(GRIS) base();
     color(RES) translate([0, 0, 36]) soporte_disco();
@@ -323,6 +332,10 @@ if (sub == "check") {
     for (i = [0 : 1], j = [0 : 1])
         torn_abajo(xs[i], ys[j], j * 2 + i + 1, false, disco_z + 8);
 } else if (sub == "4.4") {
+    color(GRIS) base();
+    ag = hp_agujeros();
+    for (i = [0 : len(ag) - 1]) anillo(ag[i][0], ag[i][1], suelo + hp_separador + 1, i + 1);
+} else if (sub == "4.5") {
     color(GRIS) base();
     color(GRIS) soporte_disco();
     losa(hp_x, hp_y, hp_pcb_z + 16, hp_w, hp_d, hp_pcb);
@@ -367,10 +380,14 @@ if (sub == "check") {
     losa(-40, io_frontal_y, io_frontal_z, io_frontal[0], io_frontal[1], io_frontal[2]);
     color(RES) translate([-18, io_frontal_y + io_frontal[1] / 2, io_frontal_z + io_frontal[2] / 2])
         rotate([0, 90, 0]) cylinder(d1 = 8, d2 = 2, h = 14, $fn = 12);
+} else if (sub == "7.0") {
+    color(GRIS) bandeja_servicio();
+    for (i = [0 : len(agujeros_pi()) - 1])
+        anillo(agujeros_pi()[i][0], agujeros_pi()[i][1], pi_z + 1, i + 1);
 } else if (sub == "7.1") {
     color(GRIS) bandeja_servicio();
     losa(pi_x0, pi_y0, pi_z + 10, pi_w, pi_d, 1.6);
-    tornillos_de(b3_pi_torn, pi_z + 12, true);
+    tornillos_de(agujeros_pi(), pi_z + 12, false);
 } else if (sub == "7.2") {
     // Corte del Nano de prácticas, a mitad del largo. Las dos filas, en naranja,
     // acaban ard_pines por debajo de la PCB: queda pin_bajo_pcb − ard_pines de aire.
@@ -389,11 +406,13 @@ if (sub == "check") {
 } else if (sub == "7.3") {
     color(GRIS) bandeja_servicio();
     hueco(b3_esp, suelo + b3_pin_z + 8, esp_pcb);
-    tornillos_de(tornillos_placa(b3_esp), suelo + b3_pin_z + 10, true);
+    tornillos_grapa(tornillos_placa(b3_esp), suelo + b3_pin_z + 10,
+                    b3_esp[0] + b3_esp[2] / 2, b3_esp[1] + b3_esp[3] / 2);
 } else if (sub == "7.4") {
     color(GRIS) bandeja_servicio();
     hueco(b3_prac, suelo + b3_pin_z + 8, ard_pcb);
-    tornillos_de(tornillos_placa(b3_prac), suelo + b3_pin_z + 10, true);
+    tornillos_grapa(tornillos_placa(b3_prac), suelo + b3_pin_z + 10,
+                    b3_prac[0] + b3_prac[2] / 2, b3_prac[1] + b3_prac[3] / 2);
 } else if (sub == "7.5") {
     color(GRIS) bandeja_servicio();
     hueco(b3_buck, suelo + buck_suelda + 8, buck_pcb);
@@ -401,12 +420,13 @@ if (sub == "check") {
     bri = bridas_buck();
     for (i = [0 : len(pas) - 1])
         torn_arriba(pas[i][0], pas[i][1], suelo + buck_suelda + 10, i + 1, false);
-    for (i = [0 : len(bri) - 1])
-        torn_arriba(bri[i][0], bri[i][1], suelo + buck_suelda + 10, i + 3, true);
+    tornillos_grapa(bri, suelo + buck_suelda + 10,
+                    b3_buck[0] + b3_buck[2] / 2, b3_buck[1] + b3_buck[3] / 2, 3);
 } else if (sub == "7.6") {
     color(GRIS) bandeja_servicio();
     hueco(b3_man, suelo + b3_pin_z + 8, ard_pcb);
-    tornillos_de(tornillos_placa(b3_man), suelo + b3_pin_z + 10, true);
+    tornillos_grapa(tornillos_placa(b3_man), suelo + b3_pin_z + 10,
+                    b3_man[0] + b3_man[2] / 2, b3_man[1] + b3_man[3] / 2);
 } else if (sub == "7.7") {
     color(GRIS) base();
     tb = torretas_bandeja();
@@ -415,10 +435,8 @@ if (sub == "check") {
     color(GRIS) base();
     color(GRIS) translate([0, 0, z_bandeja]) bandeja_servicio();
     tb = torretas_bandeja();
-    for (i = [0 : len(tb) - 1]) {
+    for (i = [0 : len(tb) - 1])
         torn_arriba(tb[i][0], tb[i][1], z_bandeja + 2, i + 1, false);
-        tuerca_abajo(tb[i][0], tb[i][1]);
-    }
 } else if (sub == "8.1") {
     color(GRIS) cuadrante_carcasa(1, 1);
     color(RES) translate([0, 0, 18]) tapa_pi();
@@ -488,6 +506,13 @@ if (sub == "check") {
             en_pendiente() translate([p[0], p[1], -pared]) anillo_luz();
         translate(pend_a_mundo([p[0] + 16, p[1], 18])) numero(i + 1);
     }
+} else if (sub == "10.7a") {
+    for (i = [0 : 1]) {
+        color(GRIS) translate([i * 40, 0, 0]) pomo();
+        color(RES) translate([i * 40 + 8, 0, 6])
+            rotate([0, 90, 0]) cylinder(d = 5, h = 8, $fn = 16);
+        n_en(i * 40, -20, 10, i + 1);
+    }
 } else if (sub == "10.7") {
     color(GRIS) carcasa_superior();
     for (i = [0 : len(pos_knobs) - 1]) {
@@ -495,8 +520,8 @@ if (sub == "check") {
         color(RES) translate(nrm * 16)
             en_pendiente() translate([p[0], p[1], 1.2]) pomo();
         color(RES) translate(nrm * 16)
-            en_pendiente() translate([p[0] + knob_d / 2 - 1, p[1], 7.2])
-                rotate([0, 90, 0]) cylinder(d = 3, h = 14, $fn = 12);
+            en_pendiente() translate([p[0] + knob_d / 2 + 2, p[1], 7.2])
+                rotate([0, 90, 0]) cylinder(d = 5.7, h = 1.7, $fn = 16);
         translate(pend_a_mundo([p[0] + 22, p[1], 20])) numero(i + 1);
     }
 } else if (sub == "10.8") {

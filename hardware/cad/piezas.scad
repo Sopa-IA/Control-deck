@@ -154,7 +154,7 @@ module puente_cable(x, y, dx, dy) {
 // canal hasta el suelo: desde la PCB hasta cualquier plástico quedan
 // pin_bajo_pcb. El apoyo es un escalón en la banda central de cada canto
 // corto, fuera del último pin. En el canto del USB ese escalón se parte
-// y, si el resto no llega a 1,6 mm, no se imprime: sujetan las arandelas.
+// y, si el resto no llega a 1,6 mm, no se imprime: sujetan las grapas.
 // usb_sy = −1 el conector mira a −Y; +1 mira a +Y.
 module bolsillo_pines(b, usb_sy, pcb_t) {
     x0 = b[0]; y0 = b[1]; lx = b[2]; ly = b[3];
@@ -290,7 +290,11 @@ module bandeja_servicio() {
             puente_cable(423.5, 198, 6, 0);
             puente_cable(423.5, 238, 6, 0);
         }
-        for (p = agujeros_pi()) translate([p[0], p[1], 1.5]) cylinder(d = 2.7, h = 20);
+        // Inserto M2.5 4×3,5. Ciego, 7 mm desde la cara del poste. El M2.5×8
+        // (largo bajo la cabeza) deja 6,4 mm de rosca: 4 en el inserto y 2,4
+        // de punta, con 0,6 mm de aire. [sin probar] Ø inserto_m25_d.
+        for (p = agujeros_pi())
+            translate([p[0], p[1], pi_z - 7]) cylinder(d = inserto_m25_d, h = 7.6, $fn = 24);
         for (p = torretas_bandeja()) translate([p[0], p[1], -5]) cylinder(d = tornillo_d, h = 10);
         // dedo para la micro-SD, que sale hacia −Y. La ranura exacta es [PENDIENTE]:
         // el plano la sitúa junto a ox = 0; la muesca cubre oy ≈ 20–38.
@@ -301,15 +305,15 @@ module bandeja_servicio() {
         for (i = [0 : pi_rej_n - 1], tramo = [[183, 14], [199, 16]])
             translate([pi_rej_x0 + i * pi_rej_paso, tramo[0], -2.4])
                 cube([pi_rej_ancho, tramo[1], 7]);
-        // Los postes no entran en la PCB: la arandela es quien la pisa.
+        // Los postes exteriores no entran en la PCB: son el plan B (grapa).
         translate([pi_x0, pi_y0, pi_z]) cube([pi_w, pi_d, 30]);
         for (p = b3_pi_torn) {
-            echo(str("ROSCA_BOLSILLO;Pi;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x10;arandela;9"));
+            echo(str("ROSCA_BOLSILLO;Pi-planB;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x12;grapa;1.6"));
             guia_m3(p[0], p[1], pi_z + 1.5, b3_rosca);
         }
         for (nom = [["ESP", b3_esp], ["Practicas", b3_prac], ["Mandos", b3_man]])
             for (p = tornillos_placa(nom[1])) {
-                echo(str("ROSCA_BOLSILLO;", nom[0], ";", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x10;arandela;9"));
+                echo(str("ROSCA_BOLSILLO;", nom[0], ";", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x12;grapa;1.6"));
                 guia_m3(p[0], p[1], suelo + b3_pin_z + ard_pcb, b3_rosca);
             }
         for (p = agujeros_buck()) {
@@ -317,7 +321,7 @@ module bandeja_servicio() {
             guia_m3(p[0], p[1], suelo + buck_suelda, b3_buck_rosca);
         }
         for (p = bridas_buck()) {
-            echo(str("ROSCA_BOLSILLO;Buck-brida;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca_baja, ";tornillo;M3x8;arandela;9"));
+            echo(str("ROSCA_BOLSILLO;Buck-brida;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca_baja, ";tornillo;M3x8;grapa;1.6"));
             guia_m3(p[0], p[1], suelo + buck_suelda + buck_pcb, b3_rosca_baja);
         }
     }
@@ -614,13 +618,34 @@ module pomo() {   // pomo Ø30 moleteado, eje de 6 mm
             translate([0, 0, knob_h - 2]) cylinder(d1 = knob_d, d2 = knob_d - 3, h = 2, $fn = 72);
         }
         for (a = [0 : 10 : 359]) rotate([0, 0, a]) translate([knob_d/2 + 0.2, 0, -1]) cylinder(d = 1.6, h = knob_h - 3, $fn = 8);
-        // eje de 6 mm: agujero redondo + plano en D opcional + prisionero M3 radial
-        // (vale para eje en D o liso; estriado: usar pomo comercial) [PENDIENTE medir eje]
+        // eje de 6 mm: agujero redondo + plano en D opcional.
+        // Estriado: el tornillo radial aprieta el eje; si no entra, pomo comercial. [PENDIENTE medir eje]
         difference() { translate([0, 0, -1]) cylinder(d = eje_pot_d + 0.2, h = 14);
             if (pomo_eje_D) translate([1.5 + 0.1, -5, -2]) cube([10, 10, 20]); }
-        translate([0, 0, 6]) rotate([0, 90, 0]) cylinder(d = 2.5, h = knob_d);   // prisionero M3 (rosca a mano o inserto)
+        // Retención radial. De la piel (x = 15) al eje (x = 3,1) hay 12 mm:
+        // un avellanado M3×4 o ×5 no llega. Cabeza de botón M3×12 (ISO 7380,
+        // Ø5,7 × 1,65) en un cajeado Ø6,5 × 1,8, paso Ø3,4, y bolsillo Ø4,0 × 4,5
+        // para el inserto M3 4×5, a ras del eje. La punta entra ~1,9 mm en el eje.
+        // [sin probar] el Ø4,0.
+        translate([knob_d/2 - 1.8, 0, 6]) rotate([0, 90, 0]) cylinder(d = 6.5, h = 2.6, $fn = 24);
+        translate([(eje_pot_d + 0.2)/2 + 4.3, 0, 6]) rotate([0, 90, 0]) cylinder(d = tornillo_d, h = 12, $fn = 20);
+        translate([(eje_pot_d + 0.2)/2 - 0.2, 0, 6]) rotate([0, 90, 0]) cylinder(d = inserto_d, h = 4.7, $fn = 24);
         translate([0, 0, -1]) cylinder(d = 12, h = 2.5);
         translate([0, knob_d/2 - 5, knob_h - 0.8]) cylinder(d = 2.4, h = 2);   // marca de posición (relleno ámbar)
+    }
+}
+// Grapa de esquina, 1,6 mm. Sustituye a la arandela Ø9, que solo pisaba
+// 1,1 mm. El agujero es el del tornillo. La lengüeta (+X) cae sobre la PCB.
+// La punta queda a 6,2 mm del eje: la esquina está a ~3,4 mm, así que entran
+// unos 2,8 mm, dentro de pin_extremo (2,5 mm) si se apunta a la esquina.
+// Una pieza. En cada esquina se gira para que la lengüeta mire a la placa.
+module grapa_esquina() {
+    difference() {
+        hull() {
+            cylinder(d = 8.5, h = grapa_t, $fn = 32);
+            translate([2.6, 0, 0]) cylinder(d = 7.2, h = grapa_t, $fn = 24);
+        }
+        translate([0, 0, -0.3]) cylinder(d = tornillo_d, h = grapa_t + 0.8, $fn = 24);
     }
 }
 module anillo_luz() {  // guía de luz anular bajo cada pomo (PETG translúcido)

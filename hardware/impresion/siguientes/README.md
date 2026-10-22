@@ -43,9 +43,9 @@ La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. Delan
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_bandeja_servicio.stl`](../../cad/export/stl/PROVISIONAL_bandeja_servicio.stl) · regenerado el 2026-10-22
 - STEP: [`STEP/02_PROVISIONAL_bandeja_servicio.step`](STEP/02_PROVISIONAL_bandeja_servicio.step) · **desfasado**, sigue siendo la v1
-- Medidas: 126,00 × 237,49 × 20,60. Volumen 181,89 cm³. Cabe en la A1: 237,49 mm frente a 246 mm con el margen de 10. Bajo cada fila de pines del Nano y del ESP hay 13 mm hasta el suelo.
+- Medidas: 126,00 × 237,49 × 20,60. Volumen 181,71 cm³. Cabe en la A1: 237,49 mm frente a 246 mm con el margen de 10. Bajo cada fila de pines del Nano y del ESP hay 13 mm hasta el suelo.
 - Cama: plancha abajo. Las paredes de los Nano y del ESP acaban en z = 18,6. Los puentes salvan unos 6 mm. Las ranuras bajo la Pi no piden soporte.
-- Tornillos autorroscantes, guía Ø2,5, sin insertos. Pi, ESP y los dos Nano: M3×10 con arandela ancha Ø9, guía de 10 mm. El buck: dos M3×8 por sus agujeros (guía de 7 mm) y dos M3×8 con arandela en las otras esquinas (guía de 8 mm). Los 4 M3 del ala, a la base, no cambian (paso libre Ø3,4).
+- Tornillos de los kits. Pi: inserto M2.5 4×3,5 y M2.5×8 de botón en los agujeros reales (Ø3,0 × 7 mm). ESP y los dos Nano: M3×12 de botón y grapa de 1,6 mm, guía Ø2,5 × 13 mm. El buck: dos M3×8 de botón por sus agujeros (guía de 7 mm) y dos M3×8 con grapa (guía de 8 mm). Los 4 del ala, a la base: inserto M3 6×5 en la torreta y M3×8 de botón. Si la bandeja ya está impresa, no se reimprime: se taladra como dice el manual.
 - No imprimir los carros ni el retenedor (piezas 16 a 19): están obsoletos.
 - Comprueba que entra por el hueco, que los 4 M3 caen en las torretas de la base y que los cuatro separadores de la Pi coinciden con la placa girada. El step-down del CAD es un LM2596 típico de 43 × 21 mm: **PENDIENTE** hasta el módulo de Miguel.
 
@@ -90,7 +90,7 @@ Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi, el panel de 
 - STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**, **desfasado**: no incluye la tapa ni el panel
 - Medidas: 228,13 × 150,25 × 150,93. Volumen 233,81 cm³ (antes 233,65, con agujeros de inserto).
 - Cama: cara del corte delantero sobre la cama, 150 mm de alto. Soportes: sí. El hueco de la tapa está en el lomo, que queda arriba en esa orientación.
-- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³). Sus dos agujeros siguen siendo paso libre Ø3,4. En la carcasa, cada poste Ø10 lleva una guía Ø2,5 × 9 mm: tornillo M3×10 de cabeza cilíndrica. Las tres orejetas de esta pieza llevan la misma guía y un M3×10 avellanado desde la base. Las otras tres carcasas no se regeneran.
+- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³). Sus dos agujeros siguen siendo paso libre Ø3,4. En la carcasa, cada poste Ø10 lleva una guía Ø2,5 × 9 mm: tornillo M3×8 de cabeza de botón. Las tres orejetas de esta pieza llevan la misma guía y un M3×8 avellanado desde la base. Las otras tres carcasas no se regeneran: el inserto M3 5×5 entra en el agujero Ø4 que ya tienen.
 - La tapa trae ranuras de salida. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue alineada con la Pi y baja hasta z ≈ 90.
 - Comprueba que el hueco cae sobre los USB de la Pi y que se puede pasar una clavija USB-A con la tapa quitada.
 
@@ -168,7 +168,7 @@ Era el carro de una protoboard de 30 × 70 mm. Esa placa ya no tiene hueco en la
 
 ### 20 · `PROVISIONAL_tapa_pi` · provisional
 
-Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3×10 a las guías Ø2,5 de `carcasa_x1_y1`. El paso de la tapa sigue en Ø3,4.
+Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3×8 de cabeza de botón a las guías Ø2,5 de `carcasa_x1_y1`. El paso de la tapa sigue en Ø3,4. El STL no se ha regenerado.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_tapa_pi.stl`](../../cad/export/stl/PROVISIONAL_tapa_pi.stl)
 - Medidas: 94,00 × 54,00 × 2,40. Volumen 9,70 cm³.
@@ -203,7 +203,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneró la bandeja con el canal de pines (126,00 × 237,49 × 20,60, 181,89 cm³). `carcasa_x1_y1` se había regenerado antes, el mismo día, con guías Ø2,5, y no se ha vuelto a exportar con este cambio. Los carros, el retenedor, la tapa, las otras tres carcasas, la base, el soporte y los biseles tampoco. Los STEP tampoco. El manual vigente es `docs/manual_montaje/` (el PDF de `docs/manual-montaje/` no se ha regenerado). La placa I/O y su prueba siguen como se añadieron ese día; `carcasa_x0_y1` no se ha vuelto a generar. El botón de encendido de ese mismo día son tres STL nuevos, para imprimir ya: `PRUEBA_boton` plana, `PROVISIONAL_boton_encendido` con la pestaña abajo y `PROVISIONAL_soporte_boton` con el suelo abajo, los tres sin soportes.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneró la bandeja otra vez, con guías de 13 mm e inserto M2.5 en la Pi (126,00 × 237,49 × 20,60, 181,71 cm³). El mismo día se regeneraron el pomo (inserto radial) y la grapa de esquina. `carcasa_x1_y1` no se ha vuelto a exportar. Los carros, el retenedor, la tapa, las otras tres carcasas, la base, el soporte y los biseles tampoco. Los STEP tampoco. El manual vigente es `docs/manual_montaje/` (el PDF de `docs/manual-montaje/` no se ha regenerado). La placa I/O y su prueba siguen como se añadieron ese día; `carcasa_x0_y1` no se ha vuelto a generar. El botón de encendido de ese mismo día son tres STL nuevos, para imprimir ya: `PRUEBA_boton` plana, `PROVISIONAL_boton_encendido` con la pestaña abajo y `PROVISIONAL_soporte_boton` con el suelo abajo, los tres sin soportes.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

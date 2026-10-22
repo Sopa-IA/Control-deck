@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Escribe docs/manual_montaje/README.md y Orbit_manual_montaje.pdf.
 
-Las siluetas de los tornillos van a 1 mm = 1 mm en el A4.
-Los recuentos de cada paso suman la lista de la compra, sin el 10 %.
+Las siluetas van a 1 mm = 1 mm en el A4.
+Los recuentos de cada paso suman lo que sale de cada kit, sin repuesto.
+La fuente del inventario es el repo privado inventario-taller. Este
+generador no escribe ahí.
 """
 from __future__ import annotations
 
@@ -44,10 +46,6 @@ PAPEL = HexColor("#f4f1ea")
 LINEA = HexColor("#c8c2b4")
 METAL = HexColor("#c5c9cf")
 METAL2 = HexColor("#8d929a")
-
-
-def con_repuesto(n: int) -> int:
-    return (n * 11 + 9) // 10
 
 
 def _dibujo(ancho, alto):
@@ -126,58 +124,94 @@ def broca(diam):
     return d
 
 
-# clave, cantidad en el aparato, nombre, dónde, estado
+def inserto(largo, d=5.0):
+    w, h = 12, largo + 2
+    dr = _dibujo(w, h)
+    dr.add(Rect((w - d) / 2 * mm, 1 * mm, d * mm, largo * mm,
+                strokeColor=TINTA, fillColor=HexColor("#c4a574"), strokeWidth=0.4))
+    return dr
+
+
+def grapa_dibujo():
+    w, h = 14, 8
+    d = _dibujo(w, h)
+    d.add(Rect(1 * mm, 2.2 * mm, 11 * mm, 1.6 * mm, strokeColor=TINTA, fillColor=METAL, strokeWidth=0.4))
+    d.add(Circle(3.2 * mm, 3 * mm, 1.6 * mm, strokeColor=TINTA, fillColor=white, strokeWidth=0.35))
+    return d
+
+
+# clave, cantidad en el aparato, existencias del kit, nombre, dónde, estado
+# El largo de la cabeza de botón (ISO 7380, JINZEYOU 840) es bajo la cabeza.
+# El largo del avellanado (wugongshan 860) incluye la cabeza.
+# El CSV del repo privado no se ha podido leer: estas existencias son las del mensaje.
 COMPRA = [
-    ("cil16", 21, "M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza",
-     "9 pasadores, 8 pletinas, 4 de la bandeja",
-     "Elegido, sin probar. En los pasadores Miguel ya cerró con un M3; este largo llena el agujero de 16 mm."),
-    ("tuerca", 12, "Tuerca M3 DIN 934",
-     "8 pletinas y 4 de la bandeja",
-     "Elegida, sin probar."),
-    ("ave10", 3, "M3×10 avellanado DIN 965, Phillips PH1",
-     "3 orejetas de la carcasa nueva",
-     "Elegido, sin probar. La guía es Ø2,5."),
-    ("plas", 26, "Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2",
-     "10 orejetas ya impresas, 4 del soporte del disco, 12 del bisel",
-     "Elegido, sin probar. El paso impreso es Ø3,4: se abre a Ø4,6 antes de meterlo."),
-    ("cil6", 4, "M3×6 cilíndrico, Phillips PH1 (tornillo de placa base)",
-     "Placa HP, en sus cuatro separadores",
-     "Elegido, sin probar. El agujero impreso es Ø4."),
-    ("cil10", 18, "M3×10 cilíndrico, Phillips PH1",
-     "16 presillas de placas y 2 de la tapa",
-     "Elegido, sin probar. Guía Ø2,5."),
-    ("arand", 18, "Arandela ancha M3 Ø9, DIN 9021",
-     "16 presillas de placas y 2 bridas del step-down",
-     "Elegida, sin probar."),
-    ("cil8", 4, "M3×8 cilíndrico, Phillips PH1",
-     "Step-down: 2 que lo atraviesan y 2 que lo pisan",
-     "Elegido, sin probar."),
-    ("pris", 2, "Prisionero M3×16 DIN 916 (Allen 1,5 mm)",
-     "Los dos pomos",
-     "Elegido, sin probar."),
-    ("unc", 4, "6-32 UNC × 1/4\" (6,4 mm), Phillips PH2",
-     "Disco Toshiba de 3,5\", por debajo",
-     "Tornillo de disco. Elegido, sin probar. No es M3."),
+    ("b16", 17, 20, "M3×16 cabeza de botón, Allen 2 mm, JINZEYOU 840",
+     "9 pasadores (ya puestos) y 8 pletinas",
+     "Del kit. Sin probar, salvo el M3 con el que ya se cerró la carcasa."),
+    ("tuerca", 8, 100, "Tuerca M3, del kit JINZEYOU",
+     "8 pletinas, por debajo",
+     "Del kit. Sin probar."),
+    ("cs8", 29, 40, "M3×8 avellanado negro, Phillips, wugongshan 860",
+     "13 orejetas, 4 del disco y 12 del bisel",
+     "Del kit. El largo incluye la cabeza. Sin probar."),
+    ("cs6", 4, 40, "M3×6 avellanado negro, Phillips, wugongshan 860",
+     "Placa HP, sobre los separadores",
+     "Del kit. Sin probar. La cabeza apoya en la PCB."),
+    ("b8", 10, 30, "M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840",
+     "4 del step-down, 4 de la bandeja a la base y 2 de la tapa",
+     "Del kit. Largo bajo la cabeza. Sin probar."),
+    ("b12", 14, 30, "M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840",
+     "12 grapas de ESP y Nanos, y 2 pomos",
+     "Del kit. Largo bajo la cabeza. Sin probar."),
+    ("b258", 4, 40, "M2.5×8 cabeza de botón, Allen 1,5 mm, JINZEYOU 840",
+     "Los cuatro agujeros reales de la Pi",
+     "Del kit. Largo bajo la cabeza. Sin probar."),
+    ("i55", 26, 30, "Inserto de latón M3, 5×5 mm (largo × Ø exterior)",
+     "10 orejetas, 12 postes del bisel y 4 del soporte del disco",
+     "Kit de latón 360. Agujero Ø4,0, sin ficha y sin probar."),
+    ("i45", 6, 30, "Inserto de latón M3, 4×5 mm",
+     "4 separadores HP y 2 pomos",
+     "Kit de latón 360. Agujero Ø4,0, sin probar. El 5×5 no cabe en el separador."),
+    ("i65", 4, 30, "Inserto de latón M3, 6×5 mm",
+     "4 torretas de la bandeja",
+     "Kit de latón 360. Agujero Ø4,0, sin probar."),
+    ("i25", 4, 40, "Inserto de latón M2.5, 4×3,5 mm",
+     "4 postes de la Pi",
+     "Kit de latón 360. Agujero Ø3,0, sin ficha y sin probar."),
 ]
 
-DIBUJO = {
-    "cil16": lambda: cilindrico(16),
-    "tuerca": tuerca,
-    "ave10": lambda: avellanado(10),
-    "plas": lambda: avellanado(10, vastago=4.5, cabeza=8.2, k=2.4),
-    "cil6": lambda: cilindrico(6),
-    "cil10": lambda: cilindrico(10),
-    "arand": arandela,
-    "cil8": lambda: cilindrico(8),
-    "pris": lambda: prisionero(16),
-    "unc": lambda: cilindrico(6.4, vastago=3.5, cabeza=6.6, k=2.2),
-    "broca46": lambda: broca(4.6),
-    "broca34": lambda: broca(3.4),
+# No está en ningún kit. El subpaso lo cuenta aparte.
+FALTA = {
+    "unc": 4,
 }
 
-NOMBRE = {c[0]: c[2] for c in COMPRA}
-NOMBRE["broca46"] = "broca de Ø4,6 mm"
-NOMBRE["broca34"] = "broca de Ø3,4 mm"
+DIBUJO = {
+    "b16": lambda: cilindrico(16, cabeza=5.7, k=1.65),
+    "tuerca": tuerca,
+    "cs8": lambda: avellanado(8),
+    "cs6": lambda: avellanado(6),
+    "b8": lambda: cilindrico(8, cabeza=5.7, k=1.65),
+    "b12": lambda: cilindrico(12, cabeza=5.7, k=1.65),
+    "b258": lambda: cilindrico(8, vastago=2.5, cabeza=4.5, k=1.5),
+    "i55": lambda: inserto(5),
+    "i45": lambda: inserto(4),
+    "i65": lambda: inserto(6),
+    "i25": lambda: inserto(4, d=3.5),
+    "unc": lambda: cilindrico(6.4, vastago=3.5, cabeza=6.6, k=2.2),
+    "broca40": lambda: broca(4.0),
+    "broca30": lambda: broca(3.0),
+    "broca25": lambda: broca(2.5),
+    "broca16": lambda: broca(1.6),
+    "grapa": grapa_dibujo,
+}
+
+NOMBRE = {c[0]: c[3] for c in COMPRA}
+NOMBRE["unc"] = "6-32 UNC × 1/4\" (6,4 mm), Phillips PH2. FALTA: comprar"
+NOMBRE["broca40"] = "broca de Ø4,0 mm"
+NOMBRE["broca30"] = "broca de Ø3,0 mm"
+NOMBRE["broca25"] = "broca de Ø2,5 mm"
+NOMBRE["broca16"] = "broca de Ø1,6 mm"
+NOMBRE["grapa"] = "grapa de esquina impresa, 1,6 mm"
 # El botón no entra en COMPRA: no son tornillos y cuadrar() no los suma.
 NOMBRE["capuchon"] = "capuchón PROVISIONAL_boton_encendido"
 NOMBRE["prueba_b"] = "placa PRUEBA_boton"
@@ -187,7 +221,7 @@ NOMBRE["led3"] = "LED de 3 mm, el color que quieras"
 NOMBRE["cola"] = "cianoacrilato"
 NOMBRE["cable"] = "cable fino, 30 cm"
 
-# Pieza, compras, nota. No lleva el 10 % de los tornillos: se compra uno.
+# Pieza, compras, nota. No entra en la cuenta de los kits.
 BOTON_COMPRA = [
     ("Pulsador táctil 12×12×7,3 mm, 4 patillas, unos 100 gf", "1",
      "De catálogo. El recorrido del clic es 0,25 mm. Si el tuyo es de 6×6, cambia sw_tipo y reexporta solo el soporte."),
@@ -211,19 +245,19 @@ PASOS = [
              "Pon las cuatro piezas en cruz, con las torretas hacia arriba. Aún no las atornilles.",
              [], None),
             ("1.2", "s1_2", "Pletina delantera",
-             "Pon la pletina sobre las dos torretas del cruce delantero. Tornillo desde arriba. Tuerca debajo. Aprieta hasta que no se mueva.",
-             [("cil16", 2), ("tuerca", 2)], None),
+             "Pon la pletina sobre las dos torretas del cruce delantero. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo. Aprieta hasta que no se mueva. La pila mide 12 mm: salen unos 4 mm para la tuerca.",
+             [("b16", 2), ("tuerca", 2)], None),
             ("1.3", "s1_3", "Pletina trasera del mismo corte",
-             "Haz lo mismo en el cruce de atrás. Tornillo desde arriba. Tuerca debajo.",
-             [("cil16", 2), ("tuerca", 2)], None),
+             "Haz lo mismo en el cruce de atrás. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.",
+             [("b16", 2), ("tuerca", 2)], None),
             ("1.4", "s1_4", "Pletina izquierda",
-             "Pon la pletina del corte largo, en el lado izquierdo. Tornillo desde arriba. Tuerca debajo.",
-             [("cil16", 2), ("tuerca", 2)], None),
+             "Pon la pletina del corte largo, en el lado izquierdo. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.",
+             [("b16", 2), ("tuerca", 2)], None),
             ("1.5", "s1_5", "Pletina derecha",
-             "Cierra el último cruce, a la derecha. Tornillo desde arriba. Tuerca debajo.",
-             [("cil16", 2), ("tuerca", 2)], None),
+             "Cierra el último cruce, a la derecha. M3×16 de cabeza de botón desde arriba. Tuerca M3 debajo.",
+             [("b16", 2), ("tuerca", 2)], None),
         ],
-        "recuento": [("cil16", 8), ("tuerca", 8)],
+        "recuento": [("b16", 8), ("tuerca", 8)],
     },
     {
         "n": 2,
@@ -231,65 +265,73 @@ PASOS = [
         "intro": "Si la carcasa ya está unida con M3, salta al paso 3.1.",
         "subs": [
             ("2.1", "s2_1", "Par izquierdo",
-             "Junta las dos piezas de la izquierda. Mete un tornillo en cada agujero del corte. Aprieta hasta que las caras se toquen.",
-             [("cil16", 2)], None),
+             "Junta las dos piezas de la izquierda. Mete un M3×16 de cabeza de botón en cada agujero del corte. Aprieta hasta que las caras se toquen.",
+             [("b16", 2)], None),
             ("2.2", "s2_2", "Par derecho",
-             "Junta las dos piezas de la derecha. Dos tornillos, igual que antes.",
-             [("cil16", 2)], None),
+             "Junta las dos piezas de la derecha. Dos M3×16 de cabeza de botón, igual que antes.",
+             [("b16", 2)], None),
             ("2.3", "s2_3", "Las dos piezas de atrás",
-             "Junta las dos piezas traseras. Cinco tornillos en los cinco agujeros del corte. Aprieta en cruz.",
-             [("cil16", 5)], None),
+             "Junta las dos piezas traseras. Cinco M3×16 de cabeza de botón en los cinco agujeros del corte. Aprieta en cruz. Estos nueve, con los ocho de las pletinas, dejan tres M3×16 en el bote.",
+             [("b16", 5)], None),
         ],
-        "recuento": [("cil16", 9)],
+        "recuento": [("b16", 9)],
     },
     {
         "n": 3,
         "titulo": "Carcasa sobre la base",
-        "intro": "El tornillo de la orejeta entra siempre desde abajo.",
+        "intro": "El tornillo de la orejeta entra siempre desde abajo. El inserto va en la orejeta, no en el suelo: el suelo solo tiene 4 mm y un inserto de 5 mm no cabe ahí.",
         "subs": [
-            ("3.1", "s3_1", "Abre diez pasos",
-             "Con la broca de Ø4,6, abre los diez agujeros Ø3,4 de la base. Desde abajo. Para en cuanto salgas del suelo. No agrandes la orejeta.",
-             [("broca46", 1)], None),
+            ("3.1", "s3_1", "Diez insertos en las orejetas ya impresas",
+             "Con el soldador, mete un inserto M3 de 5×5 en el agujero Ø4 de cada una de las diez orejetas viejas. Entra desde abajo, a ras de la cara que apoya en la base. El agujero mide unos 5,7 mm: el de 5 mm cabe y el de 6 mm no. No abras el Ø3,4 de la base.",
+             [("i55", 10)],
+             "El Ø4,0 es el fallback para un inserto de Ø exterior 5. No hay ficha y no se ha probado. Si esa orejeta ya se abrió a Ø4,6, el inserto no agarra: pasa un M3 y pon tuerca arriba. En las cuatro columnas del frente la tuerca no tiene sitio: esas tienen que quedar con el inserto."),
             ("3.2", "s3_2", "Baja la carcasa",
              "Apoya la carcasa sobre la base. Cada orejeta cae sobre su agujero.",
              [], None),
             ("3.3", "s3_3", "Tres orejetas de la pieza nueva",
-             "Atornilla las tres orejetas de la carcasa nueva, la de atrás a la derecha. Desde abajo. Para cuando la cabeza entre en el avellanado.",
-             [("ave10", 3)], None),
+             "Atornilla las tres orejetas de la carcasa de atrás a la derecha. Desde abajo, con M3×8 avellanado. Esa pieza se está imprimiendo: la guía es Ø2,5 × 9 mm y no lleva inserto. La cabeza entra en el avellanado del suelo. Entran unos 4 mm en la guía.",
+             [("cs8", 3)], None),
             ("3.4", "s3_4", "Cuatro orejetas del frente",
-             "Atornilla las cuatro del frente. Desde abajo. El tornillo es el de Ø4,5.",
-             [("plas", 4)], None),
+             "Atornilla las cuatro del frente. Desde abajo, M3×8 avellanado, al inserto del 3.1.",
+             [("cs8", 4)], None),
             ("3.5", "s3_5", "Tres orejetas de la izquierda",
-             "Atornilla las tres del lateral izquierdo. Desde abajo.",
-             [("plas", 3)], None),
+             "Atornilla las tres del lateral izquierdo. Desde abajo, M3×8 avellanado.",
+             [("cs8", 3)], None),
             ("3.6", "s3_6", "Orejeta trasera que queda",
-             "Atornilla la orejeta trasera de la pieza izquierda. Desde abajo.",
-             [("plas", 1)], None),
+             "Atornilla la orejeta trasera de la pieza izquierda. Desde abajo, M3×8 avellanado.",
+             [("cs8", 1)], None),
             ("3.7", "s3_7", "Dos orejetas de la derecha",
-             "Atornilla las dos del lateral derecho. Desde abajo.",
-             [("plas", 2)], None),
+             "Atornilla las dos del lateral derecho. Desde abajo, M3×8 avellanado.",
+             [("cs8", 2)], None),
         ],
-        "recuento": [("ave10", 3), ("plas", 10)],
+        "recuento": [("i55", 10), ("cs8", 13)],
     },
     {
         "n": 4,
         "titulo": "Disco y placa HP",
         "intro": "La carcasa sigue puesta. En el dibujo no está, para que se vea el interior.",
         "subs": [
-            ("4.1", "s4_1", "Abre los cuatro pasos del disco",
-             "Desde abajo, abre a Ø4,6 los cuatro agujeros del soporte del disco. Para al salir del suelo.",
-             [("broca46", 1)], None),
+            ("4.1", "s4_1", "Cuatro insertos en el soporte del disco",
+             "Con el soldador, mete un inserto M3 de 5×5 en cada pata del soporte, desde arriba, a ras del plato. El agujero ya es Ø4 y mide unos 6,7 mm. No abras el Ø3,4 de la base.",
+             [("i55", 4)],
+             "No consta si este soporte 3,5\" ya está impreso. El STL no cambia: el agujero ya vale para el inserto. El Ø4,0 no se ha probado."),
             ("4.2", "s4_2", "Soporte del disco",
-             "Apoya el soporte en sus cuatro postes. Atornilla desde abajo con los Ø4,5. La cabeza entra en el avellanado.",
-             [("plas", 4)], None),
+             "Apoya el soporte en sus cuatro postes. Desde abajo, M3×8 avellanado. La cabeza entra en el avellanado de la base.",
+             [("cs8", 4)], None),
             ("4.3", "s4_3", "Disco Toshiba",
-             "Apoya el disco en el soporte, conectores hacia la ventana trasera. Los cuatro tornillos entran desde abajo, por el coliso, a la rosca del disco.",
-             [("unc", 4)], None),
-            ("4.4", "s4_4", "Placa HP",
-             "Apoya la placa en los cuatro separadores. Los conectores miran a la ventana trasera. Atornilla los cuatro M3×6.",
-             [("cil6", 4)], None),
+             "Apoya el disco en el soporte, conectores hacia la ventana trasera. Los cuatro tornillos entran desde abajo, por el coliso, a la rosca del disco. Ningún kit trae 6-32.",
+             [("unc", 4)],
+             "FALTA: comprar 4× 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2. Si aún tienes los tornillos originales de la torre HP, valen esos. Un inserto 1/4-20 no entra en esa rosca."),
+            ("4.4", "s4_4", "Cuatro insertos en los separadores HP",
+             "Con el soldador, mete un inserto M3 de 4×5 en cada separador, desde arriba, a ras. El agujero es Ø4 y mide unos 6,2 mm: el de 5×5 entra justo y el de 6×5 no. No atravieses el suelo.",
+             [("i45", 4)],
+             "El Ø4,0 no se ha probado. La base ya está impresa: no se regenera."),
+            ("4.5", "s4_5", "Placa HP",
+             "Apoya la placa en los cuatro separadores. Los conectores miran a la ventana trasera. Atornilla cuatro M3×6 avellanados. La cabeza queda sobre la PCB, en la esquina. Entran unos 2,6 mm en el inserto y no llegan al fondo.",
+             [("cs6", 4)],
+             "El dibujo no pone ningún componente sobre esos cuatro agujeros. Si la cabeza toca una pieza, para."),
         ],
-        "recuento": [("plas", 4), ("unc", 4), ("cil6", 4)],
+        "recuento": [("i55", 4), ("cs8", 4), ("unc", 4), ("i45", 4), ("cs6", 4)],
     },
     {
         "n": 5,
@@ -331,38 +373,43 @@ PASOS = [
     {
         "n": 7,
         "titulo": "Bandeja de placas",
-        "intro": "Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final.",
+        "intro": "Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final. La grapa sustituye a la arandela: la lengüeta mira a la placa.",
         "subs": [
+            ("7.0", "s7_0", "Cuatro insertos en la Pi",
+             "Con el soldador, mete un inserto M2.5 de 4×3,5 en cada poste de la Pi, desde arriba, a ras del poste. El agujero es Ø3,0 y mide 7 mm. No uses los cuatro postes de fuera: esos son el plan B.",
+             [("i25", 4)],
+             "El Ø3,0 es el fallback para un inserto de Ø exterior 3,5. Sin ficha y sin probar. Si la bandeja ya está impresa, el agujero es Ø2,7 pasante: ábrelo a Ø3,0 en los 7 mm de arriba y deja el resto."),
             ("7.1", "s7_1", "Raspberry Pi",
-             "Pon la Pi en su hueco, con USB y RJ45 hacia atrás. La arandela pisa la esquina. El tornillo entra en el poste, fuera de la placa. Aprieta hasta que la arandela apoye.",
-             [("cil10", 4), ("arand", 4)], None),
+             "Pon la Pi en su hueco, con USB y RJ45 hacia atrás. Cuatro M2.5×8 de cabeza de botón, por los agujeros reales de la placa, al inserto. La PCB mide 1,6 mm: entran 6,4 mm, 4 en el inserto y 2,4 de punta.",
+             [("b258", 4)], None),
             ("7.2", "s7_2", "Mira el canal de los pines",
              "El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos filas. Acaban 1,5 mm por encima del suelo. Desde la cara inferior de la PCB hasta el suelo hay 13 mm, en toda la huella de cada fila. La placa apoya en el centro del canto corto, fuera de esas filas.",
              [],
              "El 13 mm es 11,5 mm del pin más largo, con el separador ya contado, más 1,5 mm de aire. Miguel no lo ha medido. Si un pin es más largo, para: el canal llega al suelo y no se puede bajar más."),
             ("7.3", "s7_3", "ESP8266",
-             "Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro tornillos M3×10 con arandela Ø9. La guía es Ø2,5 y mide 10 mm.",
-             [("cil10", 4), ("arand", 4)],
-             "El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces."),
+             "Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro M3×12 de cabeza de botón. La grapa, de 1,6 mm, pisa la esquina. La guía es Ø2,5 y mide 13 mm.",
+             [("b12", 4), ("grapa", 4)],
+             "El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces. Si la bandeja ya está impresa, la guía mide 10 mm: alárgala 3 mm con la broca de Ø2,5. El fondo baja de z = 8,6 a z = 5,6 y sigue cerrado."),
             ("7.4", "s7_4", "Nano de prácticas",
-             "Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro arandelas. Tornillo M3×10, guía Ø2,5 de 10 mm.",
-             [("cil10", 4), ("arand", 4)],
-             "La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre."),
+             "Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.",
+             [("b12", 4), ("grapa", 4)],
+             "La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre. La lengüeta entra unos 2,8 mm en esa esquina."),
             ("7.5", "s7_5", "Step-down",
-             "Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan. Los 3 y 4 lo pisan con arandela, por fuera de la placa. Debajo hay 3 mm para la soldadura.",
-             [("cil8", 4), ("arand", 2)],
-             "El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo."),
+             "Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan: M3×8 de cabeza de botón, sin grapa. Los 3 y 4 lo pisan con grapa, por fuera de la placa, el mismo M3×8. Debajo hay 3 mm para la soldadura.",
+             [("b8", 4), ("grapa", 2)],
+             "El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo. En el pasante entran 6,4 mm en una guía de 7 mm: quedan 0,6 mm hasta el fondo."),
             ("7.6", "s7_6", "Nano de mandos",
-             "Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las arandelas. M3×10, guía Ø2,5 de 10 mm.",
-             [("cil10", 4), ("arand", 4)], None),
-            ("7.7", "s7_7", "Abre las cuatro torretas",
-             "Con la broca de Ø3,4, abre el techo de las cuatro torretas de la base. Para en cuanto la broca caiga.",
-             [("broca34", 1)], None),
+             "Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.",
+             [("b12", 4), ("grapa", 4)], None),
+            ("7.7", "s7_7", "Inserto en las cuatro torretas",
+             "Con la broca de Ø4,0, abre el techo macizo de las cuatro torretas de la base hasta encontrar el agujero Ø4 que ya sube desde abajo. Con el soldador, mete un inserto M3 de 6×5 desde arriba, a ras de la torreta. No lo empujes hasta que asome por debajo.",
+             [("broca40", 1), ("i65", 4)],
+             "Si el techo ya se abrió a Ø3,4, ábrelo a Ø4,0. El kit trae 20 M3×16 y 17 ya están contados: estas cuatro torretas no pueden llevar otro M3×16."),
             ("7.8", "s7_8", "Atornilla la bandeja",
-             "Apoya el ala en las cuatro torretas. Tornillo desde arriba. Tuerca debajo. Aprieta en cruz.",
-             [("cil16", 4), ("tuerca", 4)], None),
+             "Apoya el ala en las cuatro torretas. M3×8 de cabeza de botón desde arriba, al inserto. Aprieta en cruz. La punta queda a ras del inserto, dentro de la base: no sale por debajo y no lleva tuerca.",
+             [("b8", 4)], None),
         ],
-        "recuento": [("cil10", 16), ("arand", 18), ("cil8", 4), ("cil16", 4), ("tuerca", 4)],
+        "recuento": [("i25", 4), ("b258", 4), ("b12", 12), ("b8", 8), ("i65", 4)],
     },
     {
         "n": 8,
@@ -370,10 +417,10 @@ PASOS = [
         "intro": "Dos tornillos. No hace falta ventilador.",
         "subs": [
             ("8.1", "s8_1", "Cierra la tapa",
-             "Apoya la tapa en el techo. Atornilla los dos tornillos del canto derecho.",
-             [("cil10", 2)], None),
+             "Apoya la tapa en el techo. Dos M3×8 de cabeza de botón en el canto derecho. La tapa mide 2,4 mm: entran unos 5,6 mm en la guía de 9 mm. Los postes están en la carcasa que se está imprimiendo: no los toques.",
+             [("b8", 2)], None),
         ],
-        "recuento": [("cil10", 2)],
+        "recuento": [("b8", 2)],
     },
     {
         "n": 9,
@@ -394,29 +441,34 @@ PASOS = [
             ("10.1", "s10_1", "Mete el monitor",
              "Mete el monitor en la tina, con los conectores hacia la derecha.",
              [], None),
-            ("10.2", "s10_2", "Abre los biseles",
-             "En el banco, abre a Ø4,6 los doce agujeros de los cuatro biseles. No taladres la carcasa.",
-             [("broca46", 1)], None),
+            ("10.2", "s10_2", "Doce insertos en el marco",
+             "Con el soldador, mete un inserto M3 de 5×5 en cada poste del marco, en la carcasa, desde fuera. El agujero ya es Ø4. No abras los biseles: ya tienen paso Ø3,4 y avellanado.",
+             [("i55", 12)],
+             "No consta si los biseles ya están impresos. El STL del bisel no cambia. El Ø4,0 del inserto no se ha probado. La carcasa no se regenera."),
             ("10.3", "s10_3", "Coloca los cuatro biseles",
              "Apoya los cuatro biseles sobre el marco. La muesca del canto derecho deja libres las teclas del monitor.",
              [], None),
             ("10.4", "s10_4", "Atornilla el bisel",
-             "Atornilla los doce, desde fuera. Ve saltando de un canto a otro.",
-             [("plas", 12)], None),
+             "Atornilla los doce desde fuera, con M3×8 avellanado. Ve saltando de un canto a otro. La cabeza entra en el avellanado del bisel.",
+             [("cs8", 12)], None),
             ("10.5", "s10_5", "Guías de luz",
              "Encaja las dos guías en el canal delantero. Sin tornillo.",
              [], None),
             ("10.6", "s10_6", "Anillos",
              "Mete un anillo desde dentro, bajo cada sitio de pomo. Sin tornillo.",
              [], None),
+            ("10.7a", "s10_7a", "Inserto en cada pomo",
+             "En el banco, con el soldador, mete un inserto M3 de 4×5 en el bolsillo radial de cada pomo. Queda a ras del agujero del eje, no dentro del eje. El bolsillo es Ø4,0.",
+             [("i45", 2)],
+             "Si un pomo ya impreso solo tiene el agujero radial de Ø2,5, el inserto no entra: imprime el STL nuevo. De la piel al eje hay 12 mm y un avellanado M3×4 o ×5 no llega."),
             ("10.7", "s10_7", "Pomos",
-             "Encaja cada pomo. Aprieta el prisionero contra el eje. Si el eje no entra, para y mira el anexo.",
-             [("pris", 2)], None),
+             "Encaja cada pomo. Mete un M3×12 de cabeza de botón en el cajeado y apriétalo contra el eje. La cabeza queda casi a ras. Si el eje no entra, para y mira el anexo.",
+             [("b12", 2)], None),
             ("10.8", "s10_8", "Pulsadores del panel",
              "Mete los dos pulsadores desde fuera y cierra su tuerca por dentro.",
              [], None),
         ],
-        "recuento": [("plas", 12), ("pris", 2)],
+        "recuento": [("i55", 12), ("cs8", 12), ("i45", 2), ("b12", 2)],
     },
     {
         "n": 11,
@@ -446,19 +498,31 @@ PASOS = [
 
 def cuadrar():
     suma = {c[0]: 0 for c in COMPRA}
+    falta = {k: 0 for k in FALTA}
+    conocidas = set(suma) | set(falta)
     for paso in PASOS:
-        parcial = {c[0]: 0 for c in COMPRA}
+        parcial = {k: 0 for k in conocidas}
         for _sid, _img, _tit, _acc, necesitas, _pend in paso["subs"]:
             for clave, qty in necesitas:
                 if clave in parcial:
                     parcial[clave] += qty
         for clave, qty in paso["recuento"]:
+            if clave not in parcial:
+                raise SystemExit(f"Paso {paso['n']} clave desconocida {clave}")
             if parcial[clave] != qty:
                 raise SystemExit(f"Paso {paso['n']} {clave}: subpasos {parcial[clave]}, recuento {qty}")
-            suma[clave] += qty
-    for clave, build, *_ in COMPRA:
+            if clave in suma:
+                suma[clave] += qty
+            else:
+                falta[clave] += qty
+    for clave, build, stock, *_resto in COMPRA:
         if suma[clave] != build:
             raise SystemExit(f"{clave}: pasos {suma[clave]}, lista {build}")
+        if build > stock:
+            raise SystemExit(f"{clave}: el aparato pide {build} y el kit trae {stock}")
+    for clave, build in FALTA.items():
+        if falta[clave] != build:
+            raise SystemExit(f"FALTA {clave}: pasos {falta[clave]}, lista {build}")
     imgs = [img for p in PASOS for _s, img, *_ in p["subs"]]
     if len(imgs) != len(set(imgs)):
         raise SystemExit("Hay dos subpasos con la misma imagen")
@@ -474,7 +538,14 @@ def necesitas_txt(items):
 def recuento_txt(items):
     if not items:
         return "Tornillos usados en este paso: ninguno."
-    return "Tornillos usados en este paso: " + ", ".join(f"{qty}× {NOMBRE[clave]}" for clave, qty in items) + "."
+    kits = [(c, q) for c, q in items if c not in FALTA]
+    faltan = [(c, q) for c, q in items if c in FALTA]
+    partes = []
+    if kits:
+        partes.append("De los kits, en este paso: " + ", ".join(f"{q}× {NOMBRE[c]}" for c, q in kits) + ".")
+    if faltan:
+        partes.append("Fuera de los kits: " + ", ".join(f"{q}× {NOMBRE[c]}" for c, q in faltan) + ".")
+    return " ".join(partes)
 
 
 PIEZAS = [
@@ -486,14 +557,15 @@ PIEZAS = [
     ["Carcasa trasera derecha", "PROVISIONAL_carcasa_x1_y1", "Imprimir. Boca del corte delantero en la cama. Con soportes."],
     ["Pletinas ×4", "PROVISIONAL_pletina_empalme_x4", "Imprimir planas, sin soportes."],
     ["Soporte de disco 3,5\"", "PROVISIONAL_soporte_disco", "Imprimir con el plato abajo."],
-    ["Bandeja", "PROVISIONAL_bandeja_servicio", "Imprimir con el ala abajo. Cabe en la A1."],
+    ["Bandeja", "PROVISIONAL_bandeja_servicio", "Pieza de noche si aún no está impresa. Ala abajo. Si ya lo está, no la reimprimas: taladra como dice el paso 7."],
+    ["Grapas de esquina ×16", "PROVISIONAL_grapa_esquina", "Pieza de día. Plana, sin soportes. 14 en el aparato y 2 de más, por si una se parte. No es tornillo del kit."],
     ["Placa I/O", "PROVISIONAL_placa_io_hp", "Imprimir con la pestaña abajo."],
     ["Marco de prueba de la placa", "PRUEBA_placa_io_hp", "Opcional. Se sujeta por fuera. No se monta."],
     ["Tapa de la Pi", "PROVISIONAL_tapa_pi", "Imprimir plana."],
-    ["Biseles ×4", "PROVISIONAL_bisel_x0_y0 … x1_y1", "Si ya están impresos, no reimprimir. Se taladran en el 10.2."],
+    ["Biseles ×4", "PROVISIONAL_bisel_x0_y0 … x1_y1", "Si ya están impresos, no reimprimir. El agujero ya es paso M3 con avellanado. No se taladran."],
     ["Guías ×2", "PROVISIONAL_guia_luz_frontal_0 y _1", "Imprimir boca abajo, PETG translúcido."],
     ["Anillos ×2", "PROVISIONAL_anillo_luz_x2", "Imprimir como salen, PETG translúcido."],
-    ["Pomos ×2", "PROVISIONAL_pomo_x2", "Imprimir de tapa abajo."],
+    ["Pomos ×2", "PROVISIONAL_pomo_x2", "Pieza de día. Tapa abajo. Llevan el bolsillo del inserto. Si el viejo solo tiene Ø2,5 radial, no sirve."],
     ["Carros, retenedor, soporte de Arduino", "sus STL provisionales", "No imprimir y no montar."],
 ]
 
@@ -504,26 +576,64 @@ def markdown():
         "",
         "Un subpaso, una acción, una figura. La pieza que se añade va en naranja y lo ya montado en gris. El número marca el agujero. La silueta del tornillo, a escala 1:1, está en el PDF.",
         "",
-        "Los tornillos están elegidos a partir del espesor del CAD y **no se han probado** en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El largo ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.",
+        "Lo que sale de cada kit está contado contra el bote, **sin repuesto**. No se ha apretado en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.",
         "",
         "Fecha del CAD: 2026-10-22. No es un montaje probado.",
         "",
-        "## Lista de la compra",
+        "## Qué sale de cada kit",
         "",
-        "La cantidad incluye un 10 % de repuesto, redondeado hacia arriba. El recuento de cada paso suma la cantidad **sin** repuesto.",
+        "Fuente del inventario: [inventario-taller](https://github.com/Sopa-IA/inventario-taller), archivo `tornilleria/inventario.csv`. Este manual no escribe en ese repo. Las reservas van en `consumo.md`, cuando Miguel las apunte con estas cuentas.",
         "",
-        "| Tornillo | En el aparato | Compras | Para qué | Estado |",
+        "El CSV no se ha podido leer desde aquí (el acceso al repo privado devolvió 404). Las existencias de la tabla son las de los tres kits, tal como están en el encargo. Conviene contrastarlas con el CSV al escribir `consumo.md`.",
+        "",
+        "JINZEYOU 840: cabeza de botón ISO 7380, acero negro, Allen. El largo es **bajo la cabeza**.",
+        "",
+        "wugongshan 860: avellanado Phillips. El largo **incluye la cabeza**.",
+        "",
+        "Insertos de latón 360. La cota es largo × Ø exterior. El agujero Ø4,0 (M3, OD 5) y el Ø3,0 (M2.5, OD 3,5) son fallback, sin ficha del fabricante y sin probar.",
+        "",
+        "| Pieza | En el aparato | En el kit | Para qué | Estado |",
         "|---|---:|---:|---|---|",
     ]
-    for clave, build, nombre, donde, estado in COMPRA:
-        lineas.append(f"| {nombre} | {build} | {con_repuesto(build)} | {donde} | {estado} |")
+    for clave, build, stock, nombre, donde, estado in COMPRA:
+        lineas.append(f"| {nombre} | {build} | {stock} | {donde} | {estado} |")
     lineas += [
         "",
-        "Herramienta: destornillador Phillips PH1 (todos los M3 de cabeza cruciforme), Phillips PH2 (los Ø4,5 y los 6-32), llave Allen de 1,5 mm, broca de Ø3,4 mm y broca de Ø4,6 mm.",
+        "| FALTA: comprar | Cantidad | En el kit | Para qué | Estado |",
+        "|---|---:|---:|---|---|",
+        "| 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2 | 4 | 0 | Disco Toshiba de 3,5\", por debajo | No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí. |",
+        "",
+        "El plan B del botón, si la cola no aguanta, son 2× M2×3 de cabeza plana (wugongshan, plata). No entran en la cuenta. El bote trae 50.",
+        "",
+        "Quedan sin usar, entre otros: el resto de M2, M2.5 y M4–M6, los insertos 1/4-20, y los avellanados M3×4 y M3×5. No se reservan.",
+        "",
+        "Herramienta: Allen de 2 mm (M3 de botón), Allen de 1,5 mm (M2.5 de botón), Phillips del kit wugongshan, Phillips PH2 para los 6-32, soldador para los insertos, broca de Ø4,0 mm, broca de Ø3,0 mm y broca de Ø2,5 mm. El plan B del botón pide además una broca de Ø1,6 mm.",
+        "",
+        "## Adaptar lo ya impreso",
+        "",
+        "No se reimprime la base, ni las tres carcasas viejas, ni `carcasa_x1_y1` (se está imprimiendo), ni la placa I/O, ni el botón de prueba, ni los carros. El inserto de la orejeta va en la orejeta. No abras el suelo a Ø4.",
+        "",
+        "| Pieza | Qué hacer | Broca | Tornillo o inserto |",
+        "|---|---|---|---|",
+        "| Pasadores, 9 | Si ya está cerrada, salta el paso 2. Esos nueve M3×16 se cuentan como gastados. | Nada | M3×16 botón |",
+        "| Pletinas, 8 | Tornillo desde arriba, tuerca debajo. | Nada | M3×16 botón + tuerca M3 |",
+        "| Diez orejetas ya impresas | Inserto en el agujero Ø4 × 5,7 de la orejeta. El suelo se queda en Ø3,4, que ya deja pasar un M3. | Nada. Si el Ø4 se abrió a Ø4,6, el inserto no agarra. | M3 5×5 y M3×8 avellanado |",
+        "| Tres orejetas de x1_y1 | No toques el STL. Guía Ø2,5 × 9 mm. | Nada | M3×8 avellanado, sin inserto |",
+        "| Soporte del disco | El agujero ya es Ø4. El STL no cambia. Duda de si ya está impreso. | Nada | M3 5×5 y M3×8 avellanado |",
+        "| Separadores HP | Agujero Ø4 × 6,2 en la base impresa. Un 6×5 no cabe. | Nada | M3 4×5 y M3×6 avellanado |",
+        "| Bisel, 12 | El inserto va en el poste de la carcasa. El bisel ya tiene paso y avellanado. | No abras a Ø4,6 | M3 5×5 y M3×8 avellanado |",
+        "| Torretas de la bandeja, 4 | Abre el techo macizo a Ø4,0. Si ya está a Ø3,4, ábrelo a Ø4,0. | Ø4,0 | M3 6×5 y M3×8 botón. No otro M3×16 |",
+        "| Bandeja, ESP y dos Nano | Si ya está impresa, alarga cada guía Ø2,5 de 10 mm en 3 mm. | Ø2,5 | M3×12 botón + grapa de 1,6 mm |",
+        "| Bandeja, Pi | Si ya está impresa, abre el Ø2,7 a Ø3,0 en los 7 mm de arriba. | Ø3,0 | M2.5 4×3,5 y M2.5×8 botón |",
+        "| Pomos | Si el impreso solo tiene el radial Ø2,5, reimprime. | Nada | M3 4×5 y M3×12 botón |",
+        "| Tapa de la Pi | El STL no cambia. Los postes están en x1_y1. | Nada | M3×8 botón |",
+        "| Disco Toshiba | La rosca del disco es 6-32. | Nada | FALTA: 4× 6-32 UNC × 1/4\" |",
+        "",
+        "Los capuchones de punta que ya cubren un M3 siguen valiendo en las pletinas: el tornillo sigue siendo M3 y asoman unos 4 mm bajo la tuerca. Los cuatro de la bandeja no salen por debajo de la base.",
         "",
         "## Para el botón de encendido",
         "",
-        "No son tornillos. No llevan el 10 % de repuesto. La carcasa no se taladra.",
+        "No son tornillos del kit. La carcasa no se taladra.",
         "",
         "| Pieza | Compras | Nota |",
         "|---|---:|---|",
@@ -569,32 +679,37 @@ def anexo_md():
     return "\n".join([
         "### Por qué este tornillo",
         "",
-        "El largo de un cilíndrico se mide bajo la cabeza. El del avellanado incluye la cabeza. Nada de esto se ha apretado en una pieza impresa, salvo el M3 de los pasadores.",
+        "El largo de una cabeza de botón se mide bajo la cabeza. El del avellanado incluye la cabeza. Nada de esto se ha apretado en una pieza impresa, salvo el M3 de los pasadores.",
         "",
         "| Unión | Qué atraviesa | Tornillo |",
         "|---|---|---|",
-        "| Pasador | Agujero Ø3,2 × 16 mm, las dos costillas | M3×16 cilíndrico. La cabeza se queda fuera. |",
-        "| Pletina | Pletina 3 mm + torreta 5 mm + suelo 4 mm = 12 mm | M3×16. Salen unos 4 mm bajo la base, para la tuerca. |",
-        "| Bandeja | Ala 2 mm + torreta 5 mm + suelo 4 mm = 11 mm | M3×16. Antes se abre el techo macizo, de unos 3 mm. Salen unos 5 mm para la tuerca. |",
-        "| Orejeta de la carcasa nueva | Suelo 4 mm + guía Ø2,5 de 9 mm | M3×10 avellanado. La punta no llega al fondo. |",
-        "| Orejeta ya impresa, bisel y soporte del disco | Paso Ø3,4 y, detrás, agujero ciego Ø4 | Ø4,5×10 avellanado, después de abrir el paso a Ø4,6. El ×10 no hace tope en el Ø4. |",
-        "| Placa HP | PCB 1,6 mm + agujero de 6,2 mm en el separador | M3×6 de placa base. No llega al fondo. El agujero es Ø4. |",
-        "| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | 6-32 × 6,4 mm. No es un M3. |",
-        "| Placas de la bandeja | Guía Ø2,5 de 10 mm, poste de 14,8 mm y arandela de 0,8 mm | M3×10. Entran 9,2 mm y quedan 0,8 mm hasta el fondo. La arandela Ø9 pisa la esquina 1,1 mm. |",
-        "| Step-down, tornillo pasante | Guía de 7 mm | M3×8. |",
-        "| Step-down, brida | Guía de 8 mm y arandela | M3×8. |",
-        "| Tapa | Tapa 2,4 mm + guía de 9 mm | M3×10. Entran unos 8 mm. |",
-        "| Pomo | De la piel al eje hay 12 mm | Prisionero M3×16. Un ×12 solo rozaría el eje. |",
+        "| Pasador | Agujero Ø3,2 × 16 mm, las dos costillas | M3×16 botón. La cabeza se queda fuera. Ya gastados si la carcasa está cerrada. |",
+        "| Pletina | Pletina 3 mm + torreta 5 mm + suelo 4 mm = 12 mm | M3×16 botón. Salen unos 4 mm bajo la base, para la tuerca. |",
+        "| Bandeja a la base | Ala 2 mm + inserto de 6 mm en la torreta | M3×8 botón. La punta queda a ras del inserto, en z = 3, dentro del suelo. |",
+        "| Orejeta de x1_y1 | Suelo 4 mm + guía Ø2,5 de 9 mm | M3×8 avellanado. Entran unos 4 mm. No llega al fondo. |",
+        "| Orejeta ya impresa | Paso Ø3,4 del suelo e inserto 5×5 en la orejeta (agujero Ø4 × 5,7) | M3×8 avellanado. El inserto no va en el suelo. |",
+        "| Bisel | Bisel de 3 mm, con avellanado, e inserto 5×5 en el poste | M3×8 avellanado. |",
+        "| Soporte del disco | Paso Ø3,4 del suelo e inserto 5×5 en la pata | M3×8 avellanado. |",
+        "| Placa HP | PCB 1,6 mm + inserto 4×5 en un agujero de 6,2 mm | M3×6 avellanado. Entran unos 2,6 mm. La cabeza apoya en la PCB. |",
+        "| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | FALTA: 6-32 × 6,4 mm. No es un M3 ni un 1/4-20. |",
+        "| ESP y dos Nano | Grapa 1,6 mm + guía Ø2,5 de 13 mm | M3×12 botón. Entran 10,4 mm y quedan 2,6 mm hasta el fondo. |",
+        "| Pi | PCB 1,6 mm + inserto M2.5 de 4 mm en un agujero de 7 mm | M2.5×8 botón. Entran 6,4 mm. |",
+        "| Step-down, tornillo pasante | PCB 1,6 mm + guía de 7 mm | M3×8 botón. Quedan 0,6 mm hasta el fondo. |",
+        "| Step-down, brida | Grapa 1,6 mm + guía de 8 mm | M3×8 botón. |",
+        "| Tapa | Tapa 2,4 mm + guía de 9 mm | M3×8 botón. Entran unos 5,6 mm. |",
+        "| Pomo | De la piel al eje hay 12 mm. Cajeado 1,8 mm + inserto 4×5 | M3×12 botón. La punta entra unos 1,9 mm en el eje. |",
         "",
-        "### Por qué se taladra",
+        "### Por qué este agujero",
         "",
-        "Un autorroscante de Ø4,5 no pasa por el agujero impreso de Ø3,4. Por eso el paso 3.1, el 4.1 y el 10.2 lo abren a Ø4,6, y solo el paso: el agujero Ø4 de la orejeta, del soporte o de la carcasa se queda como está, que es donde el Ø4,5 muerde.",
+        "El inserto de las diez orejetas viejas entra en el agujero que ya tienen, Ø4 × 5,7 mm. Un inserto de 6 mm no cabe. El suelo, de 4 mm, tampoco admite un inserto de 5 mm: el tornillo pasa por el Ø3,4 que ya está, y la cabeza avellanada se sienta en el avellanado que ya está. No se abre a Ø4,6.",
         "",
-        "La tuerca no cabe en esos agujeros: son ciegos y de Ø4. Si el Ø4,5 gira en vacío, para. No lo cambies por un M4. La otra salida es abrir ese agujero de lado a lado y poner una tuerca M3, y eso es otro taladro, no el de este manual.",
+        "Si ese Ø4 de la orejeta ya se agrandó a Ø4,6, el inserto no muerde. Ahí sí: M3 pasante y tuerca por arriba. En las columnas del frente no hay sitio para esa tuerca.",
         "",
-        "Las torretas de la bandeja no tienen el paso de Ø3,4 que sí tienen las de las pletinas. El techo, de unos 3 mm, está macizo. El 7.7 lo abre con Ø3,4 para que el M3×16 llegue a la tuerca. Un M3 no muerde el Ø4 que hay debajo: por eso lleva tuerca y no autorroscante.",
+        "Las torretas de la bandeja tienen el techo macizo, de unos 3 mm, y debajo un Ø4 que ya sale por la cara inferior de la base. El 7.7 abre el techo a Ø4,0 y el inserto de 6×5 se queda a ras, sin asomar. No van con M3×16: 9 pasadores + 8 pletinas son 17, y el bote trae 20.",
         "",
-        "El M3×6 de la placa HP es el tornillo de placa base. Si gira en vacío, el agujero del separador es Ø4, el del inserto que ya no se usa. No cabe un tornillo más gordo en el agujero de la PCB. No se ha elegido otra pieza.",
+        "La Pi usa sus cuatro agujeros M2.5. Los postes de fuera se quedan en el STL, con guía de 13 mm, por si el inserto no agarra: entonces M3×12 y grapa, y esos cuatro no están en la cuenta.",
+        "",
+        "La grapa mide 1,6 mm y la lengüeta llega a 6,2 mm del eje del tornillo. La esquina de la PCB está a unos 3,4 mm, así que la lengüeta entra unos 2,8 mm. Una arandela de Ø9 solo pisaba 1,1 mm y no está en los kits.",
         "",
         "### Si algo no entra",
         "",
@@ -604,7 +719,7 @@ def anexo_md():
         "",
         "El corte corto delantero de la carcasa no lleva tornillo. Los cinco del paso 2.3 están todos en la mitad de atrás. Los de los pasos 2.1 y 2.2 unen cada par de delante con atrás.",
         "",
-        "Si el eje del potenciómetro está estriado, el pomo impreso no entra. Hace falta un pomo comercial para eje estriado. El eje de 6 mm está acordado y sin medir.",
+        "Si el eje del potenciómetro está estriado y el M3×12 no lo frena, hace falta un pomo comercial para eje estriado. El eje de 6 mm está acordado y sin medir. El plano en D sigue en el parámetro pomo_eje_D y no es la única retención.",
         "",
         "### Coordenadas que usa el dibujo",
         "",
@@ -615,7 +730,7 @@ def anexo_md():
         "- Pasadores laterales: dos en x = 7 y dos en x = 449, a z = 25 y z = 55.",
         "- Orejetas con guía Ø2,5, las de la carcasa nueva: (325; 292,5), (420; 292,5) y (448,3; 205).",
         "- Las otras diez orejetas conservan el agujero Ø4 de cuando se imprimieron.",
-        "- Hueco de la Pi: origen (330; 167,5), 56 × 85 mm, USB hacia +Y. Presillas en (328; 165,2), (388; 165,2), (327,8; 254,2) y (388,6; 254,2).",
+        "- Hueco de la Pi: origen (330; 167,5), 56 × 85 mm, USB hacia +Y. Los tornillos van en los agujeros reales. Postes de plan B en (328; 165,2), (388; 165,2), (327,8; 254,2) y (388,6; 254,2).",
         "- ESP, de la foto: (346; 86), 31 × 58 mm. Nano de prácticas: (399; 66), 18 × 45. Step-down: (399; 124), 21 × 43. Nano de mandos: (400; 222), 18 × 45.",
         "- Torretas de la bandeja: (318,3; 49), (436,3; 49), (318,3; 278,5) y (436,3; 278,5).",
         "",
@@ -627,9 +742,9 @@ def anexo_md():
         "",
         "Nano de prácticas, Nano de mandos y ESP8266. La cara inferior de la PCB queda a 13 mm del suelo de la bandeja. Ese 13 es 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire. [PENDIENTE] de medir. El pin corto que cita Miguel, unos 6 mm más el separador, queda holgado dentro de ese canal.",
         "",
-        "Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro arandelas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.",
+        "Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro grapas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.",
         "",
-        "La guía de la esquina sigue en Ø2,5 × 10 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la arandela de 0,8 mm, el M3×10 entra 9,2 mm y le quedan 0,8 mm hasta el fondo. El tornillo no cambia. La lista de la compra tampoco. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto: la arandela Ø9 pasa 1,1 mm de la esquina de la PCB.",
+        "La guía de la esquina es Ø2,5 × 13 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la grapa de 1,6 mm, el M3×12 entra 10,4 mm y le quedan 2,6 mm hasta el fondo. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto. Si la bandeja ya impresa trae la guía de 10 mm, el 7.3 dice cómo alargarla.",
         "",
         "Con la bandeja en sus torretas, el ala queda a z = 11 y la cara inferior de estas tres PCB a z = 28. La carcasa y la tapa no se han tocado.",
         "",
@@ -639,13 +754,13 @@ def anexo_md():
         "",
         "El Nano de mandos queda bajo el techo plano de la carcasa x1_y1. Hasta ese techo interior hay 117 mm. El hueco de la tapa acaba en x = 396 y la placa empieza en x = 400. La tapa apoya sobre el techo macizo, así que el límite es el techo.",
         "",
-        "La Pi sigue a 8 mm del suelo, con su rejilla. Los 4 M3 de la bandeja a la base no cambian. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.",
+        "La Pi sigue a 8 mm del suelo, con su rejilla, y se atornilla por sus agujeros M2.5. Los cuatro tornillos de la bandeja a la base son M3×8 de botón sobre un inserto de 6×5. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.",
         "",
         "### Botón de encendido",
         "",
         "La carcasa x0_y1 ya está impresa y no se regenera. El capuchón usa el Ø12,2 (eje a z = 112) y la guía el Ø3,1, 14 mm más arriba, en el lateral izquierdo. Holgura del vástago: 0,3 mm por lado. La pestaña es Ø16 × 1,6 mm y no sale. En reposo asoma 2,4 mm. El recorrido es 1,5 mm, hasta un tope; el clic del táctil, de 0,25 mm, ocurre al final. Dos láminas de 0,8 mm lo devuelven. Esa fuerza no se ha medido.",
         "",
-        "El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø2,0 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un autorroscante de Ø2,5×4, que pasa por el Ø2,7 del soporte y muerde la pared. Esos dos tornillos no están en la lista. No uses el Ø4,5.",
+        "El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø1,6 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un M2×3 de cabeza plana (wugongshan, plata): pasa por el Ø2,7 del soporte y muerde la pared. Esos dos no están en la cuenta. El bote trae 50. No uses un M3.",
         "",
         "El soporte queda por encima del marcador de la placa frontal (16×70×26, aún sin medir). No entra en esa caja ni la usa de anclaje.",
         "",
@@ -758,10 +873,10 @@ def tabla(filas, anchos, st):
 
 
 def tabla_compra(st):
-    filas = [["", "Tornillo", "Compras", "Para qué", "Estado"]]
+    filas = [["", "Pieza del kit", "Aparato", "Kit", "Para qué"]]
     dibujos = [None]
-    for clave, build, nombre, donde, estado in COMPRA:
-        filas.append(["", nombre, str(con_repuesto(build)), donde, estado])
+    for clave, build, stock, nombre, donde, _estado in COMPRA:
+        filas.append(["", nombre, str(build), str(stock), donde])
         dibujos.append(DIBUJO[clave]())
     datos = []
     for i, fila in enumerate(filas):
@@ -770,7 +885,7 @@ def tabla_compra(st):
         if i:
             celdas[0] = dibujos[i]
         datos.append(celdas)
-    anchos = [24 * mm, 46 * mm, 16 * mm, 42 * mm, 50 * mm]
+    anchos = [22 * mm, 58 * mm, 16 * mm, 14 * mm, 68 * mm]
     t = Table(datos, colWidths=anchos, repeatRows=1)
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), PAPEL),
@@ -780,7 +895,7 @@ def tabla_compra(st):
         ("RIGHTPADDING", (0, 0), (-1, -1), 2),
         ("TOPPADDING", (0, 0), (-1, -1), 2),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-        ("ALIGN", (2, 1), (2, -1), "CENTER"),
+        ("ALIGN", (2, 1), (3, -1), "CENTER"),
     ]))
     return t
 
@@ -816,13 +931,33 @@ def pdf(st):
     f.append(P("Un subpaso es una sola acción. La pieza naranja es la que pones. Lo gris ya está puesto. El número es el agujero. El dibujo del tornillo está a escala 1:1: puedes apoyar el tornillo encima.", st["p"]))
     f.append(foto("portada"))
     f.append(Spacer(1, 2 * mm))
-    f.append(P("Lista de la compra", st["h1"]))
-    f.append(P("La columna Compras incluye un 10 % de repuesto, redondeado hacia arriba. Cada paso, al final, cuenta los tornillos usados sin ese repuesto. Esas cuentas suman la columna de aparato de esta lista.", st["p"]))
+    f.append(P("Qué sale de cada kit", st["h1"]))
+    f.append(P("Fuente del inventario: https://github.com/Sopa-IA/inventario-taller , archivo tornilleria/inventario.csv. Este manual no escribe en ese repo. Las reservas van en consumo.md. El CSV no se ha podido leer desde aquí: las existencias son las de los tres kits del encargo.", st["p"]))
+    f.append(P("JINZEYOU 840, cabeza de botón, largo bajo la cabeza. wugongshan 860, avellanado, largo con la cabeza. Insertos de latón 360, cota largo × Ø exterior. La columna Aparato es lo que gasta el montaje. La columna Kit es lo que hay en el bote. No hay 10 % de repuesto.", st["p"]))
     f.append(tabla_compra(st))
     f.append(Spacer(1, 2 * mm))
-    f.append(P("Herramienta: destornillador Phillips PH1 para todos los M3 de cabeza cruciforme. Phillips PH2 para los Ø4,5 y para los 6-32. Llave Allen de 1,5 mm para los prisioneros. Broca de Ø3,4 mm y broca de Ø4,6 mm.", st["p"]))
+    f.append(P("FALTA: comprar 4× 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2, para el disco Toshiba. No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí.", st["p"]))
+    f.append(P("Plan B del botón, solo si la cola falla: 2× M2×3 cabeza plana. No entran en la cuenta. El bote trae 50.", st["p"]))
+    f.append(P("Herramienta: Allen de 2 mm para los M3 de botón, Allen de 1,5 mm para los M2.5, Phillips del kit wugongshan, Phillips PH2 para los 6-32, soldador para los insertos, brocas de Ø4,0, Ø3,0 y Ø2,5 mm.", st["p"]))
+    f.append(P("Adaptar lo ya impreso", st["h1"]))
+    f.append(P("La base, las tres carcasas viejas, la que se está imprimiendo, la placa I/O y el botón de prueba no se reimprimen. El inserto de la orejeta va en la orejeta, no en el suelo.", st["p"]))
+    f.append(tabla([
+        ["Pieza", "Qué hacer", "Pieza del kit"],
+        ["Pasadores", "Si ya está cerrada, salta el paso 2", "9× M3×16 botón, ya gastados"],
+        ["Pletinas", "Desde arriba, tuerca debajo", "8× M3×16 botón + tuerca"],
+        ["10 orejetas viejas", "Inserto en el Ø4 de la orejeta. No abras la base", "M3 5×5 y M3×8 avellanado"],
+        ["3 orejetas nuevas", "Guía Ø2,5 × 9. No toques el STL", "M3×8 avellanado"],
+        ["Soporte del disco", "El agujero ya es Ø4", "M3 5×5 y M3×8 avellanado"],
+        ["Separadores HP", "Agujero de 6,2 mm. Un 6×5 no cabe", "M3 4×5 y M3×6 avellanado"],
+        ["Bisel", "Inserto en el poste de la carcasa", "M3 5×5 y M3×8 avellanado"],
+        ["Torretas de la bandeja", "Abre el techo a Ø4,0", "M3 6×5 y M3×8 botón"],
+        ["ESP y dos Nano", "Si ya impresa, alarga la guía 3 mm con Ø2,5", "M3×12 botón + grapa"],
+        ["Pi", "Si ya impresa, abre Ø2,7 a Ø3,0 × 7 mm", "M2.5 4×3,5 y M2.5×8"],
+        ["Pomos", "Si solo hay Ø2,5 radial, reimprime", "M3 4×5 y M3×12 botón"],
+        ["Disco Toshiba", "Rosca 6-32", "FALTA: 4× 6-32 × 1/4\""],
+    ], [38 * mm, 72 * mm, 68 * mm], st))
     f.append(P("Para el botón de encendido", st["h1"]))
-    f.append(P("No son tornillos y no llevan el 10 % de repuesto. La carcasa no se taladra. La resistencia no se pone hasta medir el cabezal.", st["p"]))
+    f.append(P("No son tornillos del kit. La carcasa no se taladra. La resistencia no se pone hasta medir el cabezal.", st["p"]))
     f.append(tabla(
         [["Pieza", "Compras", "Nota"]] + [[a, b, c] for a, b, c in BOTON_COMPRA],
         [62 * mm, 18 * mm, 98 * mm], st))
@@ -859,16 +994,17 @@ def pdf(st):
     f.append(Spacer(1, 1 * mm))
     f.append(tabla([
         ["Unión", "Pila", "Tornillo"],
-        ["Pasador", "Ø3,2 × 16 mm", "M3×16 cilíndrico"],
-        ["Pletina", "3 + 5 + 4 = 12 mm", "M3×16 y tuerca"],
-        ["Bandeja", "2 + 5 + 4 = 11 mm", "M3×16 y tuerca, tras abrir el techo"],
-        ["Orejeta nueva", "suelo 4 mm + guía 9 mm", "M3×10 avellanado"],
-        ["Orejeta impresa, bisel, disco", "paso Ø3,4 y agujero Ø4", "Ø4,5×10, tras abrir el paso"],
-        ["Placa HP", "1,6 mm + agujero de 6,2 mm", "M3×6 de placa base"],
-        ["Disco Toshiba", "rosca 6-32, chapa de 2 mm", "6-32 × 6,4 mm"],
-        ["Placas de la bandeja", "guía 10 mm, poste 14,8 mm", "M3×10 y arandela Ø9"],
-        ["Tapa", "2,4 mm + guía de 9 mm", "M3×10"],
-        ["Pomo", "12 mm hasta el eje", "prisionero M3×16"],
+        ["Pasador", "Ø3,2 × 16 mm", "M3×16 botón"],
+        ["Pletina", "3 + 5 + 4 = 12 mm", "M3×16 botón y tuerca"],
+        ["Bandeja a la base", "ala 2 mm + inserto 6 mm", "M3×8 botón"],
+        ["Orejeta de x1_y1", "suelo 4 mm + guía 9 mm", "M3×8 avellanado"],
+        ["Orejeta impresa", "paso Ø3,4 e inserto en la orejeta", "M3 5×5 y M3×8 avellanado"],
+        ["Placa HP", "1,6 mm + inserto 4 mm", "M3×6 avellanado"],
+        ["Disco Toshiba", "rosca 6-32, chapa de 2 mm", "FALTA: 6-32 × 6,4 mm"],
+        ["ESP y dos Nano", "grapa 1,6 + guía 13 mm", "M3×12 botón"],
+        ["Pi", "1,6 mm + inserto M2.5 de 4 mm", "M2.5×8 botón"],
+        ["Tapa", "2,4 mm + guía de 9 mm", "M3×8 botón"],
+        ["Pomo", "12 mm hasta el eje", "inserto 4×5 y M3×12 botón"],
     ], [40 * mm, 68 * mm, 70 * mm], st))
     doc.build(f, onFirstPage=marca_pagina, onLaterPages=marca_pagina)
     print(f"PDF {PDF} páginas {PAGINAS['n']}")

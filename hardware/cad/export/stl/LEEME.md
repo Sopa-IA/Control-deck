@@ -51,6 +51,8 @@ El mismo día, después, la bandeja pasa a huecos fijos. Se regeneró solo `PROV
 
 | STL | Caja (mm) | Volumen | Qué es |
 |---|---|---|---|
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 181,89 cm³ | Huecos de la Pi, dos Nano, el ESP y el step-down. Canal de 13 mm bajo cada fila de pines. Misma ala. Antes 25,10 mm y 190,72 cm³ |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 181,71 cm³ | Huecos de la Pi, dos Nano, el ESP y el step-down. Canal de 13 mm. Guías de esquina Ø2,5 × 13 mm e inserto M2.5 en la Pi. Misma ala. Antes 181,89 cm³ |
+| `PROVISIONAL_grapa_esquina` | 10,45 × 8,50 × 1,60 | 0,10 cm³ | Grapa de 1,6 mm. Imprimir 16. Pieza de día |
+| `PROVISIONAL_pomo_x2` | 30,00 × 30,00 × 17,00 | 10,92 cm³ | Pomo con bolsillo radial para inserto M3 4×5. Imprimir 2. Pieza de día |
 
-`comprobar_stl.py`: las 27 mallas siguen cerradas y dentro de la cama (el lado largo de la bandeja mide 237,49; con margen de 10 mm el límite es 246). `comprobar_interferencias.py`: salida 0, 23 cajas, también con `carro_conjunto="nano_proto"`. Un solo sólido (Volumes: 2, Simple: yes).
+`comprobar_stl.py`: las 31 mallas siguen cerradas y dentro de la cama (el lado largo de la bandeja mide 237,49; con margen de 10 mm el límite es 246). La bandeja es un solo sólido (Volumes: 2, Simple: yes). `comprobar_interferencias.py`: salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas.

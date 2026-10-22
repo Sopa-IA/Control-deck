@@ -430,12 +430,16 @@ cama_x = 256; cama_y = 256;   // [FUENTE] Bambu Lab A1
 cama_z = 256;                 // [FUENTE]
 material = "PETG";            // [DISEÑO] recomendado para A1 (marco abierto)
 margen_cama = 10;             // [DISEÑO] margen de seguridad
-inserto_d  = 4.0;   // [PENDIENTE] agujero para inserto M3 térmico (según fabricante del inserto)
-inserto_l  = 5.7;   // [PENDIENTE]
-// Miguel no usa insertos: el tornillo autorroscante entra en el PETG.
-// "inserto" recupera el Ø4 × 5,7. Las piezas YA impresas (base, carcasas
-// x0_y0 / x0_y1 / x1_y0, soporte, biseles) no leen este parámetro.
-fijacion   = "autorroscante";   // [DISEÑO] "autorroscante" | "inserto"
+// Sin ficha del fabricante. Ø4,0 es el fallback para un inserto M3 de OD 5.
+// Ø3,0 es el fallback para un inserto M2.5 de OD 3,5. Los dos, sin probar.
+inserto_d  = 4.0;   // [sin probar]
+inserto_m25_d = 3.0; // [sin probar] agujero del inserto M2.5 4×3,5 en los postes de la Pi
+inserto_l  = 5.7;   // [PENDIENTE] profundidad ya impresa en orejetas y separadores. No alargarla ahí.
+// Los kits son tornillo de máquina e inserto de latón. fijacion se queda en
+// "autorroscante" para que un futuro export de carcasa_x1_y1 (se está
+// imprimiendo) siga sacando las guías Ø2,5. No exportar esa carcasa.
+// Las piezas ya impresas no leen este parámetro.
+fijacion   = "autorroscante";   // [DISEÑO] no cambiar: protege el export de x1_y1
 rosca_d    = 2.5;   // [DISEÑO] guía para autorroscante M3 en PETG
 rosca_prof = 8;     // [DISEÑO] profundidad mínima cuando el plástico llega
 rosca_pared = 2.5;  // [DISEÑO] pared mínima alrededor de la guía, para que no raje
@@ -566,7 +570,8 @@ b3_usb = 10;            // [DISEÑO] hueco del conector, centrado en el canto. E
 b3_torn_lx = 1.5;       // [DISEÑO] eje del tornillo, fuera del canto largo (X)
 b3_torn_ly = 3.0;       // [DISEÑO] eje del tornillo, fuera del canto corto (Y)
 b3_boss = 7.6;          // [DISEÑO] poste. Pared (7,6 − 2,5) / 2 = 2,55 ≥ rosca_pared
-b3_rosca = 10;          // [DISEÑO] guía en los postes que suben hasta la PCB
+b3_rosca = 13;          // [DISEÑO] M3×12 botón (largo bajo la cabeza) + grapa de 1,6: entran 10,4 mm y quedan 2,6 hasta el fondo
+grapa_t = 1.6;          // [DISEÑO] grapa de esquina, en lugar de la arandela Ø9. La lengüeta entra ~2,5 mm en la esquina, dentro de pin_extremo
 b3_rosca_baja = 8;      // [DISEÑO] guía de las bridas del buck (el poste es bajo)
 b3_buck_rosca = 7;      // [DISEÑO] guía bajo el agujero del módulo. No atraviesa el ala
 
@@ -576,8 +581,9 @@ b3_buck = [399, 124, 21, 43];    // step-down. lx = buck_w, ly = buck_l
 b3_esp  = [346, 86, 31, 58];     // ESP8266. USB hacia +Y. 58 × 31 [PENDIENTE] [FOTO]
 b3_man  = [400, 222, 18, 45];    // Nano de mandos. USB hacia +Y. [FUENTE] 18 × 45
 
-// Pisada de la Pi. Fuera de la PCB, lejos de los postes M2.5 (Ø6 en
-// (333,5, 171) y (382,5, 171)). Arandela ancha M3 (Ø9, DIN 9021).
+// Postes exteriores de la Pi. Plan B si el inserto M2.5 de los agujeros
+// reales no agarra: M3×12 botón y la misma grapa. No entran en la cuenta.
+// Lejos de los postes M2.5 (Ø6 en (333,5, 171) y (382,5, 171)).
 b3_pi_torn = [[328.0, 165.2], [388.0, 165.2], [327.8, 254.2], [388.6, 254.2]];
 
 // Convertidor step-down. Módulo típico con LM2596, 43 × 21 mm, agujeros

@@ -3,7 +3,7 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp | boton_encendido | soporte_boton | prueba_boton
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | grapa | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp | boton_encendido | soporte_boton | prueba_boton
 // OBSOLETO, no imprimir: carro_nano | carro_esp | carro_proto | retenedor_nano (bahía v2)
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
@@ -32,6 +32,7 @@ else if (parte == "bandeja") bandeja_servicio();
 else if (parte == "guia") let(t = tramo_guia(k))
     rotate([90, 0, 0]) guia_luz_frontal(t[0], t[1], k == 0 ? 3 : 0, k == n_guia - 1 ? 3 : 0);
 else if (parte == "pomo")   rotate([180, 0, 0]) pomo();
+else if (parte == "grapa") grapa_esquina();
 else if (parte == "anillo") anillo_luz();
 else if (parte == "soporte_arduino") translate([-ard_cx, -sop_ard_y0, -sop_ard_z0]) soporte_arduino();
 // Riel boca abajo: el cajeado de las torretas queda abierto hacia arriba y no hay que puentearlo.
