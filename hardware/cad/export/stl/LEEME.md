@@ -37,3 +37,12 @@ El 2026-10-21 por la tarde se regeneraron la bandeja, `carcasa_x1_y1` y los carr
 | `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 cm³ | Tapa del techo, ranuras y agujeros de ventilador |
 
 `comprobar_stl.py` el 2026-10-22: las 25 mallas caben y están cerradas. `comprobar_interferencias.py`: sin interferencias, con el par Nano+ESP y con el par Nano+proto. Ese día la bandeja y `carcasa_x1_y1` cambiaron los agujeros de inserto por guías Ø2,5. El resto de los STL no se regeneró.
+
+El mismo día, después, se añadieron la placa I/O del HP y su prueba. Ninguna otra malla se volvió a exportar: `carcasa_x0_y1` sigue siendo la ya impresa.
+
+| STL | Caja (mm) | Volumen | Qué es |
+|---|---|---|---|
+| `PROVISIONAL_placa_io_hp` | 171,75 × 55,95 × 2,80 | 16,81 cm³ | Placa de la ventana trasera. Reborde 6 mm (4,5 abajo) y tetón de 1,4 mm. Huecos [PENDIENTE] [FOTO] |
+| `PRUEBA_placa_io_hp` | 159,75 × 45,45 × 1,40 | 3,36 cm³ | Marco de la misma ventana, para ver qué hueco falla |
+
+`comprobar_stl.py` con estas dos: 27 mallas, cerradas, dentro de la cama. `comprobar_interferencias.py` sigue sin interferencias (la placa no entra en el ensamblaje).

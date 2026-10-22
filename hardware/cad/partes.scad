@@ -3,7 +3,7 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto | retenedor_nano | tapa_pi
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto | retenedor_nano | tapa_pi | placa_io_hp | prueba_placa_io_hp
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
 
@@ -43,6 +43,10 @@ else if (parte == "carro_esp") translate([8, esp_w/2 + 4, 0]) carro_imprimible(e
 else if (parte == "carro_proto") translate([8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w, proto_pcb_z, "bordes");
 else if (parte == "retenedor_nano") translate([-(ard_cx - ard_w/2 - 6), -(ard_y - 4), -(ard_pcb_z + ard_pcb - 4.2)]) retenedor_nano();
 else if (parte == "tapa_pi") translate([-tapa_x0 + tapa_sol + 2, -tapa_y0 + tapa_sol + 2, 0]) tapa_pi();
+// Reborde en el origen de la cama. La esquina de la ventana queda a (labio, labio_inf).
+else if (parte == "placa_io_hp")
+    translate([io_placa_labio, io_placa_labio_inf, 0]) placa_io_hp();
+else if (parte == "prueba_placa_io_hp") prueba_placa_io_hp();
 else if (parte == "pletina") pletina_empalme();
 else if (parte == "soporte_disco") translate([-disco_x, -disco_y, -suelo - 2]) soporte_disco();
 else if (parte == "info") {

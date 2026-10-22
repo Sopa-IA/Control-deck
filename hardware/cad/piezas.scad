@@ -466,3 +466,72 @@ module anillo_luz() {  // guía de luz anular bajo cada pomo (PETG translúcido)
 }
 // v1: la tapa de botón impresa desaparece: los pulsadores de panel genéricos traen
 // su propio actuador (modelo [PENDIENTE]).
+
+// ---------------------------------------------------------------------
+// PLACA I/O DEL HP (ventana ya impresa de carcasa_x0_y1; esa pieza no se toca)
+// Origen: esquina inferior izquierda de la ventana. x a la derecha mirando
+// la trasera, y hacia arriba, z hacia fuera. Reborde sobre la cama.
+// ---------------------------------------------------------------------
+io_nervio = 3.2;   // [DISEÑO] marco de la prueba
+io_anillo = 2.6;   // [DISEÑO] plástico alrededor de cada hueco de la prueba
+io_espina = 3.0;   // [DISEÑO] nervio de cada hueco hasta el marco superior
+
+module placa_io_hp() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    t = io_placa_t;
+    echo(str("PLACA_IO;ventana;", Ww, ";", Wh, ";z0;", ventana_hp_z,
+             ";t;", t, ";labio;", io_placa_labio, ";", io_placa_labio_inf,
+             ";holg;", io_placa_holg, ";suelo_bajo_ventana;", ventana_hp_z - suelo));
+    for (h = io_huecos)
+        echo(str("HUECO_IO;", h[0], ";", h[1], ";", h[2], ";", h[3], ";", h[4]));
+    difference() {
+        union() {
+            translate([-io_placa_labio, -io_placa_labio_inf, 0])
+                caja_r([Ww + 2*io_placa_labio,
+                        Wh + io_placa_labio + io_placa_labio_inf, t], 3);
+            // Tetón: mismo centro de arco que la ventana (r = 2) y 0,4 mm dentro.
+            translate([io_placa_holg, io_placa_holg, t - 0.25])
+                caja_r([Ww - 2*io_placa_holg, Wh - 2*io_placa_holg, t + 0.25],
+                       2 - io_placa_holg);
+        }
+        for (h = io_huecos)
+            translate([h[1], h[2], -0.3])
+                caja_r([h[3], h[4], 2*t + 1], min(1.2, h[3]/2 - 0.4, h[4]/2 - 0.4));
+    }
+}
+
+module _cuerpo_prueba_io() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    t = io_placa_t;
+    difference() {
+        caja_r([Ww, Wh, t], 2);
+        translate([io_nervio, io_nervio, -0.4])
+            cube([Ww - 2*io_nervio, Wh - 2*io_nervio, t + 0.8]);
+    }
+    for (h = io_huecos)
+        intersection() {
+            caja_r([Ww, Wh, t], 2);
+            translate([h[1] - io_anillo, h[2] - io_anillo, 0])
+                cube([h[3] + 2*io_anillo, h[4] + 2*io_anillo, t]);
+        }
+    for (h = io_huecos)
+        translate([h[1] + h[3]/2 - io_espina/2,
+                   h[2] + h[4] + io_anillo - 0.3, 0])
+            cube([io_espina, Wh - io_nervio - (h[2] + h[4] + io_anillo) + 0.6, t]);
+}
+
+module prueba_placa_io_hp() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    echo(str("PRUEBA_IO;ventana;", Ww, ";", Wh, ";t;", io_placa_t,
+             ";nervio;", io_nervio, ";anillo;", io_anillo));
+    difference() {
+        _cuerpo_prueba_io();
+        for (h = io_huecos)
+            translate([h[1], h[2], -0.4])
+                caja_r([h[3], h[4], io_placa_t + 0.8],
+                       min(1.2, h[3]/2 - 0.4, h[4]/2 - 0.4));
+    }
+}

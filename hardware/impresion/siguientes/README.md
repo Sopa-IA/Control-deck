@@ -50,7 +50,7 @@ La Pi queda en la mitad izquierda, con los USB y el RJ45 hacia la trasera. La cu
 
 ### 03 · `PROVISIONAL_carcasa_x0_y1` (detrás-izquierda) · provisional
 
-Trozo trasero izquierdo de la cuña: ventana I/O del HP, pasacables, I/O frontal en el lateral izquierdo, pulsador y LED. Es la primera de la carcasa porque es la que más depende del HP. Se imprime después de probar la pared I/O de la base; si la ventana no cuadra, se corrige antes.
+Trozo trasero izquierdo de la cuña: ventana I/O del HP, pasacables, I/O frontal en el lateral izquierdo, pulsador y LED. **Ya está impresa. No se reimprime.** La placa I/O entra por esa ventana desde dentro.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_carcasa_x0_y1.stl`](../../cad/export/stl/PROVISIONAL_carcasa_x0_y1.stl)
 - STEP: [`STEP/03_PROVISIONAL_carcasa_x0_y1.step`](STEP/03_PROVISIONAL_carcasa_x0_y1.step) · origen **malla**
@@ -182,13 +182,23 @@ Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3×10 a la
 - Medidas: 94,00 × 54,00 × 2,40. Volumen 9,70 cm³.
 - Cama: plana. El hueco que tapa mide 72 × 42 mm. Lleva ranuras de salida y agujeros para un ventilador opcional de 30 × 30 o 40 × 40.
 
+### Placa I/O del HP · `PROVISIONAL_placa_io_hp` y `PRUEBA_placa_io_hp` · provisional
+
+Cierra el hueco de la ventana de la pieza 03, que ya está impresa. Entra por dentro: reborde de 6 mm (4,5 mm abajo, porque hasta el suelo hay 5,2 mm) y tetón 0,4 mm más pequeño que la ventana por lado. Chapa 1,4 mm, pila 2,8 mm. Sin tornillo. Cama: reborde abajo, sin soportes.
+
+Los huecos son una estimación de la foto del 2026-10-22, marcados [PENDIENTE] en `io_huecos`. La prueba es el marco de la ventana (159,75 × 45,45). Se apoya por fuera, con el hueco de la esquina en el extremo inferior izquierdo, y se mira qué conector no entra.
+
+- STL: [`hardware/cad/export/stl/PROVISIONAL_placa_io_hp.stl`](../../cad/export/stl/PROVISIONAL_placa_io_hp.stl) · 171,75 × 55,95 × 2,80 mm · 16,81 cm³
+- Prueba: [`hardware/cad/export/stl/PRUEBA_placa_io_hp.stl`](../../cad/export/stl/PRUEBA_placa_io_hp.stl) · 159,75 × 45,45 × 1,40 mm · 3,36 cm³
+- Qué medir, y contra qué borde: `docs/datos-pendientes-hp.md`, H-4.
+
 ## Lo que no existe en el repo
 
 - Marco o soporte del monitor aparte: el MSI va en una cuna dentro de la carcasa y lo sujeta el bisel (07-10).
 - Soporte de la Pi aparte: va en la bandeja (02).
 - Panel de control aparte: los agujeros de los mandos están en la carcasa (05 y 06).
 - Tapa de los USB de la Pi: `PROVISIONAL_tapa_pi` (pieza 20). La bandeja (02) sigue siendo la tapa de servicio de abajo.
-- Placa I/O (escudo) del HP: no hay; la ventana está en la carcasa (03).
+- Escudo metálico de I/O del HP: no hay. La pieza impresa es `PROVISIONAL_placa_io_hp`; la ventana sigue en la carcasa (03), ya impresa.
 - Todo cabe en la cama de 256 mm con las divisiones que ya trae el CAD.
 
 ## STEP para SolidWorks
@@ -201,7 +211,7 @@ Dos orígenes, y no se editan igual:
 - **STEP de malla: se editan peor en SolidWorks.** Son 03-06 (carcasa) y 07-10 (bisel). En la base: las 4 bases y la pared I/O. El importador no pudo con esas piezas y salen de la STL: triángulos unidos en caras planas grandes, pero los agujeros y las curvas son polígonos. Se pueden medir, cortar y añadir operaciones. No se puede cambiar un diámetro de agujero como si fuera un cilindro.
 - **`05_PROVISIONAL_carcasa_x1_y0.step` es un STEP de malla con defecto.** FreeCAD lo marca como no válido por **12 triángulos cruzados** en la STL, en el plano x ≈ 406,3 mm (y ≈ 138-143, z ≈ 88-91), junto al potenciómetro delantero. La caja y el volumen coinciden con la STL. Si SolidWorks se queja, usar «Diagnóstico de importación».
 
-Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneraron la bandeja v2 y `carcasa_x1_y1`: las guías de los carros, de los postes de la tapa y de las orejetas de esa pieza pasan a Ø2,5 (`fijacion = "autorroscante"`). Los carros, la tapa, las otras tres carcasas, la base, el soporte y los biseles no se han vuelto a exportar. Los STEP y el manual PDF tampoco.
+Para cambiar medidas de verdad, la referencia es `hardware/cad/params.scad`, no estos STEP. El 2026-10-22 se regeneraron la bandeja v2 y `carcasa_x1_y1`: las guías de los carros, de los postes de la tapa y de las orejetas de esa pieza pasan a Ø2,5 (`fijacion = "autorroscante"`). Los carros, la tapa, las otras tres carcasas, la base, el soporte y los biseles no se han vuelto a exportar. Los STEP y el manual PDF tampoco. Ese mismo día se añadieron `PROVISIONAL_placa_io_hp` y `PRUEBA_placa_io_hp`; `carcasa_x0_y1` no se ha vuelto a generar.
 
 Ejemplo para regenerar una pieza (no ejecutado aquí):
 

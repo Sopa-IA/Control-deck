@@ -194,17 +194,35 @@ hp_comp_h = 35;             // [MEDIDO 2026-10-18, Miguel] altura máxima sobre 
                             // (el disipador con su ventilador es lo más alto). Límite del modelo:
                             // 41 mm con 3 mm de holgura a la tina. v2: supuesto de 38 mm.
 // I/O trasero [FOTO 2026-10-18]: los conectores asoman por la chapa de la caja HP; NO hay escudo
-// I/O separado. Orden a lo largo del borde (de DC a audio): jack DC, VGA, HDMI, 2x USB,
-// RJ45 + USB, audio. En Orbit (vista superior, I/O hacia atrás) el audio queda a la izquierda
-// (X baja) y el jack DC a la derecha. Posiciones exactas [PENDIENTE de medir].
-// La ventana de Orbit es una abertura LIBRE del tamaño de la abertura estándar (no asume escudo).
-// Para cerrar el hueco alrededor de los conectores hace falta una PLACA I/O IMPRESA a medida
-// (pendiente de medir los conectores; no se modela aún). Ver docs/diseno-mecanico.md.
+// I/O separado. En Orbit (vista superior, I/O hacia atrás) el audio queda a la izquierda
+// (X baja) y el jack DC a la derecha. La ventana ya impresa de carcasa_x0_y1 no se toca.
+// La placa impresa se acota en la ventana, mirando la trasera: x desde el borde izquierdo,
+// z desde el borde inferior. Ese orden es el de la foto, no el de la X del mundo.
 hp_io_h = 44.45;            // [FUENTE estándar ATX] abertura del escudo I/O 158,75 x 44,45 mm
 hp_io_w = 158.75;
 hp_io_prof = 25;            // [PENDIENTE] fondo de la pila de conectores traseros sobre la placa
 hp_io_x0 = 5.6;             // [PENDIENTE de medir] posición de la abertura respecto al borde izq.
 hp_io_baja = 2.24;          // [PENDIENTE] la abertura empieza ~2,2 mm bajo la cara superior de la PCB
+// Placa I/O impresa (PROVISIONAL_placa_io_hp). Entra por dentro de la ventana ya
+// impresa. El reborde apoya en la cara interior; el tetón centra. No se atornilla:
+// la pared tiene 3 mm y carcasa_x0_y1 no se reimprime. `fijacion` no se usa aquí.
+// Huecos [PENDIENTE] [FOTO 2026-10-22]: la ventana 159,75 × 45,45 es la escala de la
+// foto casi perpendicular. Cada hueco lleva ya ~1 mm por lado. Donde dos conectores
+// salen casi pegados el nervio queda en 2 mm (ahí la holgura es menor de 1 mm).
+// [nombre, x, z, ancho, alto] en mm, desde la esquina inferior izquierda de la ventana.
+io_placa_t = 1.4;            // [DISEÑO] chapa 1,2–1,6 mm; el tetón repite este grueso
+io_placa_labio = 6;         // [DISEÑO] reborde interior, arriba y a los lados
+io_placa_labio_inf = 4.5;   // [DISEÑO] abajo hay ~5,2 mm hasta el suelo de la base
+io_placa_holg = 0.4;        // [DISEÑO] el tetón entra con 0,4 mm por lado (no es apriete)
+io_huecos = [
+    ["dc",      0,   0,    7,    8],   // jack DC, a ras del borde inferior; el barril no se ve
+    ["vga",     9,   4,   24.5, 14],
+    ["hdmi",   35.5, 3.5, 15.5, 10],   // solo el conector; la pestaña de encima queda tapada
+    ["usb3",   73,   4,   17,   16],   // 2 USB 3 azules, apilados
+    ["rj_usb", 92,   3,   24,   31],   // RJ45 sobre 2 USB 2
+    ["audio", 126,   2,   23,   32],   // columna de 3 jacks y su chapita
+    ["pines", 151,   1,    7,    7],   // cabecera suelta, abajo a la derecha
+];
 function datos_hp(p) = p == "desktop_mini_ref" ? [177.04, 174.75, 34.29]
                      : p == "iris_mitx_desnuda" ? [mitx, mitx, hp_separador + hp_pcb + hp_io_h - hp_io_baja]
                      : [200, 200, 45];

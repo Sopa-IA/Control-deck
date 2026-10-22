@@ -136,7 +136,7 @@ El carro de 30 × 70, con su margen de 1 mm por lado, acaba en x = 324,86. El su
 | Tamaño de la placa | 170 × 170 mm confirmado | **Medido por Miguel** (17 × 17 cm) |
 | Altura de componentes | `hp_comp_h` 38 → **35 mm** (disipador + ventilador, lo más alto). Holgura a la tina de la pantalla ≈ **9 mm** (límite del modelo: 41 mm con 3 mm) | **Medido por Miguel** |
 | Agujeros de anclaje | **Patrón estándar mini-ITX; coincide visualmente con los 4 tornillos de la foto, no medido.** Corregido el agujero F: está **22,86 mm más adentro** que C (33,02 mm del borde I/O); v2 lo ponía alineado con C. Cambia solo `PROVISIONAL_base_x0_y1` | Estándar mini-ITX (`datos-pendientes-hp.md` §A2, fuente 9) |
-| I/O trasero | La placa **no tiene escudo I/O** (los conectores asomaban por la chapa de la caja HP). La ventana de Orbit es una **abertura libre**; para cerrar el hueco hará falta una **placa I/O impresa a medida** (pendiente de medir los conectores; no se modela). Orden observado: audio a la izquierda … jack DC a la derecha, con el HDMI en el lado de la Pi | Foto de Miguel (observación) |
+| I/O trasero | La placa **no tiene escudo I/O** (los conectores asomaban por la chapa de la caja HP). La ventana de Orbit es una **abertura libre**. La placa impresa es `PROVISIONAL_placa_io_hp` (2026-10-22): entra por dentro, con reborde interior; los huecos están estimados en la foto y marcados [PENDIENTE] en `io_huecos`. Mirando la trasera: jack DC, VGA, HDMI, 2× USB 3, RJ45 sobre 2× USB 2, audio y pines. En la vista superior de Orbit ese orden va al revés (el audio queda a X baja) | Foto de Miguel |
 | Disposición de la placa | Marcador ilustrativo según la foto: 2 DDR3L paralelos al borde delantero, Wi-Fi M.2, disipador central (la altura total = 35 mm) | Foto (ilustrativo) |
 | Capturadora (modo C) | **Reserva de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`usar_capturadora`, `captura`). Sin pieza nueva: velcro o brida. Cables ilustrativos del modo C | Diseño; medidas reales PENDIENTES |
 | Envolvente | Sin cambios: 456,3 × 300,5 × 153,9 mm | — |
@@ -152,7 +152,7 @@ El HP de Miguel es un **HP Slimline 260-a110ns** (torre estrecha de ~307 × 100 
 | Placa mini-ITX 170 × 170 | En horizontal, atrás a la izquierda (`hp_x` = 17 mm, borde trasero a 3 mm de la pared), componentes hacia arriba | Formato: fuente HP (hermanas) |
 | Separadores | 4 torretas impresas en la base, Ø9, **6,35 mm** (estándar ATX), con inserto M3, en el **patrón estándar mini-ITX** (C a 6,35 mm del lateral y 10,16 mm del borde I/O; F a +157,48 / +22,86 mm; H y J a +154,94 mm) | v3: patrón estándar, coincide visualmente con la foto, **no medido** (H-2) |
 | Altura de componentes | v3: caja de **35 mm** sobre la PCB (medido). El modelo admite **hasta 41 mm con 3 mm de holgura** a la tina de la pantalla (43 mm con 1 mm; 45 mm interfiere) | **Medido** (H-3) |
-| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa; sustituye la ventana genérica de v1. El jack DC del adaptador de 19,5 V entra por aquí | v3: **sin escudo** (foto); abertura libre, placa I/O impresa pendiente; posición de cada conector **PENDIENTE** (H-4) |
+| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa; sustituye la ventana genérica de v1. El jack DC del adaptador de 19,5 V entra por aquí. `carcasa_x0_y1` ya está impresa: la abertura no se toca | v3: **sin escudo** (foto). Placa `PROVISIONAL_placa_io_hp` modelada; posición de cada conector **PENDIENTE** [FOTO 2026-10-22] (H-4) |
 | Flujo de aire | **Entrada:** ranuras de la base bajo la placa y ranuras bajas del lateral izquierdo (zona trasera, hasta z ≈ 60 mm). **Salida:** rejilla superior trasera sobre la placa (el aire caliente sube). Se conserva el disipador/ventilador original | Sentido real del ventilador: **PENDIENTE** (H-5); térmica: U-20 |
 | Disco | **SSD 2,5"** (100,45 × 69,85 × 9,5, SFF-8201) en un **soporte impreso** nuevo (`PROVISIONAL_soporte_disco`), a la derecha de la placa, sobre 4 torretas; la plancha queda 3 mm por encima de las torretas de empalme. **Opción HDD 3,5"** (`usar_hdd_35 = true`, 101,6 × 147 × 26,1, SFF-8301) en el mismo sitio, también sin interferencias | Agujeros de los discos: **PENDIENTE** (colisos en el soporte) |
 | DVD | **Retirado**; no se modela | — |
@@ -363,7 +363,7 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 | I/O frontal HP, pulsador Ø12 + LED 3 mm | Marcador 16 × 70 × 26; ventana 62 × 18 | **PENDIENTE** | H-6, H-7 |
 | Adaptador HDMI→USB-C (hueco, modo B) | 72 × 32 × 16 | **PENDIENTE** (modelo sin verificar) | `adap_video` |
 | Capturadora HDMI→USB (reserva, modo C) | 72 × 30 × 20 | **Reserva de diseño**; medidas del aparato **PENDIENTES** | `captura` |
-| HP, ventana I/O trasera | 159,75 × 45,45 (abertura de escudo I/O 158,75 × 44,45 + 1 mm), abertura libre | **Con fuente** (estándar ATX); la placa HP no tiene escudo (foto); posición de conectores **PENDIENTE** (H-4) | `hp_io_*` |
+| HP, ventana I/O trasera | 159,75 × 45,45 (abertura de escudo I/O 158,75 × 44,45 + 1 mm), abertura libre. Placa 171,75 × 55,95 × 2,80 y prueba 159,75 × 45,45 × 1,40 | **Con fuente** el tamaño de la abertura (estándar ATX). Huecos de la placa: **PENDIENTE** [FOTO 2026-10-22] (H-4) | `hp_io_*`, `io_huecos` |
 | Raspberry Pi | Placa 85 × 56; agujeros 58 × 49 a 3,5 mm del borde, Ø2,7 | **Con fuente** | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf |
 | Raspberry Pi, altura con conectores | 20 | **PENDIENTE** | Según el modelo que tenga Miguel |
 | KVM (opcional, desactivado) | 140 × 90 × 30 | **PENDIENTE** | Solo con `usar_kvm = true`. El fabricante no publica medidas (ver `conmutacion-video-usb.md`) |
@@ -491,7 +491,7 @@ Herramientas usadas: OpenSCAD 2021.01, con `xvfb-run` para trabajar sin pantalla
 
 ## 7. Pendiente antes de fabricar (lista no exhaustiva)
 
-1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). ~~Tamaño y altura~~ medidos (§0c). Falta: posición real de los agujeros (H-2), **posición de cada conector trasero para diseñar la placa I/O impresa** (H-4), `io_frontal`, `boton_hp_*` (H-6, H-7) y antenas Wi-Fi (H-9).
+1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). ~~Tamaño y altura~~ medidos (§0c). Falta: posición real de los agujeros (H-2), **calibre de cada conector trasero para corregir `io_huecos`** (H-4; la placa ya está modelada desde la foto), `io_frontal`, `boton_hp_*` (H-6, H-7) y antenas Wi-Fi (H-9).
 2. **Medir el MSI de Miguel:**
    - posición de los puertos y de las teclas OSD a lo largo del canto derecho (`puertos_v0/1`, `osd_v0/1`);
    - marcos y desplazamiento del área activa;
