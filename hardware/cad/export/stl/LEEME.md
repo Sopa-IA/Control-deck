@@ -51,6 +51,6 @@ El mismo día, después, la bandeja pasa a huecos fijos. Se regeneró solo `PROV
 
 | STL | Caja (mm) | Volumen | Qué es |
 |---|---|---|---|
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 25,10 | 190,72 cm³ | Huecos de la Pi, dos Nano, el ESP y el step-down. Misma ala. Antes 30,20 mm y 167,53 cm³ |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 181,89 cm³ | Huecos de la Pi, dos Nano, el ESP y el step-down. Canal de 13 mm bajo cada fila de pines. Misma ala. Antes 25,10 mm y 190,72 cm³ |
 
 `comprobar_stl.py`: las 27 mallas siguen cerradas y dentro de la cama (el lado largo de la bandeja mide 237,49; con margen de 10 mm el límite es 246). `comprobar_interferencias.py`: salida 0, 23 cajas, también con `carro_conjunto="nano_proto"`. Un solo sólido (Volumes: 2, Simple: yes).

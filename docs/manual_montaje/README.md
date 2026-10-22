@@ -305,7 +305,7 @@ Tornillos usados en este paso: ninguno.
 
 ## Paso 7. Bandeja de placas
 
-Primero las placas, en el banco. La bandeja se atornilla a la base al final.
+Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final.
 
 ### 7.1 Raspberry Pi
 
@@ -315,53 +315,65 @@ Primero las placas, en el banco. La bandeja se atornilla a la base al final.
 
 Pon la Pi en su hueco, con USB y RJ45 hacia atrás. La arandela pisa la esquina. El tornillo entra en el poste, fuera de la placa. Aprieta hasta que la arandela apoye.
 
-### 7.2 ESP8266
+### 7.2 Mira el canal de los pines
 
 ![7.2](img/s7_2.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Cuatro tornillos con arandela, en las esquinas.
+El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos filas. Acaban 1,5 mm por encima del suelo. Desde la cara inferior de la PCB hasta el suelo hay 13 mm, en toda la huella de cada fila. La placa apoya en el centro del canto corto, fuera de esas filas.
 
-**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB. Si no entra, no la fuerces.
+**PENDIENTE DE MEDIR.** El 13 mm es 11,5 mm del pin más largo, con el separador ya contado, más 1,5 mm de aire. Miguel no lo ha medido. Si un pin es más largo, para: el canal llega al suelo y no se puede bajar más.
 
-### 7.3 Nano de prácticas
+### 7.3 ESP8266
 
 ![7.3](img/s7_3.png)
 
 **NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
 
-Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. Cuatro tornillos con arandela.
+Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro tornillos M3×10 con arandela Ø9. La guía es Ø2,5 y mide 10 mm.
 
-### 7.4 Step-down
+**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces.
+
+### 7.4 Nano de prácticas
 
 ![7.4](img/s7_4.png)
 
-**NECESITAS:** 4× M3×8 cilíndrico, Phillips PH1  ·  2× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
 
-Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan. Los 3 y 4 lo pisan con arandela, por fuera de la placa.
+Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro arandelas. Tornillo M3×10, guía Ø2,5 de 10 mm.
 
-**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. Mide el tuyo antes de apretar.
+**PENDIENTE DE MEDIR.** La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre.
 
-### 7.5 Nano de mandos
+### 7.5 Step-down
 
 ![7.5](img/s7_5.png)
 
-**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+**NECESITAS:** 4× M3×8 cilíndrico, Phillips PH1  ·  2× Arandela ancha M3 Ø9, DIN 9021
 
-Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Cuatro tornillos con arandela.
+Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan. Los 3 y 4 lo pisan con arandela, por fuera de la placa. Debajo hay 3 mm para la soldadura.
 
-### 7.6 Abre las cuatro torretas
+**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo.
+
+### 7.6 Nano de mandos
 
 ![7.6](img/s7_6.png)
+
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+
+Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las arandelas. M3×10, guía Ø2,5 de 10 mm.
+
+### 7.7 Abre las cuatro torretas
+
+![7.7](img/s7_7.png)
 
 **NECESITAS:** 1× broca de Ø3,4 mm
 
 Con la broca de Ø3,4, abre el techo de las cuatro torretas de la base. Para en cuanto la broca caiga.
 
-### 7.7 Atornilla la bandeja
+### 7.8 Atornilla la bandeja
 
-![7.7](img/s7_7.png)
+![7.8](img/s7_8.png)
 
 **NECESITAS:** 4× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  4× Tuerca M3 DIN 934
 
@@ -530,7 +542,7 @@ El largo de un cilíndrico se mide bajo la cabeza. El del avellanado incluye la 
 | Orejeta ya impresa, bisel y soporte del disco | Paso Ø3,4 y, detrás, agujero ciego Ø4 | Ø4,5×10 avellanado, después de abrir el paso a Ø4,6. El ×10 no hace tope en el Ø4. |
 | Placa HP | PCB 1,6 mm + agujero de 6,2 mm en el separador | M3×6 de placa base. No llega al fondo. El agujero es Ø4. |
 | Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | 6-32 × 6,4 mm. No es un M3. |
-| Placas de la bandeja | Guía Ø2,5 de 10 mm y arandela de 0,8 mm | M3×10. Entran unos 9 mm. La arandela pisa la esquina, el tornillo no atraviesa la PCB. |
+| Placas de la bandeja | Guía Ø2,5 de 10 mm, poste de 14,8 mm y arandela de 0,8 mm | M3×10. Entran 9,2 mm y quedan 0,8 mm hasta el fondo. La arandela Ø9 pisa la esquina 1,1 mm. |
 | Step-down, tornillo pasante | Guía de 7 mm | M3×8. |
 | Step-down, brida | Guía de 8 mm y arandela | M3×8. |
 | Tapa | Tapa 2,4 mm + guía de 9 mm | M3×10. Entran unos 8 mm. |
@@ -542,7 +554,7 @@ Un autorroscante de Ø4,5 no pasa por el agujero impreso de Ø3,4. Por eso el pa
 
 La tuerca no cabe en esos agujeros: son ciegos y de Ø4. Si el Ø4,5 gira en vacío, para. No lo cambies por un M4. La otra salida es abrir ese agujero de lado a lado y poner una tuerca M3, y eso es otro taladro, no el de este manual.
 
-Las torretas de la bandeja no tienen el paso de Ø3,4 que sí tienen las de las pletinas. El techo, de unos 3 mm, está macizo. El 7.6 lo abre con Ø3,4 para que el M3×16 llegue a la tuerca. Un M3 no muerde el Ø4 que hay debajo: por eso lleva tuerca y no autorroscante.
+Las torretas de la bandeja no tienen el paso de Ø3,4 que sí tienen las de las pletinas. El techo, de unos 3 mm, está macizo. El 7.7 lo abre con Ø3,4 para que el M3×16 llegue a la tuerca. Un M3 no muerde el Ø4 que hay debajo: por eso lleva tuerca y no autorroscante.
 
 El M3×6 de la placa HP es el tornillo de placa base. Si gira en vacío, el agujero del separador es Ø4, el del inserto que ya no se usa. No cabe un tornillo más gordo en el agujero de la PCB. No se ha elegido otra pieza.
 
@@ -571,7 +583,25 @@ No hacen falta para montar. Están por si hay que reimprimir una pieza.
 
 ### Lo que sigue sin medir
 
-Placa frontal del HP (el marcador sigue en 16×70×26). Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Step-down real. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+Placa frontal del HP (el marcador sigue en 16×70×26). Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm). Dónde acaba la fila respecto al canto (el canal usa 3,2 mm y deja 2,5 mm en el extremo). Step-down real, y si lleva pines. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+
+### Pines bajo la PCB
+
+Nano de prácticas, Nano de mandos y ESP8266. La cara inferior de la PCB queda a 13 mm del suelo de la bandeja. Ese 13 es 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire. [PENDIENTE] de medir. El pin corto que cita Miguel, unos 6 mm más el separador, queda holgado dentro de ese canal.
+
+Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro arandelas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.
+
+La guía de la esquina sigue en Ø2,5 × 10 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la arandela de 0,8 mm, el M3×10 entra 9,2 mm y le quedan 0,8 mm hasta el fondo. El tornillo no cambia. La lista de la compra tampoco. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto: la arandela Ø9 pasa 1,1 mm de la esquina de la PCB.
+
+Con la bandeja en sus torretas, el ala queda a z = 11 y la cara inferior de estas tres PCB a z = 28. La carcasa y la tapa no se han tocado.
+
+El Nano de prácticas cae bajo la pendiente de la carcasa delantera derecha. En y = 66, un USB o un chip de 4 mm sobre la PCB queda a 12,6 mm del techo interior. El ICSP del dibujo, 8 mm y en el extremo contrario al USB, queda a unos 35 mm. La tapa de la Pi no llega a esta placa.
+
+El ESP queda debajo de la tina de la pantalla. En el borde delantero, la PCB (1,6 mm) tiene 4,8 mm hasta el suelo de esa tina. El módulo del dibujo, 3 mm y centrado, queda a 14 mm. El USB mira atrás, donde la tina está más alta. Un componente de 4 mm pegado al borde delantero quedaría a 0,8 mm: el dibujo no pone ninguno ahí.
+
+El Nano de mandos queda bajo el techo plano de la carcasa x1_y1. Hasta ese techo interior hay 117 mm. El hueco de la tapa acaba en x = 396 y la placa empieza en x = 400. La tapa apoya sobre el techo macizo, así que el límite es el techo.
+
+La Pi sigue a 8 mm del suelo, con su rejilla. Los 4 M3 de la bandeja a la base no cambian. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.
 
 ### Botón de encendido
 

@@ -73,28 +73,28 @@ No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El
 
 ## Huecos fijos (2026-10-22)
 
-Miguel aprueba el concepto de un bolsillo por placa, con paredes bajas y un tornillo en cada esquina. La foto de referencia no está a escala y tiene tres columnas: aquí los huecos van a lo largo, en dos columnas. El contorno no cambia (ala 126,00 × 237,49 mm). Los 4 M3 a la base siguen en x = 318,26 y 436,26, y = 49 y 278,492, con paso libre Ø3,4. Roscan en la base ya impresa. La carcasa y `tapa_pi` no se han tocado: las paredes nuevas acaban en z = 23,1 y la tapa está en el techo.
+Miguel aprueba el concepto de un bolsillo por placa, con paredes bajas y un tornillo en cada esquina. La foto de referencia no está a escala y tiene tres columnas: aquí los huecos van a lo largo, en dos columnas. El contorno no cambia (ala 126,00 × 237,49 mm). Los 4 M3 a la base siguen en x = 318,26 y 436,26, y = 49 y 278,492, con paso libre Ø3,4. Roscan en la base ya impresa. La carcasa y `tapa_pi` no se han tocado: las paredes de los Nano y del ESP acaban en z = 18,6 y la tapa está en el techo.
 
 La Pi no se mueve. Sigue en x = 330 a 386, y = 167,5 a 252,5, USB y RJ45 hacia +Y, a 12 mm del suelo sobre los cuatro postes Ø6 (agujero Ø2,7, paso del M2,5). La rejilla bajo el SoC y la muesca de la micro-SD siguen igual. Las paredes de la Pi llegan a ras de la PCB (z = 13,5), sin reborde sobre la rejilla. El canto +Y queda abierto. El canto +X solo lleva pared de y = 216 a 250, por detrás de los HDMI. El HAT sigue sin modelar [PENDIENTE].
 
 | Hueco | Esquina −X −Y de la PCB | PCB | USB | Cara inferior |
 |---|---|---|---|---|
 | Pi 4 | 330, 167,5 | 56 × 85 [FUENTE] | +Y | z = 12, postes de 8 mm |
-| ESP8266 | 346, 86 | 31 × 58 [PENDIENTE] [FOTO] | +Y | z = 21,5 |
-| Nano de prácticas | 399, 66 | 18 × 45 [FUENTE] | −Y | z = 21,5 |
+| ESP8266 | 346, 86 | 31 × 58 [PENDIENTE] [FOTO] | +Y | z = 17 (`pin_bajo_pcb` = 13 sobre el suelo) |
+| Nano de prácticas | 399, 66 | 18 × 45 [FUENTE] | −Y | z = 17 |
 | Step-down | 399, 124 | 21 × 43 [PENDIENTE] | — | z = 7 |
-| Nano de mandos | 400, 222 | 18 × 45 [FUENTE] | +Y | z = 21,5 |
+| Nano de mandos | 400, 222 | 18 × 45 [FUENTE] | +Y | z = 17 |
 
-Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm. En las tres placas con pines hacia abajo el apoyo es un escalón de 2,0 mm en los cantos cortos: los pines, en el marcador, empiezan a 2,4 mm del canto [PENDIENTE]. El centro del bolsillo queda vacío hasta el suelo (z = 4). No hay taladro pasante. El canto del USB está partido 10 mm para el conector. El step-down no lleva pines: reborde de 2,2 mm y un hueco de 3 mm para las soldaduras [DISEÑO].
+Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm. En las tres placas con pines macho hacia abajo, cada fila tiene un canal de `pin_fila_w` = 3,2 mm desde el canto largo, vaciado hasta el suelo. Desde la cara inferior de la PCB hasta ese suelo hay `pin_bajo_pcb` = 13 mm: 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire [PENDIENTE] de medir. El apoyo es un escalón de 2,0 mm en la banda central del canto corto, fuera del último pin (`pin_extremo` = 2,5 mm, el dibujo empieza a 2,4 mm). En el canto del mini-USB de los Nano ese escalón no llega a 1,6 mm y no se imprime: sujetan las arandelas. El ESP sí lo lleva a los dos lados del conector. El canto del USB sigue partido 10 mm. El step-down no lleva regleta en el modelo: reborde de 2,2 mm y un hueco de 3 mm para las soldaduras [DISEÑO].
 
-La columna derecha (x = 399) queda fuera de la tina. El ESP, debajo de la pantalla, queda a ≥ 5 mm de la tina en la comprobación de cajas. Delante de y ≈ 85 y a la izquierda de x ≈ 380 el suelo se queda bajo: ahí la tina no deja pared alta.
+La columna derecha (x = 399) queda fuera de la tina. El ESP queda debajo de la pantalla: con la bandeja en las torretas, el borde delantero de su PCB tiene 4,8 mm hasta el suelo de la tina, y el módulo dibujado (3 mm, centrado) tiene 14 mm. Delante de y ≈ 85 y a la izquierda de x ≈ 380 el suelo se queda bajo: ahí la tina no deja pared alta.
 
 Tornillos. `fijacion = "autorroscante"`, guía Ø2,5, poste Ø7,6 (pared 2,55 mm). La cabeza sola no llega al borde: hace falta arandela ancha M3, Ø9 (DIN 9021). El tornillo va fuera de la PCB y la arandela pisa la esquina.
 
 | Sitio | Dónde (ejes) | Guía | Tornillo |
 |---|---|---|---|
 | Pi, cuatro esquinas | (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2) | Ø2,5 × 10 mm, desde z = 13,5 | M3×10 cilíndrico + arandela Ø9 |
-| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 10 mm, desde z = 23,1 | M3×10 + arandela Ø9 |
+| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 10 mm, desde z = 18,6 | M3×10 + arandela Ø9 |
 | Nano de prácticas | (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
 | Nano de mandos | (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270) | Ø2,5 × 10 mm | M3×10 + arandela Ø9 |
 | Buck, agujeros del módulo | (402,5, 127,5) y (416,5, 163,5), a 3,5 mm de la esquina [PENDIENTE] | Ø2,5 × 7 mm, desde la cara inferior (z = 7) hasta z = 0. No atraviesa el ala | M3×8. Atraviesa la PCB (1,6 mm) y rosca unos 6 mm |
@@ -107,11 +107,11 @@ Canales. Las paredes de los bolsillos hacen de canal. Siete puentes (dos postes 
 
 La proto 30 × 70 se queda sin puesto. La capturadora también: su nido (x = 390, y = 220) caía encima del Nano de mandos. `usar_nido_captura = false`. Dónde va el aparato es [PENDIENTE].
 
-`PROVISIONAL_bandeja_servicio`: 126,00 × 237,49 × 25,10 mm, 190,72 cm³, un solo sólido, malla cerrada, z de −2 a 23,1. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. `comprobar_interferencias.py` (2026-10-22): salida 0, 23 cajas, también con `carro_conjunto="nano_proto"` (ese par ya no cambia las cajas: no hay carros en el ensamblaje). El ESP queda a ≥ 5 mm de la tina, la clavija del Nano de prácticas a ≥ 8 mm del interior, la del Nano de mandos a ≥ 5 mm de una orejeta, la del RJ45 de la Pi a ≥ 1 mm. No es un montaje.
+`PROVISIONAL_bandeja_servicio`: 126,00 × 237,49 × 20,60 mm, 181,89 cm³, un solo sólido, malla cerrada, z de −2 a 18,6. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. `comprobar_interferencias.py` (2026-10-22, tras bajar las tres PCB a 13 mm): salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas. Con la bandeja montada, el Nano de prácticas (USB de 4 mm, y = 66) queda a 12,6 mm del techo interior; el ESP, bajo la tina, tiene 4,8 mm en el borde delantero de la PCB y 14 mm en el módulo dibujado; el Nano de mandos queda a 117 mm del techo de x1_y1. La carcasa no se ha tocado. No es un montaje.
 
 No se han regenerado la carcasa, la tapa, los carros ni el retenedor. Esos cuatro STL siguen en el directorio y quedan **obsoletos**: no imprimir `PROVISIONAL_carro_nano`, `PROVISIONAL_carro_esp`, `PROVISIONAL_carro_proto30x70` ni `PROVISIONAL_retenedor_nano`.
 
-[PENDIENTE] de esta bandeja: el módulo real del step-down (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas, no el aparato de Miguel); el ESP de la foto (58 × 31, y si el micro-USB va centrado); cuántos milímetros del canto corto están libres de pines (el apoyo es de 2,0 mm); el largo real de las clavijas (mandos 22 mm, acaba en y = 289 y sale unos 15 mm del suelo de la bandeja; prácticas 12 mm, acaba en y = 54); el HAT; y dónde se guarda la capturadora. El agarre del autorroscante no se ha probado en una pieza.
+[PENDIENTE] de esta bandeja: el largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm); cuántos milímetros del canto corto y del canto largo están libres de pines (el canal usa 3,2 mm y deja 2,5 mm en el extremo); el módulo real del step-down y si lleva pines (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas); el ESP de la foto (58 × 31, y si el micro-USB va centrado); el largo real de las clavijas; el HAT; y dónde se guarda la capturadora. El agarre del autorroscante no se ha probado en una pieza.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 

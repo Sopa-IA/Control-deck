@@ -401,7 +401,7 @@ usar_nido_captura = false;
 // sale el mini-USB. El CAD usa la cota de catálogo.
 ard_l = 45; ard_w = 18; ard_pcb = 1.6;
 ard_arriba = 4;      // [PENDIENTE]
-ard_pines  = 8.5;    // [PENDIENTE] (con conectores dupont hembra debajo hacen falta ~15 mm)
+ard_pines  = 11.5;   // [PENDIENTE] pin macho más largo, separador incluido. El aire es pin_bajo_pcb − ard_pines
 ard_usb_sale = 1.5;  // [PENDIENTE] cuánto sobresale el mini-USB del borde de la PCB
 ard_clavija = 22;    // [PENDIENTE] clavija mini-USB + alivio (recta), por detrás del borde
 ard_altura_soporte = 16;   // [DISEÑO] PCB sobre la bandeja (deja sitio a los dupont)
@@ -476,13 +476,11 @@ esp_l = 58;                               // [PENDIENTE] estimación de la foto
 esp_w = 31;                               // [PENDIENTE] estimación de la foto
 esp_clavija = 10;                         // [DISEÑO] reserva del enchufe; no medido
 esp_pcb = 1.6;                            // [DISEÑO] PCB típico
-esp_pcb_z = 17.5;                         // cara inferior de la PCB sobre la bandeja [DISEÑO]
+esp_pcb_z = 17.5;                         // OBSOLETO, solo el carro. El hueco usa pin_bajo_pcb
 esp_mod = [24, 16, 3];                    // ESP-12 sobre la PCB, x y z [DISEÑO]; no medido
 esp_ag_inset = 3.5;                       // centro del agujero a la esquina [DISEÑO]; no medido
-// Carcasa Dupont hembra de 2,54 mm, en el eje del pin. Cota habitual de ese
-// conector; los cables de Miguel no se han medido. El separador negro del
-// pin macho (≈ 2,5 mm) queda entre la PCB y la carcasa: el hueco bajo la PCB
-// tiene que ser ≈ 14,5 + 2,5 = 17 mm para enchufar a fondo.
+// Carcasa Dupont hembra de 2,54 mm. La usan los carros obsoletos.
+// El hueco fijo no: Miguel pone regletas macho hacia abajo y la cota es pin_bajo_pcb.
 dupont_carcasa = 14.5;                    // [DISEÑO] no medido en los cables de Miguel
 dupont_separador = 2.5;                   // [DISEÑO] plástico negro bajo la PCB; no medido
 
@@ -492,12 +490,10 @@ dupont_separador = 2.5;                   // [DISEÑO] plástico negro bajo la P
 // [PENDIENTE]. En el carro el mini-USB mira a +X. El ICSP, en el otro extremo, hacia arriba.
 pr_l = ard_l; pr_w = ard_w;
 pr_pcb = 1.6;
-pr_pcb_z = 17.5;                          // cara inferior sobre la bandeja [DISEÑO]
+pr_pcb_z = 17.5;                          // OBSOLETO, solo el carro. El hueco usa pin_bajo_pcb
 pr_icsp = [7.6, 5.1, 8];                  // 2x3 hacia arriba [DISEÑO]; no medido
 pr_clavija = 12;                          // [DISEÑO] reserva del enchufe mini-USB; no medido
-// 14,5 + 2,5 = 17 mm bajo la PCB. Los dos puestos de la bahía v2 están
-// detrás de y = 80, donde la tina deja pasar esa altura. El puesto delantero
-// de la bahía vieja (y = 76, PCB a 12 mm) ya no se usa.
+// Los carros de la bahía v2 ya no se imprimen. El hueco fijo deja pin_bajo_pcb.
 
 // Riel modular (2026-10-21). Miguel: los DOS tornillos a la IZQUIERDA de la
 // canaleta, en la bandeja ya impresa. Son las dos torretas de la distribución
@@ -558,8 +554,14 @@ bay_torn = [[-0.8, -4.5], [0.8, 4.5]];
 // ---------------------------------------------------------------------
 b3_holg = 0.5;          // [DISEÑO] aire entre la PCB y la pared
 b3_pared = 2.2;         // [DISEÑO] pared del bolsillo
-b3_apoyo = 2.0;         // [DISEÑO] apoyo en el canto corto. Los pines salen a 2,4 mm [PENDIENTE]
-b3_pin_z = 17.5;        // [DISEÑO] cara inferior de la PCB sobre el suelo. Dupont 14,5 + separador 2,5
+// Regleta macho de agujero pasante, pines hacia abajo. Miguel: bajo la PCB
+// asoman el separador (~2,5 mm) y el pin (~6 mm; algunos llegan a 11,5 mm
+// con el separador ya contado). Hasta medirlo, pin largo 11,5 + aire 1,5.
+pin_bajo_pcb = 13;      // [PENDIENTE] libre desde la cara inferior de la PCB hasta la bandeja
+pin_fila_w = 3.2;       // [DISEÑO] huella de cada fila, desde el canto largo. El dibujo usa 2,5 mm. No medido
+pin_extremo = 2.5;      // [DISEÑO] tramo sin pin junto al canto corto. El dibujo empieza a 2,4 mm. No medido
+b3_apoyo = 2.0;         // [DISEÑO] escalón del canto corto, solo en la banda central, menor que pin_extremo
+b3_pin_z = pin_bajo_pcb;
 b3_usb = 10;            // [DISEÑO] hueco del conector, centrado en el canto. El clon no se ha medido
 b3_torn_lx = 1.5;       // [DISEÑO] eje del tornillo, fuera del canto largo (X)
 b3_torn_ly = 3.0;       // [DISEÑO] eje del tornillo, fuera del canto corto (Y)

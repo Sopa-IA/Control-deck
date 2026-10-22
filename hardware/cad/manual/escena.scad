@@ -372,14 +372,29 @@ if (sub == "check") {
     losa(pi_x0, pi_y0, pi_z + 10, pi_w, pi_d, 1.6);
     tornillos_de(b3_pi_torn, pi_z + 12, true);
 } else if (sub == "7.2") {
+    // Corte del Nano de prácticas, a mitad del largo. Las dos filas, en naranja,
+    // acaban ard_pines por debajo de la PCB: queda pin_bajo_pcb − ard_pines de aire.
+    corte_y = b3_prac[1] + b3_prac[3] / 2;
+    intersection() {
+        difference() {
+            color(GRIS) bandeja_servicio();
+            translate([b3_prac[0] - 12, corte_y, -8]) cube([b3_prac[2] + 28, 50, 36]);
+        }
+        translate([b3_prac[0] - 10, b3_prac[1] - 4, -3])
+            cube([b3_prac[2] + 20, corte_y - b3_prac[1] + 6, 28]);
+    }
+    color(RES) for (sx = [ard_w/2 - 7.62, ard_w/2 + 7.62])
+        translate([b3_prac[0] + sx - 1.25, b3_prac[1] + pin_extremo, suelo + b3_pin_z - ard_pines])
+            cube([2.5, corte_y - (b3_prac[1] + pin_extremo), ard_pines]);
+} else if (sub == "7.3") {
     color(GRIS) bandeja_servicio();
     hueco(b3_esp, suelo + b3_pin_z + 8, esp_pcb);
     tornillos_de(tornillos_placa(b3_esp), suelo + b3_pin_z + 10, true);
-} else if (sub == "7.3") {
+} else if (sub == "7.4") {
     color(GRIS) bandeja_servicio();
     hueco(b3_prac, suelo + b3_pin_z + 8, ard_pcb);
     tornillos_de(tornillos_placa(b3_prac), suelo + b3_pin_z + 10, true);
-} else if (sub == "7.4") {
+} else if (sub == "7.5") {
     color(GRIS) bandeja_servicio();
     hueco(b3_buck, suelo + buck_suelda + 8, buck_pcb);
     pas = agujeros_buck();
@@ -388,15 +403,15 @@ if (sub == "check") {
         torn_arriba(pas[i][0], pas[i][1], suelo + buck_suelda + 10, i + 1, false);
     for (i = [0 : len(bri) - 1])
         torn_arriba(bri[i][0], bri[i][1], suelo + buck_suelda + 10, i + 3, true);
-} else if (sub == "7.5") {
+} else if (sub == "7.6") {
     color(GRIS) bandeja_servicio();
     hueco(b3_man, suelo + b3_pin_z + 8, ard_pcb);
     tornillos_de(tornillos_placa(b3_man), suelo + b3_pin_z + 10, true);
-} else if (sub == "7.6") {
+} else if (sub == "7.7") {
     color(GRIS) base();
     tb = torretas_bandeja();
     for (i = [0 : len(tb) - 1]) anillo(tb[i][0], tb[i][1], z_pletina + 1, i + 1);
-} else if (sub == "7.7") {
+} else if (sub == "7.8") {
     color(GRIS) base();
     color(GRIS) translate([0, 0, z_bandeja]) bandeja_servicio();
     tb = torretas_bandeja();

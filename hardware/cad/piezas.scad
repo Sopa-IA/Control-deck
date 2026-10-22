@@ -150,9 +150,12 @@ module puente_cable(x, y, dx, dy) {
         translate([x + dx, y + dy, zb]) cube([2, 2, 1.6]);
     }
 }
-// Bolsillo de una placa con pines hacia abajo. Apoyo solo en los cantos
-// cortos (2 mm: dentro de los 2,4 mm sin pines). El centro queda libre
-// hasta el suelo. usb_sy = −1 el conector mira a −Y; +1 mira a +Y.
+// Bolsillo de una placa con pines macho hacia abajo. Bajo cada fila hay un
+// canal hasta el suelo: desde la PCB hasta cualquier plástico quedan
+// pin_bajo_pcb. El apoyo es un escalón en la banda central de cada canto
+// corto, fuera del último pin. En el canto del USB ese escalón se parte
+// y, si el resto no llega a 1,6 mm, no se imprime: sujetan las arandelas.
+// usb_sy = −1 el conector mira a −Y; +1 mira a +Y.
 module bolsillo_pines(b, usb_sy, pcb_t) {
     x0 = b[0]; y0 = b[1]; lx = b[2]; ly = b[3];
     z0 = suelo - 0.2;
@@ -169,37 +172,50 @@ module bolsillo_pines(b, usb_sy, pcb_t) {
                 cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
             translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
                 cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
-            // canto −Y. El apoyo entra 0,3 mm en la pared para no quedar suelto.
-            if (usb_sy < 0)
-                apoyo_partido(x0, y0 - b3_holg - 0.3, lx, z0, z_pcb);
-            else
-                translate([x0 - 0.3, y0 - b3_holg - 0.3, z0])
-                    cube([lx + 0.6, b3_apoyo + b3_holg + 0.3, z_pcb - z0]);
-            // canto +Y
-            if (usb_sy > 0)
-                apoyo_partido(x0, y0 + ly - b3_apoyo, lx, z0, z_pcb);
-            else
-                translate([x0 - 0.3, y0 + ly - b3_apoyo, z0])
-                    cube([lx + 0.6, b3_apoyo + b3_holg + 0.3, z_pcb - z0]);
+            apoyo_centro(x0, y0 - b3_holg - 0.3, y0 + b3_apoyo, lx, z0, z_pcb, usb_sy < 0);
+            apoyo_centro(x0, y0 + ly - b3_apoyo, y0 + ly + b3_holg + 0.3, lx, z0, z_pcb, usb_sy > 0);
             for (p = tornillos_placa(b))
                 translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
         }
         // La PCB entra desde arriba. El poste no pisa la placa.
         translate([x0 - 0.01, y0 - 0.01, z_pcb - 0.01]) cube([lx + 0.02, ly + 0.02, 40]);
-        // Paso del conector, en el canto usb_sy. El apoyo de ese canto ya está partido.
+        // Paso del conector, en el canto usb_sy.
         translate([x0 + lx/2 - b3_usb/2,
                    usb_sy < 0 ? y0 - b3_holg - b3_pared - 0.4 : y0 + ly + b3_holg - 0.2,
                    z_pcb - 0.6])
             cube([b3_usb, b3_pared + 0.8, 20]);
+        // Canal de cada fila. El cilindro no se resta: deja rosca_pared
+        // alrededor de la guía, y ese cilindro no llega a pin_extremo.
+        difference() {
+            union() {
+                translate([x0, y0, z0 - 0.01]) cube([pin_fila_w, ly, z_pcb - z0 + 0.02]);
+                translate([x0 + lx - pin_fila_w, y0, z0 - 0.01]) cube([pin_fila_w, ly, z_pcb - z0 + 0.02]);
+            }
+            for (p = tornillos_placa(b))
+                translate([p[0], p[1], z0 - 0.2])
+                    cylinder(d = rosca_d + 2*rosca_pared, h = z_pcb - z0 + 1, $fn = 24);
+        }
     }
 }
-module apoyo_partido(x0, yb, lx, z0, z_pcb) {
-    xa = x0 + lx/2 - b3_usb/2;
-    dy = b3_apoyo + b3_holg + 0.3;
-    translate([x0 - 0.3, yb, z0]) cube([xa - (x0 - 0.3), dy, z_pcb - z0]);
-    translate([xa + b3_usb, yb, z0]) cube([x0 + lx + 0.3 - (xa + b3_usb), dy, z_pcb - z0]);
+// Escalón en la banda central. No entra en la huella de las filas.
+// En el canto del USB, cada lado tiene que medir al menos 1,6 mm.
+module apoyo_centro(x0, y_lo, y_hi, lx, z0, z_pcb, abrir_usb) {
+    xL = x0 + pin_fila_w;
+    xR = x0 + lx - pin_fila_w;
+    hh = z_pcb - z0;
+    dy = y_hi - y_lo;
+    if (abrir_usb) {
+        xa = x0 + lx/2 - b3_usb/2;
+        xb = xa + b3_usb;
+        if (xa - xL >= 1.6)
+            translate([xL, y_lo, z0]) cube([xa - xL, dy, hh]);
+        if (xR - xb >= 1.6)
+            translate([xb, y_lo, z0]) cube([xR - xb, dy, hh]);
+    } else
+        translate([xL, y_lo, z0]) cube([xR - xL, dy, hh]);
 }
-// Step-down. No lleva pines. Reborde perimetral, dos tornillos por los
+// Step-down. En el modelo no hay regleta: solo buck_suelda bajo la PCB.
+// Reborde perimetral, dos tornillos por los
 // agujeros del módulo y dos bridas en los otros cantos.
 module bolsillo_buck() {
     x0 = b3_buck[0]; y0 = b3_buck[1]; lx = b3_buck[2]; ly = b3_buck[3];
