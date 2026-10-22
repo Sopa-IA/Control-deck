@@ -152,7 +152,8 @@
       "properties": {
         "action": { "type": "string" }, "ok": { "type": "boolean" }, "dry_run": { "type": "boolean" },
         "simulated": { "type": "boolean" },
-        "message": { "type": "string", "maxLength": 500 }
+        "message": { "type": "string", "maxLength": 500 },
+        "output": { "type": "string", "maxLength": 8000, "description": "Salida de arduino-cli o líneas del monitor serie. No va en el registro corto." }
       }
     },
     "mapping": {

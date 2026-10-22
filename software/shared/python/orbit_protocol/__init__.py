@@ -24,7 +24,7 @@ DEFAULT_MAPPING_PATH = SHARED_DIR / "controls.default.json"
 HEARTBEAT_S = 5.0          # orbitd envía ping cada 5 s
 HEARTBEAT_TIMEOUT_S = 15.0  # sin pong en 15 s -> cliente desconectado
 CONFIRM_TTL_S = 15.0        # validez del desafío de confirmación
-MAX_MESSAGE_BYTES = 16 * 1024
+MAX_MESSAGE_BYTES = 48 * 1024
 
 _schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 _validator = jsonschema.Draft202012Validator(_schema)

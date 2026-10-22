@@ -40,6 +40,7 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `docs/diseno-mecanico.md` | Diseño v1 + HP v3. **Varios párrafos siguen hablando del SSD 2,5".** La geometría vigente está en `params.scad`, no en ese texto. |
 | `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). El montaje de la Pi es el de `instalacion-pi.md`. |
 | `docs/instalacion-pi.md` | Arranque directo a Orbit OS, kiosco, Moonlight y el marco integrado. |
+| `docs/ardu-lab.md` | Programar el Nano de prácticas desde Orbit OS. El de mandos queda bloqueado. |
 | `docs/datos-pendientes-hp.md` | Ficha del HP, fuentes y lista H-1…H-12. Parte de H-2 y H-8 ha avanzado; el archivo no se ha reescrito entero. |
 | `docs/informe-fase1.md`, `pantallas.md`, `controles.md`, `raspberry-pi.md`, `alimentacion-preliminar.md`, `incertidumbres-hardware.md` | Investigación de la fase 1. Prevalecen las decisiones del prototipo cuando no coinciden. |
 | `hardware/cad/params.scad` | Todas las cotas, con etiqueta de origen. |

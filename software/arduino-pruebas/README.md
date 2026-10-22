@@ -1,5 +1,7 @@
 # arduino-pruebas · Nano de prácticas
 
+Desde el 2026-10-22 se programa desde la sección **Ardu Lab** de Orbit OS. Los pasos están en [`docs/ardu-lab.md`](../../docs/ardu-lab.md). No se sube a `/dev/ttyUSB1`: la placa se identifica por `/dev/serial/by-path` y el Nano de mandos queda bloqueado. El ejemplo de `arduino-cli upload -p /dev/ttyUSB1` de más abajo es antiguo y no hay que usarlo.
+
 Placa **aparte** del Nano de los mandos. El firmware de los mandos sigue en [`../arduino-controls/`](../arduino-controls/) y no se toca desde aquí. Este directorio es un ejemplo para que Miguel lo sustituya por sus propios programas.
 
 **No se ha probado en una placa ni en una pantalla.** Compila; eso es todo lo que se ha comprobado.

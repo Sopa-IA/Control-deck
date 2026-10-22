@@ -20,6 +20,7 @@ describe('App', () => {
   it('con el simulador muestra el distintivo MODO SIMULACIÓN', async () => {
     render(<OrbitProvider forceSource="sim" animate={false}><Shell /></OrbitProvider>);
     expect(await screen.findByText(/MODO SIMULACIÓN/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Ardu Lab/ })).toBeTruthy();
     expect(screen.getAllByText('SIM').length).toBeGreaterThan(0);
   });
   it('con backend real sin conexión: no inventa datos ni muestra SIMULACIÓN', async () => {

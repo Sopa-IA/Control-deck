@@ -2,6 +2,7 @@
 import { ACTIONS, makeMessage, type ControlEventPayload, type MappingPayload, type Message, type TelemetryPayload } from '@shared/ts/protocol';
 import defaultControls from '@shared/controls.default.json';
 import marco from '@shared/marco.json';
+import { simProblema } from '../ardu/parse';
 import type { DataSource } from './source';
 import type { ConnStatus } from './state';
 
@@ -36,6 +37,8 @@ export class SimDataSource implements DataSource {
   private visibleSystem: 'hp' | 'pi' = 'pi';
   private layout: 'integrado' | 'completa' = 'integrado';
   private sidebar: 'cerrado' | 'abierto' = 'cerrado';
+  private sketches = new Map<string, string>();
+  private monitorOn = false;
   constructor(private opts: { animateControls?: boolean; seed?: number } = {}) {}
 
   private emit<T extends Message['type']>(type: T, payload: Message<T>['payload'], replyTo?: string) {
@@ -102,7 +105,7 @@ export class SimDataSource implements DataSource {
         return;
       }
       this.emitVisible();
-      this.result(p.action, m.id);
+      this.result(p.action, m.id, p.params);
     } else if (m.type === 'action_confirm') {
       const p = (m as Message<'action_confirm'>).payload;
       const pend = this.pending.get(p.request_id);
@@ -133,15 +136,67 @@ export class SimDataSource implements DataSource {
     });
   }
 
-  private result(action: string, replyTo: string) {
+  private result(action: string, replyTo: string, params?: Record<string, unknown>) {
     const label = ACTIONS[action]?.label ?? action;
+    let ok = true;
     let message = `SIMULADO: no se ha ejecutado «${label}».`;
+    let output = '';
     if (action === 'pi.switch_visible') {
       message = this.visibleSystem === 'hp'
         ? 'SIMULADO: Moonlight no se ha abierto. El emparejamiento con Sunshine en 10.0.0.1 no está hecho.'
         : 'SIMULADO: Moonlight cerrado. Se vuelve a Orbit OS.';
+    } else if (action === 'pi.ardu_ports') {
+      message = 'SIMULADO: no hay placas USB. El Nano de mandos quedaría bloqueado.';
+      output = JSON.stringify({ ports: [{ role: 'mandos', by_path: 'sim-usb-mandos', device: '', blocked: true, present: false }], practicas: 'no' });
+    } else if (action === 'pi.ardu_sketch') {
+      const op = String(params?.op ?? '');
+      const sketch = String(params?.sketch ?? '');
+      const source = String(params?.source ?? '');
+      if (op === 'guardar') {
+        this.sketches.set(sketch, source);
+        message = `SIMULADO: ${sketch} queda en el navegador. No se ha escrito en la Pi.`;
+      } else if (op === 'leer') {
+        output = this.sketches.get(sketch) ?? '';
+        message = output ? `SIMULADO: ${sketch} leído del navegador.` : 'SIMULADO: no hay copia en el navegador.';
+      } else {
+        output = JSON.stringify({ sketches: [...this.sketches.keys()] });
+        message = 'SIMULADO: lista del navegador.';
+      }
+    } else if (action === 'pi.ardu_compile' || action === 'pi.ardu_upload') {
+      const sketch = String(params?.sketch ?? '');
+      const source = this.sketches.get(sketch) ?? '';
+      const fallo = simProblema(source);
+      if (action === 'pi.ardu_upload') {
+        ok = false;
+        message = 'SIMULADO: no se sube. No hay Nano de prácticas y el de mandos está bloqueado.';
+        output = 'SIMULADO: upload no ejecutado';
+      } else if (fallo) {
+        ok = false;
+        message = `SIMULADO: no compila. Error en la línea ${fallo.line}. No se ha usado arduino-cli.`;
+        output = `${sketch}.ino:${fallo.line}:${fallo.col}: error: ${fallo.message}`;
+      } else {
+        message = `SIMULADO: ${sketch} parecería compilar. No se ha llamado a arduino-cli ni se ha subido.`;
+        output = 'SIMULADO\nSketch uses 0 bytes (navegador)';
+      }
+    } else if (action === 'pi.ardu_monitor') {
+      const op = String(params?.op ?? '');
+      const baud = Number(params?.baud ?? 9600);
+      if (op === 'abrir') {
+        this.monitorOn = true;
+        message = `SIMULADO: monitor a ${baud} baudios. No hay puerto.`;
+      } else if (op === 'cerrar') {
+        this.monitorOn = false;
+        message = 'SIMULADO: monitor cerrado.';
+      } else if (!this.monitorOn) {
+        ok = false;
+        message = 'SIMULADO: el monitor no está abierto.';
+      } else {
+        const t = Date.now() / 1000;
+        output = `A0 ${Math.round(512 + 200 * Math.sin(t))}\nA1 ${Math.round(300 + 100 * Math.cos(t))}`;
+        message = 'SIMULADO: líneas inventadas, no salen de una placa.';
+      }
     }
-    this.emit('action_result', { action, ok: true, dry_run: true, simulated: true, message }, replyTo);
+    this.emit('action_result', { action, ok, dry_run: true, simulated: true, message, ...(output ? { output } : {}) }, replyTo);
   }
 
   close(): void { this.timers.forEach(clearInterval); this.timers = []; }

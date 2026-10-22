@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--static", type=Path, default=None, help="carpeta dist/ de la interfaz")
     ap.add_argument("--state-dir", type=Path, default=None)
     ap.add_argument("--serial", default=os.environ.get("ORBIT_SERIAL"),
-                    help="Nano de mandos con CH340: /dev/ttyUSB0 (confirmar con /dev/serial/by-id; el conversor no crea un puerto CDC)")
+                    help="Reserva del Nano de mandos, por ejemplo /dev/ttyUSB0. Si arduino-puertos.json trae el by-path, ese manda.")
     ap.add_argument("--baud", type=int, default=115200)
     ap.add_argument("--serial-reset-wait", type=float,
                     default=float(os.environ.get("ORBIT_SERIAL_RESET_WAIT", NANO_RESET_WAIT_S)),
@@ -39,6 +39,16 @@ def main(argv: list[str] | None = None) -> None:
                  video=VideoConfig.from_env())
     if a.state_dir:
         cfg.state_dir = a.state_dir
+    if os.environ.get("ORBIT_ARDU_PUERTOS"):
+        cfg.ardu_ports_file = Path(os.environ["ORBIT_ARDU_PUERTOS"])
+    if os.environ.get("ORBIT_ARDU_SKETCHES"):
+        cfg.ardu_sketch_dir = Path(os.environ["ORBIT_ARDU_SKETCHES"])
+    if os.environ.get("ORBIT_ARDU_CLI"):
+        cfg.ardu_cli = os.environ["ORBIT_ARDU_CLI"]
+    if os.environ.get("ORBIT_ARDU_FQBN"):
+        cfg.ardu_fqbn = os.environ["ORBIT_ARDU_FQBN"]
+    if os.environ.get("ORBIT_ARDU_BY_PATH"):
+        cfg.ardu_by_path = Path(os.environ["ORBIT_ARDU_BY_PATH"])
     cfg.check()
     logging.getLogger("orbitd").info("orbitd en http://%s:%d (modo HP %s, controles %s)", cfg.host, cfg.port,
                                      "SIMULADO" if cfg.sim_hp else "real", "SIMULADOS" if cfg.sim_controls else "reales")

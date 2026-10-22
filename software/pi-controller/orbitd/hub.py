@@ -15,6 +15,7 @@ from aiohttp import WSMsgType, web
 import orbit_protocol as P
 
 from . import __version__
+from .ardu_lab import FQBN_OLD, ArduLab
 from .serial_events import NANO_RESET_WAIT_S, Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
 from .video import VideoConfig, VideoSwitcher
@@ -47,6 +48,11 @@ class Config:
     heartbeat_timeout_s: float = P.HEARTBEAT_TIMEOUT_S
     telemetry_period_s: float = 2.0
     video: VideoConfig = field(default_factory=VideoConfig)
+    ardu_ports_file: Optional[Path] = None
+    ardu_sketch_dir: Optional[Path] = None
+    ardu_cli: str = "arduino-cli"
+    ardu_fqbn: str = FQBN_OLD
+    ardu_by_path: Path = field(default_factory=lambda: Path("/dev/serial/by-path"))
 
     def check(self) -> None:
         if self.host not in ("127.0.0.1", "localhost", "::1") and not (self.hp_token and self.ui_token):
@@ -78,6 +84,10 @@ class Hub:
         self.mapping = self._load_mapping()
         self.video = VideoSwitcher(cfg.video)
         self.video.on_exit = self._video_exited
+        self.ardu = ArduLab(
+            ports_file=cfg.ardu_ports_file or (cfg.state_dir / "arduino-puertos.json"),
+            sketch_dir=cfg.ardu_sketch_dir or (cfg.state_dir / "ardu-lab"),
+            by_path=cfg.ardu_by_path, cli=cfg.ardu_cli, fqbn=cfg.ardu_fqbn, serial_fallback=cfg.serial_port or "")
         self._last_volume_sent = 0.0
         self._volume_pending: Optional[int] = None
         self._tasks: list[asyncio.Task] = []
@@ -253,7 +263,8 @@ class Hub:
             return
         # --- interfaz
         if t == "action_request":
-            if not self._rate_ok(c, 10 if p["action"] == "hp.volume_set" else 5):
+            limit = 10 if p["action"] in ("hp.volume_set", "pi.ardu_monitor") else 5
+            if not self._rate_ok(c, limit):
                 await self.error(c, "rate_limited", "demasiadas peticiones", msg["id"])
                 return
             spec = P.check_action(p["action"], p.get("params"))
@@ -305,10 +316,34 @@ class Hub:
         elif action == "pi.marco_sidebar":
             res = await self.video.set_sidebar(params.get("sidebar") == "abierto")
             await self.broadcast_ui("state", self.state_payload())
+        elif action.startswith("pi.ardu_"):
+            res = await self._ardu_action(action, params)
         else:
             res = self._pi_action(action, params, spec)
         if c is not None:
             await self.send(c, "action_result", res, reply_to)
+
+    def _ardu_blocked(self) -> list[str]:
+        extra = []
+        if self.cfg.serial_port:
+            extra.append(self.cfg.serial_port)
+        if self._serial is not None:
+            extra.append(self._serial.port)
+        return extra
+
+    async def _ardu_action(self, action: str, params: dict) -> dict:
+        extra = self._ardu_blocked()
+        if action == "pi.ardu_ports":
+            return self.ardu.ports_result()
+        if action == "pi.ardu_sketch":
+            return self.ardu.sketch_result(str(params.get("op", "")), str(params.get("sketch", "")), str(params.get("source", "")))
+        if action == "pi.ardu_monitor":
+            return self.ardu.monitor_result(str(params.get("op", "")), int(params.get("baud", 0)), extra)
+        if action == "pi.ardu_compile":
+            return await asyncio.to_thread(self.ardu.compile_result, str(params.get("sketch", "")))
+        if action == "pi.ardu_upload":
+            return await asyncio.to_thread(self.ardu.upload_result, str(params.get("sketch", "")), extra)
+        return {"action": action, "ok": False, "dry_run": True, "simulated": False, "message": "Acción de Ardu Lab desconocida."}
 
     def _pi_action(self, action: str, params: dict, spec: dict) -> dict:
         if action == "pi.ping":
@@ -398,18 +433,21 @@ class Hub:
                        loop.create_task(self._volume_loop())]
         if self.sim_controls:
             self._tasks.append(loop.create_task(self._sim_controls_loop()))
-        elif self.cfg.serial_port:
-            def on_line(line: str) -> None:
-                loop.create_task(self.on_serial_line(line))
-            self._serial = SerialReader(self.cfg.serial_port, self.cfg.serial_baud, loop, on_line, self._serial_status,
-                                         reset_wait_s=self.cfg.serial_reset_wait_s)
-            self._serial.start()
+        else:
+            port = self.ardu.mandos_link() or self.cfg.serial_port
+            if port:
+                def on_line(line: str) -> None:
+                    loop.create_task(self.on_serial_line(line))
+                self._serial = SerialReader(port, self.cfg.serial_baud, loop, on_line, self._serial_status,
+                                             reset_wait_s=self.cfg.serial_reset_wait_s)
+                self._serial.start()
 
     async def stop(self, app: web.Application) -> None:
         for t in self._tasks:
             t.cancel()
         if self._serial:
             self._serial.stop()
+        self.ardu.monitor.close()
         await self.video.close()
         for c in list(self.clients.values()):
             await c.ws.close()

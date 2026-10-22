@@ -63,3 +63,4 @@ El script se puede repetir. No pone puerta de enlace ni DNS en eth0, para no rom
 36. No empareja Sunshine: el PIN lo escribe Miguel.
 37. No se ha probado el kiosco, labwc, Moonlight ni el enchufe HDMI en el hardware.
 38. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
+39. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí.

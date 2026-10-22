@@ -16,6 +16,11 @@
     "pi.switch_visible":   { "target": "pi", "label": "Cambiar sistema (abrir Moonlight o volver a Orbit OS)", "params": {}, "confirm": false, "destructive": false },
     "pi.stream_layout":   { "target": "pi", "label": "Vista del HP: integrada o pantalla completa", "params": { "layout": { "type": "string", "enum": ["integrado", "completa"] } }, "confirm": false, "destructive": false },
     "pi.marco_sidebar":   { "target": "pi", "label": "Barra lateral del marco", "params": { "sidebar": { "type": "string", "enum": ["cerrado", "abierto"] } }, "confirm": false, "destructive": false },
+    "pi.ardu_ports":       { "target": "pi", "label": "Listar puertos USB de Ardu Lab", "params": {}, "confirm": false, "destructive": false },
+    "pi.ardu_sketch":      { "target": "pi", "label": "Guardar o leer un sketch de Ardu Lab", "params": { "op": { "type": "string", "enum": ["guardar", "leer", "lista"] }, "sketch": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$" }, "source": { "type": "string", "maxLength": 24000 } }, "confirm": false, "destructive": false },
+    "pi.ardu_compile":     { "target": "pi", "label": "Compilar sketch del Nano de prácticas", "params": { "sketch": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$" } }, "confirm": false, "destructive": false },
+    "pi.ardu_upload":      { "target": "pi", "label": "Subir sketch al Nano de prácticas", "params": { "sketch": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$" } }, "confirm": false, "destructive": false },
+    "pi.ardu_monitor":     { "target": "pi", "label": "Monitor serie del Nano de prácticas", "params": { "op": { "type": "string", "enum": ["abrir", "leer", "cerrar"] }, "baud": { "type": "integer", "enum": [9600, 19200, 38400, 57600, 115200] } }, "confirm": false, "destructive": false },
     "pi.restart_ui":       { "target": "pi", "label": "Recargar interfaz",       "params": {}, "confirm": false, "destructive": false },
     "pi.shutdown":         { "target": "pi", "label": "Apagar Raspberry Pi",     "params": {}, "confirm": true,  "destructive": true }
   },

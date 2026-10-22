@@ -22,6 +22,7 @@ const shots = [
   { name: 'sistemas_1920x1080', s: 'sistemas', w: 1920, h: 1080 },
   { name: 'inicio_1920x720', s: 'inicio', w: 1920, h: 720 },
   { name: 'integrado_1920x1080', s: 'inicio', vista: 'integrado', w: 1920, h: 1080 },
+  { name: 'ardulab_1920x1080', s: 'ardulab', w: 1920, h: 1080 },
 ];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? '/usr/bin/google-chrome', args: ['--no-sandbox'] });

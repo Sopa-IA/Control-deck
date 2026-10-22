@@ -57,6 +57,15 @@ if ! dpkg -s moonlight-qt >/dev/null 2>&1; then
   apt-get install -y moonlight-qt
 fi
 
+log "arduino-cli y el core AVR, para Ardu Lab sin internet después"
+if ! command -v arduino-cli >/dev/null 2>&1; then
+  curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
+fi
+if ! sudo -u "$ORBIT_USER" -H arduino-cli core list | grep -q 'arduino:avr'; then
+  sudo -u "$ORBIT_USER" -H arduino-cli core update-index
+  sudo -u "$ORBIT_USER" -H arduino-cli core install arduino:avr
+fi
+
 log "Python de orbitd"
 sudo -u "$ORBIT_USER" python3 -m venv "$ROOT/.venv"
 sudo -u "$ORBIT_USER" "$ROOT/.venv/bin/pip" install -U pip
@@ -91,13 +100,31 @@ text = "\n".join([
     "ORBIT_MOONLIGHT_APP=Desktop",
     f"ORBIT_LABWC_RC={sys.argv[2]}",
     "ORBIT_FOCUS_CMD=/usr/local/bin/orbit-al-frente",
-    "ORBIT_SERIAL=/dev/ttyUSB0",
+    "ORBIT_SERIAL=",
     "ORBIT_SERIAL_RESET_WAIT=2",
+    "ORBIT_ARDU_PUERTOS=/var/lib/orbit/arduino-puertos.json",
+    "ORBIT_ARDU_CLI=arduino-cli",
+    "ORBIT_ARDU_FQBN=arduino:avr:nano:cpu=atmega328old",
     "",
 ])
 Path("/etc/orbit/orbitd.env").write_text(text, encoding="utf-8")
 PY
 chmod 600 /etc/orbit/orbitd.env
+
+PUERTOS=/var/lib/orbit/arduino-puertos.json
+if [[ ! -f "$PUERTOS" ]]; then
+  python3 - "$PUERTOS" <<'PY'
+import json, sys
+from pathlib import Path
+carpeta = Path("/dev/serial/by-path")
+nombres = sorted(x.name for x in carpeta.iterdir() if x.is_symlink()) if carpeta.is_dir() else []
+# Un solo enlace no se confunde con otro. Con dos placas no se adivina cuál es cuál.
+mandos = nombres[0] if len(nombres) == 1 else ""
+Path(sys.argv[1]).write_text(json.dumps({"mandos": mandos, "practicas": ""}, indent=2) + "\n", encoding="utf-8")
+PY
+  chown "$ORBIT_USER:$ORBIT_USER" "$PUERTOS"
+  chmod 644 "$PUERTOS"
+fi
 
 GROUPS=""
 for g in dialout video render input gpio; do
@@ -339,3 +366,8 @@ log "Listo. Reinicia la Pi para ver Orbit OS al encender."
 echo "Usuario de la sesión: $ORBIT_USER"
 echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco). Para volver: rm /var/lib/orbit/kiosk-pausa"
 echo "Moonlight aún no está emparejado. Pasos en docs/instalacion-pi.md"
+echo "Ardu Lab: anota el basename de /dev/serial/by-path en /var/lib/orbit/arduino-puertos.json"
+echo "Sin eso no se abre el Nano de mandos y no se sube al de prácticas. docs/ardu-lab.md"
+if [[ -d /dev/serial/by-path ]]; then
+  ls -l /dev/serial/by-path || true
+fi

@@ -12,6 +12,7 @@ import { Sistemas } from './sections/Sistemas';
 import { Hardware } from './sections/Hardware';
 import { Controles } from './sections/Controles';
 import { Herramientas } from './sections/Herramientas';
+import { ArduLab } from './sections/ArduLab';
 import { Configuracion } from './sections/Configuracion';
 
 function initialSection(): SectionId {
@@ -56,7 +57,8 @@ function Shell() {
     }
   }), [orbit]);
 
-  const title = SECTIONS.find((s) => s.id === section)?.label ?? '';
+  const current = SECTIONS.find((s) => s.id === section);
+  const title = current?.label ?? '';
   const forzarMarco = new URLSearchParams(window.location.search).get('vista') === 'integrado';
   const hpAbierto = state.visible?.system === 'hp';
   if (forzarMarco || hpAbierto) return <Marco />;
@@ -69,7 +71,7 @@ function Shell() {
         </div>
         <nav aria-label="Secciones">
           {SECTIONS.map((s) => (
-            <button key={s.id} className={`nav-item ${s.id === section ? 'active' : ''}`} onClick={() => setSection(s.id)} aria-current={s.id === section ? 'page' : undefined}>
+            <button key={s.id} className={`nav-item ${s.id === section ? 'active' : ''} ${s.literal ? 'as-written' : ''}`} onClick={() => setSection(s.id)} aria-current={s.id === section ? 'page' : undefined}>
               <span className="nav-icon">{s.icon}</span>{s.label}
             </button>
           ))}
@@ -81,7 +83,7 @@ function Shell() {
       </aside>
       <div className="main-col">
         <header className="topbar">
-          <h1>{title}</h1>
+          <h1 className={current?.literal ? 'as-written' : undefined}>{title}</h1>
           <div className="topbar-right">
             {simulated && <SimBadge parts={simulatedParts(state)} />}
             {state.source === 'ws' && state.conn !== 'conectado' && <div className="offline-badge">SIN CONEXIÓN CON ORBITD</div>}
@@ -96,6 +98,7 @@ function Shell() {
           {section === 'sistemas' && <Sistemas openOsd={() => setOsd(true)} />}
           {section === 'hardware' && <Hardware />}
           {section === 'controles' && <Controles />}
+          {section === 'ardulab' && <ArduLab />}
           {section === 'herramientas' && <Herramientas />}
           {section === 'configuracion' && <Configuracion brightness={brightness} setBrightness={setBrightness} />}
         </main>

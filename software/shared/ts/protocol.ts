@@ -28,7 +28,7 @@ export interface ControlEventPayload { control: string; kind: 'pot' | 'button'; 
 export interface ActionRequestPayload { action: string; params?: Record<string, unknown>; dry_run?: boolean }
 export interface ConfirmRequiredPayload { request_id: string; action: string; challenge: string; expires_in_s: number }
 export interface ActionConfirmPayload { request_id: string; challenge: string }
-export interface ActionResultPayload { action: string; ok: boolean; dry_run: boolean; simulated?: boolean; message: string }
+export interface ActionResultPayload { action: string; ok: boolean; dry_run: boolean; simulated?: boolean; message: string; output?: string }
 export interface MappingPayload { version?: number; pots: Record<string, string>; buttons: Record<string, string> }
 export interface WelcomePayload { session: string; server_time: number; heartbeat_s: number; mode: Mode }
 export interface ErrorPayload { code: string; message: string }
