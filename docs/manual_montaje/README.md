@@ -1,344 +1,554 @@
-# Manual de montaje del Orbit Terminal
+# Orbit Terminal — manual de montaje
 
-Copia legible del PDF `Orbit_manual_montaje.pdf`. Figuras en `img/`, regeneradas con `hardware/cad/manual/render_manual.py`.
+Un subpaso, una acción, una figura. La pieza que se añade va en naranja y lo ya montado en gris. El número marca el agujero. La silueta del tornillo, a escala 1:1, está en el PDF.
 
+Los tornillos están elegidos a partir del espesor del CAD y **no se han probado** en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El largo ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.
 
+Fecha del CAD: 2026-10-22. No es un montaje probado.
 
-Provisional, 22 de octubre de 2026. Sale del CAD de esta rama (hardware/cad/). La pieza de cada paso va en naranja y el resto en gris. No es una foto del montaje y no certifica que esté probado.
+## Lista de la compra
 
-Lo no medido lleva [PENDIENTE]. Lo que es decisión de diseño y no una cota de calibre lleva [DISEÑO]. Miguel atornilla el plástico directamente: no usa insertos térmicos ni pegamento en la carcasa.
+La cantidad incluye un 10 % de repuesto, redondeado hacia arriba. El recuento de cada paso suma la cantidad **sin** repuesto.
 
-**Aviso.** Un M3 autorroscante muerde una guía de unos Ø2,5 mm. No muerde un agujero de Ø4 (el del inserto de las piezas ya impresas) ni un paso libre de Ø3,4, ni un taladro pasante de Ø3,2. Donde el STL tiene uno de esos tres, el agarre queda [PENDIENTE]. No se fuerza el tornillo.
+| Tornillo | En el aparato | Compras | Para qué | Estado |
+|---|---:|---:|---|---|
+| M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza | 21 | 24 | 9 pasadores, 8 pletinas, 4 de la bandeja | Elegido, sin probar. En los pasadores Miguel ya cerró con un M3; este largo llena el agujero de 16 mm. |
+| Tuerca M3 DIN 934 | 12 | 14 | 8 pletinas y 4 de la bandeja | Elegida, sin probar. |
+| M3×10 avellanado DIN 965, Phillips PH1 | 3 | 4 | 3 orejetas de la carcasa nueva | Elegido, sin probar. La guía es Ø2,5. |
+| Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2 | 26 | 29 | 10 orejetas ya impresas, 4 del soporte del disco, 12 del bisel | Elegido, sin probar. El paso impreso es Ø3,4: se abre a Ø4,6 antes de meterlo. |
+| M3×6 cilíndrico, Phillips PH1 (tornillo de placa base) | 4 | 5 | Placa HP, en sus cuatro separadores | Elegido, sin probar. El agujero impreso es Ø4. |
+| M3×10 cilíndrico, Phillips PH1 | 18 | 20 | 16 presillas de placas y 2 de la tapa | Elegido, sin probar. Guía Ø2,5. |
+| Arandela ancha M3 Ø9, DIN 9021 | 18 | 20 | 16 presillas de placas y 2 bridas del step-down | Elegida, sin probar. |
+| M3×8 cilíndrico, Phillips PH1 | 4 | 5 | Step-down: 2 que lo atraviesan y 2 que lo pisan | Elegido, sin probar. |
+| Prisionero M3×16 DIN 916 (Allen 1,5 mm) | 2 | 3 | Los dos pomos | Elegido, sin probar. |
+| 6-32 UNC × 1/4" (6,4 mm), Phillips PH2 | 4 | 5 | Disco Toshiba de 3,5", por debajo | Tornillo de disco. Elegido, sin probar. No es M3. |
 
-Regenerar las figuras, desde la raíz del repo: python3 hardware/cad/manual/render_manual.py y después python3 hardware/cad/manual/escribir_manual.py. OpenSCAD 2021, vista previa, sin --render: en el render CGAL el color del paso no llega al PNG. El PDF antiguo docs/manual-montaje/ no se ha regenerado y no vale para este montaje.
+Herramienta: destornillador Phillips PH1 (todos los M3 de cabeza cruciforme), Phillips PH2 (los Ø4,5 y los 6-32), llave Allen de 1,5 mm, broca de Ø3,4 mm y broca de Ø4,6 mm.
 
-![Carcasa en naranja y base en gris, ya unidas en el modelo. Bisel, mandos y placas van en los pasos siguientes: meterlos en esta misma vista vacía el árbol CSG de OpenSCAD.](img/00_conjunto.png)
+## Piezas
 
-*Carcasa en naranja y base en gris, ya unidas en el modelo. Bisel, mandos y placas van en los pasos siguientes: meterlos en esta misma vista vacía el árbol CSG de OpenSCAD.*
+| Pieza | STL | Qué hacer |
+|---|---|---|
+| Base, 4 trozos | PROVISIONAL_base_x0_y0 … x1_y1 | Ya impresa. No reimprimir. Plana, sin soportes. |
+| Carcasas izquierda y delantera derecha | PROVISIONAL_carcasa_x0_y0, x0_y1, x1_y0 | Ya impresas. No reimprimir. |
+| Carcasa trasera derecha | PROVISIONAL_carcasa_x1_y1 | Imprimir. Boca del corte delantero en la cama. Con soportes. |
+| Pletinas ×4 | PROVISIONAL_pletina_empalme_x4 | Imprimir planas, sin soportes. |
+| Soporte de disco 3,5" | PROVISIONAL_soporte_disco | Imprimir con el plato abajo. |
+| Bandeja | PROVISIONAL_bandeja_servicio | Imprimir con el ala abajo. Cabe en la A1. |
+| Placa I/O | PROVISIONAL_placa_io_hp | Imprimir con la pestaña abajo. |
+| Marco de prueba de la placa | PRUEBA_placa_io_hp | Opcional. Se sujeta por fuera. No se monta. |
+| Tapa de la Pi | PROVISIONAL_tapa_pi | Imprimir plana. |
+| Biseles ×4 | PROVISIONAL_bisel_x0_y0 … x1_y1 | Si ya están impresos, no reimprimir. Se taladran en el 10.2. |
+| Guías ×2 | PROVISIONAL_guia_luz_frontal_0 y _1 | Imprimir boca abajo, PETG translúcido. |
+| Anillos ×2 | PROVISIONAL_anillo_luz_x2 | Imprimir como salen, PETG translúcido. |
+| Pomos ×2 | PROVISIONAL_pomo_x2 | Imprimir de tapa abajo. |
+| Carros, retenedor, soporte de Arduino | sus STL provisionales | No imprimir y no montar. |
 
+## Paso 1. Une la base
 
-## 0. Piezas, tornillos y electrónica
+Las cuatro piezas ya están impresas. Torretas hacia arriba. No las reimprimas.
 
+### 1.1 Coloca las cuatro piezas
 
-### Impresas en la Bambu Lab A1
+![1.1](img/s1_1.png)
 
-Cama 256 × 256 × 256 mm. Margen de comprobación 10 mm (cabe hasta 246). PETG. Relleno orientativo 15–20 %. No hay tiempos ni gramos: no se ha laminado. La orientación es la de hardware/impresion/siguientes/README.md y, en la base, la de ESTADO-Y-TRASPASO.md.
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-| STL | Ud. | Cama y soportes | Estado |
-| --- | --- | --- | --- |
-| PROVISIONAL_base_x0_y0 | 1 | Cara plana abajo. Sin soportes. | Ya impresa. No reimprimir. |
-| PROVISIONAL_base_x0_y1 | 1 | Igual. | Ya impresa. Separadores C y F. |
-| PROVISIONAL_base_x1_y0 | 1 | Igual. | Ya impresa. |
-| PROVISIONAL_base_x1_y1 | 1 | Igual. | Ya impresa. Hueco de la bandeja. |
-| PROVISIONAL_pletina_empalme_x4 | 4 | Cara plana. Sin soportes. El STL es una. | Imprimir 4. |
-| PROVISIONAL_carcasa_x0_y0 | 1 | Corte trasero sobre la cama, ~150 mm. Soportes sí, solo desde la cama. | Ya impresa. Agujeros Ø4. |
-| PROVISIONAL_carcasa_x0_y1 | 1 | Corte delantero sobre la cama. Soportes sí. | Ya impresa. No reimprimir: lleva la ventana I/O. |
-| PROVISIONAL_carcasa_x1_y0 | 1 | Corte trasero sobre la cama. Soportes sí. | Ya impresa. El STEP tiene 12 triángulos cruzados; se imprime el STL. |
-| PROVISIONAL_carcasa_x1_y1 | 1 | Corte delantero sobre la cama, ~150 mm. El hueco de la tapa queda arriba. Soportes sí. | Imprimir este STL (233,81 cm³), no uno anterior. |
-| PROVISIONAL_soporte_disco | 1 | Boca abajo, bandeja contra la cama. Soportes solo en la cama. | El de 2,5 pulgadas salió pequeño. Este es el de 3,5. |
-| PROVISIONAL_placa_io_hp | 1 | Reborde abajo. Sin soportes. | Huecos [PENDIENTE] [FOTO]. |
-| PRUEBA_placa_io_hp | 1 | Plana. Se apoya por fuera, no se monta. | Prueba de la ventana. |
-| PRUEBA_plantilla_pivotes_HP | 1 | Barras abajo. Sin soportes. No se monta. | Diámetro del pivote [PENDIENTE]. |
-| PROVISIONAL_bandeja_servicio | 1 | Plancha abajo. Puentes de ~6 mm. Las ranuras de la Pi no piden soporte. | Sustituye a la v1. 126,00 × 237,49 × 25,10. |
-| PROVISIONAL_tapa_pi | 1 | Plana. Sin soportes. | 94 × 54 × 2,4 mm. |
-| PROVISIONAL_bisel_x0_y0 | 1 | Tal cual: cara vista abajo. Sin soportes. | Agujeros de inserto. Si ya está impreso, no reimprimir. |
-| PROVISIONAL_bisel_x0_y1 | 1 | Igual. | Igual. |
-| PROVISIONAL_bisel_x1_y0 | 1 | Igual. | Igual. |
-| PROVISIONAL_bisel_x1_y1 | 1 | Igual. | Igual. Conviene probar uno antes por la ventana. |
-| PROVISIONAL_guia_luz_frontal_0 | 1 | Boca abajo. Sin soportes. PETG translúcido. | Canal 10,4 mm. Tira [PENDIENTE]. |
-| PROVISIONAL_guia_luz_frontal_1 | 1 | Igual. | Igual. |
-| PROVISIONAL_anillo_luz_x2 | 2 | Tal cual. Sin soportes. Translúcido. | Entran por dentro. |
-| PROVISIONAL_pomo_x2 | 2 | Tapa abajo. Sin soportes. | Eje de 6 mm [PENDIENTE] de medir. |
+Pon las cuatro piezas en cruz, con las torretas hacia arriba. Aún no las atornilles.
 
-**Aviso.** No imprimir, y no montar: PROVISIONAL_carro_nano, PROVISIONAL_carro_esp, PROVISIONAL_carro_proto30x70, PROVISIONAL_retenedor_nano y PROVISIONAL_soporte_arduino. La bandeja de huecos no tiene dónde van. El soporte del Nano es de la bandeja v1.
+### 1.2 Pletina delantera
 
-![Piezas sueltas del CAD, en naranja. La placa gris del centro es PRUEBA_placa_io_hp: se apoya en la ventana y no se deja montada. La bandeja, la tapa, el soporte del disco, la placa I/O, una guía, un anillo, un pomo y una pletina.](img/00_piezas.png)
+![1.2](img/s1_2.png)
 
-*Piezas sueltas del CAD, en naranja. La placa gris del centro es PRUEBA_placa_io_hp: se apoya en la ventana y no se deja montada. La bandeja, la tapa, el soporte del disco, la placa I/O, una guía, un anillo, un pomo y una pletina.*
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
 
+Pon la pletina sobre las dos torretas del cruce delantero. Tornillo desde arriba. Tuerca debajo. Aprieta hasta que no se mueva.
 
-### Tornillería de todo el aparato
+### 1.3 Pletina trasera del mismo corte
 
-La huella (Phillips, Pozidriv o Allen) no está en el CAD. Se usa la del tornillo que se compre. Herramienta: el destornillador de esa huella. En autorroscante, parar cuando la cabeza asienta. Seguir girando pasa la guía del PETG.
+![1.3](img/s1_3.png)
 
-| Unión | Ud. | Tornillo | Agujero que hay | ¿Muerde? |
-| --- | --- | --- | --- | --- |
-| Pletinas de la base | 8 | M3 cilíndrico. Largo [PENDIENTE]. Si fuera inserto, candidato no probado M3×8. | Torreta Ø8 × 5 mm. Ø4 desde abajo y paso Ø3,4 desde arriba. Pletina 3 mm. | No. [PENDIENTE] |
-| Carcasa, taladros de pasador | 9 | M3, sin pegamento. Candidato no probado: M3×16 cilíndrico. Si no muerde, tuerca. | Ø3,2 pasante, 16 mm (8 mm por costilla). Pensado para un pasador Ø3, no para rosca. | No es guía. [PENDIENTE] |
-| Orejetas de carcasa_x1_y1 | 3 | M3×10 avellanado, desde abajo. | Guía Ø2,5 × 9 mm. La base ya trae el avellanado (paso Ø3,4, hasta Ø6,6). | Sí, autorroscante. Sin probar en pieza. |
-| Orejetas de las otras tres carcasas | 10 | M3 avellanado, desde abajo. Largo [PENDIENTE]. | Ø4 × 5,7 mm (inserto). Esas carcasas ya están impresas. | No. [PENDIENTE] |
-| Bandeja a la base | 4 | M3. El largo no se ha vuelto a elegir. | Paso Ø3,4 en el ala de 2 mm. Torreta de la base, 5 mm, agujero Ø4. | No. [PENDIENTE] |
-| Separadores de la placa HP | 4 | Pivote o M3. Diámetro [PENDIENTE]. | Cilindro Ø9, alto 6,35 mm. Ø4 abierto por arriba. | No. La plantilla no se monta. |
-| Soporte del disco a la base | 4 | M3 avellanado, desde abajo. Largo [PENDIENTE]. | Ø4 en el poste. Avellanado en la base. | No. [PENDIENTE] |
-| Toshiba 3,5 a su soporte | los del disco | SFF-8301 indica rosca 6-32. No usar M3 en esa rosca. | Colisos en el soporte, a 3,18 mm del lateral. | [PENDIENTE] mirar el tornillo que trae. |
-| Esquinas de Pi, ESP y dos Nano | 16 | M3×10 cilíndrico + arandela ancha Ø9 (DIN 9021). | Guía Ø2,5 × 10 mm. Poste Ø7,6. | Sí. La cabeza sola no llega a la PCB. |
-| Step-down, agujeros del módulo | 2 | M3×8. Atraviesa la PCB de 1,6 mm. | Guía Ø2,5 × 7 mm, desde z = 7 hasta z = 0. | Sí. Posición de los agujeros [PENDIENTE]. |
-| Step-down, las otras dos esquinas | 2 | M3×8 + arandela Ø9. | Guía Ø2,5 × 8 mm. | Sí. |
-| Tapa de la Pi | 2 | M3×10 cilíndrico. | Tapa Ø3,4 y 2,4 mm. Poste Ø10 con guía Ø2,5 × 9 mm. | Sí. |
-| Biseles | 12 | M3 avellanado. Largo [PENDIENTE]. | Bisel Ø3,4, avellanado hasta Ø6,4. Carcasa Ø4 × 5,7. | No. [PENDIENTE] |
-| Pomos | 2 | M3 prisionero, uno por pomo. | Agujero radial Ø2,5 en el pomo. | Sí, en el propio pomo. |
-| Placa I/O, guías, anillos, OLED | 0 | Sin tornillo en el CAD. | La OLED, cómo se sujeta: [PENDIENTE]. | — |
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
 
-Las tres orejetas con guía Ø2,5 están en (325, 292,492), (420, 292,492) y (448,26, 205). Las otras diez conservan el Ø4. En total hay 13 orejetas. Los 9 taladros de pasador son 5 en el corte X (x = 228,13) y 4 en el corte Y (y = 150,246). Esos dos números salen de pos_pasadores_x() y pos_pasadores_y() en esta rama.
+Haz lo mismo en el cruce de atrás. Tornillo desde arriba. Tuerca debajo.
 
+### 1.4 Pletina izquierda
 
-### Electrónica que entra en la caja
+![1.4](img/s1_4.png)
 
-- Placa HP Slimline 260-a110ns, desmontada de su torre, con disipador, ventilador y RAM. 170 × 170 mm, medido. Lo más alto sobre la placa: 35 mm, medido.
-- Adaptador HP externo de 65 W, 19,5 V y 3,33 A. Se queda fuera, sin abrir. El diámetro del barril es [PENDIENTE]. Dentro de Orbit no hay red.
-- Disco Toshiba de 3,5 pulgadas. El modelo usa SFF-8301 (101,6 × 147 × 26,1), no la medición a ojo de ~150 × 100 × 25.
-- Placa frontal original del HP (USB, audio y SD), el pulsador y el LED de 3 mm. Todo [PENDIENTE] de medir. El paso 6 no se cierra sin esas cotas.
-- Raspberry Pi 4 y HAT VHF. El HAT no está modelado: medidas [PENDIENTE]. La Pi va con su fuente USB-C, no con la del HP.
-- Arduino Nano de mandos (clon, ATmega328P, mini-USB, CH340 probable) y otro Nano de prácticas.
-- ESP8266 NodeMCU. La foto da 58 × 31 mm [PENDIENTE]. Lleva la tira con WLED.
-- Step-down. El hueco es el de un módulo típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina. El aparato de Miguel es [PENDIENTE]. No se cablea en este manual.
-- OLED de 0,96 pulgadas, SSD1306, dirección 0x3C (confirmar: también existe 0x3D).
-- Monitor MSI PRO MP161 E2U (362,26 × 233,84 × 18,8) y su fuente USB-C, de más de 15 W. No sale del step-down.
-- Dos potenciómetros de panel y dos pulsadores. Modelo [PENDIENTE]. Eje de 6 mm [ACORDADO, PENDIENTE de medir].
-- Tira LED del frente. Tipo y tensión [PENDIENTE]. Cuatro pies de goma: el CAD reserva un cajeado de Ø12,4 × 1 mm. El pie concreto es [PENDIENTE].
-- No hay hueco para la capturadora ni para una protoboard de 30 × 70. Dónde va el dongle es [PENDIENTE].
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
 
+Pon la pletina del corte largo, en el lado izquierdo. Tornillo desde arriba. Tuerca debajo.
 
-## 1. Base de cuatro trozos y pletinas
+### 1.5 Pletina derecha
 
-Piezas: las cuatro bases y cuatro pletinas. La base ya está impresa. Se apoya con la cara de los pies hacia la mesa. Los separadores del HP (C y F en x0_y1, H y J en x0_y0) quedan hacia arriba.
+![1.5](img/s1_5.png)
 
-![Los cuatro trozos, separados. Van en naranja. Las pletinas, en gris, quedan en el hueco de cada junta.](img/01_base_explosion.png)
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  2× Tuerca M3 DIN 934
 
-*Los cuatro trozos, separados. Van en naranja. Las pletinas, en gris, quedan en el hueco de cada junta.*
+Cierra el último cruce, a la derecha. Tornillo desde arriba. Tuerca debajo.
 
-Cada pletina es de 30 × 10 × 3 mm, con dos pasos Ø3,4 separados 18 mm. Hay dos a caballo del corte X (x = 228,13) y dos a caballo del corte Y (y = 150,246). Se apoyan en las torretas de Ø8 × 5 mm.
+Tornillos usados en este paso: 8× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza, 8× Tuerca M3 DIN 934.
 
-![Pletinas en naranja, levantadas 11 mm para verlas. La base, en gris.](img/01_pletinas.png)
+## Paso 2. Une la carcasa
 
-*Pletinas en naranja, levantadas 11 mm para verlas. La base, en gris.*
+Si la carcasa ya está unida con M3, salta al paso 3.1.
 
-![Una pletina sobre las dos torretas de una junta del corte X. Los agujeros de la pletina caen en el eje de las torretas.](img/01_zoom_pletina.png)
+### 2.1 Par izquierdo
 
-*Una pletina sobre las dos torretas de una junta del corte X. Los agujeros de la pletina caen en el eje de las torretas.*
+![2.1](img/s2_1.png)
 
-Tornillos: 8 M3 de cabeza cilíndrica, dos por pletina, desde arriba. Largo [PENDIENTE]. La torreta tiene 5 mm y la pletina 3 mm. El agujero de la torreta es Ø4 por abajo y Ø3,4 por arriba: un autorroscante no rosca ahí.
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
 
-**Aviso.** No dar por cerrada esta junta. Hace falta una solución que agarre en Ø4 o en Ø3,4 (tuerca, otro tornillo, o reimprimir las torretas con guía Ø2,5). Reimprimir la base no entra en este manual: ya está hecha. [PENDIENTE]
+Junta las dos piezas de la izquierda. Mete un tornillo en cada agujero del corte. Aprieta hasta que las caras se toquen.
 
-Herramienta: destornillador de la huella del M3. Orden: presentar las cuatro pletinas, enroscar los ocho tornillos solo hasta que cojan, y apretar en cruz (una pletina de un corte, luego la del otro, y volver). Dentro de cada pletina, alternar los dos tornillos. No apretar una junta del todo antes de tener las cuatro presentadas: la base se abre. Tres pletinas quedan debajo del soporte del disco: las dos del corte Y y la trasera del corte X (y ≈ 186). Van puestas antes del soporte, o tiene que poderse llegar a ellas.
+### 2.2 Par derecho
 
+![2.2](img/s2_2.png)
 
-## 2. Carcasa de cuatro trozos, con M3 en los Ø3,2
+**NECESITAS:** 2× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
 
-Piezas: carcasa_x0_y0, x0_y1, x1_y0 y x1_y1. Las tres primeras ya están impresas. x1_y1 es el STL de 233,81 cm³, con guías Ø2,5 en sus postes y en sus tres orejetas. Sin pegamento.
+Junta las dos piezas de la derecha. Dos tornillos, igual que antes.
 
-![Los cuatro trozos. En naranja, el trasero izquierdo (x0_y1). Los otros tres, en gris. El corte delantero de x0_y1 y de x1_y1 es el que va contra la cama al imprimir.](img/02_carcasa_explosion.png)
+### 2.3 Las dos piezas de atrás
 
-*Los cuatro trozos. En naranja, el trasero izquierdo (x0_y1). Los otros tres, en gris. El corte delantero de x0_y1 y de x1_y1 es el que va contra la cama al imprimir.*
+![2.3](img/s2_3.png)
 
-Miguel une la carcasa con tornillos M3 metidos por los agujeros de los pasadores. El CAD los dibujó como alojamiento de un pasador Ø3: son Ø3,2 y pasan las dos costillas (16 mm, 8 mm a cada lado). Un M3 (Ø3,0) entra con holgura. No es una guía de Ø2,5.
+**NECESITAS:** 5× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza
 
-![Corte X, junto a la trasera, con los dos trozos separados. En naranja, x0_y1. Se ven los medios cilindros del taladro Ø3,2 en la costilla.](img/02_zoom_pasador.png)
+Junta las dos piezas traseras. Cinco tornillos en los cinco agujeros del corte. Aprieta en cruz.
 
-*Corte X, junto a la trasera, con los dos trozos separados. En naranja, x0_y1. Se ven los medios cilindros del taladro Ø3,2 en la costilla.*
+Tornillos usados en este paso: 9× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza.
 
-Son 9 tornillos: 5 en el plano x = 228,13 y 4 en el plano y = 150,246. Candidato, no probado: M3×16 de cabeza cilíndrica. Si la rosca no muerde el PETG, el mismo tornillo con tuerca al otro lado de la costilla: el taladro es pasante. [PENDIENTE] cuál de las dos agarra.
+## Paso 3. Carcasa sobre la base
 
-Herramienta: destornillador, y una llave de tuerca M3 si hace falta la tuerca. Orden: encarar los cuatro trozos, meter los 9 tornillos sin apretar, empezar por los más cercanos al cruce de los dos cortes y seguir hacia las esquinas. Apretar en ese mismo orden, poco a poco. Si se cierra una esquina primero, el cruce no junta. Aviso: no echar pegamento para «ayudar». No agrandar el Ø3,2.
+El tornillo de la orejeta entra siempre desde abajo.
 
+### 3.1 Abre diez pasos
 
-## 3. Carcasa a la base, por las orejetas
+![3.1](img/s3_1.png)
 
-La carcasa ya unida baja sobre la base. Trece orejetas. El tornillo entra desde abajo: la base trae el paso Ø3,4 y el avellanado hasta Ø6,6, para que la cabeza no salga del suelo.
+**NECESITAS:** 1× broca de Ø4,6 mm
 
-![Carcasa en naranja, levantada. Base en gris. Así se presenta antes de los trece tornillos.](img/03_carcasa_base.png)
+Con la broca de Ø4,6, abre los diez agujeros Ø3,4 de la base. Desde abajo. Para en cuanto salgas del suelo. No agrandes la orejeta.
 
-*Carcasa en naranja, levantada. Base en gris. Así se presenta antes de los trece tornillos.*
+### 3.2 Baja la carcasa
 
-![Orejeta trasera de x1_y1, en (420, 292,492). La carcasa está levantada, en naranja. Esta guía es Ø2,5 × 9 mm. Tornillo: M3×10 avellanado. Las otras dos iguales están en (325, 292,492) y (448,26, 205).](img/03_zoom_orejeta_auto.png)
+![3.2](img/s3_2.png)
 
-*Orejeta trasera de x1_y1, en (420, 292,492). La carcasa está levantada, en naranja. Esta guía es Ø2,5 × 9 mm. Tornillo: M3×10 avellanado. Las otras dos iguales están en (325, 292,492) y (448,26, 205).*
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-![Orejeta junto a la ventana del HP, en (197, 292,492), sobre la carcasa ya impresa. El agujero es Ø4 × 5,7, no una guía. Un M3×10 aquí no rosca. [PENDIENTE]](img/03_zoom_orejeta_inserto.png)
+Apoya la carcasa sobre la base. Cada orejeta cae sobre su agujero.
 
-*Orejeta junto a la ventana del HP, en (197, 292,492), sobre la carcasa ya impresa. El agujero es Ø4 × 5,7, no una guía. Un M3×10 aquí no rosca. [PENDIENTE]*
+### 3.3 Tres orejetas de la pieza nueva
 
-Herramienta: destornillador, con la caja de canto o boca abajo para llegar al avellanado. Orden: los trece tornillos presentados, luego apriete cruzado (delante, detrás, izquierda, derecha) para que la carcasa no se vaya a un lado. Los tres de x1_y1 se aprietan hasta asentar la cabeza y se paran. Los otros diez no se fuerzan: el Ø4 no agarra.
+![3.3](img/s3_3.png)
 
-**Aviso.** No reimprimir x0_y0, x0_y1 ni x1_y0 para cambiar esos diez agujeros. Cómo se cierra esa unión queda [PENDIENTE]. Los tres de x1_y1 sí siguen el autorroscante.
+**NECESITAS:** 3× M3×10 avellanado DIN 965, Phillips PH1
 
+Atornilla las tres orejetas de la carcasa nueva, la de atrás a la derecha. Desde abajo. Para cuando la cabeza entre en el avellanado.
 
-## 4. Placa HP, separadores y disco Toshiba
+### 3.4 Cuatro orejetas del frente
 
-Piezas: la placa mini-ITX, el soporte del disco y el Toshiba. Los cuatro separadores ya van en la base (Ø9 × 6,35 mm). C está en (23,35, 284,33), F en (180,83, 261,47), H en (23,35, 129,39) y J en (180,83, 129,39). El patrón es el mini-ITX de catálogo: cuadra con la foto y no se ha medido con calibre. Miguel prefiere pivotes. La plantilla PRUEBA_plantilla_pivotes_HP trae diámetros 3,8 / 3,6 / 3,4 / 3,2 y no se monta. Hasta que uno gane, el agujero impreso sigue siendo Ø4 abierto por arriba. [PENDIENTE]
+![3.4](img/s3_4.png)
 
-![Base en gris. Soporte del disco en naranja, a la derecha de la placa. La placa verde es el marcador: RAM, disipador y pila de conectores son ilustrativos, salvo el alto de 35 mm y el tamaño 170 × 170, que están medidos.](img/04_hp_disco.png)
+**NECESITAS:** 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
 
-*Base en gris. Soporte del disco en naranja, a la derecha de la placa. La placa verde es el marcador: RAM, disipador y pila de conectores son ilustrativos, salvo el alto de 35 mm y el tamaño 170 × 170, que están medidos.*
+Atornilla las cuatro del frente. Desde abajo. El tornillo es el de Ø4,5.
 
-![Separador C. El cilindro impreso y el agujero de arriba. El hexágono es el marcador del tornillo, no una pieza del STL.](img/04_zoom_separador.png)
+### 3.5 Tres orejetas de la izquierda
 
-*Separador C. El cilindro impreso y el agujero de arriba. El hexágono es el marcador del tornillo, no una pieza del STL.*
+![3.5](img/s3_5.png)
 
-Tornillos de la placa: 4. Métrica [PENDIENTE] (pivote o M3). No roscan en Ø4. Tornillos del soporte a la base: 4 M3 avellanados desde abajo, a postes con Ø4. Largo [PENDIENTE], mismo problema de agarre. Tornillos del Toshiba al soporte: los del propio disco. La norma del hueco dice rosca 6-32. [PENDIENTE] contar los que trae y no meter un M3 en una rosca 6-32.
+**NECESITAS:** 3× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
 
-Herramienta: destornillador, y la llave de los 6-32 si el disco los usa. Orden: soporte del disco (los cuatro de abajo, solo presentados), disco en los colisos, tornillos del disco, luego la placa sobre los cuatro separadores. Apretar los separadores en cruz. El ventilador del disipador HP no sopla a la Pi.
+Atornilla las tres del lateral izquierdo. Desde abajo.
 
-**Aviso.** La carcasa, si ya está atornillada, deja como paso grande la abertura de la pantalla: el bisel y el MSI van en el paso 10. La placa mide 170 × 170 mm. No se ha comprobado si entra por ahí y se desliza hasta los separadores. Si no entra, este paso va antes de bajar la carcasa. [PENDIENTE]
+### 3.6 Orejeta trasera que queda
 
+![3.6](img/s3_6.png)
 
-## 5. Placa I/O trasera del HP
+**NECESITAS:** 1× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
 
-Pieza: PROVISIONAL_placa_io_hp. Entra por dentro de la ventana ya impresa de carcasa_x0_y1 (159,75 × 45,45 mm). No se atornilla: la pared tiene 3 mm y una guía de 8 mm no cabe. El reborde (6 mm arriba y a los lados, 4,5 mm abajo) apoya en la cara interior. El tetón, 0,4 mm más pequeño que la ventana por lado, la centra. Chapa de 1,4 mm. Abajo, hasta el suelo, hay unos 5,2 mm.
+Atornilla la orejeta trasera de la pieza izquierda. Desde abajo.
 
-![Placa en naranja, separada hacia atrás para verla. La carcasa x0_y1, en gris. En el montaje el reborde queda dentro y el tetón entra en la ventana. No va empujada desde fuera.](img/05_placa_io.png)
+### 3.7 Dos orejetas de la derecha
 
-*Placa en naranja, separada hacia atrás para verla. La carcasa x0_y1, en gris. En el montaje el reborde queda dentro y el tetón entra en la ventana. No va empujada desde fuera.*
+![3.7](img/s3_7.png)
 
-Antes, PRUEBA_placa_io_hp: se apoya por fuera, con el hueco de la esquina en el extremo inferior izquierdo de quien mira la trasera, y se anota qué conector no entra. Los huecos (DC, VGA, HDMI, dos USB 3, RJ45 sobre dos USB 2, audio y la cabecera) son de la foto del 22 de octubre de 2026, con ~1 mm por lado. [PENDIENTE] [FOTO]. La lista para medir está en docs/datos-pendientes-hp.md, H-4.
+**NECESITAS:** 2× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
 
-Tornillos: ninguno. Herramienta: ninguna. Orden: la prueba, corregir la tabla io_huecos si un conector no entra, y solo entonces la placa definitiva, desde dentro, hasta que el reborde toque la pared. Aviso: no limar la ventana impresa. No cortar el pasacables de encima (40 × 16 mm, 12 mm sobre la ventana). El jack DC de 19,5 V asoma por esta placa. El barril, [PENDIENTE].
+Atornilla las dos del lateral derecho. Desde abajo.
 
+Tornillos usados en este paso: 3× M3×10 avellanado DIN 965, Phillips PH1, 10× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2.
 
-## 6. Placa frontal del HP, pulsador y LED
+## Paso 4. Disco y placa HP
 
-**Aviso.** [PENDIENTE de medidas]. Este paso no se puede cerrar. La ventana, el agujero del pulsador y el del LED ya están cortados en carcasa_x0_y1, que no se reimprime. No se agrandan.
+La carcasa sigue puesta. En el dibujo no está, para que se vea el interior.
 
-En el CAD, la placa frontal es un marcador de 16 × 70 × 26 mm en el lateral izquierdo, detrás de la tina. El pulsador es Ø12 y 22 mm de fondo. El LED es un agujero de Ø3,1, 14 mm por encima del centro del pulsador. Ninguna de esas cotas está medida. El patillaje del botón original, para ponerlo en paralelo, tampoco. [PENDIENTE]
+### 4.1 Abre los cuatro pasos del disco
 
-![Lateral izquierdo de x0_y1. La ventana rectangular y el agujero redondo son los del CAD. La placa, el pulsador y el LED de verdad no están medidos: no hay tornillo ni orden de apriete que copiar.](img/06_io_frontal.png)
+![4.1](img/s4_1.png)
 
-*Lateral izquierdo de x0_y1. La ventana rectangular y el agujero redondo son los del CAD. La placa, el pulsador y el LED de verdad no están medidos: no hay tornillo ni orden de apriete que copiar.*
+**NECESITAS:** 1× broca de Ø4,6 mm
 
-Tornillos: no hay ninguno en el modelo. Herramienta: ninguna hasta tener la placa delante. Cuando se mida, se anota cómo se sujeta (pestañas originales, tornillo o brida) y se añade a este paso. Aviso: no cablear el pulsador a ciegas. Es un contacto seco en paralelo al cabezal del HP, y el pinout se mira con el polímetro.
+Desde abajo, abre a Ø4,6 los cuatro agujeros del soporte del disco. Para al salir del suelo.
 
+### 4.2 Soporte del disco
 
-## 7. Bandeja de huecos
+![4.2](img/s4_2.png)
 
-Pieza: PROVISIONAL_bandeja_servicio. Plancha abajo al imprimir. Entra por el hueco de la base, ala de 2 mm hacia abajo. Contorno 126,00 × 237,49 mm, alto 25,10 mm (de z = −2 a z = 23,1). Cabe en la A1: el lado largo queda 8,5 mm dentro del margen de 246.
+**NECESITAS:** 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
 
-![Bandeja en naranja, 40 mm por encima de la base gris, con las placas del marcador.](img/07_bandeja.png)
+Apoya el soporte en sus cuatro postes. Atornilla desde abajo con los Ø4,5. La cabeza entra en el avellanado.
 
-*Bandeja en naranja, 40 mm por encima de la base gris, con las placas del marcador.*
+### 4.3 Disco Toshiba
 
-![Planta. Pi al fondo (USB y RJ45 hacia atrás). A la izquierda, el ESP. A la derecha, de delante a atrás: Nano de prácticas, step-down y Nano de mandos.](img/07_bandeja_planta.png)
+![4.3](img/s4_3.png)
 
-*Planta. Pi al fondo (USB y RJ45 hacia atrás). A la izquierda, el ESP. A la derecha, de delante a atrás: Nano de prácticas, step-down y Nano de mandos.*
+**NECESITAS:** 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2
 
-La Pi no se mueve: esquina en (330, 167,5), 56 × 85 mm, USB y RJ45 hacia +Y, a 12 mm del suelo, sobre postes Ø6 con agujero Ø2,7. Por ese agujero no entra un M3. La pisada son las cuatro arandelas, no esos postes. La rejilla bajo el SoC se deja libre: las paredes de la Pi llegan a ras de la PCB (z = 13,5) y no tapan la rejilla. El HAT no está dibujado. [PENDIENTE]
+Apoya el disco en el soporte, conectores hacia la ventana trasera. Los cuatro tornillos entran desde abajo, por el coliso, a la rosca del disco.
 
-![Hueco del ESP, en naranja. Pines hacia abajo: el apoyo es un escalón de 2 mm en los cantos cortos. El centro baja hasta el suelo. El canto del USB está partido.](img/07_zoom_hueco.png)
+### 4.4 Placa HP
 
-*Hueco del ESP, en naranja. Pines hacia abajo: el apoyo es un escalón de 2 mm en los cantos cortos. El centro baja hasta el suelo. El canto del USB está partido.*
+![4.4](img/s4_4.png)
 
-| Placa | Esquina −X −Y | USB | Tornillos |
-| --- | --- | --- | --- |
-| Pi 4 | 330, 167,5 | +Y | 4 × M3×10 + arandela Ø9. Guías en (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2). |
-| ESP8266 | 346, 86 | +Y | 4 × M3×10 + Ø9. (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147). PCB 31 × 58 [PENDIENTE]. |
-| Nano prácticas | 399, 66 | −Y | 4 × M3×10 + Ø9. (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114). |
-| Step-down | 399, 124 | — | 2 × M3×8 por los agujeros del módulo y 2 × M3×8 + Ø9 en (421,5, 121) y (397,5, 166). |
-| Nano mandos | 400, 222 | +Y | 4 × M3×10 + Ø9. (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270). |
+**NECESITAS:** 4× M3×6 cilíndrico, Phillips PH1 (tornillo de placa base)
 
-A la base: 4 M3 por el ala, en (318,26, 49), (436,26, 49), (318,26, 278,492) y (436,26, 278,492). Paso Ø3,4. La torreta de la base es Ø4. Largo y agarre [PENDIENTE]. Son los mismos cuatro de la base ya impresa, no unos nuevos elegidos ahora.
+Apoya la placa en los cuatro separadores. Los conectores miran a la ventana trasera. Atornilla los cuatro M3×6.
 
-Herramienta: destornillador y las arandelas Ø9. Orden, en cada placa: los cuatro (o dos) tornillos hasta que la arandela roce la esquina, en cruz, y luego asentar. No arquear la PCB. La arandela tiene que pisar el borde; la cabeza sola no llega. Los de la Pi delanteros quedan a ~1,2 mm de los postes Ø6: no montar la arandela cruzada contra el poste.
+Tornillos usados en este paso: 4× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2, 4× 6-32 UNC × 1/4" (6,4 mm), Phillips PH2, 4× M3×6 cilíndrico, Phillips PH1 (tornillo de placa base).
 
-**Aviso.** El escalón de 2 mm supone que los pines empiezan a 2,4 mm del canto. [PENDIENTE] medirlo: si el pin está más adentro, el escalón lo pisa. La clavija de mandos del marcador sale unos 15 mm del suelo de la bandeja. La de prácticas acaba en y = 54. Largos reales [PENDIENTE]. El step-down de 43 × 21 es una cifra típica, no el módulo de Miguel. No hay sexto hueco: ni protoboard ni capturadora.
+## Paso 5. Placa de conectores traseros
 
-Los cables van por los siete puentes (barra a 4,2 mm del suelo, luz de unos 4 mm): entre prácticas y el step-down, en el corredor del ESP, y tres en el canto derecho. No apoyarlos sobre el puente: pasan por debajo.
+La ventana ya está cortada. No la toques.
 
+### 5.1 Mete la placa por dentro
 
-## 8. Tapa de la Pi y abertura de x1_y1
+![5.1](img/s5_1.png)
 
-Pieza: PROVISIONAL_tapa_pi (94 × 54 × 2,4 mm). Cubre el hueco del techo de carcasa_x1_y1, encima de los USB y el RJ45. Dos tornillos M3×10 de cabeza cilíndrica, en x = 404, a las guías Ø2,5 de los postes Ø10. El paso de la tapa es Ø3,4: la rosca está en el poste, no en la tapa.
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-![Tapa en naranja, levantada. Carcasa x1_y1 en gris. Se ven las ranuras, la muesca del dedo y los dos agujeros de los M3×10.](img/08_tapa.png)
+Entra con la placa desde dentro de la carcasa. La pestaña queda hacia ti. Empuja hasta que asiente en la ventana. No lleva tornillo.
 
-*Tapa en naranja, levantada. Carcasa x1_y1 en gris. Se ven las ranuras, la muesca del dedo y los dos agujeros de los M3×10.*
+Tornillos usados en este paso: ninguno.
 
-Herramienta: destornillador. Orden: la tapa en su asiento (la muesca hacia delante), los dos tornillos presentados, y apretar los dos a la vez hasta asentar. No seguir. Los agujeros de Ø3,2 de la tapa son para un ventilador opcional de 30 × 30 o 40 × 40: no hace falta ponerlo, y no tapan las ranuras si no se monta. Aviso: el ventilador del HP no alimenta este hueco. Para llegar a los USB de la Pi se quita esta tapa.
+## Paso 6. Frente izquierdo del HP
 
+La ventana, el pulsador y el LED ya están cortados. No los agrandes.
 
-## 9. Panel de pines y OLED
+### 6.1 Placa frontal
 
-El panel no es una pieza aparte: está en la trasera de carcasa_x1_y1 (x desde 250, z desde 68, 74 × 72 mm). La OLED va por dentro, detrás de la ventana de 24 × 14 mm. Esas dos cotas son [DISEÑO], a partir del área visible de una ficha de 0,96 pulgadas. La profundidad del marcador es 12 mm. [PENDIENTE] la PCB real y cómo se sujeta: el CAD no trae tornillo.
+![6.1](img/s6_1.png)
 
-![Trasera de x1_y1. La OLED del marcador, en naranja, separada hacia dentro. En el plástico se leen OLED, PRG, ARD 5V, PI 3V3 y NO UNIR. La retícula es el paso de 2,54 mm.](img/09_panel.png)
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-*Trasera de x1_y1. La OLED del marcador, en naranja, separada hacia dentro. En el plástico se leen OLED, PRG, ARD 5V, PI 3V3 y NO UNIR. La retícula es el paso de 2,54 mm.*
+Mete la placa frontal por la ventana del lateral izquierdo, desde fuera, hasta que los conectores asomen.
 
-Tornillos: ninguno en este paso. Herramienta: ninguna para el plástico. El cableado está en el paso 11. Aviso: no unir ARD 5V con PI 3V3. No cablear el cabezal de 40 pines de la Pi hasta saber el HAT: el HAT ocupa ese cabezal, y GPIO2/GPIO3 son el I2C de la Pi. [PENDIENTE]
+**PENDIENTE DE MEDIR.** La placa de verdad no está medida. El dibujo usa 16×70×26 mm. Si la tuya no entra, para: no limes la carcasa impresa.
 
+### 6.2 Pulsador
 
-## 10. Biseles, pantalla, guías, anillos y pomos
+![6.2](img/s6_2.png)
 
-El MSI se apoya en la tina. Lo sujeta el bisel, en cuatro trozos, cara vista abajo al imprimir. Doce tornillos M3 avellanados (tres por trozo) a agujeros Ø4 × 5,7 de la carcasa. El paso del bisel es Ø3,4, avellanado hasta Ø6,4. Largo [PENDIENTE]: en Ø4 el M3 no rosca. El bisel se puede quitar y el monitor sale.
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-![Bisel en cuatro trozos, separados de la pendiente. El trozo delantero izquierdo, en naranja. La carcasa, en gris. El dibujo de la pantalla es el marcador, no la interfaz real.](img/10_bisel.png)
+Mete el pulsador en el agujero redondo, desde fuera, y fija su tuerca por dentro.
 
-*Bisel en cuatro trozos, separados de la pendiente. El trozo delantero izquierdo, en naranja. La carcasa, en gris. El dibujo de la pantalla es el marcador, no la interfaz real.*
+**PENDIENTE DE MEDIR.** El agujero es Ø12,2 mm, de diseño. El pulsador real no está medido.
 
-El área activa se supone centrada. [PENDIENTE] La muesca del bisel cae sobre las teclas del canto derecho del MSI (encendido, arriba, abajo). Conviene imprimir un trozo, apoyar el monitor y mirar si la ventana enseña toda la imagen antes de imprimir los otros tres.
+### 6.3 LED
 
-![Pomos y anillos separados de la consola, y las dos guías del frente adelantadas. Carcasa en gris.](img/10_mandos.png)
+![6.3](img/s6_3.png)
 
-*Pomos y anillos separados de la consola, y las dos guías del frente adelantadas. Carcasa en gris.*
+**NECESITAS:** Nada. Este paso no lleva tornillo.
 
-Guías: dos, PROVISIONAL_guia_luz_frontal_0 y _1. Sin tornillos. Entran en el canal del frente. PETG translúcido, impresas boca abajo. El canal del modelo mide 10,4 mm para una tira de 10 mm. La tira sigue sin identificar. [PENDIENTE]
+Mete el LED en el agujero de encima del pulsador.
 
-Anillos: dos, PROVISIONAL_anillo_luz_x2. Sin tornillos. Entran por dentro de la ranura anular, con tres puentes. Translúcido.
+**PENDIENTE DE MEDIR.** El agujero es Ø3,1 mm. El LED real no está medido.
 
-Pomos: dos, Ø30. Un M3 prisionero por pomo, en el agujero radial Ø2,5. Eje de 6 mm, liso o en D: [ACORDADO, PENDIENTE de medir]. Si el eje es estriado, este pomo no vale y se usa uno comercial. Los dos pulsadores de panel traen su propio actuador. Modelo [PENDIENTE]. No hay tapa impresa.
+Tornillos usados en este paso: ninguno.
 
-Herramienta: destornillador. Para el prisionero, el mismo, en el lateral del pomo. Orden: monitor en la tina, con los puertos (USB-C y Mini-HDMI) hacia el canto derecho; los doce tornillos del bisel presentados; apriete en cruz, sin forzar los Ø4; guías de luz de izquierda a derecha; anillos por dentro; pomos, y el prisionero cuando el eje esté dentro, sin aplastar el eje. Aviso: no apretar el bisel contra el cristal. Si el M3 no agarra en Ø4, parar. [PENDIENTE]
+## Paso 7. Bandeja de placas
 
+Primero las placas, en el banco. La bandeja se atornilla a la base al final.
 
-## 11. Cableado y comprobación
+### 7.1 Raspberry Pi
 
-El dibujo solo tiene hilo donde el firmware o el CAD dan la unión por sabida. Lo gris no se cablea: falta el dato. No es el recorrido por dentro de la caja.
+![7.1](img/s7_1.png)
 
-![Diagrama generado con OpenSCAD. Naranja: alimentación del HP y la OLED. Azul: los Nano. Verde: la Pi y la placa. Gris: step-down y MSI, sin hilo.](img/11_cableado.png)
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
 
-*Diagrama generado con OpenSCAD. Naranja: alimentación del HP y la OLED. Azul: los Nano. Verde: la Pi y la placa. Gris: step-down y MSI, sin hilo.*
+Pon la Pi en su hueco, con USB y RJ45 hacia atrás. La arandela pisa la esquina. El tornillo entra en el poste, fuera de la placa. Aprieta hasta que la arandela apoye.
 
+### 7.2 ESP8266
 
-### Alimentación
+![7.2](img/s7_2.png)
 
-- El adaptador de 19,5 V entra por el jack DC de la placa HP y se queda fuera. No se abre y no se mete la red en la caja.
-- La Pi y el MSI llevan cada uno su fuente USB-C. La del MSI tiene que dar más de 15 W. No salen del step-down.
-- El step-down está en su hueco y no se conecta aquí. Entrada, salida y masa: [PENDIENTE] hasta tener el módulo.
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
 
+Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Cuatro tornillos con arandela, en las esquinas.
 
-### USB del Nano de mandos a la Pi
+**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB. Si no entra, no la fuerces.
 
-- Mini-USB del Nano de mandos a un USB de la Pi. Cuál de los cuatro es [PENDIENTE].
-- Serie a 115200. El CH340 sale como /dev/ttyUSB (ejemplo /dev/ttyUSB0), no como ttyACM0. En la Pi se mira /dev/serial/by-id. Aún no se ha leído en la placa de Miguel. [PENDIENTE]
-- Abrir el puerto reinicia el Nano. orbitd espera 2,0 s antes de escribir «?» . Ese tiempo es [DISEÑO].
-- P1 al A0 y P2 al A1 (el cursor; los extremos del potenciómetro a 5 V y a GND). B1 al D2 y B2 al D3, los dos a GND, con pull-up interno. D0 y D1 son el UART. D6 queda libre: la tira no va en este Nano. No hay HID.
+### 7.3 Nano de prácticas
 
+![7.3](img/s7_3.png)
 
-### I2C de la OLED
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
 
-- La controla el Nano de prácticas. SDA en A4, SCL en A5, dirección 0x3C.
-- VCC a 5 V solo si el módulo lo admite. Si no, a 3,3 V. En un clon CH340 el pin de 3,3 V puede no existir o dar poca corriente. [PENDIENTE]
-- GND con GND. Muchos módulos ya traen las pull-up. Confirmarlo.
-- 1 kΩ en serie en cada señal que salga al panel (pines, RST, TX, RX, SDA, SCL). No en 5 V, 3,3 V ni GND. A 5 V, un corto detrás de 1 kΩ queda en 5 mA: es un límite de corriente, no un desplazador de nivel.
-- El mapa pin a pin está en software/arduino-pruebas/README.md. No unir la fila de 5 V del Nano con la de 3,3 V de la Pi.
+Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. Cuatro tornillos con arandela.
 
+### 7.4 Step-down
 
-### Tira LED y WLED
+![7.4](img/s7_4.png)
 
-- La tira la lleva el ESP8266 con WLED, no un pin del Nano de mandos.
-- Dato por defecto: GPIO2, rotulado D4 en la mayoría de NodeMCU. GPIO2 tiene que estar en alto al arrancar. A veces hace falta una pull-up de 3,3–4,7 kΩ a 3,3 V. [PENDIENTE] si este módulo la necesita.
-- La masa de la tira va con la del ESP. No alimentar la tira desde el regulador de 3,3 V del módulo.
-- Tipo y tensión de la tira: [PENDIENTE]. Si es direccionable de 5 V, el dato a 3,3 V puede quedarse corto. El desplazador de nivel es [PENDIENTE].
+**NECESITAS:** 4× M3×8 cilíndrico, Phillips PH1  ·  2× Arandela ancha M3 Ø9, DIN 9021
 
+Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan. Los 3 y 4 lo pisan con arandela, por fuera de la placa.
 
-### Comprobación final
+**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. Mide el tuyo antes de apretar.
 
-- Ningún tornillo de un agujero Ø4 o Ø3,2 se ha dado por apretado. Esas uniones siguen [PENDIENTE].
-- Los autorroscantes de Ø2,5 (huecos, tapa, tres orejetas de x1_y1, prisioneros) asientan y no siguen girando.
-- La placa I/O entra por dentro. La prueba de fuera ya se ha mirado, o el paso 5 sigue abierto.
-- El paso 6 sigue marcado [PENDIENTE de medidas] hasta calar la placa frontal, el pulsador y el LED.
-- ARD 5V y PI 3V3 no están unidos. El cabezal de 40 pines de la Pi no está cableado.
-- La tira no sale del regulador de 3,3 V del ESP. El step-down no alimenta nada todavía.
-- No hay 230 V dentro. El adaptador HP y las dos fuentes USB-C están fuera.
-- Al abrir el serie del Nano de mandos, se espera el reinicio antes de pedir el saludo.
+### 7.5 Nano de mandos
 
-Esto no es un montaje hecho. Amplía este mismo archivo cuando una cota deje de ser [PENDIENTE].
+![7.5](img/s7_5.png)
+
+**NECESITAS:** 4× M3×10 cilíndrico, Phillips PH1  ·  4× Arandela ancha M3 Ø9, DIN 9021
+
+Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Cuatro tornillos con arandela.
+
+### 7.6 Abre las cuatro torretas
+
+![7.6](img/s7_6.png)
+
+**NECESITAS:** 1× broca de Ø3,4 mm
+
+Con la broca de Ø3,4, abre el techo de las cuatro torretas de la base. Para en cuanto la broca caiga.
+
+### 7.7 Atornilla la bandeja
+
+![7.7](img/s7_7.png)
+
+**NECESITAS:** 4× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza  ·  4× Tuerca M3 DIN 934
+
+Apoya el ala en las cuatro torretas. Tornillo desde arriba. Tuerca debajo. Aprieta en cruz.
+
+Tornillos usados en este paso: 16× M3×10 cilíndrico, Phillips PH1, 18× Arandela ancha M3 Ø9, DIN 9021, 4× M3×8 cilíndrico, Phillips PH1, 4× M3×16 cilíndrico, Phillips PH1, rosca hasta la cabeza, 4× Tuerca M3 DIN 934.
+
+## Paso 8. Tapa de la Pi
+
+Dos tornillos. No hace falta ventilador.
+
+### 8.1 Cierra la tapa
+
+![8.1](img/s8_1.png)
+
+**NECESITAS:** 2× M3×10 cilíndrico, Phillips PH1
+
+Apoya la tapa en el techo. Atornilla los dos tornillos del canto derecho.
+
+Tornillos usados en este paso: 2× M3×10 cilíndrico, Phillips PH1.
+
+## Paso 9. Pantalla del Nano de prácticas
+
+Va por dentro de la ventana del panel. No hay tornillo.
+
+### 9.1 Acerca el OLED a la ventana
+
+![9.1](img/s9_1.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Pon el módulo por dentro, centrado en la ventana. No lo atornilles: el CAD no tiene tornillo para él.
+
+**PENDIENTE DE MEDIR.** El módulo del dibujo mide 33,5 mm de ancho. La ventana, 24×14 mm, es de diseño. Mide el OLED antes de pegarlo o de calzarlo.
+
+Tornillos usados en este paso: ninguno.
+
+## Paso 10. Pantalla y mandos
+
+El monitor entra en la tina. El bisel lo sujeta. Quitar esos tornillos lo suelta.
+
+### 10.1 Mete el monitor
+
+![10.1](img/s10_1.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Mete el monitor en la tina, con los conectores hacia la derecha.
+
+### 10.2 Abre los biseles
+
+![10.2](img/s10_2.png)
+
+**NECESITAS:** 1× broca de Ø4,6 mm
+
+En el banco, abre a Ø4,6 los doce agujeros de los cuatro biseles. No taladres la carcasa.
+
+### 10.3 Coloca los cuatro biseles
+
+![10.3](img/s10_3.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Apoya los cuatro biseles sobre el marco. La muesca del canto derecho deja libres las teclas del monitor.
+
+### 10.4 Atornilla el bisel
+
+![10.4](img/s10_4.png)
+
+**NECESITAS:** 12× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2
+
+Atornilla los doce, desde fuera. Ve saltando de un canto a otro.
+
+### 10.5 Guías de luz
+
+![10.5](img/s10_5.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Encaja las dos guías en el canal delantero. Sin tornillo.
+
+### 10.6 Anillos
+
+![10.6](img/s10_6.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Mete un anillo desde dentro, bajo cada sitio de pomo. Sin tornillo.
+
+### 10.7 Pomos
+
+![10.7](img/s10_7.png)
+
+**NECESITAS:** 2× Prisionero M3×16 DIN 916 (Allen 1,5 mm)
+
+Encaja cada pomo. Aprieta el prisionero contra el eje. Si el eje no entra, para y mira el anexo.
+
+### 10.8 Pulsadores del panel
+
+![10.8](img/s10_8.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Mete los dos pulsadores desde fuera y cierra su tuerca por dentro.
+
+Tornillos usados en este paso: 12× Autorroscante para plástico Ø4,5×10, avellanado, Phillips PH2, 2× Prisionero M3×16 DIN 916 (Allen 1,5 mm).
+
+## Paso 11. Cables que ya están decididos
+
+Lo gris del dibujo no se cablea. No hay red dentro de Orbit.
+
+### 11.1 Jack del HP
+
+![11.1](img/s11_1.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Deja el adaptador de 19,5 V fuera. Enchufa solo su jack al conector trasero de la placa.
+
+### 11.2 USB de mandos
+
+![11.2](img/s11_2.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Conecta el mini-USB del Nano de mandos a un USB de la Pi.
+
+### 11.3 I2C del OLED
+
+![11.3](img/s11_3.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Une SDA del OLED al A4 y SCL al A5 del Nano de prácticas. Una resistencia de 1 kΩ en cada señal.
+
+### 11.4 Dato de la tira
+
+![11.4](img/s11_4.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Une el dato de la tira al GPIO2 del ESP. La masa de la tira, a la masa del ESP. No alimentes la tira desde el pin de 3,3 V.
+
+### 11.5 Repasa
+
+![11.5](img/s11_5.png)
+
+**NECESITAS:** Nada. Este paso no lleva tornillo.
+
+Comprueba las cuatro uniones naranjas. No añadas los cables grises.
+
+Tornillos usados en este paso: ninguno.
+
+## Anexo
+
+### Por qué este tornillo
+
+El largo de un cilíndrico se mide bajo la cabeza. El del avellanado incluye la cabeza. Nada de esto se ha apretado en una pieza impresa, salvo el M3 de los pasadores.
+
+| Unión | Qué atraviesa | Tornillo |
+|---|---|---|
+| Pasador | Agujero Ø3,2 × 16 mm, las dos costillas | M3×16 cilíndrico. La cabeza se queda fuera. |
+| Pletina | Pletina 3 mm + torreta 5 mm + suelo 4 mm = 12 mm | M3×16. Salen unos 4 mm bajo la base, para la tuerca. |
+| Bandeja | Ala 2 mm + torreta 5 mm + suelo 4 mm = 11 mm | M3×16. Antes se abre el techo macizo, de unos 3 mm. Salen unos 5 mm para la tuerca. |
+| Orejeta de la carcasa nueva | Suelo 4 mm + guía Ø2,5 de 9 mm | M3×10 avellanado. La punta no llega al fondo. |
+| Orejeta ya impresa, bisel y soporte del disco | Paso Ø3,4 y, detrás, agujero ciego Ø4 | Ø4,5×10 avellanado, después de abrir el paso a Ø4,6. El ×10 no hace tope en el Ø4. |
+| Placa HP | PCB 1,6 mm + agujero de 6,2 mm en el separador | M3×6 de placa base. No llega al fondo. El agujero es Ø4. |
+| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | 6-32 × 6,4 mm. No es un M3. |
+| Placas de la bandeja | Guía Ø2,5 de 10 mm y arandela de 0,8 mm | M3×10. Entran unos 9 mm. La arandela pisa la esquina, el tornillo no atraviesa la PCB. |
+| Step-down, tornillo pasante | Guía de 7 mm | M3×8. |
+| Step-down, brida | Guía de 8 mm y arandela | M3×8. |
+| Tapa | Tapa 2,4 mm + guía de 9 mm | M3×10. Entran unos 8 mm. |
+| Pomo | De la piel al eje hay 12 mm | Prisionero M3×16. Un ×12 solo rozaría el eje. |
+
+### Por qué se taladra
+
+Un autorroscante de Ø4,5 no pasa por el agujero impreso de Ø3,4. Por eso el paso 3.1, el 4.1 y el 10.2 lo abren a Ø4,6, y solo el paso: el agujero Ø4 de la orejeta, del soporte o de la carcasa se queda como está, que es donde el Ø4,5 muerde.
+
+La tuerca no cabe en esos agujeros: son ciegos y de Ø4. Si el Ø4,5 gira en vacío, para. No lo cambies por un M4. La otra salida es abrir ese agujero de lado a lado y poner una tuerca M3, y eso es otro taladro, no el de este manual.
+
+Las torretas de la bandeja no tienen el paso de Ø3,4 que sí tienen las de las pletinas. El techo, de unos 3 mm, está macizo. El 7.6 lo abre con Ø3,4 para que el M3×16 llegue a la tuerca. Un M3 no muerde el Ø4 que hay debajo: por eso lleva tuerca y no autorroscante.
+
+El M3×6 de la placa HP es el tornillo de placa base. Si gira en vacío, el agujero del separador es Ø4, el del inserto que ya no se usa. No cabe un tornillo más gordo en el agujero de la PCB. No se ha elegido otra pieza.
+
+### Si algo no entra
+
+La placa HP se mete por la abertura de la pantalla, con la carcasa ya puesta. Si no pasa, haz el paso 4 antes del paso 3.
+
+Tres pletinas quedan debajo del soporte del disco: las dos del corte largo y la trasera del corte corto. Van en el paso 1, antes del disco.
+
+El corte corto delantero de la carcasa no lleva tornillo. Los cinco del paso 2.3 están todos en la mitad de atrás. Los de los pasos 2.1 y 2.2 unen cada par de delante con atrás.
+
+Si el eje del potenciómetro está estriado, el pomo impreso no entra. Hace falta un pomo comercial para eje estriado. El eje de 6 mm está acordado y sin medir.
+
+### Coordenadas que usa el dibujo
+
+No hacen falta para montar. Están por si hay que reimprimir una pieza.
+
+- Envolvente: 456,26 × 300,49 × 153,92 mm. Cortes en x = 228,13 e y = 150,25.
+- Pasadores de atrás, en el corte x: cinco, todos con y mayor que 150.
+- Pasadores laterales: dos en x = 7 y dos en x = 449, a z = 25 y z = 55.
+- Orejetas con guía Ø2,5, las de la carcasa nueva: (325; 292,5), (420; 292,5) y (448,3; 205).
+- Las otras diez orejetas conservan el agujero Ø4 de cuando se imprimieron.
+- Hueco de la Pi: origen (330; 167,5), 56 × 85 mm, USB hacia +Y. Presillas en (328; 165,2), (388; 165,2), (327,8; 254,2) y (388,6; 254,2).
+- ESP, de la foto: (346; 86), 31 × 58 mm. Nano de prácticas: (399; 66), 18 × 45. Step-down: (399; 124), 21 × 43. Nano de mandos: (400; 222), 18 × 45.
+- Torretas de la bandeja: (318,3; 49), (436,3; 49), (318,3; 278,5) y (436,3; 278,5).
+
+### Lo que sigue sin medir
+
+Placa frontal del HP, pulsador y LED. Step-down real. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+
+Los huecos de la placa I/O salen de una foto del 2026-10-22, no de un calibre. La placa se imprime con esa tabla y se prueba con el marco `PRUEBA_placa_io_hp` antes de darla por buena.
+
+### Cableado fino
+
+Nano de mandos: P1 en A0, P2 en A1, con los extremos a 5 V y a masa. B1 en D2 y B2 en D3, a masa, con la resistencia interna. D0 y D1 son el serial. D6 se queda libre. 115200 baudios. El puerto de ejemplo es /dev/ttyUSB0. Abrir el puerto reinicia la placa; orbitd espera 2,0 s antes de escribir «?». Ese tiempo es de diseño. No hay HID.
+
+OLED: SSD1306 en 0x3C. SDA en A4, SCL en A5. 5 V solo si el módulo lo admite. 1 kΩ en las señales que salen al panel, no en 5 V, 3,3 V ni masa. Rótulos de la carcasa: OLED, PRG, ARD 5V, PI 3V3, NO UNIR. No cablees el cabezal de 40 pines de la Pi: el HAT lo ocupa y sus medidas no están tomadas.
+
+Tira: el dato sale de GPIO2, que es D4. GPIO2 tiene que estar alto al arrancar. La masa de la tira va con la del ESP. La alimentación de la tira no sale del regulador de 3,3 V del módulo. Tensión y tipo, sin medir.
+
+La Pi y el monitor llevan su propia fuente USB-C. El monitor pide más de 15 W. El adaptador del HP, 65 W a 19,5 V, se queda fuera.
+
