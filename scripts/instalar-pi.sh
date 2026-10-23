@@ -114,6 +114,8 @@ if ! dpkg -s labwc >/dev/null 2>&1; then
 fi
 apt_optional wlrctl
 apt_optional wmctrl
+# Fondo negro al entrar en la sesión, si el paquete está. Sin él el kiosco igual arranca.
+apt_optional swaybg
 if ! command -v lxterminal >/dev/null && ! command -v x-terminal-emulator >/dev/null; then
   apt_optional lxterminal
 fi
@@ -192,6 +194,9 @@ PY
 chmod 600 /etc/orbit/orbitd.env
 
 PUERTOS=/var/lib/orbit/arduino-puertos.json
+if [[ ! -d /dev/serial/by-path ]]; then
+  log "No está /dev/serial/by-path. El Nano no está enchufado: no es un fallo. Cuando lo enchufes: sudo bash scripts/detectar-nanos.sh"
+fi
 if [[ ! -f "$PUERTOS" ]]; then
   python3 - "$PUERTOS" <<'PY'
 import json, sys
@@ -308,8 +313,11 @@ if p.exists():
 prof = data.setdefault("profile", {})
 prof["exited_cleanly"] = True
 prof["exit_type"] = "Normal"
+data.setdefault("translate", {})["enabled"] = False
 p.write_text(json.dumps(data), encoding="utf-8")
 PY
+# Una sola vez --disable-features. Translate ya va en la lista: no se repite el nombre.
+FEATURES="Translate,TranslateUI"
 exec "$BIN" \
   --user-data-dir="$UD" \
   --kiosk \
@@ -318,7 +326,8 @@ exec "$BIN" \
   --disable-infobars \
   --disable-session-crashed-bubble \
   --hide-crash-restore-bubble \
-  --disable-features=Translate,TranslateUI \
+  --disable-features="$FEATURES" \
+  --lang=es \
   --check-for-update-interval=31536000 \
   --overscroll-history-navigation=0 \
   --no-first-run \
@@ -383,11 +392,27 @@ exit 0
 EOF
 chmod 755 /usr/local/bin/orbit-kiosk /usr/local/bin/orbit-kiosk-bucle /usr/local/bin/orbit-atajo /usr/local/bin/orbit-al-frente
 
+log "Chromium sin burbuja de traducir"
+escribir_politica_chromium() {
+  local dir="$1"
+  install -d -m 755 "$dir"
+  cat > "$dir/orbit.json" <<'EOF'
+{
+  "TranslateEnabled": false
+}
+EOF
+  chmod 644 "$dir/orbit.json"
+}
+escribir_politica_chromium /etc/chromium/policies/managed
+escribir_politica_chromium /etc/chromium-browser/policies/managed
+
 log "Sesión gráfica"
 install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" "$ORBIT_HOME/.config/labwc"
 as_user env ORBIT_LABWC_RC="$LABWC_RC" "$ROOT/.venv/bin/python" -c 'import os; from pathlib import Path; from orbitd.video import write_labwc_rc; write_labwc_rc(Path(os.environ["ORBIT_LABWC_RC"]), "integrado", False)'
 cat > "$ORBIT_HOME/.config/labwc/autostart" <<'EOF'
 #!/bin/sh
+# Negro ya, para que el escritorio no se quede a la vista mientras orbitd arranca.
+command -v swaybg >/dev/null 2>&1 && swaybg -c '#000000' >/dev/null 2>&1 &
 /usr/local/bin/orbit-kiosk-bucle >/tmp/orbit-kiosk.log 2>&1 &
 EOF
 chown "$ORBIT_USER:$ORBIT_USER" "$ORBIT_HOME/.config/labwc/autostart" "$LABWC_RC" 2>/dev/null || true
@@ -493,16 +518,13 @@ ignore-auto-dns=true
 method=disabled
 EOF
 chmod 600 /etc/NetworkManager/system-connections/orbit-enlace-hp.nmconnection
+# shellcheck disable=SC1091
+source "$(dirname "$0")/orbit-nm.sh"
 if command -v nmcli >/dev/null && systemd_up && systemctl is-active --quiet NetworkManager; then
-  nmcli con reload || true
-  CON="orbit-enlace-hp"
-  while IFS=: read -r name iface; do
-    [[ "$name" == "$CON" ]] && continue
-    [[ "$iface" == "eth0" ]] || continue
-    nmcli con mod "$name" connection.autoconnect no || true
-  done < <(nmcli -t -f NAME,connection.interface-name con show)
+  nmcli connection reload || true
+  desactivar_autoconnect_eth0 "orbit-enlace-hp"
   if ip link show eth0 >/dev/null 2>&1; then
-    nmcli con up "$CON" || log "eth0 no ha levantado el perfil. El cable puede no estar; el perfil queda guardado."
+    nmcli connection up orbit-enlace-hp || log "eth0 no ha levantado el perfil. El cable puede no estar; el perfil queda guardado."
   else
     log "No hay eth0 ahora. El perfil queda guardado y no pone puerta de enlace."
   fi
@@ -514,8 +536,12 @@ log "Listo. Reinicia la Pi para ver Orbit OS al encender."
 echo "Usuario de la sesión: $ORBIT_USER"
 echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco). Para volver: rm /var/lib/orbit/kiosk-pausa"
 echo "Moonlight aún no está emparejado. Pasos en docs/instalacion-pi.md"
-echo "Ardu Lab: anota el basename de /dev/serial/by-path en /var/lib/orbit/arduino-puertos.json"
-echo "Sin eso no se abre el Nano de mandos y no se sube al de prácticas. docs/ardu-lab.md"
+echo "Ardu Lab no sube nada hasta anotar el basename de /dev/serial/by-path."
+echo "Cuando los Nano estén enchufados: sudo bash scripts/detectar-nanos.sh"
+echo "Eso escribe /var/lib/orbit/arduino-puertos.json. El de mandos no se programa. docs/ardu-lab.md"
 if [[ -d /dev/serial/by-path ]]; then
+  echo "Puertos vistos ahora:"
   ls -l /dev/serial/by-path || true
+else
+  echo "Ahora no está /dev/serial/by-path. Es normal: el Nano no estaba enchufado. El instalador sigue."
 fi

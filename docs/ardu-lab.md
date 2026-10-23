@@ -13,9 +13,9 @@ Nada de esto se ha probado en una placa ni en la Pi.
 3. Si ves la franja amarilla **SIMULADO**, no estás grabando ninguna placa.
 4. Desenchufa los dos Nano.
 5. Enchufa solo el Nano de prácticas en el puerto USB de la Pi que va a ser el suyo. No lo cambies de sitio después.
-6. Por SSH: `ls -l /dev/serial/by-path`.
+6. Por SSH: `ls -l /dev/serial/by-path`. Si la carpeta no existe, el Nano no está enchufado.
 7. Copia el nombre del enlace, el basename. No copies `ttyUSB0` ni `ttyUSB1`: ese número cambia.
-8. Edita `/var/lib/orbit/arduino-puertos.json` y pon ese nombre en `practicas`.
+8. Edita `/var/lib/orbit/arduino-puertos.json` y pon ese nombre en `practicas`. O, con la placa enchufada, `sudo bash scripts/detectar-nanos.sh` pregunta el número y escribe el archivo.
 9. Desenchufa el de prácticas.
 10. Enchufa solo el Nano de mandos en el otro puerto USB, el que va a ser el suyo.
 11. Vuelve a mirar `ls -l /dev/serial/by-path` y copia ese basename en `mandos`.

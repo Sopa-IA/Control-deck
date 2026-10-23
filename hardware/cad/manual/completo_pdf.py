@@ -188,7 +188,7 @@ def tornillo_png(path: Path, tipo: str, leyenda: str) -> Path:
 
 
 def problemas_png(path: Path) -> Path:
-    im = Image.new("RGB", (1200, 900), "#f7f4ee")
+    im = Image.new("RGB", (1200, 980), "#f7f4ee")
     d = ImageDraw.Draw(im)
     filas = [
         ("No entra SSH", "Espera al Wi-Fi. El nombre es el de Imager, no tiene que ser pi."),
@@ -197,14 +197,15 @@ def problemas_png(path: Path) -> Path:
         ("No apaga", "Confirma en pantalla. Un toque corto no vale. Sin la UI abierta, no apaga."),
         ("El PC se iba a apagar", "El simulador no llama a systemctl. Para."),
         ("Moonlight no abre", "Empareja una vez: moonlight-qt pair 10.0.0.1 y el PIN en Sunshine."),
+        ("No está by-path", "El Nano no estaba enchufado. Luego: sudo bash scripts/detectar-nanos.sh"),
     ]
-    y = 24
+    y = 16
     for titulo, texto in filas:
-        d.rounded_rectangle((24, y, 1176, y + 130), 12, fill="white", outline="#d5d0c6", width=2)
-        d.rounded_rectangle((44, y + 28, 92, y + 76), 8, fill="#e07a1f")
-        d.text((112, y + 24), titulo, font=_font(28, True), fill="#1c1c1e")
-        d.text((112, y + 72), texto, font=_font(22), fill="#5e6168")
-        y += 146
+        d.rounded_rectangle((24, y, 1176, y + 120), 12, fill="white", outline="#d5d0c6", width=2)
+        d.rounded_rectangle((44, y + 36, 92, y + 84), 8, fill="#e07a1f")
+        d.text((112, y + 18), titulo, font=_font(26, True), fill="#1c1c1e")
+        d.text((112, y + 64), texto, font=_font(20), fill="#5e6168")
+        y += 136
     path.parent.mkdir(parents=True, exist_ok=True)
     im.save(path)
     return path
@@ -858,7 +859,8 @@ def construir(fotos):
     story.append(Spacer(1, 3 * mm))
     story.append(foto(fotos["fallos"], 176, 120))
     story.append(Paragraph(
-        "No cortes la carcasa para arreglar un paso. Si un tetón no entra, lija el tetón.",
+        "No cortes la carcasa para arreglar un paso. Si un tetón no entra, lija el tetón. "
+        "Si al instalar no existe /dev/serial/by-path, enchufa los Nano y ejecuta sudo bash scripts/detectar-nanos.sh.",
         st["p"]))
     # última página: sin PageBreak final de más. El paso() ya parte. Este bloque es la última.
 

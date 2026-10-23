@@ -16,7 +16,7 @@ Nada de esto se ha probado en la Pi ni en el HP.
 6. Entra por SSH con el usuario que pusiste en Imager.
 7. Clona la rama del PR #9, que aún no está fusionada: `git clone -b cursor/bandeja-v2-modular-6d15 https://github.com/Sopa-IA/Control-deck.git`.
 8. Entra en la carpeta: `cd Control-deck`.
-9. Ejecuta una vez, con internet: `sudo bash scripts/instalar-pi.sh`.
+9. Ejecuta una vez, con internet: `sudo bash scripts/instalar-pi.sh`. Si dice que no está `/dev/serial/by-path`, el Nano no estaba enchufado: no es un fallo y el script sigue.
 10. Si el script termina bien, reinicia: `sudo reboot`.
 11. Al encender, lo primero que se ve es Orbit OS. El arcoíris y los textos de arranque quedan ocultos en la medida de lo posible.
 
@@ -71,7 +71,7 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 41. No empareja Sunshine: el PIN lo escribe Miguel.
 42. El kiosco con GPU, una sesión labwc de verdad y Moonlight contra el HP no se han probado en la Pi. El script sí se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
 43. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
-44. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí.
+44. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí. Con los Nano enchufados, `sudo bash scripts/detectar-nanos.sh` lista `/dev/serial/by-path` y escribe `/var/lib/orbit/arduino-puertos.json`. Si la carpeta no existe, enchufa la placa y vuelve a lanzarlo.
 
 ## Primera vez que encienda la Pi
 
