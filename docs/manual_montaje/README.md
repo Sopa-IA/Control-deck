@@ -1,5 +1,7 @@
 # Orbit Terminal — manual de montaje
 
+> **Sustituido.** El manual vigente es [Orbit Terminal - Manual de montaje y software](../manual_completo/Orbit_manual_completo.pdf) (`docs/manual_completo/`). Este archivo se queda como historial.
+
 Un subpaso, una acción, una figura. La pieza que se añade va en naranja y lo ya montado en gris. El número marca el agujero. La silueta del tornillo, a escala 1:1, está en el PDF.
 
 Lo que sale de cada kit está contado contra el bote, **sin repuesto**. No se ha apretado en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.
