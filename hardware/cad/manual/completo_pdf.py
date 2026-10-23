@@ -377,7 +377,8 @@ def render_todo() -> dict[str, Path]:
         ("cmd", "connect AA:BB:CC:DD:EE:FF"),
         ("cmd", "scan off"),
         ("cmd", "exit"),
-        ("dim", "Tras reiniciar, pulsa una tecla si no conecta."),
+        ("dim", "Page Timeout: pulsa una tecla, o apaga y enciende."),
+        ("dim", "Permission denied: remove, scan on, pair, trust, connect."),
     ])
     fotos["chk_orbit"] = terminal(IMG / "chk_orbit.png", [
         ("cmd", "systemctl status orbitd"),
@@ -831,7 +832,7 @@ def construir(fotos):
       "Entra con el mismo usuario.",
       "chk_ssh", "1. El SSH responde.")
     p("Empareja el teclado Bluetooth",
-      "Por SSH. El teclado en modo de emparejamiento, y no conectado a otro aparato. Si sigue unido a un PC o a un teléfono, la Pi no lo ve. Tras reiniciar, pulsa una tecla: algunos teclados no despiertan solos.",
+      "Por SSH. El teclado en modo de emparejamiento, y no conectado a otro aparato. Al arrancar, Orbit OS intenta conectar solo. Si no contesta (Page Timeout), pulsa una tecla o apágalo y enciéndelo. Si dice Permission denied, vuelve a emparejar: remove, scan on, pair, trust, connect.",
       "chk_bt", "power on, agent on, default-agent, scan on, pair, trust, connect, scan off, exit.")
     p("orbitd está activo",
       "systemctl status orbitd dice active. En la pantalla se ve Orbit OS.",

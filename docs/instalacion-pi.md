@@ -61,22 +61,23 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 
 ## Teclado Bluetooth
 
-37. Por SSH, con el teclado en modo de emparejamiento y sin estar conectado a otro aparato (un PC o un teléfono: si sigue unido, la Pi no lo ve). Entra en `bluetoothctl` y, en este orden: `power on`, `agent on`, `default-agent`, `scan on`. Cuando salga el teclado, anota su dirección y sigue: `pair AA:BB:CC:DD:EE:FF`, `trust AA:BB:CC:DD:EE:FF`, `connect AA:BB:CC:DD:EE:FF`, `scan off`, `exit`. En cada arranque, `orbit-bt-unblock.service` (después de `bluetooth.service` y de `systemd-rfkill.service`) ejecuta `rfkill unblock bluetooth` y `bluetoothctl power on`: sin el escritorio, hci0 volvía a salir bloqueado. En `/etc/bluetooth/main.conf` quedan `AutoEnable=true`, `ReconnectAttempts=7` y `ReconnectIntervals=1, 2, 4, 8, 16, 32, 64`, para reintentar un aparato con trust. Se puede repetir el instalador. Si no hay Bluetooth, no cambia nada y el script sigue. Si `power on` responde `org.bluez.Error.Failed`, el bloqueo sigue: `sudo rfkill unblock bluetooth` y otra vez `power on`. Tras reiniciar, algunos teclados no conectan hasta que se pulsa una tecla.
+37. Por SSH, con el teclado en modo de emparejamiento y sin estar conectado a otro aparato (un PC o un teléfono: si sigue unido, la Pi no lo ve). Entra en `bluetoothctl` y, en este orden: `power on`, `agent on`, `default-agent`, `scan on`. Cuando salga el teclado, anota su dirección y sigue: `pair AA:BB:CC:DD:EE:FF`, `trust AA:BB:CC:DD:EE:FF`, `connect AA:BB:CC:DD:EE:FF`, `scan off`, `exit`. En cada arranque, `orbit-bt-unblock.service` (después de `bluetooth.service` y de `systemd-rfkill.service`) ejecuta `rfkill unblock bluetooth` y `bluetoothctl power on`: sin el escritorio, hci0 volvía a salir bloqueado. En `/etc/bluetooth/main.conf` quedan `AutoEnable=true`, `ReconnectAttempts=7` y `ReconnectIntervals=1, 2, 4, 8, 16, 32, 64`. En `/etc/bluetooth/input.conf` queda `ClassicBondedOnly=false`, para teclados baratos. Se puede repetir el instalador. Si no hay Bluetooth, no cambia nada y el script sigue. Si `power on` responde `org.bluez.Error.Failed`, el bloqueo sigue: `sudo rfkill unblock bluetooth` y otra vez `power on`.
+38. `orbit-bt-autoconnect.service` arranca después de ese desbloqueo. Durante unos 3 minutos intenta `bluetoothctl connect` a menudo; luego cada 30 s mientras no haya un teclado conectado, y más tarde se espacia. Recorre `bluetoothctl devices Trusted` y, si BlueZ no acepta ese filtro, `devices Paired`. Los intentos quedan en `journalctl -u orbit-bt-autoconnect`. Si el journal dice Page Timeout, el teclado no contesta: pulsa una tecla, o apágalo y enciéndelo. Si dice Permission denied, hay que volver a emparejarlo: `remove AA:BB:CC:DD:EE:FF`, `scan on`, `pair`, `trust`, `connect`.
 
 ## Apagar y reiniciar desde Orbit OS
 
-38. En Sistemas, o en el menú de apagado, Apagar Pi y Reiniciar Pi piden confirmación en pantalla.
-39. Al confirmar, la Pi se apaga o se reinicia en el acto. No hay 60 segundos para cancelar. Eso de los 60 segundos es solo del HP.
-40. El script deja en `/etc/sudoers.d/orbit-power` dos órdenes y nada más: `systemctl poweroff` y `systemctl reboot`, sin contraseña, para el usuario de orbitd.
-41. En el simulador del PC esas acciones no apagan la máquina.
-42. Si asignas Apagar la Pi o Reiniciar la Pi a un botón del Nano, un toque corto no hace nada. Hay que mantenerlo pulsado: entonces sale el mismo diálogo. Sin la pantalla de Orbit OS abierta, no se apaga.
+39. En Sistemas, o en el menú de apagado, Apagar Pi y Reiniciar Pi piden confirmación en pantalla.
+40. Al confirmar, la Pi se apaga o se reinicia en el acto. No hay 60 segundos para cancelar. Eso de los 60 segundos es solo del HP.
+41. El script deja en `/etc/sudoers.d/orbit-power` dos órdenes y nada más: `systemctl poweroff` y `systemctl reboot`, sin contraseña, para el usuario de orbitd.
+42. En el simulador del PC esas acciones no apagan la máquina.
+43. Si asignas Apagar la Pi o Reiniciar la Pi a un botón del Nano, un toque corto no hace nada. Hay que mantenerlo pulsado: entonces sale el mismo diálogo. Sin la pantalla de Orbit OS abierta, no se apaga.
 
 ## Qué no hace esta instalación
 
-43. No empareja Sunshine: el PIN lo escribe Miguel. Tampoco empareja el teclado: solo quita el bloqueo del Bluetooth. El emparejamiento es el paso 37.
-44. En la Pi de Miguel, con la sesión del escritorio, Orbit OS se veía tras unos segundos de barra y fondo. La burbuja de traducir ya no sale. Esta pasada cambia el autologin a la sesión `orbit`. Aún no se ha vuelto a arrancar así, ni Moonlight contra el HP. El script también se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
-45. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
-46. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí. Con los Nano enchufados, `sudo bash scripts/detectar-nanos.sh` lista `/dev/serial/by-path` y escribe `/var/lib/orbit/arduino-puertos.json`. Si la carpeta no existe, enchufa la placa y vuelve a lanzarlo.
+44. No empareja Sunshine: el PIN lo escribe Miguel. Tampoco empareja el teclado: el emparejamiento es el paso 37. Al arrancar sí intenta conectar los que ya tienen trust (paso 38).
+45. En la Pi de Miguel, con la sesión del escritorio, Orbit OS se veía tras unos segundos de barra y fondo. La burbuja de traducir ya no sale. Esta pasada cambia el autologin a la sesión `orbit`. Aún no se ha vuelto a arrancar así, ni Moonlight contra el HP. El script también se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
+46. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
+47. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí. Con los Nano enchufados, `sudo bash scripts/detectar-nanos.sh` lista `/dev/serial/by-path` y escribe `/var/lib/orbit/arduino-puertos.json`. Si la carpeta no existe, enchufa la placa y vuelve a lanzarlo.
 
 ## Primera vez que encienda la Pi
 
@@ -90,4 +91,4 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 8. Moonlight aún hay que emparejarlo una vez.
 9. Ctrl+Alt+T sale del kiosco y abre una terminal. `rm /var/lib/orbit/kiosk-pausa` vuelve. `sudo orbit-escritorio` y un reinicio devuelven el escritorio.
 10. En el PC, el simulador no apaga ese PC.
-11. Tras reiniciar, `rfkill list` no muestra Soft blocked en el Bluetooth. El teclado con trust conecta solo; si no, pulsa una tecla.
+11. Tras reiniciar, `rfkill list` no muestra Soft blocked. `journalctl -u orbit-bt-autoconnect` muestra los intentos. Si dice Page Timeout, pulsa una tecla o apaga y enciende el teclado. Si dice Permission denied, vuelve a emparejarlo.

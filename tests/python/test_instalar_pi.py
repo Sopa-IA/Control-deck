@@ -371,3 +371,150 @@ def test_bluetooth_rfkill_falla_y_el_instalador_sigue(tmp_path: Path):
     assert "enable bluetooth.service" not in ordenes
     assert "enable orbit-bt-unblock.service" in ordenes
     assert "After=bluetooth.service systemd-rfkill.service" in unit.read_text(encoding="utf-8")
+
+
+def _btctl(path: Path, calls: Path, mode: Path) -> None:
+    path.write_text(
+        f"""#!/bin/bash
+printf '%s\\n' "$*" >> {calls}
+cmd="$1"
+arg="${{2:-}}"
+if [[ "$cmd" == devices && "$arg" == Trusted ]]; then
+  if [[ -f {mode} && "$(cat {mode})" == paired ]]; then
+    echo "Too many arguments" >&2
+    exit 1
+  fi
+  echo "Device 13:07:10:02:00:22 Teclado"
+  exit 0
+fi
+if [[ "$cmd" == devices && "$arg" == Paired ]]; then
+  echo "Device 13:07:10:02:00:22 Teclado"
+  exit 0
+fi
+if [[ "$cmd" == info ]]; then
+  if [[ -f {mode} && "$(cat {mode})" == connected ]]; then
+    printf '%s\\n' "Connected: yes" "Icon: input-keyboard" "UUID: 00001124-0000-1000-8000-00805f9b34fb"
+  else
+    printf '%s\\n' "Connected: no" "Icon: input-keyboard" "UUID: 00001124-0000-1000-8000-00805f9b34fb"
+  fi
+  exit 0
+fi
+if [[ "$cmd" == connect ]]; then
+  echo "Failed to connect: org.bluez.Error.Failed br-connection-create-socket"
+  exit 1
+fi
+echo "cmd inesperada: $*" >&2
+exit 3
+""",
+        encoding="utf-8",
+    )
+    path.chmod(0o755)
+
+
+def test_autoconnect_intenta_trusted_y_se_calla_si_ya_esta(tmp_path: Path):
+    calls = tmp_path / "calls"
+    mode = tmp_path / "mode"
+    btctl = tmp_path / "bluetoothctl"
+    _btctl(btctl, calls, mode)
+    env = {
+        "ORBIT_BTCTL": str(btctl),
+        "ORBIT_BT_ROUNDS": "1",
+        "ORBIT_BT_NO_SLEEP": "1",
+    }
+    proc = _bash("source scripts/orbit-bt-autoconnect.sh\nbucle_autoconnect\n", env)
+    assert proc.returncode == 0, proc.stderr
+    texto = calls.read_text(encoding="utf-8")
+    assert "devices Trusted" in texto
+    assert "devices Paired" not in texto
+    assert "connect 13:07:10:02:00:22" in texto
+    assert "connect 13:07:10:02:00:22" in proc.stdout
+    assert "br-connection-create-socket" in proc.stdout
+    modo = _bash(
+        "source scripts/orbit-bt-autoconnect.sh\n"
+        "printf '%s\\n' \"$(espera_segundos 0 0)\" \"$(espera_segundos 200 0)\" "
+        "\"$(espera_segundos 2000 0)\" \"$(espera_segundos 10 1)\"\n",
+        {},
+    )
+    assert modo.returncode == 0, modo.stderr
+    assert modo.stdout.split() == ["10", "30", "120", "60"]
+
+    calls.write_text("", encoding="utf-8")
+    mode.write_text("connected", encoding="utf-8")
+    proc = _bash("source scripts/orbit-bt-autoconnect.sh\nbucle_autoconnect\n", env)
+    assert proc.returncode == 0, proc.stderr
+    texto = calls.read_text(encoding="utf-8")
+    assert "devices Trusted" in texto
+    assert "connect " not in texto
+    assert "connect " not in proc.stdout
+
+
+def test_autoconnect_si_trusted_no_existe_usa_paired(tmp_path: Path):
+    calls = tmp_path / "calls"
+    mode = tmp_path / "mode"
+    mode.write_text("paired", encoding="utf-8")
+    btctl = tmp_path / "bluetoothctl"
+    _btctl(btctl, calls, mode)
+    proc = _bash(
+        "source scripts/orbit-bt-autoconnect.sh\nbucle_autoconnect\n",
+        {"ORBIT_BTCTL": str(btctl), "ORBIT_BT_ROUNDS": "1", "ORBIT_BT_NO_SLEEP": "1"},
+    )
+    assert proc.returncode == 0, proc.stderr
+    texto = calls.read_text(encoding="utf-8")
+    assert "devices Trusted" in texto
+    assert "devices Paired" in texto
+    assert "connect 13:07:10:02:00:22" in texto
+
+
+def test_autoconnect_servicio_e_input_conf(tmp_path: Path):
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    calls = tmp_path / "calls"
+    rfkill = bin_dir / "rfkill"
+    rfkill.write_text(f"#!/bin/bash\nprintf '%s\\n' \"$*\" >> {calls}\nexit 0\n", encoding="utf-8")
+    rfkill.chmod(0o755)
+    systemctl = bin_dir / "systemctl"
+    systemctl.write_text(
+        f"#!/bin/bash\nprintf '%s\\n' \"$*\" >> {calls}\nif [[ \"$1\" == show ]]; then printf '%s\\n' loaded; fi\nexit 0\n",
+        encoding="utf-8",
+    )
+    systemctl.chmod(0o755)
+    conf_dir = tmp_path / "bluetooth"
+    conf_dir.mkdir()
+    (conf_dir / "main.conf").write_text("[Policy]\nAutoEnable=true\n", encoding="utf-8")
+    inp = conf_dir / "input.conf"
+    inp.write_text("[General]\n#ClassicBondedOnly=true\nIdleTimeout=0\n", encoding="utf-8")
+    unit_dir = tmp_path / "systemd"
+    env = {
+        "ORBIT_BT_CONF": str(conf_dir / "main.conf"),
+        "ORBIT_BT_INPUT": str(inp),
+        "ORBIT_BT_UNIT": str(unit_dir / "orbit-bt-unblock.service"),
+        "ORBIT_BT_BIN": str(bin_dir / "orbit-bt-unblock"),
+        "ORBIT_RFKILL": str(rfkill),
+        "ORBIT_SYSTEMCTL": str(systemctl),
+        "ORBIT_BLUETOOTHCTL": "",
+    }
+    proc = _bash(
+        "source scripts/orbit-bluetooth.sh\ndesbloquear_bluetooth\ndesbloquear_bluetooth\n",
+        env,
+    )
+    assert proc.returncode == 0, proc.stderr
+    texto = inp.read_text(encoding="utf-8")
+    assert texto.count("ClassicBondedOnly=false") == 1
+    assert "#ClassicBondedOnly" not in texto
+    assert "IdleTimeout=0" in texto
+    assert "UserspaceHID" not in texto
+    servicio = (unit_dir / "orbit-bt-autoconnect.service").read_text(encoding="utf-8")
+    assert "After=bluetooth.service orbit-bt-unblock.service" in servicio
+    assert "Type=simple" in servicio
+    assert f"ExecStart={bin_dir / 'orbit-bt-autoconnect'}" in servicio
+    script = (bin_dir / "orbit-bt-autoconnect").read_text(encoding="utf-8")
+    assert "devices Trusted" in script
+    assert "devices Paired" in script
+    ordenes = calls.read_text(encoding="utf-8")
+    assert ordenes.count("enable orbit-bt-autoconnect.service") == 2
+    assert ordenes.count("start orbit-bt-autoconnect.service") == 2
+    assert "orbit-bt-autoconnect" in INSTALADOR.read_text(encoding="utf-8")
+    inst = (ROOT / "scripts" / "orbit-bluetooth.sh").read_text(encoding="utf-8")
+    assert "orbit-bt-autoconnect.service" in inst
+    assert "ClassicBondedOnly" in inst
+    assert "UserspaceHID" in inst
