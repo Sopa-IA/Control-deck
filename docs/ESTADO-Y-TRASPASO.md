@@ -1,6 +1,6 @@
 # Estado y traspaso · Orbit Terminal
 
-Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se reimprime). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se corta) y con las dos carcasas futuras (no se imprimen ahora). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
 **Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
 
@@ -25,14 +25,21 @@ Dentro de la cuña conviven:
 
 Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es solo Moonlight: la MSI va a la Pi y el HP se ve por el Ethernet interno. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
 
-El 2026-10-23 la carcasa ya está impresa (los cuatro trozos) y **no se reimprime**. Cuatro adaptadores, todos de día, tapan los cortes a cuchillo:
+El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
 
-- I/O frontal de `carcasa_x0_y1`: la ventana de 62 × 18 mm se alarga **32 mm hacia el frente** y queda 94 × 18 (y = 171,5 a 265,5, z = 74 a 92). No se toca el borde trasero (a 0,9 mm está el Ø12,2) ni el alto. `PROVISIONAL_marco_io_frontal` (100,4 × 32,0 × 7,5 mm, 7,67 cm³) se pega por dentro. Dos insertos M3 4×5 y dos M3×6 avellanados van en el marco, no en la carcasa.
-- Placa del HP: la ventana de 159,75 × 45,45 **no se corta**. `io_huecos` sale de la foto del 2026-10-23, escalada a ese ancho (la regla está delante y no se usa). Mirando la trasera: VGA a la izquierda y jack DC a la derecha, ±2 mm. Antes de pegar, `PRUEBA_placa_io_hp` tiene que caer sobre el VGA azul. Si no, la placa está al revés.
-- Trasera de `carcasa_x1_y1`: los agujeros impresos son el panel genérico (audio, USB, HDMI, RJ45, DC), no la Pi. La Pi mira USB y RJ45 hacia atrás, pero la cara del conector acaba en y = 255,5 y la pared interior está en y = 297,5: faltan 42 mm. El corte de cables es 150 × 40 mm (x = 238 a 388, z = 14 a 54). `PROVISIONAL_placa_puertos_pi` (158,2 × 52,0 × 2,8 mm, 17,47 cm³) se pega por dentro. Por ella pasan los cables.
-- El campo de Ø1,6, la OLED y PRG se sustituyen por un rectángulo de 74 × 60 mm (x = 250 a 324, z = 76 a 136). `PROVISIONAL_panel_pines` (86,0 × 72,0 × 9,4 mm, 18,22 cm³) se pega por fuera y lleva dos copas. **FALTA: comprar** una regleta hembra 2×20 y una 2×15, paso 2,54 mm. El CSV de electrónica no se ha podido leer.
+Adaptadores para ahora (piezas de día, sin tornillo nuevo):
 
-En `consumo.md` (repo del inventario, no este): el M3×6 avellanado pasa de 4 a 6, y el inserto M3 4×5 pasa de 6 a 8. No hay STL nuevo de carcasa.
+- I/O frontal de `carcasa_x0_y1`: la ventana sigue en 62 × 18 mm. `PROVISIONAL_marco_io_frontal` (67,4 × 26,0 × 3,8 mm, 1,58 cm³) entra a presión desde fuera. Quedan a mano los dos USB y, si asoma, el lector SD. Se pierden los dos jacks de audio del frontal (el audio sigue en la placa trasera). Si el lector no cabe en la boca de 59,8 × 15,8 mm, se pierde también.
+- Placa del HP: la ventana de 159,75 × 45,45 no se toca. `io_huecos` sale de la foto del 2026-10-23, escalada a ese ancho (la regla está delante y no se usa). Mirando la trasera: VGA a la izquierda y jack DC a la derecha, ±2 mm. Antes de montar, `PRUEBA_placa_io_hp` tiene que caer sobre el VGA azul. No se pierde ningún puerto de esa foto.
+- Trasera de `carcasa_x1_y1`: los agujeros impresos son el panel genérico, no la Pi. `PROVISIONAL_placa_puertos_pi` (85,0 × 39,0 × 3,8 mm, 6,94 cm³) los tapa por dentro, con un tetón en cada uno. Los cuatro USB y el RJ45 de la Pi se alcanzan por la tapa del techo: la cara del conector acaba en y = 255,5 y la pared interior está en y = 297,5. Por esa trasera, esos puertos se pierden. Un alargador USB o RJ45 sería FALTA y esta tapa no lo usa.
+- Panel de pines: los Ø1,6 se quedan. `PROVISIONAL_panel_pines` (80,0 × 78,0 × 4,6 mm, 9,19 cm³) va por fuera y se engancha en las ventanas de OLED y de PRG. Quedan a mano los 40 pines de la Pi y los 24 del Nano (D2–D13 y A0–A7, GND, RST, 5 V, 3,3 V). Se pierden D0, D1 y cualquier pin de una regleta 2×15 sin agujero. **FALTA: comprar** regleta macho 2×20 y regleta macho 2×12, pines de al menos 11 mm, y cables Dupont hembra-hembra. El CSV de electrónica no se ha podido leer.
+
+Carcasa futura, no imprimir ahora (si algún día se imprime, es pieza de noche):
+
+- `FUTURO_carcasa_x0_y1_sin_adaptadores`: ventana frontal de 94 × 18 mm (y = 171,5 a 265,5, z = 74 a 92). Caben jacks, USB y lector. No hace falta marco.
+- `FUTURO_carcasa_x1_y1_sin_adaptadores`: dos pasos de cable alineados con la Pi, y ranuras de regleta Pi 2×20 y Nano 2×15 en lugar de los Ø1,6. No hace falta tapa ni careta.
+
+En `consumo.md` (repo del inventario, no este): el M3×6 avellanado sigue en 4 de 40 y el inserto M3 4×5 sigue en 6 de 30. Los adaptadores no gastan tornillo.
 
 Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
 

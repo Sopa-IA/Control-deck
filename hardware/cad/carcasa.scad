@@ -203,6 +203,13 @@ module cortes_panel_practicas() {
     // el recorte del conector de panel que se compre es [PENDIENTE].
     translate([panel_x0 + panel_w - 18, D - pared - 1, panel_z0 + panel_h - 20])
         cube([14, pared + 2, 8]);
+    if (carcasa_futura) {
+        // Ranuras del tamaño del cuerpo de la regleta, para que el plástico
+        // pare por dentro y los enchufes queden en la cara. Sin careta aparte.
+        // Pi 2×20, en el sitio de los Ø1,6. Nano 2×15, centrado en esa franja.
+        translate([254, D - pared - 1, 81.2]) cube([51, pared + 2, 6.2]);
+        translate([251, D - pared - 1, 102.2]) cube([40, pared + 2, 6.2]);
+    } else {
     // Visto desde fuera, +X queda a la izquierda. La columna 0 es ese extremo
     // izquierdo: se numera restando, no sumando.
     // Nano: fila de arriba (mayor z) D2..D13 de izquierda a derecha; fila de
@@ -222,6 +229,7 @@ module cortes_panel_practicas() {
     rotulo_trasero(panel_x0 + 18, panel_z0 + 44, "ARD 5V", 2.2);
     rotulo_trasero(panel_x0 + 28, panel_z0 + 24, "PI 3V3", 2.2);
     rotulo_trasero(panel_x0 + 36, panel_z0 + 5, "NO UNIR", 2.6);
+    }
 }
 
 // --- Conectores traseros ---------------------------------------------
@@ -289,28 +297,34 @@ module tapa_pi() {
     }
 }
 module cortes_traseros() {
+    echo(str("CARCASA_FUTURA;", carcasa_futura));
     translate([ventana_hp_x, D - pared - 1, ventana_hp_z]) rotate([-90, 0, 0])
         translate([0, -ventana_hp[1], 0]) caja_r([ventana_hp[0], ventana_hp[1], pared + 2], 2);
     // HP v2: lateral izquierdo: ventana del I/O frontal del HP, pulsador de encendido y LED [PENDIENTE medidas]
     if (hp_desnuda) {
-        // Ventana ya impresa 62 × 18. El cuchillo la deja en 94 × 18, solo hacia el frente.
-        translate([-1, io_frontal_corte_y0, io_frontal_corte_z0])
-            cube([pared + 2, io_frontal_corte_y1 - io_frontal_corte_y0,
-                  io_frontal_corte_z1 - io_frontal_corte_z0]);
+        if (carcasa_futura)
+            // 94 × 18: caben audio, USB y lector. Solo en el STL futuro.
+            translate([-1, io_frontal_corte_y0, io_frontal_corte_z0])
+                cube([pared + 2, io_frontal_corte_y1 - io_frontal_corte_y0,
+                      io_frontal_corte_z1 - io_frontal_corte_z0]);
+        else
+            // Ventana ya impresa: 62 × 18. No se toca.
+            translate([-1, io_impresa_y0, io_impresa_z0])
+                cube([pared + 2, io_impresa_w, io_impresa_h]);
         translate([-1, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d + 0.2, h = pared + 2);
         translate([-1, boton_hp_y, boton_hp_z + 14]) rotate([0, 90, 0]) cylinder(d = 3.1, h = pared + 2);   // LED 3 mm
     }
     translate([pasacables_x, D - pared - 1, pasacables_z]) rotate([-90, 0, 0])
         translate([0, -pasacables[1], 0]) caja_r([pasacables[0], pasacables[1], pared + 2], 4);
-    for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])
-        if (c[5] == "c") cylinder(d = c[3], h = pared + 2);
-        else translate([-c[3]/2, -c[4]/2, 0]) caja_r([c[3], c[4], pared + 2], 1.2);
-    // Rectángulo limpio sobre esos agujeros y sobre la columna real de la Pi.
-    // La carcasa no se reexporta: esto es el corte a cuchillo, no un STL nuevo.
-    translate([pi_ventana_x0, D - pared - 1, pi_ventana_z0])
-        cube([pi_ventana_x1 - pi_ventana_x0, pared + 2, pi_ventana_z1 - pi_ventana_z0]);
-    translate([panel_x0, D - pared - 1, panel_ventana_z0])
-        cube([panel_ventana_w, pared + 2, panel_ventana_h]);
+    if (carcasa_futura) {
+        // Paso de cable delante de los USB y del RJ45 de la Pi. Sin el panel genérico.
+        for (h = [pi_futuro_rj, pi_futuro_usb])
+            translate([h[0], D - pared - 1, h[1]]) cube([h[2], pared + 2, h[3]]);
+    } else {
+        for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])
+            if (c[5] == "c") cylinder(d = c[3], h = pared + 2);
+            else translate([-c[3]/2, -c[4]/2, 0]) caja_r([c[3], c[4], pared + 2], 1.2);
+    }
 }
 
 // Agujeros para pasadores Ø3 en los planos de corte (dentro de las costillas)

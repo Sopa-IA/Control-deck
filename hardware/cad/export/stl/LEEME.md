@@ -57,14 +57,16 @@ El mismo día, después, la bandeja pasa a huecos fijos. Se regeneró solo `PROV
 
 `comprobar_stl.py`: las 31 mallas siguen cerradas y dentro de la cama (el lado largo de la bandeja mide 237,49; con margen de 10 mm el límite es 246). La bandeja es un solo sólido (Volumes: 2, Simple: yes). `comprobar_interferencias.py`: salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas.
 
-El 2026-10-23 no se ha vuelto a exportar ninguna carcasa ni la base. Los STL de `carcasa_x0_y1` y `carcasa_x1_y1` siguen siendo los ya impresos. El modelo (`carcasa.scad`) sí describe los tres rectángulos a cuchillo, para que el conjunto cuadre con la pieza ya cortada: no hay que lanzar `exportar.sh` (borra los STL y regeneraría la carcasa).
+El 2026-10-23 no se ha vuelto a exportar la carcasa ya impresa ni la base: `PROVISIONAL_carcasa_x0_y1` y `PROVISIONAL_carcasa_x1_y1` siguen siendo las del 20 y el 22 de octubre. No hay que lanzar `exportar.sh` (borra los STL y regeneraría esas carcasas). Con `carcasa_futura = false` el modelo coincide con lo impreso. Los dos STL `FUTURO_` salen solo con `-D 'carcasa_futura=true'` y **no se imprimen ahora**.
 
 | STL | Caja (mm) | Volumen | Qué es |
 |---|---|---|---|
-| `PROVISIONAL_placa_io_hp` | 171,75 × 55,95 × 2,80 | 15,71 cm³ | Misma placa. Huecos de la foto del 2026-10-23: VGA a la izquierda, DC a la derecha. Antes 16,81 cm³. Pieza de día |
-| `PRUEBA_placa_io_hp` | 159,75 × 45,45 × 1,40 | 3,52 cm³ | Misma prueba, con esos huecos. Se apoya por fuera. Antes 3,36 cm³. Pieza de día |
-| `PROVISIONAL_marco_io_frontal` | 100,4 × 32,0 × 7,5 | 7,67 cm³ | Marco del corte frontal de 94 × 18. Cara plana abajo. Pieza de día |
-| `PROVISIONAL_placa_puertos_pi` | 158,2 × 52,0 × 2,8 | 17,47 cm³ | Placa del corte de cables de la Pi, 150 × 40. Pestaña abajo. Pieza de día |
-| `PROVISIONAL_panel_pines` | 86,0 × 72,0 × 9,4 | 18,22 cm³ | Panel del corte de 74 × 60. Enchufes abajo. Pieza de día |
+| `PROVISIONAL_placa_io_hp` | 171,75 × 55,95 × 2,80 | 15,71 cm³ | Placa de la ventana trasera. Huecos de la foto del 2026-10-23: VGA a la izquierda, DC a la derecha. Pieza de día. No se pierde ningún puerto de esa foto |
+| `PRUEBA_placa_io_hp` | 159,75 × 45,45 × 1,40 | 3,52 cm³ | Misma ventana, para apoyar por fuera antes de montar. Pieza de día |
+| `PROVISIONAL_marco_io_frontal` | 67,40 × 26,00 × 3,80 | 1,58 cm³ | Marco a presión en la ventana de 62 × 18. Cara de fuera abajo. Boca 59,8 × 15,8. Pieza de día. Se pierden los dos jacks frontales |
+| `PROVISIONAL_placa_puertos_pi` | 85,00 × 39,00 × 3,80 | 6,94 cm³ | Tapa maciza de los agujeros viejos, por dentro. Reborde abajo. Pieza de día. La Pi se alcanza por la tapa del techo |
+| `PROVISIONAL_panel_pines` | 80,00 × 78,00 × 4,60 | 9,19 cm³ | Careta por fuera. Rótulos abajo, ganchos arriba. Pieza de día. Pi 2×20 y Nano 2×12 |
+| `FUTURO_carcasa_x0_y1_sin_adaptadores` | 228,1 × 150,2 × 150,9 | 212,0 cm³ | **No imprimir ahora.** Hueco frontal 94 × 18, sin marco. La impresa sigue en 213,7 cm³. Pieza de noche si se imprime |
+| `FUTURO_carcasa_x1_y1_sin_adaptadores` | 228,1 × 150,2 × 150,9 | 232,8 cm³ | **No imprimir ahora.** Pasos de cable de la Pi y ranuras de regleta. La impresa sigue en 233,8 cm³. Pieza de noche si se imprime |
 
-`comprobar_stl.py` el 2026-10-23: 34 mallas, cerradas, dentro de la cama. Las cuatro carcasas y la base no han cambiado de archivo.
+`comprobar_stl.py` el 2026-10-23: 36 mallas, cerradas, dentro de la cama. Las cuatro `PROVISIONAL_carcasa_*` y la base no han cambiado de archivo.

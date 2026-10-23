@@ -730,139 +730,156 @@ module prueba_placa_io_hp() {
     }
 }
 
+// Rótulo hundido en la cara que apoya en la cama (z = 0). Esa cara queda
+// fuera: el espejo en X lo deja legible al mirarla.
+module _rotulo_cama(x, y, s, tam = 2.2) {
+    translate([x, y, -0.02]) mirror([1, 0, 0])
+        linear_extrude(0.42)
+            text(s, size = tam, font = "Noto Sans", halign = "center", valign = "center");
+}
+
 // ---------------------------------------------------------------------
-// MARCO DEL I/O FRONTAL. La carcasa ya está impresa: esto tapa el corte
-// de 94 × 18 y sujeta la pestaña. Origen: esquina del reborde. z = 0 es
-// la cara que se pega por dentro. +z entra en la habitación.
+// MARCO DEL I/O FRONTAL. Entra a presión en la ventana YA impresa de
+// 62 × 18. No se corta ni se taladra la carcasa. z = 0 es la cara de
+// fuera (en la cama). +z es el faldón, hacia dentro del hueco.
+// El reborde de atrás mide 0,4 mm: el Ø12,2 empieza 0,9 mm después.
 // ---------------------------------------------------------------------
 module marco_io_frontal() {
-    cw = io_frontal_corte_y1 - io_frontal_corte_y0;
-    ch = io_frontal_corte_z1 - io_frontal_corte_z0;
-    x0 = marco_labio_frente;
-    y0 = marco_labio_inf;
-    W = marco_labio_frente + cw + marco_labio_atras;
-    H = marco_labio_inf + ch + marco_labio_sup;
-    apx = x0 + (cw - marco_ap_w) / 2;
-    apy = y0 + (ch - marco_ap_h) / 2;
-    cx = x0 + cw / 2;
-    cy = y0 + ch + marco_labio_sup / 2;
-    techo = marco_t + marco_canal + 4.4;   // inserto de 4 mm justo encima del canal
-    echo(str("MARCO_IO;corte;", cw, ";", ch,
-             ";pieza;", W, ";", H, ";apertura;", marco_ap_w, ";", marco_ap_h,
-             ";tornillos;", cx - marco_tornillos / 2, ";", cx + marco_tornillos / 2,
-             ";techo_z;", techo));
+    w = io_impresa_w;
+    h = io_impresa_h;
+    xf = marco_labio_frente;
+    xr = marco_labio_atras;
+    yi = marco_labio_inf;
+    ys = marco_labio_sup;
+    W = xf + w + xr;
+    H = yi + h + ys;
+    boca = 0.8;
+    echo(str("MARCO_IO;ventana;", w, ";", h,
+             ";pieza;", W, ";", H,
+             ";boca;", w - 2 * marco_holg - 2 * boca, ";", h - 2 * marco_holg - 2 * boca,
+             ";faldon;", marco_tet));
     difference() {
         union() {
             cube([W, H, marco_t]);
-            translate([x0 + marco_holg, y0 + marco_holg, marco_t - 0.05])
-                cube([cw - 2 * marco_holg, ch - 2 * marco_holg, marco_registro + 0.05]);
-            translate([2, y0 + ch - 0.2, marco_t - 0.05])
-                cube([W - 4, marco_labio_sup + 0.2, techo - marco_t + 0.05]);
+            translate([xf + marco_holg, yi + marco_holg, marco_t - 0.05])
+                cube([w - 2 * marco_holg, h - 2 * marco_holg, marco_tet + 0.05]);
+            // Nervios de 0,4 mm: asoman 0,1 mm del hueco. Si aprietan, se lijan ellos.
+            for (p = [[xf + 14, yi + marco_holg - 0.4, 10, 0.55],
+                      [xf + w - 24, yi + marco_holg - 0.4, 10, 0.55],
+                      [xf + 14, yi + h - marco_holg - 0.15, 10, 0.55],
+                      [xf + w - 24, yi + h - marco_holg - 0.15, 10, 0.55]])
+                translate([p[0], p[1], marco_t]) cube([p[2], p[3], marco_tet * 0.65]);
         }
-        translate([apx, apy, -1]) cube([marco_ap_w, marco_ap_h, techo + 3]);
-        // Canal abierto por el frente (x = 0). La pestaña entra desde ahí.
-        translate([-0.4, y0 + ch + 1.0, marco_t])
-            cube([W - 1.6, marco_labio_sup - 2.0, marco_canal]);
-        for (x = [cx - marco_tornillos / 2, cx + marco_tornillos / 2]) {
-            translate([x, cy, -0.3]) cylinder(d = tornillo_d, h = marco_t + marco_canal + 0.5, $fn = 24);
-            translate([x, cy, -0.01]) cylinder(d1 = 6.6, d2 = tornillo_d, h = 1.65, $fn = 24);
-            translate([x, cy, marco_t + marco_canal - 0.05])
-                cylinder(d = inserto_d, h = techo - (marco_t + marco_canal) + 0.4, $fn = 24);
-        }
+        translate([xf + marco_holg + boca, yi + marco_holg + boca, -0.4])
+            cube([w - 2 * marco_holg - 2 * boca, h - 2 * marco_holg - 2 * boca, marco_t + marco_tet + 2]);
+        _rotulo_cama(xf + 18, yi / 2, "USB", 2.2);
+        _rotulo_cama(xf + w - 16, yi / 2, "SD", 2.2);
     }
 }
 
 // ---------------------------------------------------------------------
-// PLACA DE CABLES DE LA PI. Origen: esquina inferior izquierda de la
-// ventana, mirando la trasera. z = 0 es la cara interior.
+// TAPA DE LOS AGUJEROS VIEJOS de x1_y1. No son la Pi. Placa maciza,
+// por dentro, con un tetón en cada hueco que ya existe. z = 0 es la
+// cara interior (en la cama). +z entra en la pared. No hay ranuras.
 // ---------------------------------------------------------------------
 module placa_puertos_pi() {
-    Ww = pi_ventana_x1 - pi_ventana_x0;
-    Wh = pi_ventana_z1 - pi_ventana_z0;
-    t = pi_placa_t;
-    echo(str("PLACA_PI;ventana;", Ww, ";", Wh, ";labio;", pi_placa_labio,
-             ";", pi_placa_labio_costilla, ";usb;", pi_hueco_usb[0], ";", pi_hueco_usb[2],
-             ";rj;", pi_hueco_rj[0], ";", pi_hueco_rj[2]));
-    difference() {
-        union() {
-            translate([-pi_placa_labio, -pi_placa_labio_inf, 0])
-                caja_r([Ww + pi_placa_labio + pi_placa_labio_costilla,
-                        Wh + pi_placa_labio + pi_placa_labio_inf, t], 3);
-            translate([pi_placa_holg, pi_placa_holg, t - 0.25])
-                caja_r([Ww - 2 * pi_placa_holg, Wh - 2 * pi_placa_holg, t + 0.25],
-                       2 - pi_placa_holg);
-        }
-        // La orejeta de x = 325 llega a z = 11. Ahí el reborde solo baja 2 mm.
-        translate([pi_muesca_x0, -pi_placa_labio_inf - 0.4, -0.4])
-            cube([pi_muesca_x1 - pi_muesca_x0,
-                  pi_placa_labio_inf - pi_muesca_labio + 0.4, t + 1]);
-        for (h = [pi_hueco_usb, pi_hueco_rj])
-            translate([h[0], h[1], -0.4])
-                caja_r([h[2], h[3], 2 * t + 2], min(1.2, h[2] / 2 - 0.4, h[3] / 2 - 0.4));
+    holg = tapa_pi_huecos_holg;
+    t = tapa_pi_huecos_t;
+    tet = tapa_pi_huecos_tet;
+    L = tapa_pi_huecos_labio;
+    x0 = min([for (c = conectores) c[1] - c[3] / 2]) - L;
+    x1 = max([for (c = conectores) c[1] + c[3] / 2]) + L;
+    z0 = min([for (c = conectores) c[2] - c[4] / 2]) - L;
+    z1 = max([for (c = conectores) c[2] + c[4] / 2]) + L;
+    echo(str("PLACA_PI;tapa;", x1 - x0, ";", z1 - z0,
+             ";mundo;", x0, ";", x1, ";", z0, ";", z1,
+             ";huecos;", len(conectores)));
+    union() {
+        caja_r([x1 - x0, z1 - z0, t], 3);
+        for (c = conectores)
+            if (c[5] == "c")
+                translate([c[1] - x0, c[2] - z0, t - 0.05])
+                    cylinder(d = c[3] - 2 * holg, h = tet + 0.05, $fn = 32);
+            else
+                translate([c[1] - c[3] / 2 + holg - x0,
+                           c[2] - c[4] / 2 + holg - z0, t - 0.05])
+                    caja_r([c[3] - 2 * holg, c[4] - 2 * holg, tet + 0.05],
+                           min(0.8, (min(c[3], c[4]) - 2 * holg) / 2 - 0.2));
     }
 }
 
-// Copa maciza. El vaciado (cuerpo de la regleta y ventana de los enchufes)
-// se resta en el módulo del panel, para que el tetón no la vuelva a llenar.
-module _copa_regleta(cx, cz, n) {
-    largo = n * 2.54;
-    ow = largo + regleta_holg + 2 * regleta_pared;
-    oh = regleta_ancho + regleta_holg + 2 * regleta_pared;
-    translate([cx - ow / 2, cz - oh / 2, 0])
-        cube([ow, oh, regleta_suelo + regleta_alto]);
-}
-
-module _vaciar_regleta(cx, cz, n) {
-    largo = n * 2.54;
-    iw = largo + regleta_holg;
-    ih = regleta_ancho + regleta_holg;
-    ow = iw + 2 * regleta_pared;
-    oh = ih + 2 * regleta_pared;
-    // Cuerpo, abierto hacia dentro (+z).
-    translate([cx - iw / 2, cz - ih / 2, regleta_suelo])
-        cube([iw, ih, regleta_alto + 1]);
-    // Los enchufes asoman por la cara de fuera. El plástico de la regleta no pasa.
-    rw = largo - 4;
-    translate([cx - rw / 2, cz - regleta_ranura / 2, -0.4])
-        cube([rw, regleta_ranura, regleta_suelo + 0.6]);
+// Lengüeta que atraviesa un hueco ya impreso y hace un diente a 45°.
+// nx0..nx1 es el cuerpo; wx0..wx1 es el diente, más ancho, al final.
+module _gancho_hueco(nx0, nx1, wx0, wx1, y0, y1) {
+    hull() {
+        translate([nx0, y0, careta_t - 0.05])
+            cube([nx1 - nx0, y1 - y0, pared - careta_gancho + 0.05]);
+        translate([wx0, y0, careta_t + pared - 0.12])
+            cube([wx1 - wx0, y1 - y0, 0.12]);
+    }
 }
 
 // ---------------------------------------------------------------------
-// PANEL DE PINES. Origen: esquina inferior izquierda de la ventana,
-// mirando la trasera. z = 0 es la cara de fuera (enchufes abajo al imprimir).
-// +z entra en la carcasa. OLED y PRG siguen en el sitio de antes.
+// CARETA DEL PANEL DE PINES. Por fuera, sobre el campo ya impreso.
+// z = 0 es la cara de fuera (en la cama). Los ganchos (+z) pasan por
+// las ventanas de OLED y de PRG, que ya existen. No se lima el grabado.
 // ---------------------------------------------------------------------
 module panel_pines() {
-    W = panel_ventana_w;
-    H = panel_ventana_h;
-    t = panel_placa_t;
-    L = panel_labio;
-    // x local = borde derecho del corte (x mundo alta) menos x mundo.
-    ox0 = oled_cx - oled_ventana[0] / 2;
-    oz0 = oled_cz - oled_ventana[1] / 2;
-    olx = panel_x0 + W - (ox0 + oled_ventana[0]);
-    olz = oz0 - panel_ventana_z0;
-    prg_xm = panel_x0 + panel_w - 18;
-    prg_zm = panel_z0 + panel_h - 20;
-    plx = panel_x0 + W - (prg_xm + 14);
-    plz = prg_zm - panel_ventana_z0;
-    echo(str("PANEL_PINES;ventana;", W, ";", H,
-             ";pi;", pi_regleta_cx, ";", pi_regleta_cz, ";n;", pi_regleta_n,
-             ";nano;", nano_regleta_cx, ";", nano_regleta_cz, ";n;", nano_regleta_n,
-             ";oled;", olx, ";", olz, ";prg;", plx, ";", plz));
+    L = careta_labio;
+    t = careta_t;
+    ox = panel_x0 - L;
+    oz = panel_z0 - L;
+    W = panel_w + 2 * L;
+    H = panel_h + 2 * L;
+    function lx(x) = x - ox;
+    function lz(z) = z - oz;
+    pi_xa = panel_x0 + 4 - 0.9;
+    pi_xb = panel_x0 + 4 + 19 * 2.54 + 0.9;
+    pi_z1 = panel_z0 + 14;
+    pi_z2 = pi_z1 + 2.54;
+    na_xa = panel_x0 + 6 - 0.9;
+    na_xb = panel_x0 + 6 + 11 * 2.54 + 0.9;
+    na_z1 = panel_z0 + 36;
+    na_z2 = na_z1 + 2.54;
+    // OLED y PRG, en mundo. La boca de la careta es 1,5 mm más pequeña.
+    oled_x0 = panel_x0 + 8;
+    oled_z0 = panel_z0 + panel_h - 22;
+    prg_x0 = panel_x0 + panel_w - 18;
+    prg_z0 = panel_z0 + panel_h - 20;
+    echo(str("PANEL_PINES;pieza;", W, ";", H,
+             ";pi;", pi_xa, ";", pi_xb, ";", pi_z1, ";", pi_z2,
+             ";nano;", na_xa, ";", na_xb, ";", na_z1, ";", na_z2));
     difference() {
         union() {
-            translate([-L, -L, 0]) caja_r([W + 2 * L, H + 2 * L, t], 2.5);
-            translate([panel_holg, panel_holg, t - 0.2])
-                caja_r([W - 2 * panel_holg, H - 2 * panel_holg, panel_tenon + 0.2], 1.5);
-            _copa_regleta(pi_regleta_cx, pi_regleta_cz, pi_regleta_n);
-            _copa_regleta(nano_regleta_cx, nano_regleta_cz, nano_regleta_n);
+            cube([W, H, t]);
+            // Ganchos en los cantos de la OLED (24 × 14). El diente pasa del borde del hueco.
+            _gancho_hueco(lx(oled_x0) + 0.25, lx(oled_x0) + 1.45,
+                          lx(oled_x0) - 0.95, lx(oled_x0) + 1.45,
+                          lz(oled_z0) + 4, lz(oled_z0) + 10);
+            _gancho_hueco(lx(oled_x0 + 24) - 1.45, lx(oled_x0 + 24) - 0.25,
+                          lx(oled_x0 + 24) - 1.45, lx(oled_x0 + 24) + 0.95,
+                          lz(oled_z0) + 4, lz(oled_z0) + 10);
+            // Ganchos en los cantos de PRG (14 × 8).
+            _gancho_hueco(lx(prg_x0) + 0.25, lx(prg_x0) + 1.15,
+                          lx(prg_x0) - 0.95, lx(prg_x0) + 1.15,
+                          lz(prg_z0) + 2.4, lz(prg_z0) + 5.6);
+            _gancho_hueco(lx(prg_x0 + 14) - 1.15, lx(prg_x0 + 14) - 0.25,
+                          lx(prg_x0 + 14) - 1.15, lx(prg_x0 + 14) + 0.95,
+                          lz(prg_z0) + 2.4, lz(prg_z0) + 5.6);
         }
-        _vaciar_regleta(pi_regleta_cx, pi_regleta_cz, pi_regleta_n);
-        _vaciar_regleta(nano_regleta_cx, nano_regleta_cz, nano_regleta_n);
-        translate([olx, olz, -0.4])
-            cube([oled_ventana[0], oled_ventana[1], panel_tenon + t + 2]);
-        translate([plx, plz, -0.4]) cube([14, 8, panel_tenon + t + 2]);
+        // Una ranura por fila. El pin de 0,64 mm pasa; el plástico de la regleta no.
+        for (zc = [pi_z1, pi_z2])
+            translate([lx(pi_xa), lz(zc) - 0.8, -0.3]) cube([pi_xb - pi_xa, 1.6, t + 0.8]);
+        for (zc = [na_z1, na_z2])
+            translate([lx(na_xa), lz(zc) - 0.8, -0.3]) cube([na_xb - na_xa, 1.6, t + 0.8]);
+        // Boca 1,5 mm dentro del hueco impreso. El gancho ocupa ese marco.
+        translate([lx(oled_x0) + 1.5, lz(oled_z0) + 1.5, -0.4])
+            cube([oled_ventana[0] - 3, oled_ventana[1] - 3, t + pared + 2]);
+        translate([lx(prg_x0) + 1.3, lz(prg_z0) + 1.3, -0.4])
+            cube([14 - 2.6, 8 - 2.6, t + pared + 2]);
+        _rotulo_cama((lx(pi_xa) + lx(pi_xb)) / 2, lz(pi_z1) - 5, "PI", 2.6);
+        _rotulo_cama((lx(na_xa) + lx(na_xb)) / 2, lz(na_z2) + 5, "NANO", 2.4);
+        _rotulo_cama(lx(panel_x0 + 40), (lz(pi_z2) + lz(na_z1)) / 2, "NO UNIR", 2.4);
     }
 }
 

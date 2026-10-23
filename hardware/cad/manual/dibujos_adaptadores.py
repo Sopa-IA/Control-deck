@@ -66,98 +66,49 @@ def s5_0():
 
 def s6_5():
     im, d = nueva()
-    titulo(d, "Lateral izquierdo. Solo se corta hacia el frente.")
-    d.rectangle((180, 160, 1180, 420), outline=LINEA, width=4)
-    d.rectangle((520, 230, 1100, 380), outline=GRIS, width=3)
-    d.rectangle((220, 230, 1100, 380), outline=AMBAR, width=5)
-    d.text((560, 280), "ventana impresa  62 × 18", fill=GRIS, font=fuente(26))
-    d.text((250, 190), "corte nuevo", fill=AMBAR, font=fuente(28))
-    cota(d, 220, 450, 520, 450, "32 mm")
-    cota(d, 220, 500, 1100, 500, "94 mm")
-    cota(d, 1140, 230, 1140, 380, "18 mm", vertical=True)
-    d.text((180, 540), "El borde de atrás no se toca: a 0,9 mm está el pulsador. No subas ni bajes.", fill=GRIS, font=fuente(26))
+    titulo(d, "Marco, por fuera. La ventana de 62 × 18 no se toca.")
+    d.rectangle((220, 150, 1180, 470), outline=LINEA, width=4)
+    d.rectangle((300, 210, 1100, 410), outline=AMBAR, width=6)
+    d.text((520, 280), "boca  ~60 × 16", fill=TINTA, font=fuente(32))
+    d.text((340, 430), "USB", fill=AMBAR, font=fuente(28))
+    d.text((980, 430), "SD", fill=AMBAR, font=fuente(28))
+    cota(d, 300, 520, 1100, 520, "62 mm, el hueco impreso")
+    cota(d, 1140, 210, 1140, 410, "18 mm", vertical=True)
+    d.text((220, 560), "Se pierden los dos jacks. Si el lector no asoma, se pierde también. No limes la carcasa.", fill=GRIS, font=fuente(24))
     guardar(im, "s6_5")
-
-
-def s6_6():
-    im, d = nueva()
-    titulo(d, "Marco. Cara plana abajo. Insertos desde arriba.")
-    d.rectangle((200, 120, 1180, 500), outline=LINEA, width=4)
-    d.rectangle((280, 250, 1120, 470), outline=AMBAR, width=5)
-    d.text((560, 330), "hueco  92 × 14", fill=TINTA, font=fuente(28))
-    d.line((460, 180, 460, 230), fill=AMBAR, width=4)
-    d.line((900, 180, 900, 230), fill=AMBAR, width=4)
-    d.ellipse((440, 160, 480, 200), outline=AMBAR, width=4)
-    d.ellipse((880, 160, 920, 200), outline=AMBAR, width=4)
-    cota(d, 460, 80, 900, 80, "60 mm")
-    d.text((200, 540), "Canal de 1,3 mm para la pestaña. Dos insertos M3 de 4×5. No es la carcasa.", fill=GRIS, font=fuente(26))
-    guardar(im, "s6_6")
-
-
-def s6_7():
-    im, d = nueva()
-    titulo(d, "Primero la pestaña al marco. Después, cola a la pared.")
-    d.rectangle((120, 180, 1280, 460), outline=LINEA, width=4)
-    d.text((160, 210), "1  Taladra la pestaña si hace falta. No taladres la carcasa.", fill=TINTA, font=fuente(30))
-    d.text((160, 270), "2  Dos M3×6 avellanados, desde la cara que se pega.", fill=TINTA, font=fuente(30))
-    d.text((160, 330), "3  Cola en esa cara. El resalte de 2 mm centra el corte.", fill=TINTA, font=fuente(30))
-    d.text((160, 390), "4  Reborde de atrás: 0,4 mm. No tapa el pulsador.", fill=TINTA, font=fuente(30))
-    guardar(im, "s6_7")
 
 
 def s9_1():
     im, d = nueva()
-    titulo(d, "Trasera, desde fuera. Rectángulo de los cables de la Pi.")
-    d.rectangle((160, 200, 1220, 460), outline=AMBAR, width=5)
-    d.text((420, 300), "150 × 40 mm", fill=TINTA, font=fuente(36))
-    d.text((180, 150), "tu izquierda  ·  unos 70 mm más allá del DC viejo", fill=GRIS, font=fuente(26))
-    d.text((700, 470), "tu derecha  ·  unos 3 mm más allá del audio viejo", fill=GRIS, font=fuente(26))
-    d.text((160, 540), "No llegues a la costura (unos 10 mm a tu derecha). Abajo, la orejeta queda 3 mm bajo el corte.", fill=GRIS, font=fuente(24))
+    titulo(d, "Tapa maciza, por dentro. Un tetón en cada agujero viejo.")
+    d.rectangle((160, 150, 1240, 470), outline=LINEA, width=4)
+    d.text((430, 270), "sin ranuras", fill=TINTA, font=fuente(36))
+    d.text((160, 500), "Audio, USB, HDMI, RJ45 y DC quedan ciegos. La Pi se alcanza por la tapa del techo.", fill=GRIS, font=fuente(26))
+    d.text((160, 545), "No se corta la trasera. Sin tornillo.", fill=GRIS, font=fuente(26))
     guardar(im, "s9_1")
 
 
 def s9_2():
     im, d = nueva()
-    titulo(d, "Placa por dentro. Hueco ancho a tu izquierda, mirando desde fuera.")
-    d.rectangle((140, 140, 1260, 480), outline=LINEA, width=4)
-    d.rectangle((220, 200, 620, 400), outline=AMBAR, width=5)
-    d.rectangle((700, 210, 920, 390), outline=AMBAR, width=5)
-    d.text((300, 280), "cables USB", fill=TINTA, font=fuente(30))
-    d.text((740, 280), "red", fill=TINTA, font=fuente(30))
-    d.text((980, 250), "macizo:", fill=GRIS, font=fuente(28))
-    d.text((980, 300), "tapa los", fill=GRIS, font=fuente(28))
-    d.text((980, 350), "agujeros viejos", fill=GRIS, font=fuente(28))
-    d.text((140, 530), "Reborde estrecho (2,2 mm) hacia la costura. Muesca de abajo: libra la orejeta. Sin tornillo.", fill=GRIS, font=fuente(24))
+    titulo(d, "Careta por fuera. Rótulos abajo, en la cama. Ganchos hacia arriba.")
+    d.rectangle((180, 70, 1220, 530), outline=LINEA, width=4)
+    d.rectangle((280, 360, 980, 400), outline=AMBAR, width=5)
+    d.rectangle((280, 410, 980, 450), outline=AMBAR, width=5)
+    d.text((500, 365), "2×20   PI", fill=TINTA, font=fuente(28))
+    d.rectangle((340, 250, 820, 290), outline=AMBAR, width=5)
+    d.rectangle((340, 200, 820, 240), outline=AMBAR, width=5)
+    d.text((460, 205), "2×12   NANO", fill=TINTA, font=fuente(28))
+    d.text((430, 310), "NO UNIR", fill=AMBAR, font=fuente(28))
+    d.rectangle((700, 90, 1040, 170), outline=LINEA, width=3)
+    d.text((800, 110), "OLED", fill=GRIS, font=fuente(26))
+    d.rectangle((240, 100, 420, 170), outline=LINEA, width=3)
+    d.text((280, 115), "PRG", fill=GRIS, font=fuente(26))
+    d.text((180, 555), "Pines macho desde dentro. Se pierden D0, D1 y el resto de una 2×15. Sin tornillo.", fill=GRIS, font=fuente(24))
     guardar(im, "s9_2")
 
 
-def s9_3():
-    im, d = nueva()
-    titulo(d, "Segundo rectángulo. 22 mm por encima del de la Pi.")
-    d.rectangle((360, 80, 1040, 500), outline=AMBAR, width=5)
-    d.text((560, 260), "74 × 60 mm", fill=TINTA, font=fuente(36))
-    d.text((360, 520), "Cubre los agujeritos, la OLED y PRG. No toques el corte de abajo.", fill=GRIS, font=fuente(26))
-    guardar(im, "s9_3")
-
-
-def s9_4():
-    im, d = nueva()
-    titulo(d, "Cara de fuera abajo, en la cama. Al montar, esa cara queda fuera.")
-    d.rectangle((160, 80, 1240, 520), outline=LINEA, width=4)
-    d.rectangle((280, 300, 980, 420), outline=AMBAR, width=5)
-    d.text((480, 340), "2×20   Pi", fill=TINTA, font=fuente(30))
-    d.rectangle((420, 160, 900, 250), outline=AMBAR, width=5)
-    d.text((520, 185), "2×15   Nano", fill=TINTA, font=fuente(30))
-    d.rectangle((700, 80, 980, 150), outline=LINEA, width=3)
-    d.text((760, 95), "OLED", fill=GRIS, font=fuente(26))
-    d.rectangle((220, 80, 400, 160), outline=LINEA, width=3)
-    d.text((270, 100), "PRG", fill=GRIS, font=fuente(26))
-    d.text((160, 550), "Regletas por dentro, enchufes hacia fuera. No unas 5 V con 3,3 V. Sin tornillo.", fill=GRIS, font=fuente(24))
-    guardar(im, "s9_4")
-
-
 def main():
-    s5_0(); s6_5(); s6_6(); s6_7(); s9_1(); s9_2(); s9_3(); s9_4()
+    s5_0(); s6_5(); s9_1(); s9_2()
     print("png", OUT)
 
 
