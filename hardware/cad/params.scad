@@ -618,12 +618,13 @@ buck_ag_d = 3.2;        // [PENDIENTE] paso del tornillo. El usuario cita agujer
 buck_ag_ins = 3.5;      // [PENDIENTE] centro del agujero a la esquina. Cifra típica, no medida
 buck_suelda = 3;        // [DISEÑO] hueco bajo la PCB para las soldaduras
 buck_h = 14;            // [PENDIENTE] alto del inductor, solo el marcador. No es una pared
-// Tapa del techo, encima de los USB/RJ45. Solo en el lomo plano (y > 246,5),
-// dentro de carcasa_x1_y1. No corta el panel de pines, la OLED ni la rejilla
-// de la pared trasera (esa rejilla va en z = 114–140; la tapa abre el techo).
+// Hueco de la tapa en el techo, 72 × 42, dentro de carcasa_x1_y1.
+// La placa la dibuja tapa_pi(): queda en el lomo plano, con tetón en este hueco.
+// tapa_sol solo desplaza el STL al exportar. No es un vuelo sobre el techo.
+// La rejilla de la pared trasera va en z = 114–140; este hueco abre el techo.
 tapa_x0 = 324; tapa_x1 = 396;
 tapa_y0 = 252; tapa_y1 = 294;
-tapa_sol = 6;                                 // solape de la tapa sobre el techo [DISEÑO]
+tapa_sol = 6;
 tapa_t = 2.4;
 // Ventilación de la Pi (2026-10-21). El HAT tapa la cara de arriba: el aire
 // entra por el suelo, recorre los 8 mm que hay bajo la PCB y sale por las

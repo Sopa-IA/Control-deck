@@ -412,7 +412,7 @@ PASOS = [
             ("7.6", "s7_6", "Nano de mandos",
              "Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Otros treinta Dupont hembra a 90°. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm. Cada ventana mide 40 × 13 mm. El cable del canto +X pasa por los puentes de x = 423,5.",
              [("b12", 4), ("grapa", 4)],
-             "Esta placa queda bajo el techo plano de x1_y1, con más de 100 mm de aire. La tapa de la Pi acaba en x = 396 y la placa empieza en x = 400: el límite sigue siendo el techo, no la tapa."),
+             "Esta placa queda bajo el techo plano de x1_y1, con más de 100 mm de aire. El hueco de la tapa acaba en x = 396 y el Nano empieza en x = 400: el límite sigue siendo el techo."),
             ("7.7", "s7_7", "Inserto en las cuatro torretas",
              "Con la broca de Ø4,0, abre el techo macizo de las cuatro torretas de la base hasta encontrar el agujero Ø4 que ya sube desde abajo. Con el soldador, mete un inserto M3 de 6×5 desde arriba, a ras de la torreta. No lo empujes hasta que asome por debajo.",
              [("broca40", 1), ("i65", 4)],
@@ -426,10 +426,10 @@ PASOS = [
     {
         "n": 8,
         "titulo": "Tapa de la Pi",
-        "intro": "Dos tornillos. No hace falta ventilador.",
+        "intro": "Dos tornillos. No hace falta ventilador. Imprime el STL de esta pasada: la tapa ya impresa sobresale del lomo y no se usa.",
         "subs": [
             ("8.1", "s8_1", "Cierra la tapa",
-             "Apoya la tapa en el techo. Dos M3×8 de cabeza de botón en el canto derecho. La tapa mide 2,4 mm: entran unos 5,6 mm en la guía de 9 mm. Los postes están en carcasa_x1_y1, que ya está impresa. No los toques: la guía es Ø2,5.",
+             "Imprime la tapa plana, con la cara del chaflán contra la cama y el tetón hacia arriba, sin soportes. Mide 92,00 × 46,79 × 4,60 mm. El tetón entra en el hueco de 72 × 42, con 0,3 mm de holgura por lado, y la placa se queda en el lomo plano: canto delantero en y = 248,5 y trasero en y = 295,3. Dos M3×8 de cabeza de botón en el canto derecho. En esos agujeros la placa mide 2,4 mm: el tornillo entra unos 5,6 mm en la guía de 9 mm. Los postes están en carcasa_x1_y1, ya impresa, y los agujeros Ø3,4 siguen en su sitio. La guía es Ø2,5. Se abre quitando esos dos tornillos. La carcasa no se reimprime.",
              [("b8", 2)], None),
         ],
         "recuento": [("b8", 2)],
@@ -583,7 +583,7 @@ PIEZAS = [
     ["Careta de pines", "PROVISIONAL_panel_pines", "Pieza de día. Rótulos abajo, ganchos arriba. Cubre el campo de Ø1,6 por fuera."],
     ["Carcasa futura, izquierda trasera", "FUTURO_carcasa_x0_y1_sin_adaptadores", "No imprimir ahora. Hueco frontal de 94 × 18, sin marco. Pieza de noche si algún día se imprime."],
     ["Carcasa futura, derecha trasera", "FUTURO_carcasa_x1_y1_sin_adaptadores", "No imprimir ahora. Ranuras de cable de la Pi y de las regletas, sin careta. Pieza de noche si algún día se imprime."],
-    ["Tapa de la Pi", "PROVISIONAL_tapa_pi", "Imprimir plana."],
+    ["Tapa de la Pi", "PROVISIONAL_tapa_pi", "Imprimir plana, chaflán abajo. La ya impresa no vale."],
     ["Biseles ×4", "PROVISIONAL_bisel_x0_y0 … x1_y1", "Si ya están impresos, no reimprimir. El agujero ya es paso M3 con avellanado. No se taladran."],
     ["Guías ×2", "PROVISIONAL_guia_luz_frontal_0 y _1", "Imprimir boca abajo, PETG translúcido."],
     ["Anillos ×2", "PROVISIONAL_anillo_luz_x2", "Imprimir como salen, PETG translúcido."],
@@ -655,7 +655,7 @@ def markdown():
         "| Bandeja v2 ya impresa | No la cortes ni la taladres. Las cuatro paredes cierran los pines. Imprime la v3. | Nada | Los mismos M3×12 y grapas, en la v3 |",
         "| Bandeja v3, Pi | El STL nuevo ya trae el Ø3,0 × 7 mm. No hace falta broca. | Nada | M2.5 4×3,5 y M2.5×8 botón |",
         "| Pomos | Si el impreso solo tiene el radial Ø2,5, reimprime. | Nada | M3 4×5 y M3×12 botón |",
-        "| Tapa de la Pi | El STL no cambia. Los postes están en x1_y1. | Nada | M3×8 botón |",
+        "| Tapa de la Pi | Imprime el STL nuevo. La de 94 × 54 no se usa. Los postes de x1_y1 siguen. | Nada en la carcasa | M3×8 botón |",
         "| Disco Toshiba | La rosca del disco es 6-32. | Nada | FALTA: 4× 6-32 UNC × 1/4\" |",
         "| Ventana frontal, x0_y1 | Se queda en 62 × 18. El marco entra a presión. Se pierden los dos jacks frontales. | Nada | Sin tornillo. |",
         "| Agujeros viejos, x1_y1 | No son la Pi. La tapa entra por dentro, un tetón por hueco. | Nada | Sin tornillo. La Pi se alcanza por la tapa del techo. |",
@@ -1047,7 +1047,7 @@ def pdf(st):
         ["Disco Toshiba", "rosca 6-32, chapa de 2 mm", "FALTA: 6-32 × 6,4 mm"],
         ["ESP y dos Nano", "grapa 1,6 + guía 13 mm", "M3×12 botón"],
         ["Pi", "1,6 mm + inserto M2.5 de 4 mm", "M2.5×8 botón"],
-        ["Tapa", "2,4 mm + guía de 9 mm", "M3×8 botón"],
+        ["Tapa", "placa 2,4 mm + guía de 9 mm", "M3×8 botón"],
         ["Pomo", "12 mm hasta el eje", "inserto 4×5 y M3×12 botón"],
     ], [40 * mm, 68 * mm, 70 * mm], st))
     doc.build(f, onFirstPage=marca_pagina, onLaterPages=marca_pagina)

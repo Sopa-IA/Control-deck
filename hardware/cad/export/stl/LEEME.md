@@ -34,7 +34,7 @@ El 2026-10-21 por la tarde se regeneraron la bandeja, `carcasa_x1_y1` y los carr
 | `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 cm³ | Carro del ESP8266, dos M3 |
 | `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 cm³ | Carro de una proto 30 × 70 (diseño, no medida) |
 | `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos |
-| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 cm³ | Tapa del techo, ranuras y agujeros de ventilador |
+| `PROVISIONAL_tapa_pi` | 92,00 × 46,79 × 4,60 | 12,43 cm³ | Placa en el lomo plano (y 248,50–295,29) y tetón 71,4 × 41,4 × 2,2. Regenerada el 2026-10-23 |
 
 `comprobar_stl.py` el 2026-10-22: las 25 mallas caben y están cerradas. `comprobar_interferencias.py`: sin interferencias, con el par Nano+ESP y con el par Nano+proto. Ese día la bandeja y `carcasa_x1_y1` cambiaron los agujeros de inserto por guías Ø2,5. El resto de los STL no se regeneró.
 

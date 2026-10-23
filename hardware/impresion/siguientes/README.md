@@ -90,7 +90,7 @@ Trozo trasero derecho: el otro potenciómetro, rejilla sobre la Pi, el panel de 
 - STEP: [`STEP/06_PROVISIONAL_carcasa_x1_y1.step`](STEP/06_PROVISIONAL_carcasa_x1_y1.step) · origen **malla**, **desfasado**: no incluye la tapa ni el panel
 - Medidas: 228,13 × 150,25 × 150,93. Volumen 233,81 cm³ (antes 233,65, con agujeros de inserto).
 - Cama: cara del corte delantero sobre la cama, 150 mm de alto. Soportes: sí. El hueco de la tapa está en el lomo, que queda arriba en esa orientación.
-- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 94,00 × 54,00 × 2,40, 9,70 cm³). Sus dos agujeros siguen siendo paso libre Ø3,4. En la carcasa, cada poste Ø10 lleva una guía Ø2,5 × 9 mm: tornillo M3×8 de cabeza de botón. Las tres orejetas de esta pieza llevan la misma guía y un M3×8 avellanado desde la base. Las otras tres carcasas no se regeneran: el inserto M3 5×5 entra en el agujero Ø4 que ya tienen.
+- La tapa es otra pieza (`PROVISIONAL_tapa_pi`, 92,00 × 46,79 × 4,60, 12,43 cm³). Sus dos agujeros siguen siendo paso libre Ø3,4, en los postes ya impresos. En la carcasa, cada poste Ø10 lleva una guía Ø2,5 × 9 mm: tornillo M3×8 de cabeza de botón. Las tres orejetas de esta pieza llevan la misma guía y un M3×8 avellanado desde la base. Las otras tres carcasas no se regeneran: el inserto M3 5×5 entra en el agujero Ø4 que ya tienen.
 - La tapa trae ranuras de salida. El panel de pines y la OLED no se han cortado. La rejilla de la pared trasera sigue alineada con la Pi y baja hasta z ≈ 90.
 - Comprueba que el hueco cae sobre los USB de la Pi y que se puede pasar una clavija USB-A con la tapa quitada.
 
@@ -168,11 +168,12 @@ Era el carro de una protoboard de 30 × 70 mm. Esa placa ya no tiene hueco en la
 
 ### 20 · `PROVISIONAL_tapa_pi` · provisional
 
-Tapa del hueco del techo, encima de los USB y el RJ45. Dos tornillos M3×8 de cabeza de botón a las guías Ø2,5 de `carcasa_x1_y1`. El paso de la tapa sigue en Ø3,4. El STL no se ha regenerado.
+Tapa del hueco del techo, encima de los USB y el RJ45. La impresa (94 × 54 × 2,4, con el canto delantero en el aire) no se usa. Esta queda entera en el lomo plano. Dos tornillos M3×8 de cabeza de botón a las guías Ø2,5 de `carcasa_x1_y1`. Los agujeros siguen en x = 404, y = 264 y y = 282, paso Ø3,4. La carcasa no se reimprime.
 
 - STL: [`hardware/cad/export/stl/PROVISIONAL_tapa_pi.stl`](../../cad/export/stl/PROVISIONAL_tapa_pi.stl)
-- Medidas: 94,00 × 54,00 × 2,40. Volumen 9,70 cm³.
-- Cama: plana. El hueco que tapa mide 72 × 42 mm. Lleva ranuras de salida y agujeros para un ventilador opcional de 30 × 30 o 40 × 40.
+- Medidas: 92,00 × 46,79 × 4,60. Volumen 12,43 cm³. En el mundo: x 319,00–411,00, y 248,50–295,29, z 0–4,60.
+- Tetón: 71,40 × 41,40 × 2,20, a 0,3 mm del hueco de 72 × 42 por cada lado. Esquinas de la placa a radio 3,5 mm y chaflán superior de 0,6 mm. Muesca pequeña en el canto −X, de 12 mm.
+- Cama: plana, cara del chaflán abajo y tetón arriba, sin soportes. Pieza de día. El canto trasero acaba en y = 295,29 porque el plano del lomo termina en y = 295,49 (el radio de 5 mm retranquea la cara de arriba); un canto en 298,5 quedaría sobre esa curva. Lleva las ranuras de salida y los agujeros del ventilador de 30 × 30 o 40 × 40.
 
 ### Placa I/O del HP · `PROVISIONAL_placa_io_hp` y `PRUEBA_placa_io_hp` · provisional
 

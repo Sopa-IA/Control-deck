@@ -267,33 +267,55 @@ conectores = let(z0 = usar_kvm ? pi_z + pi_h + 12 : suelo + 20,
 ];
 echo(str("PANEL_CONECTORES;", conectores[0][1] - 3.25, ";", conectores[8][1] + 5.75, ";PI_X;", pi_x, ";", conectores[0][2] - 4, ";", pi_z + pi_h));
 
-// Tapa de acceso a los USB y al RJ45. Placa plana: el hueco está en el lomo,
-// que es horizontal. Dos tornillos M3 al inserto del techo, en la oreja derecha.
-// Una muesca delantera para abrirla con el dedo.
+// Tapa de los USB y del RJ45. La carcasa ya impresa no se toca.
+// La placa queda dentro del lomo plano, con margen. El tetón entra en el
+// hueco de 72 × 42 y la centra. Se abre quitando los dos tornillos.
+// Los agujeros Ø3,4 no se mueven: los postes de x1_y1 ya están ahí.
 module tapa_pi() {
-    ancho = tapa_x1 - tapa_x0 + tapa_sol + 16;
-    fondo = tapa_y1 - tapa_y0 + 2*tapa_sol;
+    // Lomo geométrico: y_pend1 .. D. El radio de 5 mm deja el plano útil
+    // más adentro. Por delante se pide y ≥ 248,5. Por detrás, antes de la
+    // curva y siempre ≤ 298,5.
+    x0 = 319;
+    x1 = 411;
+    y0 = 248.5;
+    y1 = min(298.5, D - radio_borde - 0.2);
+    r = 3.5;
+    ch = 0.6;
+    tet = 2.2;
+    holg = 0.3;
     cx = (tapa_x0 + tapa_x1) / 2;
     cy = (tapa_y0 + tapa_y1) / 2;
+    echo(str("TAPA_PI;x;", x0, ";", x1, ";y;", y0, ";", y1,
+             ";plano;", y_pend1 + radio_borde * tan(15), ";", D - radio_borde));
+    module losa(ax, ay, bx, by, z, h, rr) {
+        translate([ax, ay, z]) caja_r([bx - ax, by - ay, h], rr);
+    }
     difference() {
-        translate([tapa_x0 - tapa_sol, tapa_y0 - tapa_sol, 0]) cube([ancho, fondo, tapa_t]);
-        translate([cx - 7, tapa_y0 - tapa_sol - 1, -1]) cube([14, 8, tapa_t + 2]);
-        for (y = [tapa_y0 + 12, tapa_y1 - 12])
-            translate([tapa_x1 + 8, y, -1]) cylinder(d = tornillo_d, h = tapa_t + 2, $fn = 20);
-        // Ranuras de salida, dentro del hueco (el solape apoya sobre el techo
-        // macizo). Dejan islas alrededor de los agujeros del ventilador.
+        union() {
+            // 0,3 mm por lado menos que el hueco. Esquinas redondas: no se clavan.
+            losa(tapa_x0 + holg, tapa_y0 + holg, tapa_x1 - holg, tapa_y1 - holg, 0, tet, 1.5);
+            hull() {
+                losa(x0, y0, x1, y1, tet, tapa_t - ch, r);
+                losa(x0 + ch, y0 + ch, x1 - ch, y1 - ch, tet + tapa_t - ch, ch, r - ch);
+            }
+        }
+        for (yy = [tapa_y0 + 12, tapa_y1 - 12])
+            translate([tapa_x1 + 8, yy, -1]) cylinder(d = tornillo_d, h = tet + tapa_t + 2, $fn = 24);
+        // Ranuras de salida, las de antes, dentro del hueco.
         for (b = [[328, 11], [354, 13], [382, 10]])
-            for (x = [b[0] : 3.2 : b[0] + b[1]])
-                translate([x, 258, -1]) cube([1.6, 32, tapa_t + 2]);
-        for (x = [342 : 3.2 : 376])
-            translate([x, 266, -1]) cube([1.6, 14, tapa_t + 2]);
-        // 40 × 40 (paso 32) y 30 × 30 (paso 24). Opcional: sin ventilador, siguen siendo agujeros.
+            for (xx = [b[0] : 3.2 : b[0] + b[1]])
+                translate([xx, 258, -1]) cube([1.6, 32, tet + tapa_t + 2]);
+        for (xx = [342 : 3.2 : 376])
+            translate([xx, 266, -1]) cube([1.6, 14, tet + tapa_t + 2]);
+        // 40 × 40 (paso 32) y 30 × 30 (paso 24). Sin ventilador siguen siendo agujeros.
         for (sx = [-1, 1], sy = [-1, 1]) {
             translate([cx + sx * vent_paso_40 / 2, cy + sy * vent_paso_40 / 2, -1])
-                cylinder(d = vent_ag_d, h = tapa_t + 2, $fn = 16);
+                cylinder(d = vent_ag_d, h = tet + tapa_t + 2, $fn = 16);
             translate([cx + sx * vent_paso_30 / 2, cy + sy * vent_paso_30 / 2, -1])
-                cylinder(d = vent_ag_d, h = tapa_t + 2, $fn = 16);
+                cylinder(d = vent_ag_d, h = tet + tapa_t + 2, $fn = 16);
         }
+        // Muesca pequeña en el canto −X. No llega al tetón ni al canto delantero.
+        translate([x0 - 1, cy - 6, tet - 0.2]) cube([3.2, 12, tapa_t + 2]);
     }
 }
 module cortes_traseros() {

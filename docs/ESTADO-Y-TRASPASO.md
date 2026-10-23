@@ -203,7 +203,7 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 | **Obsoleto.** Carro del ESP de la bahía v2 | — | No imprimir |
 | `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 | **Obsoleto.** Carro de la proto. Esa placa ya no tiene puesto | — | No imprimir |
 | `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 | **Obsoleto.** Clip de la cuna. El Nano de mandos va en su hueco, con cuatro M3 | — | No imprimir |
-| `PROVISIONAL_tapa_pi` | 94,00 × 54,00 × 2,40 | 9,70 | Tapa del techo sobre los USB y el RJ45. Dos M3, ranuras de salida y agujeros para un ventilador de 30 o 40 mm (antes 11,90) | Plana | Nueva. Sin imprimir |
+| `PROVISIONAL_tapa_pi` | 92,00 × 46,79 × 4,60 | 12,43 | Placa dentro del lomo plano (y 248,50–295,29). Tetón 71,4 × 41,4 × 2,2 en el hueco 72 × 42. Dos M3, ranuras y agujeros de ventilador. La de 94 × 54 ya impresa no se usa | Plana, chaflán abajo | Regenerada el 2026-10-23. La carcasa no se toca |
 
 `comprobar_stl.py` (2026-10-21, bandeja v2): las 25 mallas caben en 256³ con 10 mm de margen y están cerradas. El script imprime el volumen con un decimal. Las cifras de dos decimales de la bandeja, los carros, el clip, la tapa y `carcasa_x1_y1` salen de los vértices de esta pasada. `PROVISIONAL_riel_placas` ya no está.
 
@@ -250,7 +250,7 @@ Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 
 | 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (51,45 × 16,40 × 25,10, 6,54 cm³) | No hay STEP | Puesto y = 90. Dos M3 al cajeado. Pines abajo |
 | 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (64,45 × 29,60 × 25,10, 3,94 cm³) | No hay STEP | Puesto y = 124. Dos M3. No a la vez que el 19 |
 | 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (76,45 × 28,40 × 25,10, 10,79 cm³) | No hay STEP | Mismos tornillos que el 18 |
-| 20 | Tapa de la Pi | `PROVISIONAL_tapa_pi.stl` (94,00 × 54,00 × 2,40, 9,70 cm³) | No hay STEP | Dos M3×8 de botón a las guías Ø2,5 de x1_y1. El STL no cambia |
+| 20 | Tapa de la Pi | `PROVISIONAL_tapa_pi.stl` (92,00 × 46,79 × 4,60, 12,43 cm³) | No hay STEP | Dos M3×8 de botón en los postes ya impresos. La tapa de 94 × 54 no se usa |
 
 Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla de agujeros) están en `hardware/impresion/base/STEP/` y no hay que reimprimirlos.
 
