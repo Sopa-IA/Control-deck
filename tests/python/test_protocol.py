@@ -64,6 +64,8 @@ def test_mapping_validation():
         P.check_mapping({"pots": {"P1": "ui.select"}, "buttons": {}})   # función de botón en pot
     with pytest.raises(P.ProtocolError):
         P.check_mapping({"pots": {}, "buttons": {"B1": "hp.shutdown"}})  # no es función asignable
+    assert P.check_mapping({"pots": {}, "buttons": {"B1": "pi.shutdown"}})["buttons"]["B1"] == "pi.shutdown"
+    assert P.check_mapping({"pots": {}, "buttons": {"B1": "pi.restart"}})["buttons"]["B1"] == "pi.restart"
 
 
 def test_tokens_equal():

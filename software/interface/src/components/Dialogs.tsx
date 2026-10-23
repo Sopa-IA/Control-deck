@@ -19,11 +19,18 @@ export function ConfirmDialog() {
   }, [p, cancelConfirm]);
   if (!p) return null;
   const label = ACTIONS[p.action]?.label ?? p.action;
+  const detalle = simulated
+    ? 'Estás en MODO SIMULACIÓN: no se ejecutará nada real.'
+    : p.action === 'pi.shutdown'
+      ? 'La Raspberry Pi se apaga en el acto, en cuanto confirmes.'
+      : p.action === 'pi.restart'
+        ? 'La Raspberry Pi se reinicia en el acto, en cuanto confirmes.'
+        : 'El HP se apagará o reiniciará con 60 s de margen y se podrá cancelar.';
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="cf-title">
       <div className="modal">
         <h2 id="cf-title">Confirmar: {label}</h2>
-        <p>Acción protegida. {simulated ? 'Estás en MODO SIMULACIÓN: no se ejecutará nada real.' : 'El sistema se apagará con 60 s de margen y se podrá cancelar.'}</p>
+        <p>Acción protegida. {detalle}</p>
         <p className="muted">La confirmación caduca en {left} s.</p>
         <div className="modal-actions">
           <button className="btn" onClick={cancelConfirm}>Cancelar</button>
@@ -65,6 +72,7 @@ export function PowerMenu({ onClose }: { onClose: () => void }) {
           <button className="btn big" onClick={() => go('hp.restart')}>Reiniciar HP</button>
           <button className="btn big" onClick={() => go('hp.shutdown_cancel')}>Cancelar apagado HP</button>
           <button className="btn btn-danger big" onClick={() => go('pi.shutdown')}>Apagar Raspberry Pi</button>
+          <button className="btn big" onClick={() => go('pi.restart')}>Reiniciar Raspberry Pi</button>
         </div>
         <p className="muted">Cada acción pide confirmación y orbitd la valida contra la lista blanca.</p>
         <div className="modal-actions"><button className="btn" onClick={onClose}>Cerrar</button></div>

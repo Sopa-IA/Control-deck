@@ -141,7 +141,9 @@ export class SimDataSource implements DataSource {
     let ok = true;
     let message = `SIMULADO: no se ha ejecutado «${label}».`;
     let output = '';
-    if (action === 'pi.switch_visible') {
+    if (action === 'pi.shutdown' || action === 'pi.restart') {
+      message = 'SIMULADO: esta máquina no se apaga ni se reinicia.';
+    } else if (action === 'pi.switch_visible') {
       message = this.visibleSystem === 'hp'
         ? 'SIMULADO: Moonlight no se ha abierto. El emparejamiento con Sunshine en 10.0.0.1 no está hecho.'
         : 'SIMULADO: Moonlight cerrado. Se vuelve a Orbit OS.';

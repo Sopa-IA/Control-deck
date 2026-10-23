@@ -3,6 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 -m venv .venv
+# shellcheck disable=SC1091
 . .venv/bin/activate
 pip install -q --upgrade pip
 pip install -q -e software/shared/python -e software/pi-controller -e software/hp-agent pytest pytest-asyncio ruff

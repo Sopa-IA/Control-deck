@@ -8,7 +8,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from aiohttp import WSMsgType, web
 
@@ -16,6 +16,7 @@ import orbit_protocol as P
 
 from . import __version__
 from .ardu_lab import FQBN_OLD, ArduLab
+from .power import power_allowed, read_device_model, run_power
 from .serial_events import NANO_RESET_WAIT_S, Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
 from .video import VideoConfig, VideoSwitcher
@@ -53,6 +54,10 @@ class Config:
     ardu_cli: str = "arduino-cli"
     ardu_fqbn: str = FQBN_OLD
     ardu_by_path: Path = field(default_factory=lambda: Path("/dev/serial/by-path"))
+    # ORBIT_POWER_LIVE=1 lo escribe el instalador solo en una Pi. None lee /proc.
+    power_live: bool = False
+    device_model: Optional[str] = None
+    power_runner: Optional[Callable[[list[str]], int]] = None
 
     def check(self) -> None:
         if self.host not in ("127.0.0.1", "localhost", "::1") and not (self.hp_token and self.ui_token):
@@ -282,6 +287,9 @@ class Hub:
                     or not P.tokens_equal(p["challenge"], pend["challenge"])):
                 await self.error(c, "confirm_expired", "confirmación caducada o incorrecta", msg["id"])
                 return
+            self.pending_confirm = {
+                k: v for k, v in self.pending_confirm.items() if v["action"] != pend["action"]
+            }
             await self.execute(pend["action"], pend["params"], c, msg["id"])
         elif t == "mapping_set":
             m = P.check_mapping({"version": 1, "pots": p["pots"], "buttons": p["buttons"]})
@@ -355,8 +363,30 @@ class Hub:
         if action == "pi.restart_ui":
             asyncio.get_event_loop().create_task(self.broadcast_ui("state", self.state_payload()))
             return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recarga solicitada"}
-        return {"action": action, "ok": True, "dry_run": True, "simulated": False,
-                "message": f"«{spec['label']}» confirmado, pero NO ejecutado: apagar la Pi requiere configurar permisos (PENDIENTE)."}
+        if action in ("pi.shutdown", "pi.restart"):
+            return self._pi_power(action)
+        return {"action": action, "ok": False, "dry_run": True, "simulated": False,
+                "message": f"«{spec['label']}» no tiene ejecución en la Pi."}
+
+    def _pi_power(self, action: str) -> dict:
+        sim = bool(self.cfg.sim_hp or self.cfg.sim_controls)
+        model = read_device_model() if self.cfg.device_model is None else self.cfg.device_model
+        live = power_allowed(sim=sim, power_live=self.cfg.power_live, model=model)
+        return run_power(action, live=live, sim=sim, runner=self.cfg.power_runner)
+
+    async def _ask_confirm(self, action: str, params: dict) -> int:
+        """Pide confirmación en cada interfaz conectada. Sin interfaz, no ejecuta."""
+        uis = [c for c in self.clients.values() if c.role == "ui"]
+        if not uis:
+            log.warning("«%s» desde un botón y sin interfaz: no se ejecuta", action)
+            return 0
+        for c in uis:
+            rid, ch = uuid.uuid4().hex[:12], P.new_challenge()
+            self.pending_confirm[rid] = {"action": action, "params": params, "challenge": ch,
+                                         "expires": time.monotonic() + P.CONFIRM_TTL_S, "client": c}
+            await self.send(c, "confirm_required", {"request_id": rid, "action": action, "challenge": ch,
+                                                    "expires_in_s": P.CONFIRM_TTL_S})
+        return len(uis)
 
     # -------------------------------------------------------- controles
     async def on_serial_line(self, line: str, simulated: bool = False) -> None:
@@ -376,8 +406,13 @@ class Hub:
         fn = (self.mapping["pots"] if ev["kind"] == "pot" else self.mapping["buttons"]).get(ev["control"], "none")
         if fn == "hp.volume_set" and ev["kind"] == "pot":
             self._volume_pending = round(ev["value"] * 100 / 1023)
-        elif ev["kind"] == "button" and ev.get("event") == "press" and fn in P.ACTIONS and not P.ACTIONS[fn]["confirm"]:
-            await self.execute(fn, {}, None, None)
+        elif ev["kind"] == "button" and fn in P.ACTIONS:
+            if P.ACTIONS[fn]["confirm"]:
+                # Un toque corto no apaga. Mantener pulsado pide la confirmación en pantalla.
+                if ev.get("event") == "long":
+                    await self._ask_confirm(fn, {})
+            elif ev.get("event") == "press":
+                await self.execute(fn, {}, None, None)
 
     async def _volume_loop(self) -> None:
         while True:

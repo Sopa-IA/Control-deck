@@ -36,6 +36,7 @@ def main(argv: list[str] | None = None) -> None:
                  serial_reset_wait_s=a.serial_reset_wait,
                  hp_token=os.environ.get("ORBIT_HP_TOKEN") or None, ui_token=os.environ.get("ORBIT_UI_TOKEN") or None,
                  sim_hp=a.sim or a.sim_hp, sim_controls=a.sim or a.sim_controls, sim_buttons=a.sim_buttons,
+                 power_live=os.environ.get("ORBIT_POWER_LIVE") == "1",
                  video=VideoConfig.from_env())
     if a.state_dir:
         cfg.state_dir = a.state_dir

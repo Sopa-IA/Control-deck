@@ -10,7 +10,14 @@ if [[ "$(id -u)" -ne 0 ]]; then
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-MODEL="$(tr -d '\0' < /proc/device-tree/model 2>/dev/null || true)"
+MODEL=""
+if [[ -r /proc/device-tree/model ]]; then
+  MODEL="$(tr -d '\0' < /proc/device-tree/model)"
+fi
+# Sin device-tree (contenedor de prueba) se puede inyectar el modelo. En la Pi no hace falta.
+if [[ -z "$MODEL" && -n "${ORBIT_DEVICE_MODEL:-}" ]]; then
+  MODEL="$ORBIT_DEVICE_MODEL"
+fi
 if [[ "$MODEL" != Raspberry\ Pi* && "${ORBIT_INSTALL_ANY:-}" != 1 ]]; then
   echo "Este instalador es para una Raspberry Pi. Detectado: ${MODEL:-nada}." >&2
   exit 1
@@ -30,58 +37,129 @@ LABWC_RC="$ORBIT_HOME/.config/labwc/rc.xml"
 
 log() { printf '== %s\n' "$*"; }
 
+as_user() {
+  if command -v runuser >/dev/null 2>&1; then
+    runuser -u "$ORBIT_USER" -- "$@"
+  else
+    sudo -u "$ORBIT_USER" -H "$@"
+  fi
+}
+
+apt_optional() {
+  local pkg="$1"
+  if dpkg -s "$pkg" >/dev/null 2>&1; then
+    return 0
+  fi
+  if ! apt-cache show "$pkg" >/dev/null 2>&1; then
+    log "Opcional y ausente en este sistema: $pkg"
+    return 0
+  fi
+  if apt-get install -y "$pkg"; then
+    log "Instalado (opcional): $pkg"
+  else
+    log "Opcional y ausente en este sistema: $pkg"
+  fi
+}
+
+moonlight_distro() {
+  # La Pi 64-bit se anuncia como debian. Moonlight publica el paquete de la Pi en el canal raspbian.
+  local id like
+  if [[ "$MODEL" == Raspberry\ Pi* || -f /etc/rpi-issue ]]; then
+    printf '%s\n' raspbian
+    return
+  fi
+  id="$(sed -n 's/^ID=//p' /etc/os-release | head -n1 | tr -d '"')"
+  like="$(sed -n 's/^ID_LIKE=//p' /etc/os-release | head -n1 | tr -d '"')"
+  if [[ "$id" == raspbian || "$like" == *raspbian* ]]; then
+    printf '%s\n' raspbian
+  else
+    printf '%s\n' debian
+  fi
+}
+
+install_moonlight() {
+  local distro="$1" codename
+  codename="$(lsb_release -cs)"
+  log "Moonlight Qt, canal ${distro}/${codename}"
+  # https://github.com/moonlight-stream/moonlight-docs/wiki/Installing-Moonlight-Qt-on-Raspberry-Pi-4
+  curl -1sLf 'https://dl.cloudsmith.io/public/moonlight-game-streaming/moonlight-qt/setup.deb.sh' \
+    | distro="$distro" codename="$codename" bash
+  apt-get update
+  apt-get install -y moonlight-qt
+}
+
+systemd_up() { [[ -d /run/systemd/system ]]; }
+
 export DEBIAN_FRONTEND=noninteractive
 log "Paquetes"
 apt-get update
 apt-get install -y \
   python3 python3-venv python3-pip \
   nodejs npm \
-  curl ca-certificates lsb-release \
-  network-manager \
+  curl ca-certificates gnupg lsb-release \
+  network-manager sudo \
   unclutter x11-xserver-utils \
-  xdg-utils \
-  || true
-apt-get install -y chromium || apt-get install -y chromium-browser
-apt-get install -y wlrctl || true
-apt-get install -y wmctrl || true
+  xdg-utils
+if ! dpkg -s chromium >/dev/null 2>&1 && ! dpkg -s chromium-browser >/dev/null 2>&1; then
+  apt-get install -y chromium || apt-get install -y chromium-browser
+fi
+# labwc está en el archivo de Raspberry Pi OS (Bookworm y Trixie) y en Debian Trixie.
+# No está en Debian Bookworm. La imagen de escritorio de la Pi ya lo trae.
+if ! dpkg -s labwc >/dev/null 2>&1; then
+  if apt-cache show labwc >/dev/null 2>&1; then
+    apt-get install -y labwc
+  else
+    log "labwc no está en este repositorio. En la imagen de escritorio de la Pi ya viene. Sin él no hay kiosco Wayland."
+  fi
+fi
+apt_optional wlrctl
+apt_optional wmctrl
 if ! command -v lxterminal >/dev/null && ! command -v x-terminal-emulator >/dev/null; then
-  apt-get install -y lxterminal || true
+  apt_optional lxterminal
 fi
 
 if ! dpkg -s moonlight-qt >/dev/null 2>&1; then
-  log "Moonlight Qt, repositorio oficial de moonlight-stream"
-  # https://github.com/moonlight-stream/moonlight-docs/wiki/Installing-Moonlight-Qt-on-Raspberry-Pi-4
-  curl -1sLf 'https://dl.cloudsmith.io/public/moonlight-game-streaming/moonlight-qt/setup.deb.sh' \
-    | distro=raspbian codename="$(lsb_release -cs)" bash
-  apt-get update
-  apt-get install -y moonlight-qt
+  DISTRO="$(moonlight_distro)"
+  if ! install_moonlight "$DISTRO"; then
+    rm -f /etc/apt/sources.list.d/*moonlight*
+    apt-get update
+    if [[ "$DISTRO" != debian ]]; then
+      log "El canal ${DISTRO} no ha dejado moonlight-qt. Se prueba debian."
+      install_moonlight debian
+    else
+      exit 1
+    fi
+  fi
 fi
 
 log "arduino-cli y el core AVR, para Ardu Lab sin internet después"
 if ! command -v arduino-cli >/dev/null 2>&1; then
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
 fi
-if ! sudo -u "$ORBIT_USER" -H arduino-cli core list | grep -q 'arduino:avr'; then
-  sudo -u "$ORBIT_USER" -H arduino-cli core update-index
-  sudo -u "$ORBIT_USER" -H arduino-cli core install arduino:avr
+if ! as_user arduino-cli core list | grep -q 'arduino:avr'; then
+  as_user arduino-cli core update-index
+  as_user arduino-cli core install arduino:avr
 fi
 
 log "Python de orbitd"
-sudo -u "$ORBIT_USER" python3 -m venv "$ROOT/.venv"
-sudo -u "$ORBIT_USER" "$ROOT/.venv/bin/pip" install -U pip
-sudo -u "$ORBIT_USER" "$ROOT/.venv/bin/pip" install -e "$ROOT/software/shared/python" -e "$ROOT/software/pi-controller"
+as_user python3 -m venv "$ROOT/.venv"
+as_user "$ROOT/.venv/bin/pip" install -U pip
+as_user "$ROOT/.venv/bin/pip" install -e "$ROOT/software/shared/python" -e "$ROOT/software/pi-controller"
 
 log "Interfaz"
-sudo -u "$ORBIT_USER" bash -c "cd '$ROOT/software/interface' && npm ci && npm run build"
+as_user npm --prefix "$ROOT/software/interface" ci
+as_user npm --prefix "$ROOT/software/interface" run build
 
 log "Token"
-sudo -u "$ORBIT_USER" bash "$ROOT/scripts/gen-token.sh"
+# Sin --force: una segunda pasada no cambia los tokens que Miguel ya copió al HP.
+as_user bash "$ROOT/scripts/gen-token.sh"
 chown "$ORBIT_USER:$ORBIT_USER" "$ROOT/.env"
 chmod 600 "$ROOT/.env"
 
 install -d -m 755 /etc/orbit /var/lib/orbit /usr/local/bin
 chown "$ORBIT_USER:$ORBIT_USER" /var/lib/orbit
-python3 - "$ROOT/.env" "$LABWC_RC" <<'PY'
+if [[ "$MODEL" == Raspberry\ Pi* ]]; then POWER_LIVE=1; else POWER_LIVE=0; fi
+python3 - "$ROOT/.env" "$LABWC_RC" "$POWER_LIVE" <<'PY'
 import sys
 from pathlib import Path
 env = {}
@@ -105,6 +183,8 @@ text = "\n".join([
     "ORBIT_ARDU_PUERTOS=/var/lib/orbit/arduino-puertos.json",
     "ORBIT_ARDU_CLI=arduino-cli",
     "ORBIT_ARDU_FQBN=arduino:avr:nano:cpu=atmega328old",
+    f"ORBIT_POWER_LIVE={sys.argv[3]}",
+    f"ORBIT_POWER_ALLOW_EXEC={sys.argv[3]}",
     "",
 ])
 Path("/etc/orbit/orbitd.env").write_text(text, encoding="utf-8")
@@ -126,10 +206,35 @@ PY
   chmod 644 "$PUERTOS"
 fi
 
-GROUPS=""
-for g in dialout video render input gpio; do
-  getent group "$g" >/dev/null && GROUPS="${GROUPS}${GROUPS:+ }${g}"
+# dialout es el grupo del serie (Nano CH340 y ESP). gpio solo existe en Raspberry Pi OS.
+if ! getent group dialout >/dev/null; then
+  groupadd --system dialout
+fi
+usermod -aG dialout "$ORBIT_USER"
+EXTRA_GROUPS="dialout"
+for g in video render input gpio; do
+  if getent group "$g" >/dev/null; then
+    usermod -aG "$g" "$ORBIT_USER"
+    EXTRA_GROUPS="${EXTRA_GROUPS} ${g}"
+  else
+    log "El grupo ${g} no existe. No se crea: en la Pi, gpio lo trae el sistema."
+  fi
 done
+cat > /etc/udev/rules.d/90-orbit-serial.rules <<'EOF'
+# Nano (CH340, ttyUSB) y placas CDC (ttyACM, a veces el ESP) para el grupo dialout.
+SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]*", GROUP="dialout", MODE="0660"
+SUBSYSTEM=="tty", KERNEL=="ttyACM[0-9]*", GROUP="dialout", MODE="0660"
+EOF
+chmod 644 /etc/udev/rules.d/90-orbit-serial.rules
+
+log "Permiso mínimo para apagar y reiniciar"
+# Solo estas dos órdenes, sin contraseña. No se añade un sudo general.
+cat > /etc/sudoers.d/orbit-power <<EOF
+# Orbit OS: el usuario de orbitd solo puede apagar o reiniciar, y solo con sudo -n.
+${ORBIT_USER} ALL=(root) NOPASSWD: /usr/bin/systemctl poweroff, /usr/bin/systemctl reboot
+EOF
+chmod 440 /etc/sudoers.d/orbit-power
+visudo -cf /etc/sudoers.d/orbit-power
 
 log "Servicio orbitd"
 cat > /etc/systemd/system/orbitd.service <<EOF
@@ -142,7 +247,7 @@ Wants=network-online.target
 Type=simple
 User=$ORBIT_USER
 Group=$ORBIT_USER
-${GROUPS:+SupplementaryGroups=$GROUPS}
+SupplementaryGroups=$EXTRA_GROUPS
 WorkingDirectory=$ROOT
 EnvironmentFile=/etc/orbit/orbitd.env
 Environment=XDG_RUNTIME_DIR=/run/user/$ORBIT_UID
@@ -155,8 +260,14 @@ RestartSec=2
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl daemon-reload
-systemctl enable orbitd.service
+if systemd_up; then
+  systemctl daemon-reload
+  systemctl enable orbitd.service
+else
+  log "systemd no es pid 1. La unidad queda habilitada para cuando la Pi arranque."
+  install -d /etc/systemd/system/multi-user.target.wants
+  ln -sfn /etc/systemd/system/orbitd.service /etc/systemd/system/multi-user.target.wants/orbitd.service
+fi
 
 log "Kiosco"
 cat > /usr/local/bin/orbit-kiosk <<'EOF'
@@ -274,7 +385,7 @@ chmod 755 /usr/local/bin/orbit-kiosk /usr/local/bin/orbit-kiosk-bucle /usr/local
 
 log "Sesión gráfica"
 install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" "$ORBIT_HOME/.config/labwc"
-sudo -u "$ORBIT_USER" env ORBIT_LABWC_RC="$LABWC_RC" "$ROOT/.venv/bin/python" -c 'import os; from pathlib import Path; from orbitd.video import write_labwc_rc; write_labwc_rc(Path(os.environ["ORBIT_LABWC_RC"]), "integrado", False)'
+as_user env ORBIT_LABWC_RC="$LABWC_RC" "$ROOT/.venv/bin/python" -c 'import os; from pathlib import Path; from orbitd.video import write_labwc_rc; write_labwc_rc(Path(os.environ["ORBIT_LABWC_RC"]), "integrado", False)'
 cat > "$ORBIT_HOME/.config/labwc/autostart" <<'EOF'
 #!/bin/sh
 /usr/local/bin/orbit-kiosk-bucle >/tmp/orbit-kiosk.log 2>&1 &
@@ -299,6 +410,7 @@ EOF
   fi
 fi
 
+# LXDE-pi es el nombre de la sesión de Raspberry Pi OS, no el usuario de Imager.
 X11_AUTO="$ORBIT_HOME/.config/lxsession/LXDE-pi/autostart"
 if [[ ! -x "$(command -v labwc || true)" && ! -x "$(command -v wayfire || true)" ]] || [[ -d /etc/xdg/lxsession/LXDE-pi ]]; then
   install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" "$(dirname "$X11_AUTO")"
@@ -307,12 +419,31 @@ if [[ ! -x "$(command -v labwc || true)" && ! -x "$(command -v wayfire || true)"
   chown -R "$ORBIT_USER:$ORBIT_USER" "$ORBIT_HOME/.config/lxsession"
 fi
 
-if command -v raspi-config >/dev/null; then
-  log "Autologin al escritorio y sin apagado de pantalla"
-  raspi-config nonint do_boot_behaviour B4 || true
-  raspi-config nonint do_blanking 1 || true
+install -d -m 755 /etc/lightdm/lightdm.conf.d
+cat > /etc/lightdm/lightdm.conf.d/orbit-autologin.conf <<EOF
+[Seat:*]
+autologin-user=$ORBIT_USER
+autologin-user-timeout=0
+EOF
+chmod 644 /etc/lightdm/lightdm.conf.d/orbit-autologin.conf
+if [[ -f /etc/lightdm/lightdm.conf ]] && grep -q '^#\?autologin-user=' /etc/lightdm/lightdm.conf; then
+  sed -i -e "s/^#\\?autologin-user=.*/autologin-user=${ORBIT_USER}/" /etc/lightdm/lightdm.conf
 fi
-systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target >/dev/null 2>&1 || true
+
+if command -v raspi-config >/dev/null && [[ -e /etc/init.d/lightdm ]]; then
+  log "Autologin al escritorio y sin apagado de pantalla"
+  SUDO_USER="$ORBIT_USER" raspi-config nonint do_boot_behaviour B4
+  SUDO_USER="$ORBIT_USER" raspi-config nonint do_blanking 1
+elif command -v raspi-config >/dev/null; then
+  log "raspi-config está, pero no hay lightdm. El autologin queda en lightdm.conf.d para el escritorio de la imagen."
+fi
+if systemd_up; then
+  systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+else
+  for t in sleep.target suspend.target hibernate.target hybrid-sleep.target; do
+    ln -sfn /dev/null "/etc/systemd/system/${t}"
+  done
+fi
 
 log "Arranque en silencio"
 BOOT=""
@@ -341,25 +472,42 @@ if [[ -n "$BOOT" && -f "$BOOT/cmdline.txt" ]]; then
   printf '%s\n' "$line" > "$BOOT/cmdline.txt"
 fi
 
-log "IP fija en eth0"
-if command -v nmcli >/dev/null; then
+log "IP fija en eth0, sin puerta de enlace y sin tocar el Wi-Fi"
+install -d -m 755 /etc/NetworkManager/system-connections
+cat > /etc/NetworkManager/system-connections/orbit-enlace-hp.nmconnection <<'EOF'
+[connection]
+id=orbit-enlace-hp
+type=ethernet
+interface-name=eth0
+autoconnect=true
+
+[ethernet]
+
+[ipv4]
+method=manual
+address1=10.0.0.2/24
+never-default=true
+ignore-auto-dns=true
+
+[ipv6]
+method=disabled
+EOF
+chmod 600 /etc/NetworkManager/system-connections/orbit-enlace-hp.nmconnection
+if command -v nmcli >/dev/null && systemd_up && systemctl is-active --quiet NetworkManager; then
+  nmcli con reload || true
   CON="orbit-enlace-hp"
-  if nmcli -t -f NAME con show | grep -qx "$CON"; then
-    nmcli con mod "$CON" connection.interface-name eth0 connection.autoconnect yes \
-      ipv4.method manual ipv4.addresses "10.0.0.2/24" ipv6.method disabled \
-      ipv4.never-default yes ipv4.ignore-auto-dns yes || true
-  else
-    nmcli con add type ethernet ifname eth0 con-name "$CON" \
-      ipv4.method manual ipv4.addresses "10.0.0.2/24" ipv6.method disabled \
-      ipv4.never-default yes ipv4.ignore-auto-dns yes connection.autoconnect yes
-  fi
-  nmcli con mod "$CON" ipv4.gateway "" ipv4.dns "" || true
   while IFS=: read -r name iface; do
     [[ "$name" == "$CON" ]] && continue
     [[ "$iface" == "eth0" ]] || continue
     nmcli con mod "$name" connection.autoconnect no || true
   done < <(nmcli -t -f NAME,connection.interface-name con show)
-  nmcli con up "$CON" || true
+  if ip link show eth0 >/dev/null 2>&1; then
+    nmcli con up "$CON" || log "eth0 no ha levantado el perfil. El cable puede no estar; el perfil queda guardado."
+  else
+    log "No hay eth0 ahora. El perfil queda guardado y no pone puerta de enlace."
+  fi
+else
+  log "NetworkManager no está en marcha. eth0 quedará en 10.0.0.2/24 al arrancar, sin puerta ni DNS."
 fi
 
 log "Listo. Reinicia la Pi para ver Orbit OS al encender."

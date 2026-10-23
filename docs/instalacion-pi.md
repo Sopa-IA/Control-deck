@@ -20,7 +20,7 @@ Nada de esto se ha probado en la Pi ni en el HP.
 10. Si el script termina bien, reinicia: `sudo reboot`.
 11. Al encender, lo primero que se ve es Orbit OS. El arcoíris y los textos de arranque quedan ocultos en la medida de lo posible.
 
-El script se puede repetir. No pone puerta de enlace ni DNS en eth0, para no romper el Wi-Fi.
+El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No pone puerta de enlace ni DNS en eth0, para no romper el Wi-Fi. El usuario es el de Imager, el que ha lanzado `sudo`: no tiene que llamarse `pi`. `LXDE-pi` es el nombre de la sesión gráfica de Raspberry Pi OS, no un usuario.
 
 ## Cable interno y emparejar
 
@@ -58,9 +58,30 @@ El script se puede repetir. No pone puerta de enlace ni DNS en eth0, para no rom
 34. SSH sigue activo con el usuario y el Wi-Fi de Imager. No hace falta salir del kiosco para usarlo.
 35. El servicio se llama `orbitd`. Pararlo: `sudo systemctl stop orbitd`. Arrancarlo: `sudo systemctl start orbitd`.
 
+## Apagar y reiniciar desde Orbit OS
+
+36. En Sistemas, o en el menú de apagado, Apagar Pi y Reiniciar Pi piden confirmación en pantalla.
+37. Al confirmar, la Pi se apaga o se reinicia en el acto. No hay 60 segundos para cancelar. Eso de los 60 segundos es solo del HP.
+38. El script deja en `/etc/sudoers.d/orbit-power` dos órdenes y nada más: `systemctl poweroff` y `systemctl reboot`, sin contraseña, para el usuario de orbitd.
+39. En el simulador del PC esas acciones no apagan la máquina.
+40. Si asignas Apagar la Pi o Reiniciar la Pi a un botón del Nano, un toque corto no hace nada. Hay que mantenerlo pulsado: entonces sale el mismo diálogo. Sin la pantalla de Orbit OS abierta, no se apaga.
+
 ## Qué no hace esta instalación
 
-36. No empareja Sunshine: el PIN lo escribe Miguel.
-37. No se ha probado el kiosco, labwc, Moonlight ni el enchufe HDMI en el hardware.
-38. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
-39. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí.
+41. No empareja Sunshine: el PIN lo escribe Miguel.
+42. El kiosco con GPU, una sesión labwc de verdad y Moonlight contra el HP no se han probado en la Pi. El script sí se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
+43. hp-agent puede conectar a `ws://10.0.0.2:8765/ws` con `ORBIT_HP_TOKEN` (está en `.env` de la Pi, no se sube a git). La interfaz del kiosco no pide token porque entra por localhost.
+44. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí.
+
+## Primera vez que encienda la Pi
+
+1. SSH entra con el usuario de Imager.
+2. `systemctl status orbitd` está activo y la pantalla muestra Orbit OS.
+3. El Wi-Fi sigue teniendo internet.
+4. `ip route` no muestra una puerta por eth0. eth0 es `10.0.0.2/24`.
+5. `grep dialout /etc/group` incluye al usuario de Imager.
+6. Apagar desde Orbit OS pide confirmación y, tras ella, la Pi se apaga.
+7. Un toque corto del botón de apagar no apaga. Mantenerlo abre la confirmación.
+8. Moonlight aún hay que emparejarlo una vez.
+9. Ctrl+Alt+T sale del kiosco. `rm /var/lib/orbit/kiosk-pausa` vuelve.
+10. En el PC, el simulador no apaga ese PC.

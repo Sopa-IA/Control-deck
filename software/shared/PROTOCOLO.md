@@ -91,7 +91,9 @@ ui <──action_result{ok, dry_run, "Apagado programado en 60 s; hp.shutdown_ca
 
 - Un desafío caducado o incorrecto da `confirm_expired`, y el desafío se descarta tras un solo uso.
 - `hp.shutdown_cancel` anula el apagado (Windows: `shutdown /a`; Linux: `shutdown -c`).
-- `pi.shutdown` sigue el mismo flujo. En v0, orbitd solo lo simula o registra; ejecutar `systemctl poweroff` requiere configurar permisos (**pendiente**).
+- `pi.shutdown` y `pi.restart` usan el mismo diálogo. Tras confirmar, orbitd ejecuta solo `sudo -n /usr/bin/systemctl poweroff` o `sudo -n /usr/bin/systemctl reboot`. El instalador deja esa pareja en `/etc/sudoers.d/orbit-power`, para el usuario del servicio, y nada más. La Pi se apaga o reinicia en el acto: no hay 60 s de margen.
+- En simulación (`--sim`) o si el equipo no es una Raspberry Pi, esas dos acciones responden y no llaman a systemctl.
+- Un botón del Nano asignado a `pi.shutdown` o `pi.restart` no actúa con un toque corto. Mantenerlo pulsado abre el mismo diálogo. Si no hay una interfaz conectada, no se apaga.
 
 ## 7. Arduino → orbitd (serie)
 

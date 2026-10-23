@@ -242,3 +242,106 @@ async def test_switch_visible_modo_captura(tmp_path, monkeypatch):
             assert r["payload"]["ok"] is True and r["payload"]["dry_run"] is False
     finally:
         await srv.close()
+
+
+def _power_cfg(tmp_path, **kw):
+    calls = []
+
+    def runner(argv):
+        calls.append(list(argv))
+        return 0
+
+    cfg = Config(state_dir=tmp_path, hp_token=TOKEN, telemetry_period_s=30, power_runner=runner, **kw)
+    return cfg, calls
+
+
+async def _confirm(srv, action):
+    async with aiohttp.ClientSession() as s:
+        ui = await connect(s, srv)
+        await recv(ui, "welcome")
+        await send(ui, "action_request", {"action": action})
+        cr = await recv(ui, "confirm_required")
+        await send(ui, "action_confirm", {
+            "request_id": cr["payload"]["request_id"], "challenge": cr["payload"]["challenge"],
+        })
+        return await recv(ui, "action_result")
+
+
+async def test_pi_shutdown_en_simulacion_no_apaga(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, sim_hp=True, sim_controls=True, power_live=True,
+                            device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        r = await _confirm(srv, "pi.shutdown")
+        assert r["payload"]["dry_run"] is True and r["payload"]["simulated"] is True
+        assert "SIMULADO" in r["payload"]["message"]
+        assert calls == []
+    finally:
+        await srv.close()
+
+
+async def test_pi_restart_en_pc_no_llama_a_systemctl(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="QEMU")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        r = await _confirm(srv, "pi.restart")
+        assert r["payload"]["dry_run"] is True and calls == []
+    finally:
+        await srv.close()
+
+
+async def test_pi_shutdown_en_la_pi_usa_sudo_fijo(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        off = await _confirm(srv, "pi.shutdown")
+        assert off["payload"]["ok"] is True and off["payload"]["dry_run"] is False
+        assert calls == [["sudo", "-n", "/usr/bin/systemctl", "poweroff"]]
+    finally:
+        await srv.close()
+
+
+async def test_boton_corto_no_apaga_y_mantener_pide_confirmacion(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        async with aiohttp.ClientSession() as s:
+            ui = await connect(s, srv)
+            await recv(ui, "welcome")
+            await send(ui, "mapping_set", {"pots": {}, "buttons": {"B1": "pi.shutdown", "B2": "pi.restart"}})
+            mp = await recv(ui, "mapping")
+            while mp["payload"]["buttons"].get("B1") != "pi.shutdown":
+                mp = await recv(ui, "mapping")
+            hub = srv.app[HUB_KEY]
+            await hub.on_serial_line("B1 1\n")
+            ev = await recv(ui, "control_event")
+            assert ev["payload"]["event"] == "press"
+            assert hub.pending_confirm == {} and calls == []
+            await hub.on_serial_line("B2 L\n")
+            cr = await recv(ui, "confirm_required")
+            assert cr["payload"]["action"] == "pi.restart" and calls == []
+            await send(ui, "action_confirm", {
+                "request_id": cr["payload"]["request_id"], "challenge": cr["payload"]["challenge"],
+            })
+            r = await recv(ui, "action_result")
+            assert r["payload"]["action"] == "pi.restart" and r["payload"]["dry_run"] is False
+            assert calls == [["sudo", "-n", "/usr/bin/systemctl", "reboot"]]
+    finally:
+        await srv.close()
+
+
+async def test_mantener_sin_interfaz_no_apaga(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        hub = srv.app[HUB_KEY]
+        hub.mapping = {"version": 1, "pots": {}, "buttons": {"B1": "pi.shutdown"}}
+        await hub.on_serial_line("B1 L\n")
+        assert calls == [] and hub.pending_confirm == {}
+    finally:
+        await srv.close()

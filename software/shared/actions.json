@@ -22,7 +22,8 @@
     "pi.ardu_upload":      { "target": "pi", "label": "Subir sketch al Nano de prácticas", "params": { "sketch": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,31}$" } }, "confirm": false, "destructive": false },
     "pi.ardu_monitor":     { "target": "pi", "label": "Monitor serie del Nano de prácticas", "params": { "op": { "type": "string", "enum": ["abrir", "leer", "cerrar"] }, "baud": { "type": "integer", "enum": [9600, 19200, 38400, 57600, 115200] } }, "confirm": false, "destructive": false },
     "pi.restart_ui":       { "target": "pi", "label": "Recargar interfaz",       "params": {}, "confirm": false, "destructive": false },
-    "pi.shutdown":         { "target": "pi", "label": "Apagar Raspberry Pi",     "params": {}, "confirm": true,  "destructive": true }
+    "pi.shutdown":         { "target": "pi", "label": "Apagar Raspberry Pi",     "params": {}, "confirm": true,  "destructive": true },
+    "pi.restart":          { "target": "pi", "label": "Reiniciar Raspberry Pi",  "params": {}, "confirm": true,  "destructive": true }
   },
   "control_functions": {
     "$comment": "Funciones asignables a potenciómetros (kind=pot) y botones (kind=button) desde la sección Controles. ui.* las resuelve la interfaz; hp.*/pi.* las resuelve orbitd contra la lista blanca.",
@@ -39,6 +40,8 @@
     "hp.volume_mute":     { "kinds": ["button"],        "label": "Silenciar HP" },
     "hp.media_play_pause":{ "kinds": ["button"],        "label": "Reproducir/pausar (HP)" },
     "hp.lock_screen":     { "kinds": ["button"],        "label": "Bloquear sesión del HP" },
-    "ui.power_menu":      { "kinds": ["button"],        "label": "Menú de apagado seguro" }
+    "ui.power_menu":      { "kinds": ["button"],        "label": "Menú de apagado seguro" },
+    "pi.shutdown":        { "kinds": ["button"],        "label": "Apagar la Raspberry Pi (mantener pulsado, luego confirmar en pantalla)" },
+    "pi.restart":         { "kinds": ["button"],        "label": "Reiniciar la Raspberry Pi (mantener pulsado, luego confirmar en pantalla)" }
   }
 }

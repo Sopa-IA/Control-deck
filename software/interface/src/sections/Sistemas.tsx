@@ -27,6 +27,7 @@ function Detail({ host }: { host: 'hp' | 'pi' }) {
         </>) : (<>
           <button className="btn" onClick={() => requestAction('pi.ping')}>Comprobar</button>
           <button className="btn" onClick={() => requestAction('pi.restart_ui')}>Recargar interfaz</button>
+          <button className="btn" onClick={() => requestAction('pi.restart')}>Reiniciar Pi</button>
           <button className="btn btn-danger" onClick={() => requestAction('pi.shutdown')}>Apagar Pi</button>
         </>)}
       </div>
