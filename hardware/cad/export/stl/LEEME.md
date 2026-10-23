@@ -7,7 +7,7 @@
 - disco **HDD 3,5"** (`usar_hdd_35 = true`): el modelo usa SFF-8301 (101,6 × 147 × 26,1 mm), no la medición a ojo de Miguel (~150 × 100 × 25 mm, 2026-10-20);
 - patas del soporte del disco a 14 mm (con 8 mm la plancha chocaba con las pletinas de empalme);
 - sin KVM, mandos en columna, potenciómetro genérico de 24 mm y pulsador de 16 mm;
-- impresora Bambu Lab A1 (256³), material recomendado PETG.
+- impresora Bambu Lab A1 (256³), material PLA+ negro mate. Las guías y los anillos de luz, en translúcido.
 
 Hay cotas PENDIENTES. La referencia de estado es `docs/ESTADO-Y-TRASPASO.md`. `docs/diseno-mecanico.md` sigue describiendo en varios sitios el preset anterior de SSD 2,5".
 

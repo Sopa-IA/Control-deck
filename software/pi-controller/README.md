@@ -24,9 +24,8 @@ python -m orbitd --serial /dev/ttyUSB0                      # Nano de mandos (co
 | `ORBIT_UI_TOKEN` | Opcional: token para la interfaz |
 | `--host` | `127.0.0.1` por defecto; fuera de localhost exige los dos tokens |
 | `--state-dir` | Dónde se guarda `controls.json` (por defecto `~/.local/state/orbitd`) |
-| `ORBIT_REMOTE_CMD` | Modo A (remoto): orden del visor del escritorio del HP, sin shell (p. ej. Moonlight) |
-| `ORBIT_CAPTURE_DEVICE`, `ORBIT_CAPTURE_CMD` | Modo C (capturadora HDMI→USB): dispositivo V4L2 (`/dev/videoN` o `/dev/v4l/by-id/…`) y visor sin shell; `{device}` se sustituye |
-| `ORBIT_VIDEO_DDC`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS` | Modo B (DDC/CI, poco probable con la MSI) |
+| `ORBIT_REMOTE_CMD` | Orden de Moonlight, sin shell. La MSI va solo a la Pi; el HP se ve por el cable directo (10.0.0.1 / 10.0.0.2) |
+| `ORBIT_VIDEO_DDC`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS` | Cambio de entrada de la MSI. Apagado: los manuales no documentan DDC/CI |
 | `ORBIT_POWER_LIVE`, `ORBIT_POWER_ALLOW_EXEC` | Las escribe `scripts/instalar-pi.sh` con valor `1` solo si el equipo es una Raspberry Pi. Sin las dos, y sin un modelo `Raspberry Pi` en el device-tree, apagar y reiniciar no llaman a systemctl |
 
 La telemetría de la Pi es **real**: se lee con psutil del equipo donde corre orbitd. Si ese equipo no es una Raspberry Pi, el campo `model` lo indica.

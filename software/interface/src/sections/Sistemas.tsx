@@ -43,7 +43,7 @@ export function Sistemas({ openOsd }: { openOsd: () => void }) {
       <div className="col"><SystemCard host="hp" /><Detail host="hp" /></div>
       <div className="col"><SystemCard host="pi" /><Detail host="pi" /></div>
       <Panel title="Pantalla" className="span-2">
-        <p>La MSI va solo a la Pi, por el cable micro-HDMI a mini-HDMI. El HP no entra en el monitor: se ve con <b>Moonlight</b> contra Sunshine en <b>10.0.0.1</b>, por el Ethernet interno.</p>
+        <p>La MSI va solo a la Pi, por el cable micro-HDMI a mini-HDMI. El HP no entra en el monitor: su imagen llega por un cable de red directo, con <b>Sunshine</b> en el HP (<b>10.0.0.1</b>) y <b>Moonlight</b> en la Pi (<b>10.0.0.2</b>). El teclado y el ratón son Bluetooth, emparejados con la Pi.</p>
         <p>La vista por defecto es la <b>integrada</b>: Orbit OS se queda de fondo con una barra de 40 px y Moonlight ocupa el hueco
           {visible?.hole ? <> ({visible.hole.w}×{visible.hole.h})</> : null}, sin bordes.
           La pantalla completa (1920×1080 a 60 fps) es la alternativa.</p>

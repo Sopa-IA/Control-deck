@@ -37,7 +37,7 @@ describe('format', () => {
   it('nombre del modo de cambio de sistema', () => {
     expect(videoModeLabel('remoto')).toBe('Moonlight');
     expect(videoModeLabel('ddc')).toBe('DDC/CI');
-    expect(videoModeLabel('captura')).toBe('capturadora');
+    expect(videoModeLabel('captura')).toBe('vídeo');
     expect(videoModeLabel(undefined)).toBe('desconocido');
   });
 });

@@ -6,7 +6,7 @@ Orbit Terminal es un terminal de sobremesa en forma de cuña que reúne dos mund
 
 **Estado: prototipo.** El software funciona en **simulación** y con tests automáticos. **No se ha probado aún con el HP, la Pi, el Arduino ni el monitor reales.** La carcasa **no está lista para fabricar.**
 
-> **Para retomar el proyecto sin contexto** (Miguel u otro agente): [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md). Ahí están el mapa del repo, lo que Miguel ya tiene, cada STL con su caja medida, los modos de vídeo y los comandos para comprobar el CAD.
+> **Para retomar el proyecto sin contexto** (Miguel u otro agente): [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md). Ahí están el mapa del repo, lo que Miguel ya tiene, cada STL con su caja medida, cómo llega la imagen del HP y los comandos para comprobar el CAD.
 >
 > **Manual de montaje** (prototipo, estilo IKEA, 21 páginas, dibujos del CAD): [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf). No autoriza a fabricar. Lo que se imprime después de la base está en [`hardware/impresion/siguientes/README.md`](hardware/impresion/siguientes/README.md).
 
@@ -19,9 +19,9 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 - **Solo piezas que Miguel ya tiene.**
 - **Pantalla:** MSI PRO MP161 E2U 15,6", 1920×1080, **no táctil**. Se usa con ratón y controles; la interfaz sigue preparada para táctil.
 - **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
-- **Vídeo:** la MSI va solo a la Pi (micro-HDMI a mini-HDMI). El HP se ve con Moonlight contra Sunshine en `10.0.0.1`. La vista por defecto es integrada (barra de Orbit OS y Moonlight sin bordes en el hueco). La pantalla completa es la alternativa. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md). Sin probar en la Pi.
+- **Vídeo:** la MSI va solo a la Pi (micro-HDMI a mini-HDMI). La imagen del HP llega por un cable de red directo: el HP en `10.0.0.1` y la Pi en `10.0.0.2`, con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada (barra de Orbit OS y Moonlight sin bordes en el hueco). La pantalla completa es la alternativa. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md). Sin probar en la Pi.
 - **Controles:** potenciómetros y botones leídos por un **Arduino Nano** (clon ATmega328P, mini-USB). Sustituye al Micro: el Nano no tiene USB nativo y no puede hacer de teclado HID.
-- **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. Miguel tiene 4 OLED; Orbit usa una. El Uno de la foto no se monta: se había pensado para la capturadora, y esa vía no se usa. Se programa desde la sección **Ardu Lab**, sin el IDE. Detalle en [`docs/ardu-lab.md`](docs/ardu-lab.md).
+- **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. Miguel tiene 4 OLED; Orbit usa una. El Uno de la foto no se monta. Se programa desde la sección **Ardu Lab**, sin el IDE. Detalle en [`docs/ardu-lab.md`](docs/ardu-lab.md).
 - **ESP8266 NodeMCU** en su hueco de la bandeja, previsto para la tira LED con WLED. La tira sigue sin identificar.
 - **Raspberry Pi 4** con HAT VHF (OLED y antena SMA). Medidas del HAT: pendientes. Si el HAT no deja pasar el GPIO, el conector de la Pi en el panel queda sin cablear.
 
@@ -92,13 +92,12 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | ESP8266 y tira LED (WLED) | **Requiere intervención humana** | La tira sigue sin identificar. D6 del Nano de mandos ya no se reserva |
 | Apagado de la Pi (`pi.shutdown`) | **Pendiente** | Requiere permisos de systemd/polkit; ahora solo se registra |
 | Modos de la tira LED | **Requiere intervención humana** | Identificar la tira (tipo y tensión) |
-| Cambio automático de sistema visible (`pi.switch_visible`, botón B2) | **Implementado (sin hardware)** | orbitd elige el modo disponible: **B DDC/CI** (si está configurado; poco probable con la MSI), **C captura** (capturadora HDMI→USB en la Pi: `ORBIT_CAPTURE_DEVICE` + visor fijo `ORBIT_CAPTURE_CMD`, sin shell) o **A remoto** (visor del escritorio del HP por Ethernet interno, p. ej. Moonlight + Sunshine; `ORBIT_REMOTE_CMD`). Si uno falla pasa al siguiente. Probado con tests unitarios y de integración (dispositivo simulado); **sin verificar** con la MSI, la capturadora, el adaptador ni Sunshine. No se dan latencias ni fps. Ver [`docs/conmutacion-video-usb.md`](docs/conmutacion-video-usb.md) §V |
+| Cambio de lo que se ve (`pi.switch_visible`, botón B2) | **Implementado (sin hardware)** | La MSI va solo a la Pi. La imagen del HP llega por el cable de red directo (HP `10.0.0.1`, Pi `10.0.0.2`): Sunshine en el HP y Moonlight en la Pi (`ORBIT_REMOTE_CMD`, sin shell). El teclado y el ratón son Bluetooth, emparejados con la Pi. Sin verificar con la MSI, Sunshine ni Moonlight. No se dan latencias ni fps. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md) |
 | HP: **HP Slimline 260-a110ns** (A6-7310, 8 GB, HDMI + VGA, adaptador externo 19,5 V 65 W) | **Identificado y abierto** | **Medido por Miguel:** placa 17 × 17 cm, altura máxima 35 mm. Agujeros: patrón estándar mini-ITX (coincide visualmente con la foto, no medido). Sin escudo I/O. Faltan posición de conectores traseros, botón de encendido, antenas y BIOS: **requieren intervención humana** (`docs/datos-pendientes-hp.md` §A2, con nota de seguridad) |
 | Pi 4 confirmada (2026-10-20) con HAT VHF; conexión a la MSI, medidas del HAT y si deja pasar el GPIO | **Requiere intervención humana** | El HAT no está modelado. Ver `software/arduino-pruebas/README.md` |
-| Capturadora (comprarla o no: decisión de Miguel), adaptador HDMI→USB-C y soporte DDC/CI de la MSI | **Requiere intervención humana** | Ver `docs/conmutacion-video-usb.md` §V.5 |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
-| CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PETG) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Plantilla de pivotes (C 3,8 / F 3,6 / H 3,4 / J 3,2) **sin resultado**. STEP para SolidWorks en `hardware/impresion/`, sin regenerar el CAD. **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
+| CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PLA+ negro mate) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Plantilla de pivotes (C 3,8 / F 3,6 / H 3,4 / J 3,2) **sin resultado**. STEP para SolidWorks en `hardware/impresion/`, sin regenerar el CAD. **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
 | Medidas de potenciómetros, pulsadores y puertos/teclas del MSI | **Requiere intervención humana** | Medir las piezas de Miguel y ajustar `params.scad`/`lib.scad` |
 
 ## Tests
@@ -132,7 +131,7 @@ Nada de eso se ha probado en la placa, en la Pi ni impreso.
 - [`docs/datos-pendientes-hp.md`](docs/datos-pendientes-hp.md)
 
 **Diseño y decisiones:**
-- Decisiones del prototipo: [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md) · Vídeo y cambio de sistema: [`docs/conmutacion-video-usb.md`](docs/conmutacion-video-usb.md) §V · HP y seguridad del desmontaje: [`docs/datos-pendientes-hp.md`](docs/datos-pendientes-hp.md)
+- Decisiones del prototipo: [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md) · Imagen del HP (Sunshine y Moonlight): [`docs/instalacion-pi.md`](docs/instalacion-pi.md) · HP y seguridad del desmontaje: [`docs/datos-pendientes-hp.md`](docs/datos-pendientes-hp.md)
 - Diseño mecánico v1 + HP v3: [`docs/diseno-mecanico.md`](docs/diseno-mecanico.md) (CAD en `hardware/cad/`, renders en `assets/renders/`)
 
 ## Seguridad

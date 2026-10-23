@@ -218,7 +218,7 @@ async def test_ui_gets_last_pot_values_on_connect(server):
 
 
 async def test_switch_visible_modo_captura(tmp_path, monkeypatch):
-    # Modo C configurado en local (dispositivo simulado por el test): el estado indica «captura»
+    # Visor local configurado (dispositivo simulado por el test): el estado indica «captura»
     # y la entrada física de la MSI sigue siendo la Pi.
     import sys
 

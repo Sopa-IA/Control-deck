@@ -72,7 +72,7 @@ def test_ddc_ok(monkeypatch):
     assert r["ok"] and sw.state() == {"system": "hp", "mode": "ddc", "detail": r["message"]}
 
 
-# ------------------------------------------------------------------ modo C: capturadora
+# ------------------------------------------------------------------ visor local
 def test_from_env_captura():
     cfg = VideoConfig.from_env({"ORBIT_CAPTURE_DEVICE": "/dev/video0",
                                 "ORBIT_CAPTURE_CMD": "mpv --profile=low-latency av://v4l2:{device}"})

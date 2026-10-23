@@ -74,7 +74,7 @@ pod_base      = disposicion_mandos == "fila" ? 92 : 64;  // [DISEÑO] ancho mín
 radio_borde   = 5;    // [DISEÑO] redondeo de aristas del perfil
 chaflan_lat   = 3;    // [DISEÑO] chaflán en las aristas laterales
 
-pared  = 3.0;   // [DISEÑO] espesor de paredes (PETG/ASA, 0.4 mm boquilla)
+pared  = 3.0;   // [DISEÑO] espesor de paredes (PLA+ negro mate, 0.4 mm boquilla)
 suelo  = 4.0;   // [DISEÑO] espesor de la base inferior
 alto_pies = 4;  // [DISEÑO] pies de goma (placeholder)
 
@@ -296,7 +296,7 @@ boton_hp_z = 112;
 // El Ø12,2 y el Ø3,1 están cortados en carcasa.scad (literal 14 mm). No se regenera.
 led_hp_dz = 14;             // el mismo 14 mm del agujero ya impreso
 // Capuchón impreso. Holgura radial en el Ø12,2: 0,3 mm por lado → vástago Ø11,6. [DISEÑO]
-// En PETG, 0,15 mm por lado suele agarrotar. La PRUEBA_boton lo comprueba.
+// Una holgura de 0,15 mm por lado puede agarrotar. La PRUEBA_boton lo comprueba.
 cap_holg = 0.30;
 cap_brida_d = 16;           // no pasa el Ø12,2
 cap_brida_t = 1.6;
@@ -384,20 +384,14 @@ adap_video = [72, 32, 16];   // [PENDIENTE] marcador x y z (incluye holgura de c
 adap_x = pi_x;
 adap_y = pi_y - 12 - adap_video[1];
 adap_z = suelo + 2;
-// Modo B ahora poco probable (los manuales de la MSI no documentan DDC/CI): el hueco se conserva.
-// Bandeja v2: el hueco de 72 mm del adaptador no cabe junto a la Pi girada,
-// los carros y la capturadora. Se quita de la bandeja. Recolocar cuando se
-// mida el aparato. [PENDIENTE]
+// El hueco sigue en el CAD y no se dibuja: la MSI va solo a la Pi.
+// Bandeja v2: el hueco de 72 mm del adaptador no cabe junto a la Pi girada
+// ni junto a los carros. Se quita de la bandeja. [PENDIENTE]
 usar_adaptador_video = false;
 
-// Capturadora HDMI->USB (UVC) para el modo C (RECOMENDADO): HDMI del HP -> capturadora -> USB
-// de la Pi. Referencia vista en Amazon.es el 2026-10-18 (marca SUOFEIXIANG, "4K30 entrada /
-// 1080p", 14,69 €, sin URL): tipo "pincho" con cable corto USB-A/USB-C. Medidas NO publicadas.
-// Es una RESERVA DE ESPACIO [DISEÑO], no la medida del aparato: cuerpo + clavija HDMI recta.
-// Va en la bandeja de servicio, por delante del hueco del adaptador (se fija con velcro o brida).
-// La reserva nominal sigue siendo 72 mm. Las dos torretas DC ya impresas (y el riel que
-// se atornilla a ellas) comen el extremo derecho: la caja que se comprueba acaba en riel_x0a.
-usar_capturadora = true;       // [DISEÑO]
+// Reserva de espacio en el CAD. El montaje no la usa: la imagen del HP llega
+// por el cable de red. No cambiar estas cotas: el ensamblaje las lee.
+usar_capturadora = true;       // [DISEÑO] no mover: el ensamblaje lo lee
 captura = [72, 30, 20];        // [DISEÑO] reserva nominal; PENDIENTE de medir el aparato real
 // Con la Pi a la izquierda el hueco de 72 mm no entra. El nido es el bolsillo
 // que queda a +X de la Pi, entre los micro-HDMI y el giro de la canaleta.
@@ -407,7 +401,6 @@ cap_x = 390;
 cap_y = 220;
 cap_z = suelo + 2;
 // El nido cae donde ahora va el Nano de mandos. No se dibuja ni se comprueba.
-// [PENDIENTE] dónde queda la capturadora.
 usar_nido_captura = false;
 
 // Arduino Nano de MANDOS (2026-10-20). Sustituye al Micro. Clon ATmega328P,
@@ -442,11 +435,11 @@ canal_usb_ancho = 10;                  // [DISEÑO] canal impreso; el cable mini
 // ---------------------------------------------------------------------
 // Impresora de Miguel: Bambu Lab A1 [FUENTE] volumen 256 x 256 x 256 mm, marco abierto.
 // https://bambulab.com/en/a1/tech-specs  -> PLA/PETG/TPU "ideal"; ABS/ASA "no recomendado".
-// Material recomendado: PETG (ASA/ABS alabean sin cámara cerrada en piezas grandes).
+// Material de impresión: PLA+ negro mate.
 impresora = "bambu_a1";
 cama_x = 256; cama_y = 256;   // [FUENTE] Bambu Lab A1
 cama_z = 256;                 // [FUENTE]
-material = "PETG";            // [DISEÑO] recomendado para A1 (marco abierto)
+material = "PLA+ negro mate"; // [DISEÑO] para la A1 (marco abierto)
 margen_cama = 10;             // [DISEÑO] margen de seguridad
 // Sin ficha del fabricante. Ø4,0 es el fallback para un inserto M3 de OD 5.
 // Ø3,0 es el fallback para un inserto M2.5 de OD 3,5. Los dos, sin probar.
@@ -458,7 +451,7 @@ inserto_l  = 5.7;   // [PENDIENTE] profundidad ya impresa en orejetas y separado
 // imprimiendo) siga sacando las guías Ø2,5. No exportar esa carcasa.
 // Las piezas ya impresas no leen este parámetro.
 fijacion   = "autorroscante";   // [DISEÑO] no cambiar: protege el export de x1_y1
-rosca_d    = 2.5;   // [DISEÑO] guía para autorroscante M3 en PETG
+rosca_d    = 2.5;   // [DISEÑO] guía para autorroscante M3 en PLA+
 rosca_prof = 8;     // [DISEÑO] profundidad mínima cuando el plástico llega
 rosca_pared = 2.5;  // [DISEÑO] pared mínima alrededor de la guía, para que no raje
 boss_d     = 8.0;   // [DISEÑO]

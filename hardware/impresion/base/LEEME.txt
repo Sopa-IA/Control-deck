@@ -32,7 +32,7 @@ Montada, la base ocupa 456,3 x 300,5 mm.
 
 CÓMO IMPRIMIR
 -------------
-- PETG, relleno del 15-20 %.
+- PLA+ negro mate, relleno del 15-20 %.
 - Las 4 bases, las pletinas, la bandeja y la pared trasera: cara plana sobre la cama,
   SIN soportes (los STL ya vienen así orientados; la pared trasera, con la cara
   exterior abajo).

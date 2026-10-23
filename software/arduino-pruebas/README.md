@@ -8,18 +8,18 @@ Placa **aparte** del Nano de los mandos. El firmware de los mandos sigue en [`..
 
 ## Qué placa y por qué no el Uno
 
-Miguel prefiere el Arduino Uno de la foto. La placa de catálogo **sí cabe sola** en el hueco libre de la bandeja, y **no cabe bien** junto al ESP8266, la reserva de la capturadora (modo C) y un cable USB.
+Miguel prefiere el Arduino Uno de la foto. La placa de catálogo **sí cabe sola** en el hueco libre de la bandeja, y **no cabe bien** junto al ESP8266 y un cable USB.
 
 Caja libre, calculada el 2026-10-20 con `params.scad` (no es una medida de la bandeja impresa):
 
 | Límite | Valor | De dónde sale |
 |---|---|---|
 | X | 322,26 a 405,26 mm (ancho 83,00) | Borde de la bandeja (`serv_x`) hasta el borde izquierdo del soporte de mandos (`ard_cx - sop_ard_w/2`) |
-| Y | 53,00 a 128,49 mm (fondo 75,49) | Borde delantero de la bandeja (`serv_y`) hasta el frente de la reserva de la capturadora (`cap_y`) |
+| Y | 53,00 a 128,49 mm (fondo 75,49) | Borde delantero de la bandeja (`serv_y`) hasta `cap_y` |
 
 El Uno Rev3 mide **68,6 × 53,4 mm** ([tienda oficial](https://store.arduino.cc/products/arduino-uno-rev3), **DE FUENTE**). Ese rectángulo entra en la caja. Al lado del ESP de referencia (25,4 × 48,3 mm, ver abajo) la única colocación lado a lado es el lado corto del ESP más el lado corto del Uno: 25,4 + 53,4 = 78,8 mm. Quedan **4,2 mm** en X para los dos huecos y **6,9 mm** en Y (75,49 − 68,6). Un cable USB-B no entra en 6,9 mm. El Uno **no se monta**. Sigue en el inventario como pieza que no va en la bandeja.
 
-La placa de prácticas es un **segundo Nano** (misma cota de catálogo que el de mandos: PCB 18 × 45 mm, [tienda oficial](https://store.arduino.cc/products/arduino-nano)). Desde el 2026-10-21 va en un carro del riel, en el puesto y = 76, con el mini-USB hacia la izquierda (−X). El ESP va en el puesto y = 105. Entre los dos carros quedan 5,3 mm. La capturadora empieza en y = 128,49.
+La placa de prácticas es un **segundo Nano** (misma cota de catálogo que el de mandos: PCB 18 × 45 mm, [tienda oficial](https://store.arduino.cc/products/arduino-nano)). Desde el 2026-10-21 va en un carro del riel, en el puesto y = 76, con el mini-USB hacia la izquierda (−X). El ESP va en el puesto y = 105. Entre los dos carros quedan 5,3 mm. Esa caja libre acaba en y = 128,49.
 
 **PENDIENTE:** la foto no enseña un segundo Nano. Hay un Nano (mandos) y un Uno. Miguel acepta otro Nano si el Uno no cabe. Comprarlo no está hecho: no se compra nada sin que él lo diga.
 
@@ -27,7 +27,7 @@ La placa de prácticas es un **segundo Nano** (misma cota de catálogo que el de
 
 En un carro del riel (`PROVISIONAL_carro_nano`), atornillado al puesto y = 76. El riel (`PROVISIONAL_riel_placas`) va a las dos torretas que ya están a la izquierda de la canaleta, en (401,26, 146,492) y (401,26, 194,492). No hay torretas nuevas y la bandeja no se reimprime. El soporte del Nano de mandos no forma parte de esta bahía y no se ha modificado.
 
-El ESP8266 va en `PROVISIONAL_carro_esp`, puesto y = 105. En la foto su micro-USB mira al frente; en el carro mira a la izquierda, para no entrar en la tina ni en la capturadora. Una proto de 30 × 70 (diseño, no medida) usa el mismo puesto y no cabe a la vez que el ESP. El carro de esa proto acaba a 2,3 mm del borde de la bandeja: **PENDIENTE** con la placa real.
+El ESP8266 va en `PROVISIONAL_carro_esp`, puesto y = 105. En la foto su micro-USB mira al frente; en el carro mira a la izquierda, para no entrar en la tina. Una proto de 30 × 70 (diseño, no medida) usa el mismo puesto y no cabe a la vez que el ESP. El carro de esa proto acaba a 2,3 mm del borde de la bandeja: **PENDIENTE** con la placa real.
 
 El tetón, el cajeado Ø8,4 y el inserto M3 corto (el de 5,7 mm no cabe en los ~4 mm de la torreta ni en los ~3,3 mm bajo el mortise) no se han probado en la pieza impresa.
 
@@ -60,10 +60,10 @@ La Pi 4 tiene 2× USB 3.0 y 2× USB 2.0 ([documentación oficial](https://www.ra
 |---|---|
 | 1 | Nano de mandos, siempre conectado (orbitd, serie) |
 | 2 | ESP8266 (corriente y, una vez, grabar WLED; luego va por Wi-Fi) |
-| 3 | Capturadora del modo C |
+| 3 | Libre |
 | 4 | Puente del conector PRG, cuando no hay portátil |
 
-Son los cuatro. No queda uno de reserva. Un hub es opcional más adelante y **no se da por comprado**. La tira LED no se alimenta del regulador de 3,3 V del ESP.
+El teclado y el ratón son Bluetooth, emparejados con la Pi, y no ocupan un USB. Un hub es opcional más adelante y **no se da por comprado**. La tira LED no se alimenta del regulador de 3,3 V del ESP.
 
 ## Pantalla OLED
 

@@ -2,7 +2,7 @@
 
 **20/10/2026. Prototipo. Ninguna pieza está lista para fabricar.** Sirven para comprobar medidas y encajes. Nada de esto se ha impreso ni montado todavía, salvo lo que se indica.
 
-Origen de la lista: repo `Sopa-IA/Control-deck`, rama `main`, commit `3978879` (PR #6). Impresora: Bambu Lab A1 (cama 256 × 256). PETG, relleno 15-20 %.
+Origen de la lista: repo `Sopa-IA/Control-deck`, rama `main`, commit `3978879` (PR #6). Impresora: Bambu Lab A1 (cama 256 × 256). PLA+ negro mate, relleno 15-20 %. Las guías y los anillos de luz, en translúcido.
 
 Los STL **no se duplican** en esta carpeta. Cada pieza apunta al STL que ya está en el repo. Los STEP numerados están en [`STEP/`](STEP/).
 

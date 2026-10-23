@@ -16,14 +16,14 @@ Dentro de la cuña conviven:
 
 - una **Raspberry Pi** que ejecuta Orbit OS y es la que manda;
 - la placa de un **HP Slimline 260-a110ns** sacado de su caja, que sigue corriendo **Windows 10 Home** por su cuenta;
-- un **monitor MSI** compartido;
+- un **monitor MSI** que va solo a la Pi;
 - un **Arduino Nano** (clon, mini-USB) que lee potenciómetros y botones;
 - un **ESP8266** previsto para la tira LED, y un **segundo Nano** de prácticas con pines y una OLED en la trasera (el segundo Nano no consta en la foto: **PENDIENTE** de tenerlo);
 - luces ámbar.
 
 **Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
 
-Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es solo Moonlight: la MSI va a la Pi y el HP se ve por el Ethernet interno. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
+Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
 
 El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
 
@@ -43,7 +43,7 @@ Carcasa futura, no imprimir ahora (si algún día se imprime, es pieza de noche)
 
 En `consumo.md` (repo del inventario, no este): el M3×6 avellanado sigue en 4 de 40 y el inserto M3 4×5 sigue en 6 de 30. Los adaptadores no gastan tornillo. La bandeja v3 tampoco: mismos M3×12, M3×8 y grapas. Anota como compra los Dupont acodados a 90° y el LM2596 de 43 × 21 mm a 5 V.
 
-Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
+No hay cifras de latencia ni de fps: no se han medido.
 
 ---
 
@@ -56,7 +56,7 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `docs/ESTADO-Y-TRASPASO.md` | Este archivo. |
 | `docs/decisiones-prototipo.md` | Decisiones del 2026-10-18. El disco ya no es el SSD recomendado: ver la nota del 2026-10-20 en esa tabla. |
 | `docs/diseno-mecanico.md` | Diseño v1 + HP v3. **Varios párrafos siguen hablando del SSD 2,5".** La geometría vigente está en `params.scad`, no en ese texto. |
-| `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). El montaje de la Pi es el de `instalacion-pi.md`. |
+| `docs/conmutacion-video-usb.md` | Notas de la fase 1. El montaje vigente está en `instalacion-pi.md`. |
 | `docs/instalacion-pi.md` | Arranque directo a Orbit OS, kiosco, Moonlight y el marco integrado. |
 | `docs/ardu-lab.md` | Programar el Nano de prácticas desde Orbit OS. El de mandos queda bloqueado. |
 | `docs/datos-pendientes-hp.md` | Ficha del HP, fuentes y lista H-1…H-12. Parte de H-2 y H-8 ha avanzado; el archivo no se ha reescrito entero. |
@@ -101,7 +101,7 @@ Asignación por defecto (`controls.default.json`): P1 `hp.volume_set`, P2 `ui.sc
 
 ## 3. Lo que Miguel ya tiene
 
-Sin compras. La capturadora del modo C **no** está en esta lista: es una referencia vista en Amazon, no un aparato que tenga.
+Sin compras.
 
 | Pieza | Qué se sabe | Etiqueta |
 |---|---|---|
@@ -124,11 +124,9 @@ Sin compras. La capturadora del modo C **no** está en esta lista: es una refere
 | MSI Pro MP161 E2U | 15,6", 1920×1080, no táctil. Mini-HDMI y 2 USB-C con DP Alt. | Envolvente 362,26 × 233,84 × 18,8 mm y área activa 344,16 × 193,59 mm: **DE FUENTE** (ficha MSI; el manual da 232,92 mm de alto y el CAD usa el mayor). Posición del área activa y de los puertos del canto: **PENDIENTE** (el área se supone centrada). |
 | Potenciómetros y pulsadores | Los suyos. El CAD usa marcadores genéricos de 24 mm y 16 mm. Eje de 6 mm acordado. | **PENDIENTE** de medir. `eje_pot_d` está marcado acordado y sin medir. |
 | Tira LED | La suya. Tipo y tensión desconocidos. | **PENDIENTE**. |
-| Adaptador Mini-HDMI → HDMI | Lo tiene. En el modo C iría de la Pi a la Mini-HDMI de la MSI. | Existencia: dato del propietario. Modelo: **PENDIENTE**. |
-| Adaptador UGREEN | Modelo y sentido sin confirmar. Probablemente USB-C → HDMI, que es el sentido contrario al que haría falta para el modo B. | **PENDIENTE**. |
-| Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material del diseño: PETG. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
-
-La capturadora de referencia (marca SUOFEIXIANG, texto "4K30 entrada / 1080p", 14,69 € vistos el 2026-10-18, sin URL) **no se ha comprado**. La reserva nominal sigue siendo 72 × 30 × 20 mm. En la bandeja con huecos fijos el nido se ha quitado (caía sobre el Nano de mandos). Dónde va el aparato es [PENDIENTE]. No es la medida de un aparato.
+| Adaptador Mini-HDMI → HDMI | Lo tiene. La Pi va a la Mini-HDMI de la MSI. | Existencia: dato del propietario. Modelo: **PENDIENTE**. |
+| Adaptador UGREEN | Modelo y sentido sin confirmar. No se usa: la MSI va solo a la Pi y el HP se ve por el cable de red. | **PENDIENTE**. |
+| Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material de impresión: PLA+ negro mate. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
 
 ---
 
@@ -160,8 +158,7 @@ Unidades: milímetros. Ejes: X ancho, Y fondo (frente en 0), Z altura.
 | Panel de prácticas | x = 250, z = 68, 74 × 72 | DISEÑO, en la cara trasera de `carcasa_x1_y1` |
 | OLED (marcador) | 33,5 × 12 × 33,0; ventana 24 × 14 | FUENTE de la PCB Waveshare; profundidad y ventana DISEÑO |
 | Potenciómetro / pulsador | genérico 24 mm / 16 mm | PENDIENTE |
-| Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = true` | PENDIENTE. El hueco se conserva aunque el modo B sea poco probable |
-| Capturadora (reserva) | Nominal 72 × 30 × 20; el nido de la bandeja v2 es 26 × 32 × 14 | DISEÑO. El aparato no está medido. El hueco del adaptador de vídeo se quitó de la bandeja |
+| Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = false` | El hueco sigue en el CAD y no se dibuja. La imagen del HP llega por el cable de red |
 | KVM | `usar_kvm = false` | DISEÑO |
 
 Agujeros HP en coordenadas de la carcasa, los que imprimió `comprobar_base_hdd.py` el 2026-10-20: C (23,35, 284,332), F (180,83, 261,472), H (23,35, 129,392), J (180,83, 129,392). C y F caen en `base_x0_y1`; H y J en `base_x0_y0`. Las bases de la derecha no llevan separadores del HP.
@@ -264,15 +261,11 @@ Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla 
 
 ---
 
-## 7. Modos de vídeo
+## 7. Imagen del HP
 
-| Modo | Qué hace | Estado |
-|---|---|---|
-| **A · remoto** | La MSI muestra la Pi. Ver el HP es abrir en la Pi un visor del escritorio (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. Variable `ORBIT_REMOTE_CMD` (sin shell). Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. | **Base.** Implementado en `video.py` y cubierto por tests. **No** probado con Sunshine, Moonlight, el HP ni la MSI. Windows 10 Home no trae servidor RDP. |
-| **B · DDC/CI** | La Pi cambiaría la entrada de la MSI (`ddcutil`, VCP 0x60). Haría falta el adaptador HDMI → USB-C en el sentido correcto. Variables: `ORBIT_VIDEO_DDC=1`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS`. | Implementado y **apagado** por defecto. **Poco probable:** los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE. |
-| **C · capturadora** | HDMI del HP → capturadora UVC → USB de la Pi. La MSI sigue en la Pi. Variables: `ORBIT_CAPTURE_DEVICE` (`/dev/videoN` o `/dev/v4l/by-id|by-path/…`) y `ORBIT_CAPTURE_CMD` (sin shell; el texto `{device}` se sustituye). Teclado y ratón del HP van al HP, no a la capturadora. | **Recomendado** junto al A para tener imagen real del HP. Implementado y cubierto por tests con dispositivo simulado. **No** hay capturadora, y no se ha probado con hardware. |
+La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo: el HP en 10.0.0.1 y la Pi en 10.0.0.2. Sunshine corre en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. `ORBIT_REMOTE_CMD` lanza Moonlight sin shell. Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. Está implementado en `video.py` y cubierto por tests. **No** está probado con Sunshine, Moonlight, el HP ni la MSI. Windows 10 Home no trae servidor RDP. No hay cifras de latencia ni de fps.
 
-Prioridad en código: B si está listo, si no C si está configurado, si no A.
+Cambiar la entrada de la MSI con `ddcutil` (`ORBIT_VIDEO_DDC`) está en el código y apagado. Los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE.
 
 ---
 
@@ -281,9 +274,9 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 | PR | Qué se decidió y por qué |
 |---|---|
 | **#1** (merge `861db16`) | Entra el v0: investigación, CAD paramétrico y software **solo en simulación**. Nada probado en hardware. Se conserva la licencia Apache-2.0 de Miguel. |
-| **#2** (merge `68be364`) | CAD v1: 2 potenciómetros + 2 botones con Arduino Micro, sin KVM, impresora Bambu Lab A1 y PETG. Las medidas de mandos son de catálogo genérico. El Micro lo sustituye el cambio de abajo; esta fila se queda como historia. |
+| **#2** (merge `68be364`) | CAD v1: 2 potenciómetros + 2 botones con Arduino Micro, sin KVM, impresora Bambu Lab A1. El material de impresión vigente es PLA+ negro mate. Las medidas de mandos son de catálogo genérico. El Micro lo sustituye el cambio de abajo; esta fila se queda como historia. |
 | **#3** (merge `fc4837b`) | El HP Slimline se saca de la caja y entra la placa desnuda, sin cambiar la envolvente. El adaptador de 65 W se queda fuera y sin modificar. El cambio de sistema pasa a ser automático desde Orbit OS (entonces A y después B). |
-| **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Entra el modo C. El modo B pasa a poco probable porque los manuales de la MSI no documentan DDC/CI. |
+| **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Cambiar la entrada de la MSI queda como poco probable porque los manuales no documentan DDC/CI. |
 | **#5** (merge `bf6d641`) | Renders del CAD v3, no fotos, con créditos de qué es exacto y qué es aproximado. En un commit aparte, la lámina con recortes de fotos: Miguel autorizó publicar esa imagen. |
 | **#6** (merge `3978879`) | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
 | **#7** (merge `05ac19f`) | Después de la base: STEP AP214 para SolidWorks, el orden de las 15 piezas siguientes (los STL no se duplican) y el manual de montaje de 21 páginas. La plantilla de pivotes sigue sin resultado. Los STEP de malla se editan peor; `05_carcasa_x1_y0` tiene 12 triángulos cruzados. |
@@ -293,7 +286,7 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 ## 9. Restricciones
 
-- No se compra nada sin autorización de Miguel. La capturadora es una propuesta, no un pedido.
+- No se compra nada sin autorización de Miguel.
 - No se suben credenciales, tokens reales, `.env` ni fotos personales. La única excepción de imagen es la lámina autorizada del PR #5.
 - No se añade telemetría de uso ni envío de datos fuera. La telemetría que ya existe es local: psutil en la máquina donde corre orbitd o hp-agent, para la propia interfaz.
 - Nada va conectado a la red eléctrica dentro de la cuña. La fuente original del HP no se modifica y se queda fuera.
@@ -324,11 +317,11 @@ cd Control-deck
 ./scripts/dev-sim.sh
 ```
 
-Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y el visor del modo A o C.
+Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y Moonlight.
 
 También siguen abiertos: el calibre de cada conector trasero del HP (la placa usa la foto del 2026-10-23, ±2 mm; la prueba lo comprueba antes de pegar), los agujeros reales de la pestaña del I/O frontal (el marco trae dos a 60 mm y se taladra la chapa), antenas, cables SATA, diámetro del jack, probar en la Pi el apagado desde Orbit OS (el software ya llama a `systemctl poweroff` tras confirmar; no se ha hecho en el hardware), volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el cuerpo real de las regletas (el modelo usa 5,1 × 8,5 mm de catálogo), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
 
-De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el módulo real del step-down (el CAD usa un LM2596 típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina); el ESP de la foto (58 × 31); el tramo sin pines del canto corto (el apoyo es de 2,0 mm); el largo de las clavijas; el HAT; y dónde se guarda la capturadora. El riel suelto y los carros no se montan. La guía de los insertos cortos de las torretas DC era de esa bahía y ya no aplica a esta bandeja.
+De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el módulo real del step-down (el CAD usa un LM2596 típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina); el ESP de la foto (58 × 31); el tramo sin pines del canto corto (el apoyo es de 2,0 mm); el largo de las clavijas y el HAT. El riel suelto y los carros no se montan. La guía de los insertos cortos de las torretas DC era de esa bahía y ya no aplica a esta bandeja.
 
 ---
 

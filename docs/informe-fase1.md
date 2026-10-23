@@ -5,7 +5,7 @@
 
 > **Actualización HP v2 (2026-10-18), prevalece sobre este informe donde no coincida:**
 > - **HP identificado: HP Slimline 260-a110ns** (AMD A6-7310, 8 GB DDR3L, HDMI + VGA, adaptador externo 65 W 19,5 V). Se **desmonta**: su placa mini-ITX va dentro de la cuña; DVD retirado, SSD 2,5" recomendado. → `datos-pendientes-hp.md` (fuentes y nota de seguridad)
-> - **Vídeo:** sin KVM ni táctil. Cambio de sistema **automático desde Orbit OS** (Miguel nunca toca el OSD): **modo A base** = escritorio del HP en un visor de la Pi por Ethernet interno (Sunshine + Moonlight; RDP no, por Windows 10 Home); **modo B opcional** = HP → Mini-HDMI, Pi → adaptador HDMI→USB-C → USB-C, entrada cambiada por DDC/CI. → `conmutacion-video-usb.md` §V
+> - **Vídeo:** sin KVM ni táctil. La MSI va solo a la Pi (micro-HDMI a mini-HDMI). La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. Windows 10 Home no trae servidor RDP. → `instalacion-pi.md`
 > - **Pantalla:** MSI PRO MP161 E2U (ver `decisiones-prototipo.md`). **CAD HP v2:** `diseno-mecanico.md`.
 
 ## 1. Resumen ejecutivo

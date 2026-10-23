@@ -1,7 +1,8 @@
 """Cambio del sistema visible (HP / Pi).
 
 La MSI va solo a la Pi (micro-HDMI a mini-HDMI). El HP se ve con Moonlight contra
-Sunshine en 10.0.0.1, por el Ethernet interno. Vista por defecto: **integrada**.
+Sunshine: el HP en 10.0.0.1 y la Pi en 10.0.0.2, por el cable de red directo.
+El teclado y el ratón son Bluetooth, emparejados con la Pi. Vista por defecto: **integrada**.
 Chromium sigue a pantalla completa con el marco de Orbit OS y labwc coloca
 Moonlight, sin bordes ni título, en el hueco que deja la barra (1920×1040 si la
 barra mide 40 px y la barra lateral está cerrada). La alternativa es Moonlight
@@ -11,8 +12,8 @@ El botón físico (``pi.switch_visible``) abre Moonlight y, si ya está abierto,
 lo cierra y devuelve Orbit OS al frente. ``pi.stream_layout`` y el atajo
 Ctrl+Alt+Mayús+X cambian de vista. Ctrl+Alt+Mayús+Q lo cierra el propio Moonlight.
 
-DDC/CI y la capturadora siguen en el código si se configuran. Este montaje no
-los usa: el instalador no define esas variables.
+El cambio de entrada de la MSI sigue en el código si se configura. Este montaje no
+lo usa: el instalador no define esas variables.
 
 Moonlight es una aplicación nativa: no se puede incrustar en la página. La
 integración es colocar la ventana.
@@ -378,13 +379,13 @@ class VideoSwitcher:
     async def _capture(self, target: str) -> tuple[bool, str]:
         if target == "pi":
             await self._stop_viewer()
-            return True, "Orbit OS visible (visor de la capturadora cerrado)"
+            return True, "Orbit OS visible (visor cerrado)"
         dev = self.cfg.capture_device or ""
         if not os.path.exists(dev):
             return False, f"no existe {dev}"
         if self._viewer_alive():
             if self._viewer_kind == "captura":
-                return True, "Visor de la capturadora ya abierto"
+                return True, "Visor ya abierto"
             await self._stop_viewer()
         try:
             self._viewer = await asyncio.create_subprocess_exec(
@@ -394,7 +395,7 @@ class VideoSwitcher:
             return False, f"no se pudo abrir el visor: {exc.strerror or exc.__class__.__name__}"
         self._viewer_kind = "captura"
         self._arm_watch()
-        return True, f"HP visible por la capturadora HDMI->USB ({dev}); teclado y ratón van al HP"
+        return True, f"HP visible por el visor ({dev})"
 
     async def _remote(self, target: str) -> tuple[bool, bool, str]:
         if target == "pi":

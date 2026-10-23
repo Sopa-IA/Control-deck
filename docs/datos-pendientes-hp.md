@@ -72,7 +72,7 @@
 
 ### Antenas Wi-Fi: dos opciones
 
-1. **Conservar la tarjeta M.2 y sus antenas.** Las antenas originales van pegadas a la caja HP; al sacarla, hay que despegarlas sin tirar de los cables (soltar antes el conector de la tarjeta, que es un micro-coaxial frágil) y pegarlas por dentro de la carcasa de PETG, **lejos de chapas metálicas, del disipador y del cable HDMI**. El sitio natural es la pared trasera alta o el lomo superior, encima de la placa. La longitud de los cables decide el sitio: **PENDIENTE de medir (H-9)**. El PETG no bloquea la señal como la chapa.
+1. **Conservar la tarjeta M.2 y sus antenas.** Las antenas originales van pegadas a la caja HP; al sacarla, hay que despegarlas sin tirar de los cables (soltar antes el conector de la tarjeta, que es un micro-coaxial frágil) y pegarlas por dentro de la carcasa de PLA+ negro mate, **lejos de chapas metálicas, del disipador y del cable HDMI**. El sitio natural es la pared trasera alta o el lomo superior, encima de la placa. La longitud de los cables decide el sitio: **PENDIENTE de medir (H-9)**. El PLA+ no bloquea la señal como la chapa.
 2. **Quitar la tarjeta y usar un adaptador Wi-Fi USB** (la opción que Miguel ya contemplaba en su lista de mejoras). Se enchufa en un USB trasero o frontal y evita mover las antenas. Ocupa un USB.
 
 Si el HP va solo por cable (Ethernet a la Pi) y no necesita Wi-Fi, se puede quitar la tarjeta sin más.
@@ -83,7 +83,7 @@ Si el HP va solo por cable (Ethernet a la Pi) y no necesita Wi-Fi, se puede quit
 - La placa que cierra el hueco es `PROVISIONAL_placa_io_hp` (171,75 × 55,95 × 2,80 mm, 15,71 cm³ con los huecos del 2026-10-23). Entra **por dentro**. El reborde (6 mm arriba y a los lados, 4,5 mm abajo) apoya en la cara interior de la pared; abajo solo hay 5,2 mm hasta el suelo. Un tetón de 1,4 mm, 0,4 mm más pequeño que la ventana por lado, la centra. Chapa de 1,4 mm. No lleva tornillo. Se imprime con el reborde sobre la cama, sin soportes.
 - Los huecos están en `io_huecos`: nombre, x desde el borde izquierdo de la ventana mirando la trasera, z desde el borde inferior, ancho y alto. Foto del **2026-10-23**, escala = ancho impreso 159,75 mm (la regla no se usa). Orden: VGA, HDMI, USB 3, RJ45 sobre USB 2, audio, DC arriba a la derecha, pines abajo a la derecha. ±2 mm. Una lectura anterior ponía el DC a la izquierda; esta foto no.
 - `PRUEBA_placa_io_hp` (159,75 × 45,45 × 1,40 mm, 3,52 cm³) se apoya por fuera antes de pegar la placa. El hueco grande de la izquierda tiene que caer en el VGA azul. Si no, no se monta.
-- Sin chapa, las carcasas de los conectores ya no tocan la masa de la caja metálica: en una carcasa de PETG eso no rompe nada, pero **no hay apantallamiento** (ver §B). La placa impresa tampoco es conductora.
+- Sin chapa, las carcasas de los conectores ya no tocan la masa de la caja metálica: en una carcasa de PLA+ eso no rompe nada, pero **no hay apantallamiento** (ver §B). La placa impresa tampoco es conductora.
 
 **Qué medir (H-4).** Las dos referencias son la ventana ya impresa, mirando la trasera desde fuera: el **borde interior izquierdo** y el **borde interior inferior**. Para cada conector, cuatro cotas al canto de la carcasa metálica que tiene que atravesar la placa (no al hueco de la clavija): borde izquierdo → canto izquierdo, borde izquierdo → canto derecho, borde inferior → canto inferior, borde inferior → canto superior.
 
@@ -104,10 +104,10 @@ Confirmar que por encima de los conectores solo se ve el disipador. El hueco má
 - **Desenchufar** el adaptador de la red **y** de la placa antes de tocar nada; pulsar el botón de encendido unos segundos con todo desconectado para descargar.
 - **ESD:** pulsera antiestática conectada a tierra (o tocar una superficie metálica conectada a tierra con frecuencia); manipular la placa por los bordes y dejarla sobre su bolsa antiestática.
 - **Fuente:** es un **adaptador externo certificado** y sigue siéndolo: no se abre, no se modifica, no entra en la carcasa. **Dentro de Orbit no hay red eléctrica** (solo 19,5 V DC y 5 V USB). El proyecto nunca diseña circuitos de red.
-- **Masa de las piezas metálicas:** la placa HP no lleva escudo I/O propio (foto 2026-10-18); si se añade una placa I/O metálica, y cualquier chapa o soporte metálico deben quedar unidos a la masa de la placa (a través de los separadores/tornillos o con un cable de masa al agujero de anclaje con pad metalizado). La carcasa de PETG no es conductora: **no** se da por hecho ningún apantallamiento.
+- **Masa de las piezas metálicas:** la placa HP no lleva escudo I/O propio (foto 2026-10-18); si se añade una placa I/O metálica, y cualquier chapa o soporte metálico deben quedar unidos a la masa de la placa (a través de los separadores/tornillos o con un cable de masa al agujero de anclaje con pad metalizado). La carcasa de PLA+ negro mate no es conductora: **no** se da por hecho ningún apantallamiento.
 - **Pila CMOS:** se conserva en la placa; no cortocircuitarla.
 - **Disco duro:** manipular sin golpes, apagado; mejor clonar a un SSD antes de manipularlo (copia de seguridad previa).
-- **Térmica:** el PETG se reblandece hacia 70–80 °C (temperatura de transición vítrea del material, según fabricante del filamento: **PENDIENTE de la ficha del filamento real**). Conservar el disipador y ventilador originales, no tapar las rejillas y medir temperaturas en un prototipo abierto antes de cerrarlo.
+- **Térmica:** el PLA+ negro mate se reblandece a la temperatura de transición vítrea del filamento (**PENDIENTE de la ficha del filamento real**). Conservar el disipador y ventilador originales, no tapar las rejillas y medir temperaturas en un prototipo abierto antes de cerrarlo.
 - **Cables de antena** Wi-Fi: no tirar de ellos; soltarlos del conector de la tarjeta con cuidado.
 
 ## C. Cuestionario original (fase 1) — histórico

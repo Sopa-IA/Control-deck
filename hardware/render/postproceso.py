@@ -14,7 +14,7 @@ FD = "/usr/share/fonts/truetype/dejavu/"
 def F(s, b=False, c=False): return ImageFont.truetype(FD + ("DejaVuSansCondensed" if c else "DejaVuSans") + ("-Bold" if b else "") + ".ttf", s)
 AMB = (255, 160, 40); BL = (235, 235, 235); GR = (160, 160, 165)
 AVISO = "Render del diseño CAD — no es una foto ni un prototipo fabricado"
-CONFIG = "MSI PRO MP161 E2U 15,6\" · placa HP 260-a110ns (mini-ITX) · HDD 3,5\" · Raspberry Pi 4 · modo C (capturadora) · Arduino Micro (render desfasado: el CAD de 2026-10-20 es un Nano)"
+CONFIG = "MSI PRO MP161 E2U 15,6\" · placa HP 260-a110ns (mini-ITX) · HDD 3,5\" · Raspberry Pi 4 · PLA+ negro mate · Arduino Micro (render desfasado: el CAD de 2026-10-20 es un Nano)"
 
 def panel(d, xy, alpha_img, fill=(10, 10, 12, 190), r=10):
     d.rounded_rectangle(xy, r, fill=fill)
@@ -77,8 +77,8 @@ lam = [
     ("02_perfil_lateral", "lateral", "Perfil lateral (lado izquierdo)", "Inclinación de 30° · I/O frontal del HP y pulsador de encendido en el lateral"),
     ("03_trasera_3-4", "trasera", "Trasera 3/4", "Ventana I/O del HP (DC, VGA, HDMI, USB, RJ45, audio) · pasacables encima · panel de conectores"),
     ("04_explosionado", "explosionado", "Vista explosionada", "Bisel · MSI · carcasa · mandos · componentes · soportes · base · bandeja de servicio · guía LED"),
-    ("05_interior_cenital", "interior", "Interior visto desde arriba", "Sin carcasa, monitor ni mandos exteriores · la caja translúcida es la reserva de la capturadora"),
-    ("07_detalle_mandos", "detalle", "Detalle de la consola de mandos", "Pomos con anillo de luz ámbar · pulsadores de 16 mm · textura de capas del PETG"),
+    ("05_interior_cenital", "interior", "Interior visto desde arriba", "Sin carcasa, monitor ni mandos exteriores"),
+    ("07_detalle_mandos", "detalle", "Detalle de la consola de mandos", "Pomos con anillo de luz ámbar · pulsadores de 16 mm · textura de capas del PLA+ negro mate"),
 ]
 for nombre, raw, t, s in lam:
     p = os.path.join(RAW, raw + ".png")
