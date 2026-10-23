@@ -9,7 +9,7 @@ Para regenerarlo, desde la raíz del repo:
 python3 hardware/cad/manual/completo_pdf.py
 ```
 
-PDF: `docs/manual_completo/Orbit_manual_completo.pdf`. Páginas: 91. Pasos numerados: 77.
+PDF: `docs/manual_completo/Orbit_manual_completo.pdf`. Páginas: 92. Pasos numerados: 78.
 
 Cada paso numerado tiene su figura. Lo naranja es lo que se pone en ese paso. Las pantallas de Imager y las cajas de terminal son ilustraciones, rotuladas en la propia figura.
 
@@ -94,17 +94,18 @@ La carcasa y la base ya están impresas y cerradas. No se cortan, no se taladran
 75. 62. Lanza el instalador
 76. 63. Reinicia
 77. 64. SSH otra vez
-78. 65. orbitd está activo
-79. 66. El Wi-Fi tiene internet
-80. 67. eth0 no tiene puerta
-81. 68. Estás en dialout
-82. 69. Apagar pide confirmación
-83. 70. El botón corto no apaga
-84. 71. Empareja Moonlight una vez
-85. 72. Salir y volver al kiosco
-86. 73. El simulador no apaga el PC
-87. 74. Instala Sunshine
-88. 75. Empareja con el PIN
-89. 76. Vista integrada
-90. 77. Enchufe HDMI falso
-91. Si algo no cuadra
+78. 65. Empareja el teclado Bluetooth
+79. 66. orbitd está activo
+80. 67. El Wi-Fi tiene internet
+81. 68. eth0 no tiene puerta
+82. 69. Estás en dialout
+83. 70. Apagar pide confirmación
+84. 71. El botón corto no apaga
+85. 72. Empareja Moonlight una vez
+86. 73. Salir y volver al kiosco
+87. 74. El simulador no apaga el PC
+88. 75. Instala Sunshine
+89. 76. Empareja con el PIN
+90. 77. Vista integrada
+91. 78. Enchufe HDMI falso
+92. Si algo no cuadra

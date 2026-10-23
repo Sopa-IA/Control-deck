@@ -364,6 +364,21 @@ def render_todo() -> dict[str, Path]:
         ("cmd", "ssh USUARIO@raspberrypi.local"),
         ("ok", "USUARIO@raspberrypi:~ $"),
     ])
+    fotos["chk_bt"] = terminal(IMG / "chk_bt.png", [
+        ("dim", "Teclado en emparejar, y no unido a otro aparato."),
+        ("cmd", "bluetoothctl"),
+        ("cmd", "power on"),
+        ("cmd", "agent on"),
+        ("cmd", "default-agent"),
+        ("cmd", "scan on"),
+        ("out", "Device AA:BB:CC:DD:EE:FF Teclado"),
+        ("cmd", "pair AA:BB:CC:DD:EE:FF"),
+        ("cmd", "trust AA:BB:CC:DD:EE:FF"),
+        ("cmd", "connect AA:BB:CC:DD:EE:FF"),
+        ("cmd", "scan off"),
+        ("cmd", "exit"),
+        ("dim", "Tras reiniciar, pulsa una tecla si no conecta."),
+    ])
     fotos["chk_orbit"] = terminal(IMG / "chk_orbit.png", [
         ("cmd", "systemctl status orbitd"),
         ("ok", "Active: active (running)"),
@@ -815,6 +830,9 @@ def construir(fotos):
     p("SSH otra vez",
       "Entra con el mismo usuario.",
       "chk_ssh", "1. El SSH responde.")
+    p("Empareja el teclado Bluetooth",
+      "Por SSH. El teclado en modo de emparejamiento, y no conectado a otro aparato. Si sigue unido a un PC o a un teléfono, la Pi no lo ve. Tras reiniciar, pulsa una tecla: algunos teclados no despiertan solos.",
+      "chk_bt", "power on, agent on, default-agent, scan on, pair, trust, connect, scan off, exit.")
     p("orbitd está activo",
       "systemctl status orbitd dice active. En la pantalla se ve Orbit OS.",
       "chk_orbit", "2. Servicio y pantalla.")

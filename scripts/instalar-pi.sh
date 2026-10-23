@@ -591,10 +591,17 @@ else
   log "NetworkManager no está en marcha. eth0 quedará en 10.0.0.2/24 al arrancar, sin puerta ni DNS."
 fi
 
+log "Bluetooth"
+# La sesión orbit no arranca el panel, que era quien hacía rfkill unblock.
+# shellcheck disable=SC1091
+source "$(dirname "$0")/orbit-bluetooth.sh"
+desbloquear_bluetooth
+
 log "Listo. Reinicia la Pi para ver Orbit OS al encender."
 echo "Usuario de la sesión: $ORBIT_USER"
 echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco y abre una terminal). Para volver: rm /var/lib/orbit/kiosk-pausa"
 echo "Escritorio de Raspberry Pi: sudo orbit-escritorio y sudo reboot. Para Orbit OS otra vez: sudo bash scripts/instalar-pi.sh y sudo reboot"
+echo "Bluetooth: orbit-bt-unblock.service lo desbloquea en cada arranque. Teclado por SSH: docs/instalacion-pi.md"
 echo "Moonlight aún no está emparejado. Pasos en docs/instalacion-pi.md"
 echo "Ardu Lab no sube nada hasta anotar el basename de /dev/serial/by-path."
 echo "Cuando los Nano estén enchufados: sudo bash scripts/detectar-nanos.sh"
