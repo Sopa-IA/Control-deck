@@ -30,10 +30,10 @@
 | H-1 | Serigrafía de la placa (nombre, p/n, SSID) | Foto | Confirmar "Iris-A6" |
 | H-2 | Posición de los 4 agujeros y diámetro | Calibre, foto con regla | Separadores del CAD (`mitx_agujeros`, `mitx_ag_f`, `mitx_ag_borde`). **v3: patrón estándar mini-ITX; coincide visualmente con la foto, no medido** |
 | H-3 | ~~Altura máxima de componentes sobre la PCB~~ | — | **Medido: 35 mm** (Miguel, 2026-10-18). `hp_comp_h = 35`; el CAD admite hasta 41 mm con 3 mm de holgura |
-| H-4 | Pila de conectores traseros: alto, ancho y posición de cada conector respecto al borde interior de la ventana ya impresa. **Escudo: no hay** (foto). La placa está modelada; las cotas de `io_huecos` son de la foto del 2026-10-22 y siguen **[PENDIENTE]** | Calibre, con la referencia de abajo | Corregir `io_huecos` en `PROVISIONAL_placa_io_hp` |
+| H-4 | Pila de conectores traseros. **Escudo: no hay.** La foto del 2026-10-23, escalada al ancho impreso de 159,75 mm, pone el VGA a la izquierda y el jack DC a la derecha (±2 mm). La placa ya usa esa tabla. Sigue abierto el calibre: la prueba tiene que caer en el VGA azul antes de pegar | Calibre, si la prueba no cuadra | Confirmar o corregir `io_huecos` |
 | H-5 | Disipador: tamaño del ventilador y sentido del aire (foto: ventilador de 3 hilos sobre el disipador) | Observación | Rejillas de entrada y salida |
 | H-6 | **Cabezal del botón de encendido**: conector, patillas del pulsador y del LED | Polímetro (continuidad al pulsar el botón original) | Pulsador de Orbit en paralelo |
-| H-7 | Placa de I/O frontal (USB 2.0, audio, lector SD): medidas, cables y longitudes | Calibre | Ventana del lateral izquierdo (`io_frontal`) |
+| H-7 | Placa de I/O frontal. La cara metálica, en la foto, mide unos 96 × 18 mm. El corte a cuchillo queda 94 × 18, solo hacia el frente. Falta la posición real de los agujeros de la pestaña: el marco trae dos a 60 mm y se taladra la chapa, no la carcasa | Calibre de la pestaña, si se quiere copiar | `PROVISIONAL_marco_io_frontal` |
 | H-8 | Formato real del HDD (3,5" o 2,5") y cables SATA (datos y alimentación: ¿conector propietario en placa?) | Observación | Soporte del disco; cables para el SSD |
 | H-9 | Antenas Wi-Fi (tarjeta M.2 vista en la foto): longitud de los cables, o decidir Wi-Fi USB | Observación | Colocarlas lejos de metal (ver §A2) |
 | H-10 | Conector DC: diámetro y si es "smart pin" | Calibre | Verificar que el adaptador original entra por la ventana trasera |
@@ -80,22 +80,22 @@ Si el HP va solo por cable (Ethernet a la Pi) y no necesita Wi-Fi, se puede quit
 ### I/O trasero sin escudo: consecuencias en la carcasa
 
 - La ventana trasera de Orbit es una **abertura libre** del tamaño estándar (158,75 × 44,45 mm + 1 mm de holgura); **no asume ningún escudo I/O**. `carcasa_x0_y1` ya está impresa: la abertura no se modifica.
-- La placa que cierra el hueco es `PROVISIONAL_placa_io_hp` (171,75 × 55,95 × 2,80 mm, 16,81 cm³). Entra **por dentro**. El reborde (6 mm arriba y a los lados, 4,5 mm abajo) apoya en la cara interior de la pared; abajo solo hay 5,2 mm hasta el suelo. Un tetón de 1,4 mm, 0,4 mm más pequeño que la ventana por lado, la centra. Chapa de 1,4 mm. No lleva tornillo: la pared impresa tiene 3 mm y una guía de 8 mm no cabe. `fijacion` no interviene en esta pieza. Se imprime con el reborde sobre la cama, sin soportes.
-- Los huecos están en `io_huecos`: nombre, x desde el borde izquierdo de la ventana, z desde el borde inferior, ancho y alto. Son **[PENDIENTE] [FOTO 2026-10-22]** (la ventana impresa es la escala). La holgura de ~1 mm ya va dentro del hueco. Entre jack y VGA, VGA y HDMI, USB 3 y el bloque RJ45, y audio y pines, el nervio es de 2 mm: ahí la holgura queda por debajo de 1 mm.
-- `PRUEBA_placa_io_hp` (159,75 × 45,45 × 1,40 mm, 3,36 cm³) es solo el marco, con los mismos huecos. Se apoya por fuera de la ventana, con el hueco que rompe la esquina en el extremo inferior izquierdo.
+- La placa que cierra el hueco es `PROVISIONAL_placa_io_hp` (171,75 × 55,95 × 2,80 mm, 15,71 cm³ con los huecos del 2026-10-23). Entra **por dentro**. El reborde (6 mm arriba y a los lados, 4,5 mm abajo) apoya en la cara interior de la pared; abajo solo hay 5,2 mm hasta el suelo. Un tetón de 1,4 mm, 0,4 mm más pequeño que la ventana por lado, la centra. Chapa de 1,4 mm. No lleva tornillo. Se imprime con el reborde sobre la cama, sin soportes.
+- Los huecos están en `io_huecos`: nombre, x desde el borde izquierdo de la ventana mirando la trasera, z desde el borde inferior, ancho y alto. Foto del **2026-10-23**, escala = ancho impreso 159,75 mm (la regla no se usa). Orden: VGA, HDMI, USB 3, RJ45 sobre USB 2, audio, DC arriba a la derecha, pines abajo a la derecha. ±2 mm. Una lectura anterior ponía el DC a la izquierda; esta foto no.
+- `PRUEBA_placa_io_hp` (159,75 × 45,45 × 1,40 mm, 3,52 cm³) se apoya por fuera antes de pegar la placa. El hueco grande de la izquierda tiene que caer en el VGA azul. Si no, no se monta.
 - Sin chapa, las carcasas de los conectores ya no tocan la masa de la caja metálica: en una carcasa de PETG eso no rompe nada, pero **no hay apantallamiento** (ver §B). La placa impresa tampoco es conductora.
 
 **Qué medir (H-4).** Las dos referencias son la ventana ya impresa, mirando la trasera desde fuera: el **borde interior izquierdo** y el **borde interior inferior**. Para cada conector, cuatro cotas al canto de la carcasa metálica que tiene que atravesar la placa (no al hueco de la clavija): borde izquierdo → canto izquierdo, borde izquierdo → canto derecho, borde inferior → canto inferior, borde inferior → canto superior.
 
-1. Jack DC de 19,5 V, y el diámetro del barril. En la foto queda a ras del borde inferior y el cuerpo, negro, no se separa del fondo.
-2. VGA, la carcasa.
+1. Jack DC de 19,5 V, y el diámetro del barril. En la foto del 2026-10-23 el agujero redondo está arriba a la derecha, junto a los pines, no a la izquierda.
+2. VGA, la carcasa, a la izquierda de la ventana.
 3. HDMI, el conector. Aparte: si la pestaña metálica de encima sale por la ventana o se queda detrás (ahora la placa la tapa).
 4. Los dos USB 3 azules, como una sola carcasa apilada.
 5. RJ45 encima de los dos USB 2, como una sola carcasa.
 6. La chapita de los tres jacks de audio y, si se puede, el centro de cada jack.
 7. Los pines de cabecera: hasta dónde llegan a la derecha y hacia arriba, y si deben quedar al aire.
 
-Confirmar que por encima de los conectores solo se ve el disipador. La placa tapa esa franja (el hueco más alto acaba a 34 mm; la ventana mide 45,45 mm).
+Confirmar que por encima de los conectores solo se ve el disipador. El hueco más alto de la tabla (el DC, z = 42) deja unos 3 mm hasta el borde de la ventana (45,45 mm).
 - El borde de la placa queda a 3 mm de la pared (3 mm de espesor): las clavijas deben entrar unos 5–6 mm por la ventana. Comprobar con las clavijas reales (HDMI, RJ45, jack DC).
 
 

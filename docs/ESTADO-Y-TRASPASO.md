@@ -1,6 +1,6 @@
 # Estado y traspaso · Orbit Terminal
 
-Fecha de este documento: **2026-10-20**. Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se reimprime). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
 **Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
 
@@ -24,6 +24,15 @@ Dentro de la cuña conviven:
 **Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
 
 Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es solo Moonlight: la MSI va a la Pi y el HP se ve por el Ethernet interno. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
+
+El 2026-10-23 la carcasa ya está impresa (los cuatro trozos) y **no se reimprime**. Cuatro adaptadores, todos de día, tapan los cortes a cuchillo:
+
+- I/O frontal de `carcasa_x0_y1`: la ventana de 62 × 18 mm se alarga **32 mm hacia el frente** y queda 94 × 18 (y = 171,5 a 265,5, z = 74 a 92). No se toca el borde trasero (a 0,9 mm está el Ø12,2) ni el alto. `PROVISIONAL_marco_io_frontal` (100,4 × 32,0 × 7,5 mm, 7,67 cm³) se pega por dentro. Dos insertos M3 4×5 y dos M3×6 avellanados van en el marco, no en la carcasa.
+- Placa del HP: la ventana de 159,75 × 45,45 **no se corta**. `io_huecos` sale de la foto del 2026-10-23, escalada a ese ancho (la regla está delante y no se usa). Mirando la trasera: VGA a la izquierda y jack DC a la derecha, ±2 mm. Antes de pegar, `PRUEBA_placa_io_hp` tiene que caer sobre el VGA azul. Si no, la placa está al revés.
+- Trasera de `carcasa_x1_y1`: los agujeros impresos son el panel genérico (audio, USB, HDMI, RJ45, DC), no la Pi. La Pi mira USB y RJ45 hacia atrás, pero la cara del conector acaba en y = 255,5 y la pared interior está en y = 297,5: faltan 42 mm. El corte de cables es 150 × 40 mm (x = 238 a 388, z = 14 a 54). `PROVISIONAL_placa_puertos_pi` (158,2 × 52,0 × 2,8 mm, 17,47 cm³) se pega por dentro. Por ella pasan los cables.
+- El campo de Ø1,6, la OLED y PRG se sustituyen por un rectángulo de 74 × 60 mm (x = 250 a 324, z = 76 a 136). `PROVISIONAL_panel_pines` (86,0 × 72,0 × 9,4 mm, 18,22 cm³) se pega por fuera y lleva dos copas. **FALTA: comprar** una regleta hembra 2×20 y una 2×15, paso 2,54 mm. El CSV de electrónica no se ha podido leer.
+
+En `consumo.md` (repo del inventario, no este): el M3×6 avellanado pasa de 4 a 6, y el inserto M3 4×5 pasa de 6 a 8. No hay STL nuevo de carcasa.
 
 Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
 
@@ -307,7 +316,7 @@ cd Control-deck
 
 Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y el visor del modo A o C.
 
-También siguen abiertos: el calibre de cada conector trasero del HP (la placa I/O ya está modelada desde la foto del 2026-10-22; las cotas de `io_huecos` siguen [PENDIENTE]), antenas, cables SATA, diámetro del jack, `pi.shutdown`, volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el recorte real del USB de panel (el hueco es 14 × 8, diseño), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
+También siguen abiertos: el calibre de cada conector trasero del HP (la placa usa la foto del 2026-10-23, ±2 mm; la prueba lo comprueba antes de pegar), los agujeros reales de la pestaña del I/O frontal (el marco trae dos a 60 mm y se taladra la chapa), antenas, cables SATA, diámetro del jack, `pi.shutdown`, volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el cuerpo real de las regletas (el modelo usa 5,1 × 8,5 mm de catálogo), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
 
 De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el módulo real del step-down (el CAD usa un LM2596 típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina); el ESP de la foto (58 × 31); el tramo sin pines del canto corto (el apoyo es de 2,0 mm); el largo de las clavijas; el HAT; y dónde se guarda la capturadora. El riel suelto y los carros no se montan. La guía de los insertos cortos de las torretas DC era de esa bahía y ya no aplica a esta bandeja.
 

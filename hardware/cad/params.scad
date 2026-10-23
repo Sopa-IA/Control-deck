@@ -206,22 +206,26 @@ hp_io_baja = 2.24;          // [PENDIENTE] la abertura empieza ~2,2 mm bajo la c
 // Placa I/O impresa (PROVISIONAL_placa_io_hp). Entra por dentro de la ventana ya
 // impresa. El reborde apoya en la cara interior; el tetón centra. No se atornilla:
 // la pared tiene 3 mm y carcasa_x0_y1 no se reimprime. `fijacion` no se usa aquí.
-// Huecos [PENDIENTE] [FOTO 2026-10-22]: la ventana 159,75 × 45,45 es la escala de la
-// foto casi perpendicular. Cada hueco lleva ya ~1 mm por lado. Donde dos conectores
-// salen casi pegados el nervio queda en 2 mm (ahí la holgura es menor de 1 mm).
-// [nombre, x, z, ancho, alto] en mm, desde la esquina inferior izquierda de la ventana.
+// Huecos [FOTO 2026-10-23]: la ventana ya impresa (159,75 × 45,45) es la escala.
+// La regla de la foto está delante y no se usa. Cada hueco lleva ~1 mm de holgura.
+// Mirando la trasera, de izquierda a derecha: VGA (con tornillos), HDMI (sin la
+// pestaña de arriba), 2 USB 3 apilados, RJ45 sobre 2 USB 2, tres jacks de audio,
+// jack DC arriba a la derecha y la cabecera suelta abajo a la derecha.
+// Una lectura previa ponía el DC a la izquierda: en esta foto el agujero redondo
+// oscuro queda junto a los pines, a la derecha. ±2 mm. La PRUEBA lo comprueba.
+// [nombre, x, z, ancho, alto] desde la esquina inferior izquierda de la ventana.
 io_placa_t = 1.4;            // [DISEÑO] chapa 1,2–1,6 mm; el tetón repite este grueso
 io_placa_labio = 6;         // [DISEÑO] reborde interior, arriba y a los lados
 io_placa_labio_inf = 4.5;   // [DISEÑO] abajo hay ~5,2 mm hasta el suelo de la base
 io_placa_holg = 0.4;        // [DISEÑO] el tetón entra con 0,4 mm por lado (no es apriete)
 io_huecos = [
-    ["dc",      0,   0,    7,    8],   // jack DC, a ras del borde inferior; el barril no se ve
-    ["vga",     9,   4,   24.5, 14],
-    ["hdmi",   35.5, 3.5, 15.5, 10],   // solo el conector; la pestaña de encima queda tapada
-    ["usb3",   73,   4,   17,   16],   // 2 USB 3 azules, apilados
-    ["rj_usb", 92,   3,   24,   31],   // RJ45 sobre 2 USB 2
-    ["audio", 126,   2,   23,   32],   // columna de 3 jacks y su chapita
-    ["pines", 151,   1,    7,    7],   // cabecera suelta, abajo a la derecha
+    ["vga",      4,  26,  36,  15],  // D-sub azul, tornillos incluidos
+    ["hdmi",    46,  27,  16,  10],  // solo la boca; la chapa de encima queda tapada
+    ["usb3",    68,  14,  16,  18],  // dos USB 3, uno sobre el otro
+    ["rj_usb",  90,   3,  22,  36],  // RJ45 arriba, dos USB 2 debajo
+    ["audio",  118,   2,  18,  39],  // tres jacks, casi todo el alto
+    ["dc",     142,  30,  12,  12],  // barril, arriba a la derecha
+    ["pines",  145,   1,  12,  10],  // cabecera suelta, abajo a la derecha
 ];
 function datos_hp(p) = p == "desktop_mini_ref" ? [177.04, 174.75, 34.29]
                      : p == "iris_mitx_desnuda" ? [mitx, mitx, hp_separador + hp_pcb + hp_io_h - hp_io_baja]
@@ -264,11 +268,19 @@ disco_z = suelo + disco_soporte_h + 2;   // plancha de 2 mm sobre las patas
 //   consultado 2026-10-19]. SSD: 6 = valor previo del modelo (no verificado con SFF-8201).
 disco_ag_lado = usar_hdd_35 ? 3.18 : 6;   // los colisos van a lo largo (Y) y cubren todas las posiciones
 
-// I/O frontal del HP (USB 2.0, audio, lector SD según el propietario) reubicado en el
-// lateral IZQUIERDO, zona trasera alta. Placa y conectores [PENDIENTE de medir tras desmontar].
-io_frontal = [16, 70, 26];  // [PENDIENTE] marcador x(fondo) y(ancho) z(alto)
-io_frontal_y = D - pared - 28 - io_frontal[1];   // detrás de la tina de pantalla
+// I/O frontal del HP, lateral IZQUIERDO. [FOTO 2026-10-23] La cara metálica mide
+// unos 96 × 18 mm. De la boca del primer USB al jack de 3,5 hay unos 91 mm; el jack
+// es lo más alto, unos 13,5 mm. La ventana impresa es 62 × 18 (y = 203,5 a 265,5,
+// z = 74 a 92). No se puede bajar el alto a cuchillo: ya mide 18. Hacia atrás no
+// cabe más: el Ø12,2 del botón empieza 0,9 mm después. El corte crece solo hacia
+// el frente, 32 mm, y queda 94 × 18. El marco tapa el borde y sujeta la pestaña.
+io_frontal = [16, 70, 26];  // marcador viejo; la ventana de verdad es io_frontal_corte_*
+io_frontal_y = D - pared - 28 - io_frontal[1];   // no mueve el botón ni las rejillas
 io_frontal_z = 70;
+io_frontal_corte_y0 = 171.5;   // [FOTO] 32 mm por delante del borde delantero impreso (203,5)
+io_frontal_corte_y1 = 265.5;   // el borde trasero impreso no se toca
+io_frontal_corte_z0 = 74;      // el alto impreso, 18 mm, se queda
+io_frontal_corte_z1 = 92;
 // Pulsador de encendido del HP (contacto seco en paralelo al cabezal del botón original;
 // patillaje [PENDIENTE de medir con polímetro]) + LED de encendido, lateral izquierdo.
 boton_hp_d = 12;            // [DISEÑO] pulsador de panel Ø12 [PENDIENTE modelo]
@@ -638,10 +650,76 @@ canal_y0 = 142;
 canal_giro_x0 = 390;
 canal_giro_y0 = 258;
 
+// Ventana que se abre a cuchillo en la trasera YA impresa de x1_y1, para la
+// placa de cables de la Pi. Los agujeros viejos (audio, USB, HDMI, RJ45, DC)
+// van de x = 241 a 318 y de z = 20 a 51: no son la Pi. La Pi mira USB/RJ45
+// hacia atrás, pero la cara del conector está en y = 255,5 y la pared interior
+// en y = 297,5: faltan 42 mm. El corte engloba los agujeros viejos y la columna
+// real de la Pi (x = 332 a 384, z = 13,5 a 29,5). La costilla del corte X acaba
+// en x = 235; el corte empieza en 238. La orejeta de x = 325 solo sube a z = 11.
+pi_ventana_x0 = 238;
+pi_ventana_x1 = 388;
+pi_ventana_z0 = 14;
+pi_ventana_z1 = 54;
 // Panel de prácticas en la cara TRASERA [DISEÑO]. A la derecha de la costilla
 // del corte X (x = 228) y por encima del bloque de conectores (z ≈ 24–52).
+// Los Ø1,6 a paso 2,54 no sirven para un Dupont. El corte los sustituye,
+// junto con la ventana de la OLED y la de PRG, por una placa con regletas.
 // No es la medida de un conector comprado. La bandeja impresa no cambia.
 panel_x0 = 250;
+panel_ventana_z0 = 76;    // [DISEÑO] bajo los Ø1,6 de la Pi (z ≈ 81) y sobre el corte de la Pi (z = 54)
+panel_ventana_w = 74;     // el mismo ancho del panel, x = 250 a 324
+panel_ventana_h = 60;     // hasta z = 136; el techo está en z ≈ 154
+// Placa de cables de la Pi (PROVISIONAL_placa_puertos_pi). Entra por dentro,
+// como la del HP. El lado de la costilla (x mundo baja, a la derecha del
+// observador) solo lleva 2,2 mm de reborde: la costilla acaba en x = 235.
+// La orejeta de x = 325 sube a z = 11: en ese tramo el reborde inferior baja 2 mm.
+pi_placa_t = 1.4;
+pi_placa_labio = 6;
+pi_placa_labio_costilla = 2.2;
+pi_placa_labio_inf = 6;
+pi_placa_holg = 0.4;
+pi_muesca_x0 = 55;         // local, mirando la trasera: x = 388 − x mundo
+pi_muesca_x1 = 71;
+pi_muesca_labio = 2.0;
+// [x, z, ancho, alto] en la ventana. Los conectores de la Pi no llegan a la pared
+// (quedan 42 mm): por aquí pasan los cables.
+pi_hueco_usb = [2.5, 0.8, 34.5, 15.5];  // los dos bloques USB-A, a la izquierda del observador
+pi_hueco_rj  = [39.5, 0.8, 17.0, 13.5]; // RJ45, a la derecha de esos USB
+// Marco del I/O frontal (PROVISIONAL_marco_io_frontal). Se pega por dentro.
+// El registro asoma hacia la habitación y centra; no entra en los 3 mm de pared.
+// Hacia atrás el reborde es 0,4 mm: el Ø12,2 empieza 0,9 mm después de y = 265,5.
+// Hacia arriba, 8 mm: el soporte del botón empieza en z = 101,4.
+marco_labio_frente = 6;
+marco_labio_atras = 0.4;
+marco_labio_inf = 6;
+marco_labio_sup = 8;
+marco_t = 1.8;
+marco_registro = 2.0;
+marco_holg = 0.4;
+marco_ap_w = 92;
+marco_ap_h = 14;
+marco_canal = 1.3;         // la pestaña de chapa, ~0,8–1,0 mm, entra por aquí
+marco_tornillos = 60;      // entre ejes. Se taladra la pestaña, no la carcasa.
+// Panel de pines (PROVISIONAL_panel_pines). El reborde tapa el corte por fuera.
+// Las copas miran hacia dentro y guardan una regleta hembra de paso 2,54.
+// El cuerpo es el de catálogo, no un calibre.
+panel_placa_t = 1.4;
+panel_labio = 6;
+panel_holg = 0.4;
+panel_tenon = 2.6;
+regleta_ancho = 5.1;
+regleta_alto = 8.5;
+regleta_holg = 0.4;
+regleta_pared = 1.6;
+regleta_suelo = 0.9;
+regleta_ranura = 3.2;
+pi_regleta_n = 20;
+pi_regleta_cx = 37;        // centro en la ventana, x a la derecha mirando la trasera
+pi_regleta_cz = 8;
+nano_regleta_n = 15;
+nano_regleta_cx = 46;
+nano_regleta_cz = 30;
 panel_z0 = 68;
 panel_w = 74;
 panel_h = 72;                             // hasta z = 140; el filete superior es de 5 mm y H ≈ 154

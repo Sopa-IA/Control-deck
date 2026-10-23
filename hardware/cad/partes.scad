@@ -3,7 +3,7 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | grapa | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp | boton_encendido | soporte_boton | prueba_boton
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | grapa | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp | marco_io_frontal | placa_puertos_pi | panel_pines | boton_encendido | soporte_boton | prueba_boton
 // OBSOLETO, no imprimir: carro_nano | carro_esp | carro_proto | retenedor_nano (bahía v2)
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
@@ -49,6 +49,14 @@ else if (parte == "tapa_pi") translate([-tapa_x0 + tapa_sol + 2, -tapa_y0 + tapa
 else if (parte == "placa_io_hp")
     translate([io_placa_labio, io_placa_labio_inf, 0]) placa_io_hp();
 else if (parte == "prueba_placa_io_hp") prueba_placa_io_hp();
+// Marco frontal: cara de pegar en la cama. El canal queda hacia arriba.
+else if (parte == "marco_io_frontal") marco_io_frontal();
+// Placa de la Pi: reborde en el origen. Se mete por dentro.
+else if (parte == "placa_puertos_pi")
+    translate([pi_placa_labio, pi_placa_labio_inf, 0]) placa_puertos_pi();
+// Panel de pines: la cara de los enchufes, abajo. Las copas hacia arriba.
+else if (parte == "panel_pines")
+    translate([panel_labio, panel_labio, 0]) panel_pines();
 // Capuchón: pestaña en la cama, símbolo arriba. Soporte: suelo en la cama.
 else if (parte == "boton_encendido") boton_encendido();
 else if (parte == "soporte_boton") soporte_boton_impresion();

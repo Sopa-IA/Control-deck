@@ -154,9 +154,9 @@ COMPRA = [
     ("cs8", 29, 40, "M3×8 avellanado negro, Phillips, wugongshan 860",
      "13 orejetas, 4 del disco y 12 del bisel",
      "Del kit. El largo incluye la cabeza. Sin probar."),
-    ("cs6", 4, 40, "M3×6 avellanado negro, Phillips, wugongshan 860",
-     "Placa HP, sobre los separadores",
-     "Del kit. Sin probar. La cabeza apoya en la PCB."),
+    ("cs6", 6, 40, "M3×6 avellanado negro, Phillips, wugongshan 860",
+     "4 de la placa HP y 2 del marco frontal",
+     "Del kit. Sin probar. En la placa HP la cabeza apoya en la PCB."),
     ("b8", 10, 30, "M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840",
      "4 del step-down, 4 de la bandeja a la base y 2 de la tapa",
      "Del kit. Largo bajo la cabeza. Sin probar."),
@@ -169,9 +169,9 @@ COMPRA = [
     ("i55", 26, 30, "Inserto de latón M3, 5×5 mm (largo × Ø exterior)",
      "10 orejetas, 12 postes del bisel y 4 del soporte del disco",
      "Kit de latón 360. Agujero Ø4,0, sin ficha y sin probar."),
-    ("i45", 6, 30, "Inserto de latón M3, 4×5 mm",
-     "4 separadores HP y 2 pomos",
-     "Kit de latón 360. Agujero Ø4,0, sin probar. El 5×5 no cabe en el separador."),
+    ("i45", 8, 30, "Inserto de latón M3, 4×5 mm",
+     "4 separadores HP, 2 pomos y 2 del marco frontal",
+     "Kit de latón 360. Agujero Ø4,0, sin probar. El 5×5 no cabe en el separador ni en el marco."),
     ("i65", 4, 30, "Inserto de latón M3, 6×5 mm",
      "4 torretas de la bandeja",
      "Kit de latón 360. Agujero Ø4,0, sin probar."),
@@ -183,6 +183,8 @@ COMPRA = [
 # No está en ningún kit. El subpaso lo cuenta aparte.
 FALTA = {
     "unc": 4,
+    "h20": 1,
+    "h15": 1,
 }
 
 DIBUJO = {
@@ -207,6 +209,8 @@ DIBUJO = {
 
 NOMBRE = {c[0]: c[3] for c in COMPRA}
 NOMBRE["unc"] = "6-32 UNC × 1/4\" (6,4 mm), Phillips PH2. FALTA: comprar"
+NOMBRE["h20"] = "Regleta hembra 2×20, paso 2,54 mm. FALTA: comprar"
+NOMBRE["h15"] = "Regleta hembra 2×15, paso 2,54 mm. FALTA: comprar"
 NOMBRE["broca40"] = "broca de Ø4,0 mm"
 NOMBRE["broca30"] = "broca de Ø3,0 mm"
 NOMBRE["broca25"] = "broca de Ø2,5 mm"
@@ -215,6 +219,7 @@ NOMBRE["grapa"] = "grapa de esquina impresa, 1,6 mm"
 # El botón no entra en COMPRA: no son tornillos y cuadrar() no los suma.
 NOMBRE["capuchon"] = "capuchón PROVISIONAL_boton_encendido"
 NOMBRE["prueba_b"] = "placa PRUEBA_boton"
+NOMBRE["prueba_io"] = "marco PRUEBA_placa_io_hp"
 NOMBRE["soporte_b"] = "soporte PROVISIONAL_soporte_boton"
 NOMBRE["pulsador"] = "pulsador táctil 12×12×7,3 mm, 4 patillas, unos 100 gf"
 NOMBRE["led3"] = "LED de 3 mm, el color que quieras"
@@ -336,18 +341,23 @@ PASOS = [
     {
         "n": 5,
         "titulo": "Placa de conectores traseros",
-        "intro": "La ventana ya está cortada. No la toques.",
+        "intro": "La ventana del HP ya está cortada: 159,75 × 45,45 mm. No la agrandes. Los huecos de la placa salen de la foto del 2026-10-23. Primero la prueba, por fuera.",
         "subs": [
+            ("5.0", "s5_0", "Prueba el marco",
+             "Imprime la prueba plana, sin soportes. Apóyala por fuera de la ventana, con el mismo canto arriba. El hueco grande de la izquierda tiene que caer sobre el VGA azul. Si cae sobre otro conector, la placa está al revés: no la montes.",
+             [("prueba_io", 1)],
+             "La regla de la foto está delante y no se usa. La escala es el ancho ya impreso, 159,75 mm. Cada hueco lleva cerca de 1 mm de holgura. El error puede ser de 2 mm."),
             ("5.1", "s5_1", "Mete la placa por dentro",
-             "Entra con la placa desde dentro de la carcasa. La pestaña queda hacia ti. Empuja hasta que asiente en la ventana. No lleva tornillo.",
-             [], None),
+             "Cuando la prueba cuadre, imprime la placa con la pestaña abajo. Entra desde dentro. La pestaña queda hacia ti. Empuja hasta que el tetón asiente. No lleva tornillo: si se sale, pega el reborde a la cara interior. Mirando la trasera, de izquierda a derecha: VGA, HDMI, dos USB 3, RJ45 sobre dos USB 2, tres jacks, el jack DC arriba a la derecha y la cabecera suelta abajo a la derecha.",
+             [("cola", 1)],
+             "Una lectura anterior ponía el DC a la izquierda. En esta foto el agujero redondo oscuro está a la derecha, junto a los pines. Si la prueba no coincide, para y no pegues."),
         ],
         "recuento": [],
     },
     {
         "n": 6,
         "titulo": "Frente izquierdo del HP",
-        "intro": "Los dos agujeros ya están en la carcasa impresa. No los agrandes. Primero el capuchón, en el banco.",
+        "intro": "El Ø12,2 y el Ø3,1 ya están. No los agrandes. La ventana del I/O frontal sí se alarga, y solo hacia el frente.",
         "subs": [
             ("6.1", "s6_1", "Prueba el capuchón",
              "Imprime la placa de prueba plana y el capuchón con la pestaña en la cama y el símbolo arriba. Sin soportes. Mete el vástago en el agujero grande. Tiene que entrar y salir solo. La pestaña no debe pasar. Si rasca, lija el vástago. No toques la carcasa.",
@@ -364,11 +374,20 @@ PASOS = [
              "Suelda dos hilos en el pulsador. Van en paralelo al botón original del HP, al cabezal del panel frontal. Mide antes con el polímetro qué patillas se unen al pulsar. Otros dos hilos, del LED al mismo cabezal. La resistencia de 1 kΩ solo si ese cabezal no trae ya una.",
              [("cable", 4)],
              "El cabezal es H-6. El conector, las patillas y el largo del cable no están medidos. No hay mapa de pines."),
-            ("6.5", "s6_5", "Placa frontal",
-             "Mete la placa frontal por la ventana del lateral izquierdo, desde fuera, hasta que los conectores asomen. El soporte del botón queda por encima de esa ventana: no lo uses de anclaje.",
-             [], "La placa de verdad no está medida. El dibujo usa 16×70×26 mm. Si la tuya no entra, para: no limes la carcasa impresa."),
+            ("6.5", "s6_5", "Alarga la ventana hacia el frente",
+             "La ventana impresa mide 62 × 18 mm. No toques el borde de atrás: a 0,9 mm empieza el Ø12,2. No toques el alto: ya mide 18 mm. Desde el borde delantero de esa ventana, corta 32 mm hacia el frente de la máquina. El rectángulo queda de 94 × 18 mm. No pases de ese borde delantero nuevo: la costilla del corte acaba 14 mm antes. No subas: el soporte del botón empieza 9 mm más arriba.",
+             [],
+             "La cara metálica mide unos 96 × 18 mm y el jack, unos 13,5 mm de alto. El marco tapa el filo del corte y esconde el milímetro que sobra arriba y abajo."),
+            ("6.6", "s6_6", "Dos insertos en el marco",
+             "Imprime el marco con la cara plana abajo, sin soportes. Esa cara se pega a la pared, por dentro. Con el soldador, mete un inserto M3 de 4×5 en cada agujero Ø4, desde arriba, hasta que no asome al canal. Los dos ejes están a 60 mm.",
+             [("i45", 2)],
+             "El agujero Ø4,0 es el mismo fallback de los otros insertos de Ø exterior 5. Sin ficha y sin probar. Si no entra, no abras la carcasa: el agujero es del marco."),
+            ("6.7", "s6_7", "Atornilla la pestaña y pega el marco",
+             "Mete la pestaña en el canal, desde el extremo que da al frente. Si sus agujeros no caen en los del marco, taladra la pestaña. No taladres la carcasa. Dos M3×6 avellanados, desde la cara que va contra la pared. La cabeza queda a ras y la punta entra unos 2,9 mm en el inserto. Pon cola en esa cara, alrededor del rectángulo, y aprieta el marco por dentro un minuto. El resalte de 2 mm lo centra en el corte. El reborde de atrás mide 0,4 mm, para no tapar el pulsador.",
+             [("cs6", 2), ("cola", 1)],
+             "La cola es cianoacrilato, la misma del soporte. No entra en la cuenta. Si la pestaña pasa de 1,2 mm, líjala. No limes la carcasa. Si el tetón del marco choca con la placa, lima el marco."),
         ],
-        "recuento": [],
+        "recuento": [("i45", 2), ("cs6", 2)],
     },
     {
         "n": 7,
@@ -417,21 +436,33 @@ PASOS = [
         "intro": "Dos tornillos. No hace falta ventilador.",
         "subs": [
             ("8.1", "s8_1", "Cierra la tapa",
-             "Apoya la tapa en el techo. Dos M3×8 de cabeza de botón en el canto derecho. La tapa mide 2,4 mm: entran unos 5,6 mm en la guía de 9 mm. Los postes están en la carcasa que se está imprimiendo: no los toques.",
+             "Apoya la tapa en el techo. Dos M3×8 de cabeza de botón en el canto derecho. La tapa mide 2,4 mm: entran unos 5,6 mm en la guía de 9 mm. Los postes están en carcasa_x1_y1, que ya está impresa. No los toques: la guía es Ø2,5.",
              [("b8", 2)], None),
         ],
         "recuento": [("b8", 2)],
     },
     {
         "n": 9,
-        "titulo": "Pantalla del Nano de prácticas",
-        "intro": "Va por dentro de la ventana del panel. No hay tornillo.",
+        "titulo": "Trasera derecha: cables de la Pi y panel",
+        "intro": "carcasa_x1_y1 ya está impresa. No se reimprime. Dos rectángulos a cuchillo y dos placas pequeñas. Los agujeros viejos (audio, USB, HDMI, RJ45 y DC) no son la Pi.",
         "subs": [
-            ("9.1", "s9_1", "Acerca el OLED a la ventana",
-             "Pon el módulo por dentro, centrado en la ventana. No lo atornilles: el CAD no tiene tornillo para él.",
-             [], "El módulo del dibujo mide 33,5 mm de ancho. La ventana, 24×14 mm, es de diseño. Mide el OLED antes de pegarlo o de calzarlo."),
+            ("9.1", "s9_1", "Rectángulo de los cables de la Pi",
+             "Mira la trasera desde fuera. El agujero viejo de más a tu derecha es el círculo del audio. Desde el borde derecho de ese círculo, corta unos 3 mm más a la derecha. Desde el agujero de más a tu izquierda (el círculo del DC), sigue unos 70 mm hacia tu izquierda. Abajo, 6 mm por debajo del agujero más bajo. Arriba, 3 mm por encima del más alto. Sale un rectángulo de 150 × 40 mm. No llegues a la costura: queda a unos 10 mm a tu derecha del corte, y la costilla acaba a unos 3 mm del borde. No bajes más: la orejeta de debajo sube hasta quedar 3 mm bajo el corte. La Pi se queda en la bandeja. Sus USB y el RJ45 miran atrás, pero acaban 42 mm antes de la pared. Por el rectángulo pasan los cables, no los conectores de la placa.",
+             [],
+             "El STL impreso el 22 de octubre es un panel genérico de prolongadores. Por eso no coincide con la Pi girada. No reimprimas esa carcasa."),
+            ("9.2", "s9_2", "Placa de los cables",
+             "Imprime la placa con la pestaña abajo, sin soportes. Entra por dentro. El reborde estrecho (2,2 mm) queda hacia la costura, a tu derecha si miras desde fuera. La muesca de abajo libra la orejeta. El hueco ancho, a tu izquierda, es para los cables USB. El estrecho, a su derecha, para el de red. El resto tapa los agujeros viejos. Pasa la clavija por la placa y después enchúfala en la Pi. Pega el reborde. No lleva tornillo.",
+             [("cola", 1)], None),
+            ("9.3", "s9_3", "Rectángulo del panel de pines",
+             "Encima del corte anterior, sin tocarlo. El borde de abajo queda 22 mm por encima de ese corte. El ancho es el del campo de agujeritos: 74 mm, los mismos cantos izquierdo y derecho. El alto, 60 mm. Cubre los Ø1,6, la ventana de la OLED y la de PRG. A la costilla le quedan 15 mm. A la rejilla de la Pi, 10 mm. Al techo, unos 18 mm.",
+             [],
+             "Los Ø1,6 a paso 2,54 no sirven para un Dupont. Por eso se abren."),
+            ("9.4", "s9_4", "Placa, regletas y OLED",
+             "Imprime el panel con la cara de los enchufes abajo, sin soportes. Al montarlo, esa cara queda fuera y el reborde tapa el corte por fuera. Pégalo. Desde dentro, mete la regleta de 2×20 en la copa de abajo y la de 2×15 en la de arriba, enchufes hacia fuera, hasta que el plástico pare. Una gota de cola en cada copa. La ventana de 24×14 es la OLED: el módulo se pega por dentro, centrado. La de 14×8, a tu izquierda mirando desde fuera, es PRG. No hay rótulos grabados. De abajo arriba: Pi, Nano. No unas los 5 V del Nano con los 3,3 V de la Pi.",
+             [("h20", 1), ("h15", 1), ("cola", 1)],
+             "FALTA: comprar las dos regletas, paso 2,54 mm. El cuerpo del modelo mide 5,1 mm de ancho y 8,5 mm de alto: es de catálogo, no un calibre. El CSV de electrónica no se ha podido leer. Esta placa no lleva tornillo. Mide el OLED antes de pegarlo: el dibujo usa 33,5 mm de ancho."),
         ],
-        "recuento": [],
+        "recuento": [("h20", 1), ("h15", 1)],
     },
     {
         "n": 10,
@@ -554,13 +585,16 @@ PIEZAS = [
     ["Soporte del botón", "PROVISIONAL_soporte_boton", "Imprimir hoy. Suelo abajo, placa de canto. Sin soportes. Se pega por dentro."],
     ["Base, 4 trozos", "PROVISIONAL_base_x0_y0 … x1_y1", "Ya impresa. No reimprimir. Plana, sin soportes."],
     ["Carcasas izquierda y delantera derecha", "PROVISIONAL_carcasa_x0_y0, x0_y1, x1_y0", "Ya impresas. No reimprimir."],
-    ["Carcasa trasera derecha", "PROVISIONAL_carcasa_x1_y1", "Imprimir. Boca del corte delantero en la cama. Con soportes."],
+    ["Carcasa trasera derecha", "PROVISIONAL_carcasa_x1_y1", "Ya impresa. No reimprimir. Los dos rectángulos se abren a cuchillo."],
     ["Pletinas ×4", "PROVISIONAL_pletina_empalme_x4", "Imprimir planas, sin soportes."],
     ["Soporte de disco 3,5\"", "PROVISIONAL_soporte_disco", "Imprimir con el plato abajo."],
     ["Bandeja", "PROVISIONAL_bandeja_servicio", "Pieza de noche si aún no está impresa. Ala abajo. Si ya lo está, no la reimprimas: taladra como dice el paso 7."],
     ["Grapas de esquina ×16", "PROVISIONAL_grapa_esquina", "Pieza de día. Plana, sin soportes. 14 en el aparato y 2 de más, por si una se parte. No es tornillo del kit."],
-    ["Placa I/O", "PROVISIONAL_placa_io_hp", "Imprimir con la pestaña abajo."],
-    ["Marco de prueba de la placa", "PRUEBA_placa_io_hp", "Opcional. Se sujeta por fuera. No se monta."],
+    ["Placa I/O", "PROVISIONAL_placa_io_hp", "Pieza de día. Pestaña abajo. Huecos de la foto del 2026-10-23. Entra por dentro."],
+    ["Marco de prueba de la placa", "PRUEBA_placa_io_hp", "Pieza de día. Plana. Se sujeta por fuera antes de montar la placa. No se pega."],
+    ["Marco del I/O frontal", "PROVISIONAL_marco_io_frontal", "Pieza de día. Cara plana abajo. Se pega por dentro del corte de 94 × 18."],
+    ["Placa de cables de la Pi", "PROVISIONAL_placa_puertos_pi", "Pieza de día. Pestaña abajo. Entra por dentro del corte de 150 × 40."],
+    ["Panel de pines", "PROVISIONAL_panel_pines", "Pieza de día. Enchufes abajo. El reborde tapa por fuera el corte de 74 × 60."],
     ["Tapa de la Pi", "PROVISIONAL_tapa_pi", "Imprimir plana."],
     ["Biseles ×4", "PROVISIONAL_bisel_x0_y0 … x1_y1", "Si ya están impresos, no reimprimir. El agujero ya es paso M3 con avellanado. No se taladran."],
     ["Guías ×2", "PROVISIONAL_guia_luz_frontal_0 y _1", "Imprimir boca abajo, PETG translúcido."],
@@ -578,7 +612,7 @@ def markdown():
         "",
         "Lo que sale de cada kit está contado contra el bote, **sin repuesto**. No se ha apretado en el plástico, salvo el M3 de los pasadores: con ese Miguel ya cerró la carcasa. El ×16 de ese tornillo llena el agujero y no es una medida del tornillo que él usó.",
         "",
-        "Fecha del CAD: 2026-10-22. No es un montaje probado.",
+        "Fecha del CAD: 2026-10-23. No es un montaje probado. La carcasa no se reimprime.",
         "",
         "## Qué sale de cada kit",
         "",
@@ -602,8 +636,12 @@ def markdown():
         "| FALTA: comprar | Cantidad | En el kit | Para qué | Estado |",
         "|---|---:|---:|---|---|",
         "| 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2 | 4 | 0 | Disco Toshiba de 3,5\", por debajo | No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí. |",
+        "| Regleta hembra 2×20, paso 2,54 mm | 1 | 0 | Copa de abajo del panel de pines (GPIO de la Pi) | FALTA: comprar. El CSV de electrónica no se ha podido leer. |",
+        "| Regleta hembra 2×15, paso 2,54 mm | 1 | 0 | Copa de arriba del panel de pines (Nano de prácticas) | FALTA: comprar. El cuerpo del modelo es de catálogo: 5,1 × 8,5 mm. |",
         "",
         "El plan B del botón, si la cola no aguanta, son 2× M2×3 de cabeza plana (wugongshan, plata). No entran en la cuenta. El bote trae 50.",
+        "",
+        "Para `consumo.md`, en el repo del inventario (aquí no está ese archivo): el M3×6 avellanado pasa de 4 a 6, y el inserto M3 de 4×5 pasa de 6 a 8. El resto de la cuenta no cambia. Las dos regletas no están en el kit: anótalas como compra.",
         "",
         "Quedan sin usar, entre otros: el resto de M2, M2.5 y M4–M6, los insertos 1/4-20, y los avellanados M3×4 y M3×5. No se reservan.",
         "",
@@ -611,7 +649,7 @@ def markdown():
         "",
         "## Adaptar lo ya impreso",
         "",
-        "No se reimprime la base, ni las tres carcasas viejas, ni `carcasa_x1_y1` (se está imprimiendo), ni la placa I/O, ni el botón de prueba, ni los carros. El inserto de la orejeta va en la orejeta. No abras el suelo a Ø4.",
+        "No se reimprime la base, ni las cuatro carcasas (las cuatro ya están impresas), ni el botón de prueba, ni los carros. `carcasa_x0_y1` y `carcasa_x1_y1` se adaptan a cuchillo, con una placa pequeña cada hueco. El inserto de la orejeta va en la orejeta. No abras el suelo a Ø4.",
         "",
         "| Pieza | Qué hacer | Broca | Tornillo o inserto |",
         "|---|---|---|---|",
@@ -628,6 +666,9 @@ def markdown():
         "| Pomos | Si el impreso solo tiene el radial Ø2,5, reimprime. | Nada | M3 4×5 y M3×12 botón |",
         "| Tapa de la Pi | El STL no cambia. Los postes están en x1_y1. | Nada | M3×8 botón |",
         "| Disco Toshiba | La rosca del disco es 6-32. | Nada | FALTA: 4× 6-32 UNC × 1/4\" |",
+        "| Ventana frontal, x0_y1 | Desde el borde delantero impreso, 32 mm hacia el frente. Alto 18 mm, sin tocarlo. | Cuchillo | Marco con 2× M3 4×5 y 2× M3×6 avellanado. Cola. |",
+        "| Cables de la Pi, x1_y1 | 150 × 40 mm. Unos 3 mm más a la derecha del audio viejo y unos 70 mm más a la izquierda del DC viejo. | Cuchillo | Placa pegada por dentro. Sin tornillo. |",
+        "| Panel de pines, x1_y1 | 74 × 60 mm, 22 mm por encima del corte de la Pi. | Cuchillo | Panel pegado por fuera. FALTA: regletas 2×20 y 2×15. |",
         "",
         "Los capuchones de punta que ya cubren un M3 siguen valiendo en las pletinas: el tornillo sigue siendo M3 y asoman unos 4 mm bajo la tuerca. Los cuatro de la bandeja no salen por debajo de la base.",
         "",
@@ -691,6 +732,7 @@ def anexo_md():
         "| Bisel | Bisel de 3 mm, con avellanado, e inserto 5×5 en el poste | M3×8 avellanado. |",
         "| Soporte del disco | Paso Ø3,4 del suelo e inserto 5×5 en la pata | M3×8 avellanado. |",
         "| Placa HP | PCB 1,6 mm + inserto 4×5 en un agujero de 6,2 mm | M3×6 avellanado. Entran unos 2,6 mm. La cabeza apoya en la PCB. |",
+        "| Marco frontal | Pestaña de la chapa e inserto 4×5 en el marco, no en la carcasa | M3×6 avellanado. La punta entra unos 2,9 mm. La cabeza queda a ras de la cara que se pega. |",
         "| Disco | Rosca 6-32 del Toshiba, chapa de 2 mm | FALTA: 6-32 × 6,4 mm. No es un M3 ni un 1/4-20. |",
         "| ESP y dos Nano | Grapa 1,6 mm + guía Ø2,5 de 13 mm | M3×12 botón. Entran 10,4 mm y quedan 2,6 mm hasta el fondo. |",
         "| Pi | PCB 1,6 mm + inserto M2.5 de 4 mm en un agujero de 7 mm | M2.5×8 botón. Entran 6,4 mm. |",
@@ -736,7 +778,7 @@ def anexo_md():
         "",
         "### Lo que sigue sin medir",
         "",
-        "Placa frontal del HP (el marcador sigue en 16×70×26). Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm). Dónde acaba la fila respecto al canto (el canal usa 3,2 mm y deja 2,5 mm en el extremo). Step-down real, y si lleva pines. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.",
+        "Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Los agujeros de la pestaña del I/O frontal no se han medido: el marco trae dos a 60 mm y se taladra la chapa. Largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm). Dónde acaba la fila respecto al canto (el canal usa 3,2 mm y deja 2,5 mm en el extremo). Step-down real, y si lleva pines. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo. El cuerpo de las regletas (5,1 × 8,5 mm) es de catálogo.",
         "",
         "### Pines bajo la PCB",
         "",
@@ -762,16 +804,16 @@ def anexo_md():
         "",
         "El soporte se pega con cianoacrilato a la cara interior. No hay un poste donde enroscar. Si la cola no aguanta, el plan B son dos taladros desde dentro: broca de Ø1,6 mm, profundidad 2,0 mm, sin atravesar la pared de 3 mm. Van a 14 mm a cada lado del eje del pulsador y a su misma altura. El tornillo es un M2×3 de cabeza plana (wugongshan, plata): pasa por el Ø2,7 del soporte y muerde la pared. Esos dos no están en la cuenta. El bote trae 50. No uses un M3.",
         "",
-        "El soporte queda por encima del marcador de la placa frontal (16×70×26, aún sin medir). No entra en esa caja ni la usa de anclaje.",
+        "El soporte queda por encima del marco del I/O frontal. El marco acaba en z = 100 y el soporte empieza en z = 101,4. No lo uses de anclaje del marco.",
         "",
         "",
-        "Los huecos de la placa I/O salen de una foto del 2026-10-22, no de un calibre. La placa se imprime con esa tabla y se prueba con el marco `PRUEBA_placa_io_hp` antes de darla por buena.",
+        "Los huecos de la placa I/O salen de la foto del 2026-10-23, escalada al ancho ya impreso de 159,75 mm. No es un calibre: puede fallar 2 mm. Mirando la trasera, el VGA queda a la izquierda y el jack DC a la derecha. La prueba se apoya por fuera antes de pegar la placa. No se reimprime ninguna carcasa.",
         "",
         "### Cableado fino",
         "",
         "Nano de mandos: P1 en A0, P2 en A1, con los extremos a 5 V y a masa. B1 en D2 y B2 en D3, a masa, con la resistencia interna. D0 y D1 son el serial. D6 se queda libre. 115200 baudios. El puerto de ejemplo es /dev/ttyUSB0. Abrir el puerto reinicia la placa; orbitd espera 2,0 s antes de escribir «?». Ese tiempo es de diseño. No hay HID.",
         "",
-        "OLED: SSD1306 en 0x3C. SDA en A4, SCL en A5. 5 V solo si el módulo lo admite. 1 kΩ en las señales que salen al panel, no en 5 V, 3,3 V ni masa. Rótulos de la carcasa: OLED, PRG, ARD 5V, PI 3V3, NO UNIR. No cablees el cabezal de 40 pines de la Pi: el HAT lo ocupa y sus medidas no están tomadas.",
+        "OLED: SSD1306 en 0x3C. SDA en A4, SCL en A5. 5 V solo si el módulo lo admite. 1 kΩ en las señales que salen al panel, no en 5 V, 3,3 V ni masa. Los rótulos ya no van grabados: Pi abajo, Nano arriba, y no se unen 5 V con 3,3 V. La regleta 2×20 del panel es la que se usa. El cabezal de la propia Pi sigue ocupado si hay HAT: no lo cablees hasta medir el HAT.",
         "",
         "Tira: el dato sale de GPIO2, que es D4. GPIO2 tiene que estar alto al arrancar. La masa de la tira va con la del ESP. La alimentación de la tira no sale del regulador de 3,3 V del módulo. Tensión y tipo, sin medir.",
         "",
@@ -913,7 +955,7 @@ def marca_pagina(canvas, doc):
     canvas.drawString(14 * mm, A4[1] - 6 * mm, "Orbit Terminal   ·   Manual de montaje")
     canvas.setFillColor(GRIS)
     canvas.setFont("DejaVu", 7.5)
-    canvas.drawString(14 * mm, 7 * mm, "CAD de esta rama  ·  2026-10-22  ·  tornillos elegidos, sin probar en el plástico")
+    canvas.drawString(14 * mm, 7 * mm, "CAD de esta rama  ·  2026-10-23  ·  adaptadores de la carcasa impresa, sin reimprimirla")
     canvas.drawRightString(A4[0] - 14 * mm, 7 * mm, str(doc.page))
     canvas.restoreState()
 
@@ -936,7 +978,7 @@ def pdf(st):
     f.append(P("JINZEYOU 840, cabeza de botón, largo bajo la cabeza. wugongshan 860, avellanado, largo con la cabeza. Insertos de latón 360, cota largo × Ø exterior. La columna Aparato es lo que gasta el montaje. La columna Kit es lo que hay en el bote. No hay 10 % de repuesto.", st["p"]))
     f.append(tabla_compra(st))
     f.append(Spacer(1, 2 * mm))
-    f.append(P("FALTA: comprar 4× 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2, para el disco Toshiba. No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí.", st["p"]))
+    f.append(P("FALTA: comprar 4× 6-32 UNC × 1/4\" (6,4 mm), Phillips PH2, para el disco Toshiba. No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí. FALTA también una regleta hembra 2×20 y una 2×15, paso 2,54 mm, para el panel de pines.", st["p"]))
     f.append(P("Plan B del botón, solo si la cola falla: 2× M2×3 cabeza plana. No entran en la cuenta. El bote trae 50.", st["p"]))
     f.append(P("Herramienta: Allen de 2 mm para los M3 de botón, Allen de 1,5 mm para los M2.5, Phillips del kit wugongshan, Phillips PH2 para los 6-32, soldador para los insertos, brocas de Ø4,0, Ø3,0 y Ø2,5 mm.", st["p"]))
     f.append(P("Adaptar lo ya impreso", st["h1"]))
@@ -1000,6 +1042,7 @@ def pdf(st):
         ["Orejeta de x1_y1", "suelo 4 mm + guía 9 mm", "M3×8 avellanado"],
         ["Orejeta impresa", "paso Ø3,4 e inserto en la orejeta", "M3 5×5 y M3×8 avellanado"],
         ["Placa HP", "1,6 mm + inserto 4 mm", "M3×6 avellanado"],
+        ["Marco frontal", "pestaña ~1 mm + inserto 4 mm", "2× M3×6 avellanado"],
         ["Disco Toshiba", "rosca 6-32, chapa de 2 mm", "FALTA: 6-32 × 6,4 mm"],
         ["ESP y dos Nano", "grapa 1,6 + guía 13 mm", "M3×12 botón"],
         ["Pi", "1,6 mm + inserto M2.5 de 4 mm", "M2.5×8 botón"],

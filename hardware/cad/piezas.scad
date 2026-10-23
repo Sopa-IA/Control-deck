@@ -731,6 +731,142 @@ module prueba_placa_io_hp() {
 }
 
 // ---------------------------------------------------------------------
+// MARCO DEL I/O FRONTAL. La carcasa ya está impresa: esto tapa el corte
+// de 94 × 18 y sujeta la pestaña. Origen: esquina del reborde. z = 0 es
+// la cara que se pega por dentro. +z entra en la habitación.
+// ---------------------------------------------------------------------
+module marco_io_frontal() {
+    cw = io_frontal_corte_y1 - io_frontal_corte_y0;
+    ch = io_frontal_corte_z1 - io_frontal_corte_z0;
+    x0 = marco_labio_frente;
+    y0 = marco_labio_inf;
+    W = marco_labio_frente + cw + marco_labio_atras;
+    H = marco_labio_inf + ch + marco_labio_sup;
+    apx = x0 + (cw - marco_ap_w) / 2;
+    apy = y0 + (ch - marco_ap_h) / 2;
+    cx = x0 + cw / 2;
+    cy = y0 + ch + marco_labio_sup / 2;
+    techo = marco_t + marco_canal + 4.4;   // inserto de 4 mm justo encima del canal
+    echo(str("MARCO_IO;corte;", cw, ";", ch,
+             ";pieza;", W, ";", H, ";apertura;", marco_ap_w, ";", marco_ap_h,
+             ";tornillos;", cx - marco_tornillos / 2, ";", cx + marco_tornillos / 2,
+             ";techo_z;", techo));
+    difference() {
+        union() {
+            cube([W, H, marco_t]);
+            translate([x0 + marco_holg, y0 + marco_holg, marco_t - 0.05])
+                cube([cw - 2 * marco_holg, ch - 2 * marco_holg, marco_registro + 0.05]);
+            translate([2, y0 + ch - 0.2, marco_t - 0.05])
+                cube([W - 4, marco_labio_sup + 0.2, techo - marco_t + 0.05]);
+        }
+        translate([apx, apy, -1]) cube([marco_ap_w, marco_ap_h, techo + 3]);
+        // Canal abierto por el frente (x = 0). La pestaña entra desde ahí.
+        translate([-0.4, y0 + ch + 1.0, marco_t])
+            cube([W - 1.6, marco_labio_sup - 2.0, marco_canal]);
+        for (x = [cx - marco_tornillos / 2, cx + marco_tornillos / 2]) {
+            translate([x, cy, -0.3]) cylinder(d = tornillo_d, h = marco_t + marco_canal + 0.5, $fn = 24);
+            translate([x, cy, -0.01]) cylinder(d1 = 6.6, d2 = tornillo_d, h = 1.65, $fn = 24);
+            translate([x, cy, marco_t + marco_canal - 0.05])
+                cylinder(d = inserto_d, h = techo - (marco_t + marco_canal) + 0.4, $fn = 24);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// PLACA DE CABLES DE LA PI. Origen: esquina inferior izquierda de la
+// ventana, mirando la trasera. z = 0 es la cara interior.
+// ---------------------------------------------------------------------
+module placa_puertos_pi() {
+    Ww = pi_ventana_x1 - pi_ventana_x0;
+    Wh = pi_ventana_z1 - pi_ventana_z0;
+    t = pi_placa_t;
+    echo(str("PLACA_PI;ventana;", Ww, ";", Wh, ";labio;", pi_placa_labio,
+             ";", pi_placa_labio_costilla, ";usb;", pi_hueco_usb[0], ";", pi_hueco_usb[2],
+             ";rj;", pi_hueco_rj[0], ";", pi_hueco_rj[2]));
+    difference() {
+        union() {
+            translate([-pi_placa_labio, -pi_placa_labio_inf, 0])
+                caja_r([Ww + pi_placa_labio + pi_placa_labio_costilla,
+                        Wh + pi_placa_labio + pi_placa_labio_inf, t], 3);
+            translate([pi_placa_holg, pi_placa_holg, t - 0.25])
+                caja_r([Ww - 2 * pi_placa_holg, Wh - 2 * pi_placa_holg, t + 0.25],
+                       2 - pi_placa_holg);
+        }
+        // La orejeta de x = 325 llega a z = 11. Ahí el reborde solo baja 2 mm.
+        translate([pi_muesca_x0, -pi_placa_labio_inf - 0.4, -0.4])
+            cube([pi_muesca_x1 - pi_muesca_x0,
+                  pi_placa_labio_inf - pi_muesca_labio + 0.4, t + 1]);
+        for (h = [pi_hueco_usb, pi_hueco_rj])
+            translate([h[0], h[1], -0.4])
+                caja_r([h[2], h[3], 2 * t + 2], min(1.2, h[2] / 2 - 0.4, h[3] / 2 - 0.4));
+    }
+}
+
+// Copa maciza. El vaciado (cuerpo de la regleta y ventana de los enchufes)
+// se resta en el módulo del panel, para que el tetón no la vuelva a llenar.
+module _copa_regleta(cx, cz, n) {
+    largo = n * 2.54;
+    ow = largo + regleta_holg + 2 * regleta_pared;
+    oh = regleta_ancho + regleta_holg + 2 * regleta_pared;
+    translate([cx - ow / 2, cz - oh / 2, 0])
+        cube([ow, oh, regleta_suelo + regleta_alto]);
+}
+
+module _vaciar_regleta(cx, cz, n) {
+    largo = n * 2.54;
+    iw = largo + regleta_holg;
+    ih = regleta_ancho + regleta_holg;
+    ow = iw + 2 * regleta_pared;
+    oh = ih + 2 * regleta_pared;
+    // Cuerpo, abierto hacia dentro (+z).
+    translate([cx - iw / 2, cz - ih / 2, regleta_suelo])
+        cube([iw, ih, regleta_alto + 1]);
+    // Los enchufes asoman por la cara de fuera. El plástico de la regleta no pasa.
+    rw = largo - 4;
+    translate([cx - rw / 2, cz - regleta_ranura / 2, -0.4])
+        cube([rw, regleta_ranura, regleta_suelo + 0.6]);
+}
+
+// ---------------------------------------------------------------------
+// PANEL DE PINES. Origen: esquina inferior izquierda de la ventana,
+// mirando la trasera. z = 0 es la cara de fuera (enchufes abajo al imprimir).
+// +z entra en la carcasa. OLED y PRG siguen en el sitio de antes.
+// ---------------------------------------------------------------------
+module panel_pines() {
+    W = panel_ventana_w;
+    H = panel_ventana_h;
+    t = panel_placa_t;
+    L = panel_labio;
+    // x local = borde derecho del corte (x mundo alta) menos x mundo.
+    ox0 = oled_cx - oled_ventana[0] / 2;
+    oz0 = oled_cz - oled_ventana[1] / 2;
+    olx = panel_x0 + W - (ox0 + oled_ventana[0]);
+    olz = oz0 - panel_ventana_z0;
+    prg_xm = panel_x0 + panel_w - 18;
+    prg_zm = panel_z0 + panel_h - 20;
+    plx = panel_x0 + W - (prg_xm + 14);
+    plz = prg_zm - panel_ventana_z0;
+    echo(str("PANEL_PINES;ventana;", W, ";", H,
+             ";pi;", pi_regleta_cx, ";", pi_regleta_cz, ";n;", pi_regleta_n,
+             ";nano;", nano_regleta_cx, ";", nano_regleta_cz, ";n;", nano_regleta_n,
+             ";oled;", olx, ";", olz, ";prg;", plx, ";", plz));
+    difference() {
+        union() {
+            translate([-L, -L, 0]) caja_r([W + 2 * L, H + 2 * L, t], 2.5);
+            translate([panel_holg, panel_holg, t - 0.2])
+                caja_r([W - 2 * panel_holg, H - 2 * panel_holg, panel_tenon + 0.2], 1.5);
+            _copa_regleta(pi_regleta_cx, pi_regleta_cz, pi_regleta_n);
+            _copa_regleta(nano_regleta_cx, nano_regleta_cz, nano_regleta_n);
+        }
+        _vaciar_regleta(pi_regleta_cx, pi_regleta_cz, pi_regleta_n);
+        _vaciar_regleta(nano_regleta_cx, nano_regleta_cz, nano_regleta_n);
+        translate([olx, olz, -0.4])
+            cube([oled_ventana[0], oled_ventana[1], panel_tenon + t + 2]);
+        translate([plx, plz, -0.4]) cube([14, 8, panel_tenon + t + 2]);
+    }
+}
+
+// ---------------------------------------------------------------------
 // BOTÓN DE ENCENDIDO (provisional, 2026-10-22)
 // La carcasa x0_y1 ya está impresa: estos módulos no la modifican.
 // Capuchón por el Ø12,2, soporte pegado por dentro, prueba de ajuste.

@@ -49,8 +49,9 @@ module carcasa_superior() {
         ranura_pod();
         pasadores_union();
         // Orejetas. El tornillo entra desde la base, que ya está impresa
-        // con paso Ø3,4. Solo las de carcasa_x1_y1 (aún sin imprimir)
-        // siguen `fijacion`. El taco mide 11 mm: guía de 9 mm y 2 mm de tapa.
+        // con paso Ø3,4. Las de carcasa_x1_y1 también están impresas: el STL
+        // no se regenera y el modelo sigue con la guía Ø2,5 de `fijacion`.
+        // El taco mide 11 mm: guía de 9 mm y 2 mm de tapa.
         // Las otras tres carcasas conservan el inserto Ø4 × 5,7 con el que se imprimieron.
         for (p = orejetas)
             if (fijacion == "autorroscante" && p[0] >= corte_x(1) && p[1] >= corte_y(1)) {
@@ -292,7 +293,10 @@ module cortes_traseros() {
         translate([0, -ventana_hp[1], 0]) caja_r([ventana_hp[0], ventana_hp[1], pared + 2], 2);
     // HP v2: lateral izquierdo: ventana del I/O frontal del HP, pulsador de encendido y LED [PENDIENTE medidas]
     if (hp_desnuda) {
-        translate([-1, io_frontal_y + 4, io_frontal_z + 4]) cube([pared + 2, io_frontal[1] - 8, io_frontal[2] - 8]);
+        // Ventana ya impresa 62 × 18. El cuchillo la deja en 94 × 18, solo hacia el frente.
+        translate([-1, io_frontal_corte_y0, io_frontal_corte_z0])
+            cube([pared + 2, io_frontal_corte_y1 - io_frontal_corte_y0,
+                  io_frontal_corte_z1 - io_frontal_corte_z0]);
         translate([-1, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d + 0.2, h = pared + 2);
         translate([-1, boton_hp_y, boton_hp_z + 14]) rotate([0, 90, 0]) cylinder(d = 3.1, h = pared + 2);   // LED 3 mm
     }
@@ -301,6 +305,12 @@ module cortes_traseros() {
     for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])
         if (c[5] == "c") cylinder(d = c[3], h = pared + 2);
         else translate([-c[3]/2, -c[4]/2, 0]) caja_r([c[3], c[4], pared + 2], 1.2);
+    // Rectángulo limpio sobre esos agujeros y sobre la columna real de la Pi.
+    // La carcasa no se reexporta: esto es el corte a cuchillo, no un STL nuevo.
+    translate([pi_ventana_x0, D - pared - 1, pi_ventana_z0])
+        cube([pi_ventana_x1 - pi_ventana_x0, pared + 2, pi_ventana_z1 - pi_ventana_z0]);
+    translate([panel_x0, D - pared - 1, panel_ventana_z0])
+        cube([panel_ventana_w, pared + 2, panel_ventana_h]);
 }
 
 // Agujeros para pasadores Ø3 en los planos de corte (dentro de las costillas)
