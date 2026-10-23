@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useOrbit } from '../data/OrbitContext';
+import { usePlanetMotion } from '../components/Planet';
 import { Panel } from '../components/ui';
 
 export function Configuracion({ brightness, setBrightness }: { brightness: number; setBrightness: (n: number) => void }) {
   const { state, setSource, wsUrl, setWsUrl } = useOrbit();
   const [url, setUrl] = useState(wsUrl);
   const [token, setToken] = useState(sessionStorage.getItem('orbit.uiToken') ?? '');
+  const [motion, setMotion] = usePlanetMotion();
   return (
     <div className="config">
       <Panel title="Fuente de datos">
@@ -23,6 +25,12 @@ export function Configuracion({ brightness, setBrightness }: { brightness: numbe
           <input type="range" min={20} max={100} value={brightness} onChange={(e) => setBrightness(Number(e.target.value))} />
         </label>
         <p className="muted">Atenuación por software. El brillo real del MSI se ajusta en su OSD.</p>
+        <span className="field"><span>Animación del planeta</span></span>
+        <div className="seg">
+          <button type="button" className={`btn ${motion ? 'btn-primary' : ''}`} onClick={() => setMotion(true)}>Activada</button>
+          <button type="button" className={`btn ${motion ? '' : 'btn-primary'}`} onClick={() => setMotion(false)}>Quieta</button>
+        </div>
+        <p className="muted">En Inicio el planeta gira despacio. Viene activada. Si el sistema pide menos movimiento, se queda quieto aunque aquí esté activada. También se para con Moonlight o si la página no se ve.</p>
         <dl className="kv">
           <div><dt>Ventana</dt><dd>{window.innerWidth} × {window.innerHeight}</dd></div>
           <div><dt>Monitor</dt><dd>MSI PRO MP161 E2U · 1920×1080 · no táctil</dd></div>

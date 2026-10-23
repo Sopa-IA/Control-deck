@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { clamp, formatClock } from '../lib/format';
 import { ESTADO_LABEL, type Estado } from '../lib/hardware';
 
@@ -112,48 +112,3 @@ export function Dial({ value, label, sim }: { value: number | undefined; label: 
   );
 }
 
-/** Planeta nocturno con luces ámbar (decorativo, inspirado en la referencia). */
-export function Planet() {
-  const dots = useMemo(() => {
-    let seed = 7;
-    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    const out: { x: number; y: number; r: number; o: number }[] = [];
-    for (let i = 0; i < 520; i++) {
-      // agrupaciones tipo "ciudades"
-      const cxs = [[300, 250], [380, 330], [250, 380], [420, 220], [330, 430], [460, 380]];
-      const c = cxs[Math.floor(rnd() * cxs.length)];
-      const ang = rnd() * Math.PI * 2, dist = Math.pow(rnd(), 1.6) * 110;
-      const x = c[0] + Math.cos(ang) * dist, y = c[1] + Math.sin(ang) * dist * 0.7;
-      out.push({ x, y, r: rnd() < 0.08 ? 2.2 : 0.6 + rnd() * 1.1, o: 0.35 + rnd() * 0.65 });
-    }
-    return out;
-  }, []);
-  return (
-    <svg className="planet" viewBox="0 0 640 640" aria-hidden>
-      <defs>
-        <radialGradient id="pl-body" cx="38%" cy="30%" r="75%">
-          <stop offset="0" stopColor="#3a2410" /><stop offset="0.35" stopColor="#1a1109" /><stop offset="0.8" stopColor="#07060a" /><stop offset="1" stopColor="#020203" />
-        </radialGradient>
-        <radialGradient id="pl-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0.82" stopColor="#ff9a1f" stopOpacity="0" /><stop offset="0.9" stopColor="#ff9a1f" stopOpacity="0.28" /><stop offset="1" stopColor="#ff9a1f" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="pl-sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0" stopColor="#fff2d6" /><stop offset="0.15" stopColor="#ffc46b" stopOpacity="0.9" /><stop offset="1" stopColor="#ff8a00" stopOpacity="0" />
-        </radialGradient>
-        <clipPath id="pl-clip"><circle cx="340" cy="360" r="250" /></clipPath>
-        <filter id="pl-blur"><feGaussianBlur stdDeviation="1.1" /></filter>
-      </defs>
-      <circle cx="340" cy="360" r="292" fill="url(#pl-glow)" />
-      <circle cx="340" cy="360" r="250" fill="url(#pl-body)" />
-      <g clipPath="url(#pl-clip)" opacity="0.55">
-        {[0, 1, 2, 3, 4, 5].map((i) => <ellipse key={`la${i}`} cx="340" cy="360" rx="250" ry={40 + i * 42} fill="none" stroke="#ff9a1f" strokeOpacity="0.07" />)}
-        {[0, 1, 2, 3, 4].map((i) => <ellipse key={`lo${i}`} cx="340" cy="360" rx={40 + i * 52} ry="250" fill="none" stroke="#ff9a1f" strokeOpacity="0.06" />)}
-      </g>
-      <g clipPath="url(#pl-clip)" filter="url(#pl-blur)">
-        {dots.map((d, i) => <circle key={i} cx={d.x} cy={d.y} r={d.r} fill="#ffad42" opacity={d.o} />)}
-      </g>
-      <path d="M 120 300 A 250 250 0 0 1 420 122" fill="none" stroke="#ffb347" strokeWidth="3" strokeOpacity="0.85" filter="url(#pl-blur)" />
-      <circle cx="236" cy="180" r="46" fill="url(#pl-sun)" />
-    </svg>
-  );
-}

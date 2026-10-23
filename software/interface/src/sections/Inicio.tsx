@@ -1,5 +1,6 @@
 import { useOrbit } from '../data/OrbitContext';
-import { Clock, Meter, Panel, Planet, SimTag, StatusDot, useNow } from '../components/ui';
+import { Planet, usePlanetMotion } from '../components/Planet';
+import { Clock, Meter, Panel, SimTag, StatusDot, useNow } from '../components/ui';
 import { ago, formatDate, formatPct, formatTemp, formatUptime } from '../lib/format';
 import type { SectionId } from './index';
 
@@ -32,6 +33,7 @@ export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPowe
   const { state, requestAction } = useOrbit();
   const now = useNow(1000);
   const conn = state.conn;
+  const [motion] = usePlanetMotion();
   return (
     <div className="inicio">
       <div className="inicio-left">
@@ -63,7 +65,7 @@ export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPowe
       </div>
 
       <div className="inicio-center">
-        <Planet />
+        <Planet animar={motion} moonlight={state.visible?.system === 'hp'} />
         <div className="hero">
           <div className="hero-tag">EXPLORA · CREA · CONTROLA</div>
           <Clock big />

@@ -28,7 +28,7 @@ const shots = [
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? '/usr/bin/google-chrome', args: ['--no-sandbox'] });
 for (const sh of shots) {
   const page = await browser.newPage({ viewport: { width: sh.w, height: sh.h }, deviceScaleFactor: 1 });
-  const q = new URLSearchParams({ s: sh.s });
+  const q = new URLSearchParams({ s: sh.s, source: 'sim' });
   if (sh.vista) q.set('vista', sh.vista);
   const root = base.endsWith('/') ? base : `${base}/`;
   await page.goto(`${root}?${q}`, { waitUntil: 'networkidle' });

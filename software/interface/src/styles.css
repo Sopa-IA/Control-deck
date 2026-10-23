@@ -103,7 +103,7 @@ input[type="range"] { accent-color: var(--amber); width: 100%; height: 32px; }
 .inicio { display: grid; grid-template-columns: 360px 1fr 420px; gap: 24px; height: 100%; min-height: 0; }
 .inicio-left, .inicio-right { display: flex; flex-direction: column; gap: 18px; min-height: 0; }
 .inicio-center { position: relative; display: flex; align-items: flex-end; justify-content: center; min-height: 0; overflow: hidden; border-radius: 22px; }
-.planet { position: absolute; top: -2%; left: 50%; transform: translateX(-46%); width: min(100%, 860px); height: auto; opacity: 0.95; pointer-events: none; }
+.planet { position: absolute; top: -2%; left: 50%; transform: translateX(-46%); width: min(100%, 860px); height: auto; aspect-ratio: 1; display: block; opacity: 0.95; pointer-events: none; }
 .hero { position: relative; z-index: 1; text-align: left; width: 100%; padding: 0 22px 18px; }
 .hero-tag { font-size: 13px; letter-spacing: 0.5em; color: #d6c7b0; border-top: 1px solid rgba(255, 165, 58, 0.25); padding-top: 14px; margin-bottom: 10px; }
 .clock-big { display: block; font-size: 112px; line-height: 1; font-weight: 200; letter-spacing: 0.02em; color: #fff3e2; text-shadow: 0 0 40px rgba(255, 150, 30, 0.25); }
