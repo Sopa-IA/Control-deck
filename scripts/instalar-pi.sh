@@ -33,7 +33,8 @@ if [[ -z "$ORBIT_USER" ]]; then
 fi
 ORBIT_HOME="$(getent passwd "$ORBIT_USER" | cut -d: -f6)"
 ORBIT_UID="$(id -u "$ORBIT_USER")"
-LABWC_RC="$ORBIT_HOME/.config/labwc/rc.xml"
+# rc.xml de la sesión orbit. No el de ~/.config: labwc-pi lo mezcla con el escritorio.
+LABWC_RC="/etc/orbit/labwc/rc.xml"
 
 log() { printf '== %s\n' "$*"; }
 
@@ -43,6 +44,31 @@ as_user() {
   else
     sudo -u "$ORBIT_USER" -H "$@"
   fi
+}
+
+escribir_entorno_labwc() {
+  # El teclado de la Pi está en /etc/default/keyboard. Con -C, labwc no lee
+  # el environment del escritorio, así que se copia aquí. Se puede repetir.
+  local dest="$1" model layout variant options raw
+  model="pc105"
+  layout="es"
+  variant=""
+  options=""
+  if [[ -f /etc/default/keyboard ]]; then
+    raw="$(sed -n 's/^XKBMODEL=//p' /etc/default/keyboard | head -n1 | tr -d '"')"
+    [[ -n "$raw" ]] && model="$raw"
+    raw="$(sed -n 's/^XKBLAYOUT=//p' /etc/default/keyboard | head -n1 | tr -d '"')"
+    [[ -n "$raw" ]] && layout="$raw"
+    variant="$(sed -n 's/^XKBVARIANT=//p' /etc/default/keyboard | head -n1 | tr -d '"')"
+    options="$(sed -n 's/^XKBOPTIONS=//p' /etc/default/keyboard | head -n1 | tr -d '"')"
+  fi
+  cat > "$dest" <<EOF
+XKB_DEFAULT_MODEL=${model}
+XKB_DEFAULT_LAYOUT=${layout}
+XKB_DEFAULT_VARIANT=${variant}
+XKB_DEFAULT_OPTIONS=${options}
+EOF
+  chmod 644 "$dest"
 }
 
 apt_optional() {
@@ -407,16 +433,42 @@ escribir_politica_chromium /etc/chromium/policies/managed
 escribir_politica_chromium /etc/chromium-browser/policies/managed
 
 log "Sesión gráfica"
+# labwc-pi (la sesión rpd-labwc / LXDE-pi-labwc) ejecuta labwc -m. Ese -m mezcla
+# /etc/xdg/labwc/autostart, que lanza pcmanfm y wf-panel-pi, con el del usuario.
+# La sesión orbit llama a labwc -C, sin -m: solo /etc/orbit/labwc.
+install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" /etc/orbit/labwc
 install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" "$ORBIT_HOME/.config/labwc"
 as_user env ORBIT_LABWC_RC="$LABWC_RC" "$ROOT/.venv/bin/python" -c 'import os; from pathlib import Path; from orbitd.video import write_labwc_rc; write_labwc_rc(Path(os.environ["ORBIT_LABWC_RC"]), "integrado", False)'
-cat > "$ORBIT_HOME/.config/labwc/autostart" <<'EOF'
+cat > /etc/orbit/labwc/autostart <<'EOF'
 #!/bin/sh
-# Negro ya, para que el escritorio no se quede a la vista mientras orbitd arranca.
+# Negro ya. No se lanza el panel ni el fondo del escritorio.
 command -v swaybg >/dev/null 2>&1 && swaybg -c '#000000' >/dev/null 2>&1 &
 /usr/local/bin/orbit-kiosk-bucle >/tmp/orbit-kiosk.log 2>&1 &
 EOF
-chown "$ORBIT_USER:$ORBIT_USER" "$ORBIT_HOME/.config/labwc/autostart" "$LABWC_RC" 2>/dev/null || true
-chmod 755 "$ORBIT_HOME/.config/labwc/autostart"
+chown "$ORBIT_USER:$ORBIT_USER" /etc/orbit/labwc/autostart "$LABWC_RC" 2>/dev/null || true
+chmod 755 /etc/orbit/labwc/autostart
+escribir_entorno_labwc /etc/orbit/labwc/environment
+# El escritorio de la Pi, si se vuelve a él, mezcla este archivo con el suyo.
+# Vacío: así no vuelve a abrir el kiosco encima de la barra.
+cat > "$ORBIT_HOME/.config/labwc/autostart" <<'EOF'
+#!/bin/sh
+# Vacío a propósito. El kiosco está en /etc/orbit/labwc/autostart (sesión orbit).
+EOF
+chown "$ORBIT_USER:$ORBIT_USER" "$ORBIT_HOME/.config/labwc/autostart"
+chmod 644 "$ORBIT_HOME/.config/labwc/autostart"
+install -m 755 "$ROOT/scripts/orbit-sesion.sh" /usr/local/bin/orbit-sesion
+install -m 755 "$ROOT/scripts/orbit-lightdm.sh" /usr/local/bin/orbit-lightdm.sh
+install -m 755 "$ROOT/scripts/orbit-escritorio.sh" /usr/local/bin/orbit-escritorio
+cat > /usr/share/wayland-sessions/orbit.desktop <<'EOF'
+[Desktop Entry]
+Name=Orbit OS
+Comment=Orbit OS a pantalla completa, fondo negro, sin la barra ni el fondo del escritorio
+Exec=/usr/local/bin/orbit-sesion
+TryExec=/usr/bin/labwc
+Type=Application
+DesktopNames=labwc
+EOF
+chmod 644 /usr/share/wayland-sessions/orbit.desktop
 
 if command -v wayfire >/dev/null; then
   install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_USER" "$ORBIT_HOME/.config"
@@ -445,22 +497,29 @@ if [[ ! -x "$(command -v labwc || true)" && ! -x "$(command -v wayfire || true)"
 fi
 
 install -d -m 755 /etc/lightdm/lightdm.conf.d
-cat > /etc/lightdm/lightdm.conf.d/orbit-autologin.conf <<EOF
-[Seat:*]
-autologin-user=$ORBIT_USER
-autologin-user-timeout=0
-EOF
-chmod 644 /etc/lightdm/lightdm.conf.d/orbit-autologin.conf
-if [[ -f /etc/lightdm/lightdm.conf ]] && grep -q '^#\?autologin-user=' /etc/lightdm/lightdm.conf; then
-  sed -i -e "s/^#\\?autologin-user=.*/autologin-user=${ORBIT_USER}/" /etc/lightdm/lightdm.conf
-fi
+rm -f /etc/lightdm/lightdm.conf.d/orbit-autologin.conf
 
 if command -v raspi-config >/dev/null && [[ -e /etc/init.d/lightdm ]]; then
-  log "Autologin al escritorio y sin apagado de pantalla"
+  log "Autologin gráfico y sin apagado de pantalla"
   SUDO_USER="$ORBIT_USER" raspi-config nonint do_boot_behaviour B4
   SUDO_USER="$ORBIT_USER" raspi-config nonint do_blanking 1
 elif command -v raspi-config >/dev/null; then
-  log "raspi-config está, pero no hay lightdm. El autologin queda en lightdm.conf.d para el escritorio de la imagen."
+  log "raspi-config está, pero no hay lightdm. El autologin queda en lightdm.conf.d."
+fi
+if command -v labwc >/dev/null 2>&1; then
+  ORBIT_HOME="$ORBIT_HOME" /usr/local/bin/orbit-lightdm.sh orbit "$ORBIT_USER"
+  log "LightDM entra en la sesión orbit: labwc sin pcmanfm ni wf-panel-pi."
+else
+  log "No está labwc. No se cambia la sesión de LightDM. El autologin del usuario se queda."
+  cat > /etc/lightdm/lightdm.conf.d/zz-orbit.conf <<EOF
+[Seat:*]
+autologin-user=${ORBIT_USER}
+autologin-user-timeout=0
+EOF
+  chmod 644 /etc/lightdm/lightdm.conf.d/zz-orbit.conf
+  if [[ -f /etc/lightdm/lightdm.conf ]] && grep -q '^#\?autologin-user=' /etc/lightdm/lightdm.conf; then
+    sed -i -e "s/^#\\?autologin-user=.*/autologin-user=${ORBIT_USER}/" /etc/lightdm/lightdm.conf
+  fi
 fi
 if systemd_up; then
   systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
@@ -534,7 +593,8 @@ fi
 
 log "Listo. Reinicia la Pi para ver Orbit OS al encender."
 echo "Usuario de la sesión: $ORBIT_USER"
-echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco). Para volver: rm /var/lib/orbit/kiosk-pausa"
+echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco y abre una terminal). Para volver: rm /var/lib/orbit/kiosk-pausa"
+echo "Escritorio de Raspberry Pi: sudo orbit-escritorio y sudo reboot. Para Orbit OS otra vez: sudo bash scripts/instalar-pi.sh y sudo reboot"
 echo "Moonlight aún no está emparejado. Pasos en docs/instalacion-pi.md"
 echo "Ardu Lab no sube nada hasta anotar el basename de /dev/serial/by-path."
 echo "Cuando los Nano estén enchufados: sudo bash scripts/detectar-nanos.sh"

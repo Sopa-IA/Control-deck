@@ -399,9 +399,10 @@ def render_todo() -> dict[str, Path]:
         ("dim", "Se escribe una vez en Sunshine."),
     ])
     fotos["chk_kiosco"] = terminal(IMG / "chk_kiosco.png", [
-        ("dim", "Ctrl+Alt+T sale del kiosco."),
+        ("dim", "Ctrl+Alt+T abre una terminal."),
         ("cmd", "rm /var/lib/orbit/kiosk-pausa"),
         ("ok", "Vuelve Orbit OS."),
+        ("dim", "Escritorio: sudo orbit-escritorio"),
     ])
     fotos["chk_sim"] = pantalla(
         IMG / "chk_sim.png", "Simulador en el PC",
@@ -809,7 +810,7 @@ def construir(fotos):
       "sudo bash scripts/instalar-pi.sh",
       "soft_instala", "Con internet. Se puede repetir. La segunda vez no cambia los tokens.")
     p("Reinicia",
-      "sudo reboot",
+      "sudo reboot. La sesión orbit abre Orbit OS sobre fondo negro, sin la barra del escritorio.",
       "soft_reboot", "Al volver, lo primero es Orbit OS.")
     p("SSH otra vez",
       "Entra con el mismo usuario.",
@@ -836,8 +837,8 @@ def construir(fotos):
       "moonlight-qt pair 10.0.0.1 y el PIN en Sunshine.",
       "chk_moon", "8. Solo la primera vez.")
     p("Salir y volver al kiosco",
-      "Ctrl+Alt+T sale. rm /var/lib/orbit/kiosk-pausa vuelve.",
-      "chk_kiosco", "9. SSH sigue valiendo sin salir.")
+      "Ctrl+Alt+T pausa Chromium y abre una terminal. rm /var/lib/orbit/kiosk-pausa vuelve.",
+      "chk_kiosco", "9. SSH sigue. Escritorio: sudo orbit-escritorio y reinicia.")
     p("El simulador no apaga el PC",
       "En el ordenador de desarrollo, Apagar dice SIMULADO.",
       "chk_sim", "10. Ese PC sigue encendido.")
