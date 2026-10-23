@@ -37,11 +37,13 @@ Insertos de latón 360. La cota es largo × Ø exterior. El agujero Ø4,0 (M3, O
 | 6-32 UNC × 1/4" (6,4 mm), Phillips PH2 | 4 | 0 | Disco Toshiba de 3,5", por debajo | No lo trae ningún kit. Valen los tornillos originales de la torre, si siguen ahí. |
 | Regleta macho 2×20, paso 2,54 mm, pines ≥ 11 mm | 1 | 0 | GPIO de la Pi, por los Ø1,6 de abajo | FALTA: comprar. El CSV de electrónica no se ha podido leer. |
 | Regleta macho 2×12, paso 2,54 mm, pines ≥ 11 mm | 1 | 0 | Nano de prácticas, por los Ø1,6 de arriba. No es 2×15 | FALTA: comprar. |
-| Cables Dupont hembra-hembra, paso 2,54 mm | los que hagan falta | 0 | De los pines que asoman a la Pi y al Nano | FALTA: comprar. No están contados en un kit. |
+| Cables Dupont hembra-hembra, paso 2,54 mm | los que hagan falta | 0 | Del panel de pines (fuera) a la Pi y al Nano | FALTA: comprar. En el panel el extremo puede ser recto. |
+| Dupont hembra acodado a 90°, paso 2,54 mm | uno por pin | 0 | Las tres placas de la bandeja, pines hacia abajo | FALTA: comprar. El recto (carcasa ~14,5 mm) no entra en los 13 mm. Nano: 30 por placa. ESP: cuéntalos en la placa. |
+| Step-down LM2596, 43 × 21 mm, a 5 V | 1 | 0 | Hueco (399, 124) de la bandeja | FALTA: comprar. No está en el inventario. Ahí hay ahora un convertidor ZERO/SPAN de 4–20 mA. |
 
 El plan B del botón, si la cola no aguanta, son 2× M2×3 de cabeza plana (wugongshan, plata). No entran en la cuenta. El bote trae 50.
 
-Para `consumo.md`, en el repo del inventario (aquí no está ese archivo): el M3×6 avellanado sigue en 4 y el inserto M3 de 4×5 sigue en 6. Los adaptadores no gastan tornillo. Las dos regletas macho y los cables Dupont no están en el kit: anótalos como compra.
+Para `consumo.md`, en el repo del inventario (aquí no está ese archivo): el M3×6 avellanado sigue en 4 y el inserto M3 de 4×5 sigue en 6. Los adaptadores no gastan tornillo. La bandeja v3 usa los mismos M3×12, M3×8 y grapas: no reserva tornillo nuevo. Anota como compra las dos regletas macho, los Dupont hembra-hembra del panel, los Dupont hembra acodados a 90° de la bandeja (30 por cada Nano; los del ESP, al contarlos) y un step-down LM2596 de 43 × 21 mm a 5 V.
 
 Quedan sin usar, entre otros: el resto de M2, M2.5 y M4–M6, los insertos 1/4-20, y los avellanados M3×4 y M3×5. No se reservan.
 
@@ -61,8 +63,8 @@ No se reimprime la base, ni las cuatro carcasas (las cuatro ya están impresas),
 | Separadores HP | Agujero Ø4 × 6,2 en la base impresa. Un 6×5 no cabe. | Nada | M3 4×5 y M3×6 avellanado |
 | Bisel, 12 | El inserto va en el poste de la carcasa. El bisel ya tiene paso y avellanado. | No abras a Ø4,6 | M3 5×5 y M3×8 avellanado |
 | Torretas de la bandeja, 4 | Abre el techo macizo a Ø4,0. Si ya está a Ø3,4, ábrelo a Ø4,0. | Ø4,0 | M3 6×5 y M3×8 botón. No otro M3×16 |
-| Bandeja, ESP y dos Nano | Si ya está impresa, alarga cada guía Ø2,5 de 10 mm en 3 mm. | Ø2,5 | M3×12 botón + grapa de 1,6 mm |
-| Bandeja, Pi | Si ya está impresa, abre el Ø2,7 a Ø3,0 en los 7 mm de arriba. | Ø3,0 | M2.5 4×3,5 y M2.5×8 botón |
+| Bandeja v2 ya impresa | No la cortes ni la taladres. Las cuatro paredes cierran los pines. Imprime la v3. | Nada | Los mismos M3×12 y grapas, en la v3 |
+| Bandeja v3, Pi | El STL nuevo ya trae el Ø3,0 × 7 mm. No hace falta broca. | Nada | M2.5 4×3,5 y M2.5×8 botón |
 | Pomos | Si el impreso solo tiene el radial Ø2,5, reimprime. | Nada | M3 4×5 y M3×12 botón |
 | Tapa de la Pi | El STL no cambia. Los postes están en x1_y1. | Nada | M3×8 botón |
 | Disco Toshiba | La rosca del disco es 6-32. | Nada | FALTA: 4× 6-32 UNC × 1/4" |
@@ -96,7 +98,7 @@ No son tornillos del kit. La carcasa no se taladra.
 | Carcasa trasera derecha | PROVISIONAL_carcasa_x1_y1 | Ya impresa. No reimprimir y no cortar. |
 | Pletinas ×4 | PROVISIONAL_pletina_empalme_x4 | Imprimir planas, sin soportes. |
 | Soporte de disco 3,5" | PROVISIONAL_soporte_disco | Imprimir con el plato abajo. |
-| Bandeja | PROVISIONAL_bandeja_servicio | Pieza de noche si aún no está impresa. Ala abajo. Si ya lo está, no la reimprimas: taladra como dice el paso 7. |
+| Bandeja v3 | PROVISIONAL_bandeja_servicio | Pieza de noche. Ala abajo. Ventanas de 13 mm en los cantos largos. La ya impresa no se usa: está en OBSOLETA_bandeja_huecos_v2_ya_impresa. |
 | Grapas de esquina ×16 | PROVISIONAL_grapa_esquina | Pieza de día. Plana, sin soportes. 14 en el aparato y 2 de más, por si una se parte. No es tornillo del kit. |
 | Placa I/O | PROVISIONAL_placa_io_hp | Pieza de día. Pestaña abajo. Huecos de la foto del 2026-10-23. Entra por dentro. |
 | Marco de prueba de la placa | PRUEBA_placa_io_hp | Pieza de día. Plana. Se sujeta por fuera antes de montar la placa. No se pega. |
@@ -388,7 +390,7 @@ Tornillos usados en este paso: ninguno.
 
 ## Paso 7. Bandeja de placas
 
-Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja se atornilla a la base al final. La grapa sustituye a la arandela: la lengüeta mira a la placa.
+Bandeja v3. Imprímela: la que ya está hecha cierra los pines y no se corta. Los Dupont de las tres placas son hembra acodados a 90°. La grapa sustituye a la arandela: la lengüeta mira a la placa. La bandeja se atornilla a la base al final.
 
 ### 7.0 Cuatro insertos en la Pi
 
@@ -398,7 +400,7 @@ Primero las placas, en el banco. Los pines macho cuelgan en el canal. La bandeja
 
 Con el soldador, mete un inserto M2.5 de 4×3,5 en cada poste de la Pi, desde arriba, a ras del poste. El agujero es Ø3,0 y mide 7 mm. No uses los cuatro postes de fuera: esos son el plan B.
 
-**PENDIENTE DE MEDIR.** El Ø3,0 es el fallback para un inserto de Ø exterior 3,5. Sin ficha y sin probar. Si la bandeja ya está impresa, el agujero es Ø2,7 pasante: ábrelo a Ø3,0 en los 7 mm de arriba y deja el resto.
+**PENDIENTE DE MEDIR.** El Ø3,0 es el fallback para un inserto de Ø exterior 3,5. Sin ficha y sin probar. La v3 ya trae ese agujero, ciego, de 7 mm. No taladres la bandeja vieja: no se usa.
 
 ### 7.1 Raspberry Pi
 
@@ -408,15 +410,15 @@ Con el soldador, mete un inserto M2.5 de 4×3,5 en cada poste de la Pi, desde ar
 
 Pon la Pi en su hueco, con USB y RJ45 hacia atrás. Cuatro M2.5×8 de cabeza de botón, por los agujeros reales de la placa, al inserto. La PCB mide 1,6 mm: entran 6,4 mm, 4 en el inserto y 2,4 de punta.
 
-### 7.2 Mira el canal de los pines
+### 7.2 Mira la ventana de los pines
 
 ![7.2](img/s7_2.png)
 
 **NECESITAS:** Nada. Este paso no lleva tornillo.
 
-El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos filas. Acaban 1,5 mm por encima del suelo. Desde la cara inferior de la PCB hasta el suelo hay 13 mm, en toda la huella de cada fila. La placa apoya en el centro del canto corto, fuera de esas filas.
+El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos filas. La pared larga no está: cada fila sale por una ventana de 40 mm de largo y 13 mm de alto, desde el suelo hasta la PCB. En cada extremo queda un retorno de 2,5 mm, donde no hay pin, y el poste. La placa apoya en el centro del canto corto.
 
-**PENDIENTE DE MEDIR.** El 13 mm es 11,5 mm del pin más largo, con el separador ya contado, más 1,5 mm de aire. Miguel no lo ha medido. Si un pin es más largo, para: el canal llega al suelo y no se puede bajar más.
+**PENDIENTE DE MEDIR.** Un Dupont hembra recto mide unos 14,5 mm de carcasa. En 13 mm no entra: faltan 1,5 mm, y el hilo saldría contra el suelo. Hace falta la carcasa acodada a 90°, una por pin. El cable sale horizontal, sin curva forzada, y puede bajar a los puentes. Subir la PCB 7,5 mm para un recto chocaría con la tina en el ESP.
 
 ### 7.3 ESP8266
 
@@ -424,9 +426,9 @@ El corte es el Nano de prácticas, a mitad del largo. Lo naranja son las dos fil
 
 **NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Cuatro M3×12 de cabeza de botón. La grapa, de 1,6 mm, pisa la esquina. La guía es Ø2,5 y mide 13 mm.
+Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro de los dos cantos cortos: el del USB va partido, a cada lado del conector. Enchufa un Dupont hembra a 90° en cada pin. El cable del canto −X va hacia la Pi; el del canto +X, al corredor de los puentes (y = 100 y 132). Cuatro M3×12 de cabeza de botón. La grapa, de 1,6 mm, pisa la esquina. La guía es Ø2,5 y mide 13 mm. La ventana mide 53 × 13 mm.
 
-**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB y el largo de los pines. Si no entra, no la fuerces. Si la bandeja ya está impresa, la guía mide 10 mm: alárgala 3 mm con la broca de Ø2,5. El fondo baja de z = 8,6 a z = 5,6 y sigue cerrado.
+**PENDIENTE DE MEDIR.** El hueco es 58×31 mm, sacado de una foto. Mide la PCB, cuántos pines tiene cada fila y el largo del pin. Si no entra, no la fuerces. No la subas: en la esquina delantera la PCB queda a 4,8 mm del suelo de la tina. La guía de la v3 ya mide 13 mm. No taladres la bandeja vieja.
 
 ### 7.4 Nano de prácticas
 
@@ -434,19 +436,19 @@ Pon el ESP en su hueco, pines hacia abajo y USB hacia atrás. Apoya en el centro
 
 **NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.
+Pon el Nano de prácticas, pines hacia abajo y mini-USB hacia delante. Treinta Dupont hembra a 90°, uno por pin (2×15). El canto de atrás lleva el escalón central. En el canto del USB el conector ocupa el centro: sujetan las cuatro grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm. Cada ventana mide 40 × 13 mm.
 
-**PENDIENTE DE MEDIR.** La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre. La lengüeta entra unos 2,8 mm en esa esquina.
+**PENDIENTE DE MEDIR.** La huella de cada fila mide 3,2 mm desde el canto largo y empieza a 2,5 mm del canto corto. Es de diseño: el dibujo pone la fila a 15,24 mm y el primer pin a 2,4 mm. No es un calibre. La lengüeta entra unos 2,8 mm en esa esquina. La tapa de la Pi no llega a esta placa.
 
-### 7.5 Step-down
+### 7.5 Hueco del step-down
 
 ![7.5](img/s7_5.png)
 
 **NECESITAS:** 4× M3×8 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  2× grapa de esquina impresa, 1,6 mm
 
-Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan: M3×8 de cabeza de botón, sin grapa. Los 3 y 4 lo pisan con grapa, por fuera de la placa, el mismo M3×8. Debajo hay 3 mm para la soldadura.
+El hueco se queda para un LM2596 de 43 × 21 mm a 5 V. Aún no está: FALTA comprarlo. Lo que hay ahora en ese hueco es un convertidor de señal ZERO/SPAN de 4–20 mA, no un step-down. Si lo dejas ahí, los bornes van por encima de la PCB y el reborde, que acaba a ras, no los encierra. Los tornillos 1 y 2 atraviesan el módulo: M3×8 de cabeza de botón, sin grapa. Los 3 y 4 lo pisan con grapa, por fuera de la placa, el mismo M3×8. Debajo hay 3 mm para la soldadura.
 
-**PENDIENTE DE MEDIR.** El hueco es un módulo típico de 43×21 mm, con agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el tuyo lleva pines hacia abajo, para y mídelo. En el pasante entran 6,4 mm en una guía de 7 mm: quedan 0,6 mm hasta el fondo.
+**PENDIENTE DE MEDIR.** Agujeros a 3,5 mm de la esquina. En el modelo no hay regleta. Si el módulo lleva pines hacia abajo, para y mídelo. En el pasante entran 6,4 mm en una guía de 7 mm: quedan 0,6 mm hasta el fondo. No hay step-down en el inventario.
 
 ### 7.6 Nano de mandos
 
@@ -454,7 +456,9 @@ Pon el módulo en su hueco. Los tornillos 1 y 2 lo atraviesan: M3×8 de cabeza d
 
 **NECESITAS:** 4× M3×12 cabeza de botón, Allen 2 mm, JINZEYOU 840  ·  4× grapa de esquina impresa, 1,6 mm
 
-Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm.
+Pon el Nano de mandos, pines hacia abajo y mini-USB hacia atrás. Otros treinta Dupont hembra a 90°. Igual que el de prácticas: escalón en el canto contrario al USB, y en el del USB sujetan las grapas. M3×12 de cabeza de botón, guía Ø2,5 de 13 mm. Cada ventana mide 40 × 13 mm. El cable del canto +X pasa por los puentes de x = 423,5.
+
+**PENDIENTE DE MEDIR.** Esta placa queda bajo el techo plano de x1_y1, con más de 100 mm de aire. La tapa de la Pi acaba en x = 396 y la placa empieza en x = 400: el límite sigue siendo el techo, no la tapa.
 
 ### 7.7 Inserto en las cuatro torretas
 
@@ -706,15 +710,21 @@ No hacen falta para montar. Están por si hay que reimprimir una pieza.
 
 ### Lo que sigue sin medir
 
-Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Cuánto mide de verdad cada boca de la chapa frontal (el marco deja 59,8 × 15,8 mm; el lector puede no asomar). Largo real de los pines macho de la bandeja (el canal usa 11,5 mm más 1,5 mm). Dónde acaba la fila respecto al canto (el canal usa 3,2 mm y deja 2,5 mm en el extremo). Step-down real, y si lleva pines. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
+Patillaje del cabezal H-6, conector y largo real del cable del botón. Si el pulsador no es el 12×12×7,3 de catálogo. Si el cabezal ya limita el LED. Cuánto mide de verdad cada boca de la chapa frontal (el marco deja 59,8 × 15,8 mm; el lector puede no asomar). Largo real de los pines macho de la bandeja (el canal usa 11,5 mm más 1,5 mm). Dónde acaba la fila respecto al canto (el canal usa 3,2 mm y deja 2,5 mm en el extremo). Cuántos pines tiene el ESP. El LM2596 aún no está: FALTA comprarlo, 43 × 21 mm a 5 V. ESP real. OLED real. HAT de la Pi. Tira de LED: tipo, ancho y tensión. Largo de los cables USB. Qué USB de la Pi usa el Nano de mandos. Eje del potenciómetro. Pies de goma. Diámetro del jack. Recorrido del step-down: no se ha dibujado ningún hilo.
 
-### Pines bajo la PCB
+### Pines bajo la PCB, bandeja v3
 
-Nano de prácticas, Nano de mandos y ESP8266. La cara inferior de la PCB queda a 13 mm del suelo de la bandeja. Ese 13 es 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire. [PENDIENTE] de medir. El pin corto que cita Miguel, unos 6 mm más el separador, queda holgado dentro de ese canal.
+La bandeja ya impresa (`OBSOLETA_bandeja_huecos_v2_ya_impresa`, la de los huecos cerrados) no se reimprime y no se corta. No sirve: las cuatro paredes llegan hasta la PCB y el pin macho queda dentro. La v3 es `PROVISIONAL_bandeja_servicio`. Mismas posiciones, mismos 4 M3 a la base, misma Pi.
 
-Bajo cada fila el plástico del bolsillo está vaciado hasta el suelo. El apoyo es un escalón de 2 mm en la banda central del canto corto, fuera del último pin. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro grapas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.
+Nano de prácticas, Nano de mandos y ESP8266. La cara inferior de la PCB sigue a 13 mm del suelo. Ese 13 es 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire. [PENDIENTE] de medir. No se sube la placa.
 
-La guía de la esquina es Ø2,5 × 13 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la grapa de 1,6 mm, el M3×12 entra 10,4 mm y le quedan 2,6 mm hasta el fondo. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto. Si la bandeja ya impresa trae la guía de 10 mm, el 7.3 dice cómo alargarla.
+Un Dupont hembra recto no cabe. La carcasa mide unos 14,5 mm a lo largo del pin y el hueco mide 13: faltan 1,5 mm para apoyar, y el hilo saldría contra el suelo, sin radio de curva. Para un recto con unos 6 mm de curva harían falta 20,5 mm bajo la PCB, o sea subirla 7,5 mm. El ESP no puede: en la esquina delantera (y = 86, canto +X, bajo el reborde de la tina) la PCB queda a 4,8 mm del plástico. Un elevador sobre los postes tampoco abre las paredes que ya están impresas, y un M3×12 solo deja 2,6 mm de más en la guía de 13 mm. Por eso no hay pieza elevadora. Hace falta un Dupont hembra acodado a 90° en cada pin (FALTA: comprar). La carcasa a 90° ocupa unos 2,5 mm a lo largo del pin y el cable sale horizontal por la ventana.
+
+Cada fila tiene una ventana en el canto largo, desde el suelo hasta la cara superior de la PCB. El claro es 13 mm de alto. En Y mide 40 mm en los dos Nano (largo 45 menos 2,5 mm por extremo) y 53 mm en el ESP (largo 58). El retorno de la esquina y el poste no tapan pines. El apoyo sigue siendo un escalón de 2 mm en la banda central del canto corto. En el canto del mini-USB de los dos Nano el conector ocupa el centro y el escalón no llega a 1,6 mm: no se imprime, y sujetan las cuatro grapas. El ESP, más ancho, sí lleva escalón a los dos lados del USB.
+
+El cable puede bajar al suelo y pasar bajo los siete puentes que ya había (barra a 4,2 mm del suelo, luz de unos 4 mm). El hilo de un Dupont, de cerca de 1,2 mm, entra. Hacia la Pi sale el canto −X del ESP. Hacia el panel de pines y la OLED, el corredor de la derecha y los puentes de x = 423,5.
+
+La guía de la esquina es Ø2,5 × 13 mm. El poste mide 14,8 mm: arranca 0,2 mm bajo el suelo y llega a la cara superior de la PCB (suelo 4 + 13 + PCB 1,6). Con la grapa de 1,6 mm, el M3×12 entra 10,4 mm y le quedan 2,6 mm hasta el fondo. El eje está a 1,5 mm del canto largo y a 3,0 mm del canto corto. La v3 ya trae esa guía. No se alarga a broca.
 
 Con la bandeja en sus torretas, el ala queda a z = 11 y la cara inferior de estas tres PCB a z = 28. La carcasa y la tapa no se han tocado.
 
@@ -724,7 +734,7 @@ El ESP queda debajo de la tina de la pantalla. En el borde delantero, la PCB (1,
 
 El Nano de mandos queda bajo el techo plano de la carcasa x1_y1. Hasta ese techo interior hay 117 mm. El hueco de la tapa acaba en x = 396 y la placa empieza en x = 400. La tapa apoya sobre el techo macizo, así que el límite es el techo.
 
-La Pi sigue a 8 mm del suelo, con su rejilla, y se atornilla por sus agujeros M2.5. Los cuatro tornillos de la bandeja a la base son M3×8 de botón sobre un inserto de 6×5. El step-down sigue con 3 mm bajo la PCB para la soldadura: en el modelo no hay regleta.
+La Pi sigue a 8 mm del suelo, con su rejilla, y se atornilla por sus agujeros M2.5. Los cuatro tornillos de la bandeja a la base son M3×8 de botón sobre un inserto de 6×5. El hueco de 43 × 21 mm sigue con 3 mm bajo la PCB para la soldadura y el reborde a ras: no encierra un borne de arriba. No hay step-down en el inventario. FALTA: comprar un LM2596 de 43 × 21 mm a 5 V. Lo que está en ese hueco es un convertidor ZERO/SPAN de 4–20 mA.
 
 ### Botón de encendido
 

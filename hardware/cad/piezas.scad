@@ -150,24 +150,33 @@ module puente_cable(x, y, dx, dy) {
         translate([x + dx, y + dy, zb]) cube([2, 2, 1.6]);
     }
 }
-// Bolsillo de una placa con pines macho hacia abajo. Bajo cada fila hay un
-// canal hasta el suelo: desde la PCB hasta cualquier plástico quedan
-// pin_bajo_pcb. El apoyo es un escalón en la banda central de cada canto
-// corto, fuera del último pin. En el canto del USB ese escalón se parte
-// y, si el resto no llega a 1,6 mm, no se imprime: sujetan las grapas.
-// usb_sy = −1 el conector mira a −Y; +1 mira a +Y.
+// Bolsillo de una placa con pines macho hacia abajo (bandeja v3, 2026-10-23).
+// Las paredes largas ya no cierran el canal: cada fila sale por una ventana
+// desde el suelo hasta la cara superior de la PCB. Quedan los postes de
+// esquina, un retorno corto en la zona sin pines (pin_extremo) y el apoyo
+// del canto corto. La PCB no sube: bajo la carcasa ya impresa el ESP solo
+// tiene 4,8 mm en la esquina delantera hasta la tina, y un Dupont recto
+// (carcasa 14,5 mm) no cabe en los 13 mm. El cable sale en horizontal con
+// un Dupont hembra acodado a 90°. usb_sy = −1 el conector mira a −Y; +1 a +Y.
 module bolsillo_pines(b, usb_sy, pcb_t) {
     x0 = b[0]; y0 = b[1]; lx = b[2]; ly = b[3];
     z0 = suelo - 0.2;
     z_pcb = suelo + b3_pin_z;
     z1 = z_pcb + pcb_t;
     h = z1 - z0;
+    // Retorno de esquina, solo hasta pin_extremo: no tapa ningún pin y
+    // deja la holgura de 0,5 mm. Va pegado al poste; no es un puente.
+    ret_y = b3_holg + b3_pared + pin_extremo;
+    echo(str("VENTANA_PINES;ly;", ly, ";claro_y;", ly - 2*pin_extremo,
+             ";claro_z;", b3_pin_z, ";desde_suelo_hasta_pcb"));
     difference() {
         union() {
-            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
-                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
-            translate([x0 + lx + b3_holg, y0 - b3_holg - b3_pared, z0])
-                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            for (sx = [x0 - b3_holg - b3_pared, x0 + lx + b3_holg]) {
+                translate([sx, y0 - b3_holg - b3_pared, z0])
+                    cube([b3_pared, ret_y, h]);
+                translate([sx, y0 + ly - pin_extremo, z0])
+                    cube([b3_pared, ret_y, h]);
+            }
             translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
                 cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
             translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
@@ -214,9 +223,12 @@ module apoyo_centro(x0, y_lo, y_hi, lx, z0, z_pcb, abrir_usb) {
     } else
         translate([xL, y_lo, z0]) cube([xR - xL, dy, hh]);
 }
-// Step-down. En el modelo no hay regleta: solo buck_suelda bajo la PCB.
-// Reborde perimetral, dos tornillos por los
-// agujeros del módulo y dos bridas en los otros cantos.
+// Hueco 43 × 21 mm. En el modelo no hay regleta: solo buck_suelda bajo la PCB.
+// El reborde acaba a ras de la PCB (z = 8,6). Un borne de tornillo va encima
+// de la placa y el hilo sale por arriba: el reborde no lo encierra. No se
+// abren ventanas aquí. Lo que Miguel tiene puesto es un convertidor ZERO/SPAN
+// de 4–20 mA, no el step-down. El LM2596 43 × 21 mm a 5 V es FALTA: comprar.
+// Reborde perimetral, dos tornillos por los agujeros del módulo y dos bridas.
 module bolsillo_buck() {
     x0 = b3_buck[0]; y0 = b3_buck[1]; lx = b3_buck[2]; ly = b3_buck[3];
     z0 = suelo - 0.2;

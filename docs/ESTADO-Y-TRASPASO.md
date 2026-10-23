@@ -1,6 +1,6 @@
 # Estado y traspaso · Orbit Terminal
 
-Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se corta) y con las dos carcasas futuras (no se imprimen ahora). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se corta), las dos carcasas futuras (no se imprimen ahora) y la bandeja v3 (ventanas para los Dupont). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
 **Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
 
@@ -27,6 +27,8 @@ Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es solo Moon
 
 El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
 
+La bandeja de huecos también está impresa y **no sirve**: las paredes largas llegan hasta la PCB y encierran los pines macho. No se corta. Hay que imprimir la v3 (`PROVISIONAL_bandeja_servicio`, 126,00 × 237,49 × 20,60 mm, 173,2 cm³, pieza de noche, unas 14 h sin laminar). La malla vieja queda en `OBSOLETA_bandeja_huecos_v2_ya_impresa` (181,71 cm³). Las placas no se mueven. Los tornillos son los mismos. Un Dupont hembra recto (~14,5 mm) no entra en los 13 mm bajo la PCB, y subir la placa 7,5 mm chocaría con la tina en el ESP (4,8 mm en la esquina delantera). **FALTA: comprar** Dupont hembra acodado a 90°, uno por pin (30 por cada Nano; los del ESP, al contarlos), y un step-down LM2596 de 43 × 21 mm a 5 V. En ese hueco hay ahora un convertidor ZERO/SPAN de 4–20 mA. El reborde de ese hueco acaba a ras de la PCB y no encierra un borne de arriba.
+
 Adaptadores para ahora (piezas de día, sin tornillo nuevo):
 
 - I/O frontal de `carcasa_x0_y1`: la ventana sigue en 62 × 18 mm. `PROVISIONAL_marco_io_frontal` (67,4 × 26,0 × 3,8 mm, 1,58 cm³) entra a presión desde fuera. Quedan a mano los dos USB y, si asoma, el lector SD. Se pierden los dos jacks de audio del frontal (el audio sigue en la placa trasera). Si el lector no cabe en la boca de 59,8 × 15,8 mm, se pierde también.
@@ -39,7 +41,7 @@ Carcasa futura, no imprimir ahora (si algún día se imprime, es pieza de noche)
 - `FUTURO_carcasa_x0_y1_sin_adaptadores`: ventana frontal de 94 × 18 mm (y = 171,5 a 265,5, z = 74 a 92). Caben jacks, USB y lector. No hace falta marco.
 - `FUTURO_carcasa_x1_y1_sin_adaptadores`: dos pasos de cable alineados con la Pi, y ranuras de regleta Pi 2×20 y Nano 2×15 en lugar de los Ø1,6. No hace falta tapa ni careta.
 
-En `consumo.md` (repo del inventario, no este): el M3×6 avellanado sigue en 4 de 40 y el inserto M3 4×5 sigue en 6 de 30. Los adaptadores no gastan tornillo.
+En `consumo.md` (repo del inventario, no este): el M3×6 avellanado sigue en 4 de 40 y el inserto M3 4×5 sigue en 6 de 30. Los adaptadores no gastan tornillo. La bandeja v3 tampoco: mismos M3×12, M3×8 y grapas. Anota como compra los Dupont acodados a 90° y el LM2596 de 43 × 21 mm a 5 V.
 
 Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
 
@@ -182,7 +184,8 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_base_x1_y1` | 228,13 × 150,13 × 8,99 | 81,02 | Detrás-derecha: hueco de la bandeja (Pi), una pata del disco | Igual | Igual |
 | `PROVISIONAL_pletina_empalme_x4` | 30,00 × 10,00 × 3,00 | 0,84 | Una pletina. Hay que imprimir 4 | Cara plana, sin soportes (misma guía) | No consta impresión de este STL |
 | `PROVISIONAL_soporte_disco` | 111,60 × 147,00 × 17,99 | 18,64 | Bandeja del HDD 3,5" (patas 14 mm, colisos a 3,18 mm del lateral) | Única pieza de la guía que pide soportes: boca abajo, bandeja contra la cama, soportes solo en la cama | El soporte **2,5"** (SSD) se imprimió y salió pequeño. Este STL 3,5" no consta como impreso |
-| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 181,71 | Huecos fijos. Misma ala. Pi con inserto M2.5, grapas en ESP y Nanos. Guías de esquina Ø2,5 × 13 mm. Bajo cada fila de pines hay 13 mm | Plancha abajo, pieza de noche. Paredes de Nano y ESP en z = 18,6. Si ya está impresa, no reimprimir: taladrar como dice el manual | La v1 está impresa. Esta la sustituye si aún no se ha imprimido |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 173,2 | Bandeja v3. Ventanas de 13 mm en los cantos largos (Nano 40 mm, ESP 53 mm). Misma ala, misma Pi, mismos 4 M3 | Plancha abajo, pieza de noche, unas 14 h sin laminar. No cortar la carcasa | Sustituye a la v2 ya impresa |
+| `OBSOLETA_bandeja_huecos_v2_ya_impresa` | 126,00 × 237,49 × 20,60 | 181,71 | La bandeja de paredes cerradas que Miguel ya imprimió | No reimprimir y no cortar | Obsoleta: encierra los pines |
 | `PROVISIONAL_carcasa_x0_y0` | 228,13 × 150,25 × 95,36 | 104,65 | Delante-izquierda | `diseno-mecanico.md` recomienda la cara de corte sobre la cama. Soportes: no documentado | No probada |
 | `PROVISIONAL_carcasa_x0_y1` | 228,13 × 150,25 × 150,93 | 213,68 | Detrás-izquierda: ventana I/O del HP, pasacables, I/O frontal, pulsador y LED | Igual | No probada. Volumen 213,68 cm³ |
 | `PROVISIONAL_carcasa_x1_y0` | 228,13 × 150,25 × 95,36 | 115,54 | Delante-derecha | Igual | No probada |
@@ -233,7 +236,7 @@ Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 
 | Nº | Pieza | STL | STEP | Notas de estado |
 |---|---|---|---|---|
 | 01 | Plantilla de pivotes C 3,8 / F 3,6 / H 3,4 / J 3,2 | `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl` | `01_PRUEBA_plantilla_pivotes_HP.step` | **Pendiente de resultado.** Hasta entonces la base sigue con insertos M3 |
-| 02 | Bandeja de servicio v2 | `PROVISIONAL_bandeja_servicio.stl` (126,00 × 237,49 × 20,60, 181,71 cm³) | `02_…step` **desfasado** (sigue siendo la v1) | Pieza de noche si no está impresa. A la base: inserto M3 6×5 y M3×8 botón. El STEP no se ha regenerado |
+| 02 | Bandeja de servicio v3 | `PROVISIONAL_bandeja_servicio.stl` (126,00 × 237,49 × 20,60, 173,2 cm³) | `02_…step` **desfasado** (sigue siendo la v1) | Pieza de noche, unas 14 h. La v2 impresa es `OBSOLETA_bandeja_huecos_v2_ya_impresa` y no se usa. El STEP no se ha regenerado |
 | 03 | Carcasa detrás-izquierda | `PROVISIONAL_carcasa_x0_y1.stl` | `03_PROVISIONAL_carcasa_x0_y1.step` (malla) | No impresa. Después de probar la pared I/O |
 | 04 | Carcasa delante-izquierda | `PROVISIONAL_carcasa_x0_y0.stl` | `04_PROVISIONAL_carcasa_x0_y0.step` (malla) | No impresa |
 | 05 | Carcasa delante-derecha | `PROVISIONAL_carcasa_x1_y0.stl` | `05_PROVISIONAL_carcasa_x1_y0.step` (malla, **no válido**) | No impresa. 12 triángulos cruzados en x ≈ 406,3 |

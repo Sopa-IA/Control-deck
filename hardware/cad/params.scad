@@ -579,6 +579,11 @@ b3_pared = 2.2;         // [DISEÑO] pared del bolsillo
 // Regleta macho de agujero pasante, pines hacia abajo. Miguel: bajo la PCB
 // asoman el separador (~2,5 mm) y el pin (~6 mm; algunos llegan a 11,5 mm
 // con el separador ya contado). Hasta medirlo, pin largo 11,5 + aire 1,5.
+// No se sube la PCB. Un Dupont hembra recto (carcasa ~14,5 mm) no entra en
+// 13 mm: le faltan 1,5 mm, y el hilo saldría contra el suelo. Para dejarle
+// unos 6 mm de curva harían falta 20,5 mm bajo la PCB (subir 7,5 mm). El
+// ESP, en la esquina delantera, solo tiene 4,8 mm hasta la tina ya impresa.
+// El cable sale de lado, con Dupont hembra acodado a 90° (FALTA: comprar).
 pin_bajo_pcb = 13;      // [PENDIENTE] libre desde la cara inferior de la PCB hasta la bandeja
 pin_fila_w = 3.2;       // [DISEÑO] huella de cada fila, desde el canto largo. El dibujo usa 2,5 mm. No medido
 pin_extremo = 2.5;      // [DISEÑO] tramo sin pin junto al canto corto. El dibujo empieza a 2,4 mm. No medido

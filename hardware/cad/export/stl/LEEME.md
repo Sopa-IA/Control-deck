@@ -69,4 +69,15 @@ El 2026-10-23 no se ha vuelto a exportar la carcasa ya impresa ni la base: `PROV
 | `FUTURO_carcasa_x0_y1_sin_adaptadores` | 228,1 × 150,2 × 150,9 | 212,0 cm³ | **No imprimir ahora.** Hueco frontal 94 × 18, sin marco. La impresa sigue en 213,7 cm³. Pieza de noche si se imprime |
 | `FUTURO_carcasa_x1_y1_sin_adaptadores` | 228,1 × 150,2 × 150,9 | 232,8 cm³ | **No imprimir ahora.** Pasos de cable de la Pi y ranuras de regleta. La impresa sigue en 233,8 cm³. Pieza de noche si se imprime |
 
-`comprobar_stl.py` el 2026-10-23: 36 mallas, cerradas, dentro de la cama. Las cuatro `PROVISIONAL_carcasa_*` y la base no han cambiado de archivo.
+`comprobar_stl.py` el 2026-10-23, por la mañana: 36 mallas, cerradas, dentro de la cama. Las cuatro `PROVISIONAL_carcasa_*` y la base no han cambiado de archivo.
+
+El mismo día, por la tarde, la bandeja pasa a v3. Solo se ha vuelto a exportar `PROVISIONAL_bandeja_servicio`. La malla de paredes cerradas que Miguel ya imprimió se guarda aparte y no se reimprime ni se corta. La carcasa, la base y `tapa_pi` no se han tocado. No lanzar `exportar.sh`.
+
+| STL | Caja (mm) | Volumen | Qué es |
+|---|---|---|---|
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 173,2 cm³ | **Bandeja v3. Imprimir.** Ala abajo, pieza de noche. Ventana de 13 mm de alto en cada canto largo del ESP (53 mm) y de los dos Nano (40 mm). Mismos huecos, mismos 4 M3, misma Pi. Antes 181,71 cm³ |
+| `OBSOLETA_bandeja_huecos_v2_ya_impresa` | 126,00 × 237,49 × 20,60 | 181,71 cm³ | **No reimprimir y no cortar.** Es la que ya está hecha. Las paredes llegan hasta la PCB y encierran los pines |
+
+Estimación sin laminar: 173,2 cm³ de plástico, hilo 0,2 × 0,42 mm, a 40 mm/s de media, unas 14 horas. No es un tiempo de laminador.
+
+`comprobar_stl.py` el 2026-10-23, por la tarde: 37 mallas, cerradas, dentro de la cama. OpenSCAD de la v3: Simple yes, Volumes 2, igual que la v2.
