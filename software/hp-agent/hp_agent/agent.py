@@ -7,6 +7,7 @@ import json
 import logging
 import platform
 import socket
+import time
 
 import aiohttp
 import psutil
@@ -58,18 +59,72 @@ def _cpu_temp_c() -> float | None:
     return None
 
 
+# Lectura anterior de bytes enviados y recibidos, para pasar de contadores a kb/s.
+_last_net: tuple[float, int, int] | None = None
+
+
+def _nic_cuenta(nombre: str) -> bool:
+    """Suma Wi-Fi (internet) y Ethernet (cable a la Pi). Fuera: loopback y Virtual Display Driver."""
+    n = nombre.strip().lower()
+    if n in {"lo", "lo0"} or "loopback" in n:
+        return False
+    if "virtual display" in n or "virtualdisplay" in n:
+        return False
+    return True
+
+
+def _bytes_red() -> tuple[int, int]:
+    """Bytes enviados y recibidos. Por interfaz si se puede; si no, el total de psutil."""
+    try:
+        per = psutil.net_io_counters(pernic=True)
+    except (AttributeError, OSError, NotImplementedError):
+        per = None
+    if per:
+        sent = recv = 0
+        for nombre, c in per.items():
+            if not _nic_cuenta(str(nombre)):
+                continue
+            sent += int(c.bytes_sent)
+            recv += int(c.bytes_recv)
+        return sent, recv
+    try:
+        total = psutil.net_io_counters()
+    except (AttributeError, OSError, NotImplementedError):
+        return 0, 0
+    if not total:
+        return 0, 0
+    return int(total.bytes_sent), int(total.bytes_recv)
+
+
+def _net_kbps() -> tuple[float, float]:
+    """Subida y bajada en kb/s, la misma cuenta que la Pi: bytes de diferencia × 8 / 1000 / segundos."""
+    global _last_net
+    sent, recv = _bytes_red()
+    now = time.monotonic()
+    if _last_net is None:
+        _last_net = (now, sent, recv)
+        return 0.0, 0.0
+    t0, s0, r0 = _last_net
+    _last_net = (now, sent, recv)
+    dt = max(now - t0, 1e-3)
+    up = max(0, sent - s0) * 8 / 1000 / dt
+    down = max(0, recv - r0) * 8 / 1000 / dt
+    return round(up, 1), round(down, 1)
+
+
 def telemetry() -> dict:
     vm = psutil.virtual_memory()
     try:
         disk = psutil.disk_usage("C:\\" if platform.system() == "Windows" else "/").percent
     except OSError:
         disk = 0.0
-    import time
+    up, down = _net_kbps()
     return {"host": "hp", "simulated": False, "hostname": socket.gethostname()[:64],
             "model": machine_model(), "os": os_label(),
             "cpu_pct": round(psutil.cpu_percent(interval=None), 1), "mem_pct": round(vm.percent, 1),
             "mem_used_mb": round((vm.total - vm.available) / 2**20, 1), "mem_total_mb": round(vm.total / 2**20, 1),
-            "disk_pct": round(disk, 1), "temp_c": _cpu_temp_c(), "uptime_s": round(time.time() - psutil.boot_time())}
+            "disk_pct": round(disk, 1), "temp_c": _cpu_temp_c(), "uptime_s": round(time.time() - psutil.boot_time()),
+            "net_up_kbps": up, "net_down_kbps": down}
 
 
 async def run_once(cfg: AgentConfig) -> None:

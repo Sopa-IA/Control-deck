@@ -122,6 +122,98 @@ def test_el_log_no_repite_el_token():
     assert encontrado == ["conectado token ***"]
 
 
+class _Contadores:
+    def __init__(self, sent, recv):
+        self.bytes_sent = sent
+        self.bytes_recv = recv
+
+
+def _fija_red(monkeypatch, muestras, tiempos):
+    import hp_agent.agent as agent
+
+    agent._last_net = None
+    cursor = {"i": 0}
+
+    def falso(*, pernic=False):
+        i = min(cursor["i"], len(muestras) - 1)
+        cursor["i"] += 1
+        return muestras[i]
+
+    reloj = {"i": 0}
+
+    def ahora():
+        i = min(reloj["i"], len(tiempos) - 1)
+        reloj["i"] += 1
+        return tiempos[i]
+
+    monkeypatch.setattr(agent.psutil, "net_io_counters", falso)
+    monkeypatch.setattr(agent.time, "monotonic", ahora)
+    return agent
+
+
+def test_la_red_suma_wifi_y_ethernet_y_omite_loopback_y_virtual(monkeypatch):
+    import orbit_protocol as P
+
+    # Wi-Fi RTL8723BE (internet) y Ethernet hacia la Pi. El virtual y el loopback no entran.
+    cero = {
+        "Wi-Fi": _Contadores(0, 0),
+        "Ethernet": _Contadores(0, 0),
+        "Loopback Pseudo-Interface 1": _Contadores(10**12, 10**12),
+        "Virtual Display Driver": _Contadores(10**12, 10**12),
+        "VirtualDisplayDriver": _Contadores(10**12, 10**12),
+    }
+    luego = {
+        "Wi-Fi": _Contadores(1000, 2000),
+        "Ethernet": _Contadores(3000, 5000),
+        "Loopback Pseudo-Interface 1": _Contadores(10**12 + 9_000_000, 10**12),
+        "Virtual Display Driver": _Contadores(10**12 + 8_000_000, 10**12),
+        "VirtualDisplayDriver": _Contadores(10**12 + 7_000_000, 10**12),
+    }
+    agent = _fija_red(monkeypatch, [cero, luego], [100.0, 102.0])
+    primera = agent.telemetry()
+    assert primera["net_up_kbps"] == 0.0
+    assert primera["net_down_kbps"] == 0.0
+    segunda = agent.telemetry()
+    # 4000 B enviados y 7000 B recibidos en 2 s → kb/s como en la Pi (× 8 / 1000 / dt).
+    assert segunda["net_up_kbps"] == 16.0
+    assert segunda["net_down_kbps"] == 28.0
+    P.make("telemetry", "hp", segunda)
+
+
+def test_si_no_hay_contadores_por_interfaz_usa_el_total(monkeypatch):
+    import hp_agent.agent as agent
+
+    agent._last_net = None
+    muestras = [_Contadores(0, 0), _Contadores(125_000, 250_000)]
+    i = {"n": 0}
+
+    def falso(*, pernic=False):
+        if pernic:
+            raise NotImplementedError("pernic")
+        v = muestras[min(i["n"], 1)]
+        i["n"] += 1
+        return v
+
+    tiempos = iter([10.0, 11.0])
+    monkeypatch.setattr(agent.psutil, "net_io_counters", falso)
+    monkeypatch.setattr(agent.time, "monotonic", lambda: next(tiempos))
+    assert agent.telemetry()["net_down_kbps"] == 0.0
+    dato = agent.telemetry()
+    # 125000 B y 250000 B en 1 s → kb/s como en la Pi (× 8 / 1000).
+    assert dato["net_up_kbps"] == 1000.0
+    assert dato["net_down_kbps"] == 2000.0
+
+
+def test_un_contador_que_retrocede_no_sale_negativo(monkeypatch):
+    agent = _fija_red(
+        monkeypatch,
+        [{"Ethernet": _Contadores(5_000, 9_000)}, {"Ethernet": _Contadores(100, 50)}],
+        [1.0, 3.0],
+    )
+    assert agent._net_kbps() == (0.0, 0.0)
+    assert agent._net_kbps() == (0.0, 0.0)
+
+
 def test_config_env_overrides_file(tmp_path):
     f = tmp_path / "a.toml"
     f.write_text('hub_url = "ws://x:1/ws"\ntoken = "archivo"\n[apps]\nnav = ["firefox"]\n', encoding="utf-8")
