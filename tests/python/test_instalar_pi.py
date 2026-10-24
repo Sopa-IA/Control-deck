@@ -17,68 +17,133 @@ def _kiosk() -> str:
     return trozo.split("\nEOF", 1)[0]
 
 
-def test_nmcli_no_lista_interface_name_y_es_repetible(tmp_path: Path):
+def _codigo_sin_comentarios(texto: str) -> str:
+    lineas = []
+    for linea in texto.splitlines():
+        lineas.append(linea.split("#", 1)[0])
+    return "\n".join(lineas)
+
+
+def test_el_instalador_no_toca_perfiles_wifi():
+    inst = _codigo_sin_comentarios(INSTALADOR.read_text(encoding="utf-8"))
+    nm = _codigo_sin_comentarios((ROOT / "scripts/orbit-nm.sh").read_text(encoding="utf-8"))
+    for src in (inst, nm):
+        for prohibido in (
+            "connection reload",
+            "con reload",
+            "connection modify",
+            "con mod ",
+            "connection delete",
+            "connection load",
+            "connection up",
+            "netplan apply",
+            "netplan generate",
+            "cloud-init",
+            "rfkill unblock wifi",
+            "rfkill block",
+        ):
+            assert prohibido not in src
+    bloque = inst.split("apt-get install -y \\", 1)[1].split("if ! dpkg -s network-manager", 1)[0]
+    assert "network-manager" not in bloque
+    assert "dpkg -s network-manager" in inst
+    perfil = inst.split("orbit-enlace-hp.nmconnection <<'EOF'", 1)[1].split("\nEOF", 1)[0]
+    assert "address1=10.0.0.2/24" in perfil
+    assert perfil.count("never-default=true") == 2
+    assert "ignore-auto-dns=true" in perfil
+    assert not any(linea.startswith(("gateway", "dns=")) for linea in perfil.splitlines())
+    assert "method=manual" in perfil
+    assert "method=disabled" in perfil
+    assert "autoconnect-priority=100" in perfil
+    assert "desactivar_autoconnect_eth0" not in inst
+    assert "avisar_red" in inst
+    assert "avisar_si_cambio_la_red" in inst
+
+
+def test_avisa_si_wlan0_no_esta_conectado_y_no_edita_perfiles(tmp_path: Path):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     calls = tmp_path / "calls"
-    fake = bin_dir / "nmcli"
-    fake.write_text(
+    (bin_dir / "nmcli").write_text(
         f"""#!/bin/bash
-set -euo pipefail
 printf '%s\\n' "$*" >> {calls}
-if [[ "$1" == "-t" ]]; then
-  if [[ "$*" == *connection.interface-name* ]]; then
-    echo "Error: invalid field 'connection.interface-name'; allowed fields: NAME,UUID,DEVICE" >&2
-    exit 2
-  fi
-  printf '%s\\n' 'orbit-enlace-hp' 'Cable\\: salon' 'eth0-fija' 'wifi-casa'
-  exit 0
-fi
-if [[ "$1" == "-g" ]]; then
-  name="${{@: -1}}"
-  case "$name" in
-    orbit-enlace-hp|eth0-fija|Cable:\\ salon) printf '%s\\n' eth0 ;;
-    *) printf '\\n' ;;
-  esac
-  exit 0
-fi
-if [[ "$1" == connection && "$2" == modify ]]; then
-  printf 'MOD %s\\n' "$3" >> {calls}
-  exit 0
-fi
-if [[ "$1" == connection && "$2" == reload ]]; then
-  exit 0
-fi
-echo "nmcli inesperado: $*" >&2
-exit 3
+printf '%s\\n' 'eth0:connected' 'wlan0:disconnected' 'lo:unmanaged'
 """,
         encoding="utf-8",
     )
-    fake.chmod(0o755)
+    (bin_dir / "nmcli").chmod(0o755)
+    (bin_dir / "ip").write_text(
+        f"""#!/bin/bash
+printf '%s\\n' "$*" >> {calls}
+if [[ "$1" == "-4" && "$3" == "default" ]]; then
+  printf '%s\\n' 'default via 192.0.2.1 dev wlan0'
+fi
+""",
+        encoding="utf-8",
+    )
+    (bin_dir / "ip").chmod(0o755)
     env = os.environ.copy()
     env["PATH"] = f"{bin_dir}{os.pathsep}{env.get('PATH', '')}"
     proc = subprocess.run(
-        [
-            "bash", "-c",
-            "source scripts/orbit-nm.sh\n"
-            "desactivar_autoconnect_eth0 orbit-enlace-hp\n"
-            "desactivar_autoconnect_eth0 orbit-enlace-hp\n",
-        ],
+        ["bash", "-c", "source scripts/orbit-nm.sh\navisar_red\n"],
         cwd=ROOT, env=env, capture_output=True, text=True, check=False,
     )
     assert proc.returncode == 0, proc.stderr
-    assert "invalid field" not in proc.stderr
-    assert proc.stderr.strip() == ""
+    assert "wlan0 no está conectado" in proc.stdout
+    assert "dev eth0" not in proc.stdout
     texto = calls.read_text(encoding="utf-8")
-    listados = [ln for ln in texto.splitlines() if ln.startswith("-t ")]
-    assert listados and all("interface-name" not in ln for ln in listados)
-    assert any(ln.startswith("-g connection.interface-name connection show ") for ln in texto.splitlines())
-    mods = [line for line in texto.splitlines() if line.startswith("MOD ")]
-    assert mods.count("MOD eth0-fija") == 2
-    assert mods.count("MOD Cable: salon") == 2
-    assert not any("orbit-enlace-hp" in line for line in mods)
-    assert not any("wifi-casa" in line for line in mods)
-    assert "NAME,connection.interface-name" not in INSTALADOR.read_text(encoding="utf-8")
+    assert "device status" in texto
+    for prohibido in ("modify", "reload", "delete", "load", " up"):
+        assert prohibido not in texto
+
+    (bin_dir / "nmcli").write_text(
+        f"""#!/bin/bash
+printf '%s\\n' "$*" >> {calls}
+printf '%s\\n' 'wlan0:connected'
+""",
+        encoding="utf-8",
+    )
+    (bin_dir / "ip").write_text(
+        """#!/bin/bash
+if [[ "$1" == "-4" ]]; then
+  printf '%s\\n' 'default via 192.0.2.1 dev eth0 proto static'
+fi
+""",
+        encoding="utf-8",
+    )
+    calls.write_text("", encoding="utf-8")
+    proc = subprocess.run(
+        ["bash", "-c", "source scripts/orbit-nm.sh\navisar_red\n"],
+        cwd=ROOT, env=env, capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "wlan0 no está conectado" not in proc.stdout
+    assert "sale por eth0" in proc.stdout
+
+
+def test_el_aviso_de_perfiles_ignora_solo_el_de_eth0(tmp_path: Path):
+    red = tmp_path / "system-connections"
+    netplan = tmp_path / "netplan"
+    red.mkdir()
+    netplan.mkdir()
+    (red / "preconfigured.nmconnection").write_text("wifi\n", encoding="utf-8")
+    (netplan / "50-cloud-init.yaml").write_text("wifis: {}\n", encoding="utf-8")
+    script = f"""
+set -euo pipefail
+source scripts/orbit-nm.sh
+antes_nm="$(nombres_en {red})"
+antes_np="$(nombres_en {netplan})"
+install -D /dev/null {red}/orbit-enlace-hp.nmconnection
+avisar_si_cambio_la_red "$antes_nm" "$antes_np" {red} {netplan}
+rm {netplan}/50-cloud-init.yaml
+avisar_si_cambio_la_red "$antes_nm" "$antes_np" {red} {netplan}
+"""
+    proc = subprocess.run(
+        ["bash", "-c", script],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "system-connections" not in proc.stdout
+    assert proc.stdout.count("ha cambiado /etc/netplan") == 1
 
 
 def test_sesion_orbit_sin_mezclar_el_escritorio(tmp_path: Path):

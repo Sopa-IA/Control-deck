@@ -188,12 +188,13 @@ def tornillo_png(path: Path, tipo: str, leyenda: str) -> Path:
 
 
 def problemas_png(path: Path) -> Path:
-    im = Image.new("RGB", (1200, 980), "#f7f4ee")
+    im = Image.new("RGB", (1200, 1120), "#f7f4ee")
     d = ImageDraw.Draw(im)
     filas = [
         ("No entra SSH", "Espera al Wi-Fi. El nombre es el de Imager, no tiene que ser pi."),
         ("orbitd no arranca", "sudo systemctl status orbitd. Si falla, vuelve a lanzar el script."),
         ("Hay puerta en eth0", "El perfil es orbit-enlace-hp: 10.0.0.2/24, sin puerta ni DNS."),
+        ("Wi-Fi caído", "No apliques netplan. El instalador no borra ese perfil."),
         ("No apaga", "Confirma en pantalla. Un toque corto no vale. Sin la UI abierta, no apaga."),
         ("El PC se iba a apagar", "El simulador no llama a systemctl. Para."),
         ("Moonlight no abre", "Empareja una vez: moonlight-qt pair 10.0.0.1 y el PIN en Sunshine."),
@@ -890,7 +891,9 @@ def construir(fotos):
     story.append(foto(fotos["fallos"], 176, 120))
     story.append(Paragraph(
         "No cortes la carcasa para arreglar un paso. Si un tetón no entra, lija el tetón. "
-        "Si al instalar no existe /dev/serial/by-path, enchufa los Nano y ejecuta sudo bash scripts/detectar-nanos.sh.",
+        "Si al instalar no existe /dev/serial/by-path, enchufa los Nano y ejecuta sudo bash scripts/detectar-nanos.sh. "
+        "Si wlan0 queda desconectado, el instalador no ha borrado el Wi-Fi a propósito: no recarga NetworkManager y no aplica netplan. "
+        "eth0 es 10.0.0.2/24, sin puerta ni DNS, y no es la ruta por defecto. No pegues contraseñas.",
         st["p"]))
     # última página: sin PageBreak final de más. El paso() ya parte. Este bloque es la última.
 

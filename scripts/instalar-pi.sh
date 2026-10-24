@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Instala Orbit OS en una Raspberry Pi para que, al encender, lo primero sea Orbit OS.
 # Idempotente: se puede ejecutar otra vez. Hay que lanzarlo con sudo, con Wi-Fi e internet.
-# No toca la puerta de enlace del Wi-Fi. eth0 queda en 10.0.0.2/24, sin puerta ni DNS.
+# eth0 queda en 10.0.0.2/24, sin puerta, sin DNS y sin ruta por defecto.
+# No borra ni modifica perfiles Wi-Fi. No recarga NetworkManager ni aplica netplan.
 set -euo pipefail
 
 if [[ "$(id -u)" -ne 0 ]]; then
@@ -119,14 +120,24 @@ systemd_up() { [[ -d /run/systemd/system ]]; }
 
 export DEBIAN_FRONTEND=noninteractive
 log "Paquetes"
+# shellcheck disable=SC1091
+source "$(dirname "$0")/orbit-nm.sh"
+RED_NM_ANTES="$(nombres_en /etc/NetworkManager/system-connections)"
+RED_NP_ANTES="$(nombres_en /etc/netplan)"
 apt-get update
 apt-get install -y \
   python3 python3-venv python3-pip \
   nodejs npm \
   curl ca-certificates gnupg lsb-release \
-  network-manager sudo \
+  sudo \
   unclutter x11-xserver-utils \
   xdg-utils
+# Si NetworkManager ya está, no se reinstala. Una puesta al día migra los perfiles
+# a Netplan y, en esta Raspberry Pi OS, esa regeneración vacía /etc/netplan.
+if ! dpkg -s network-manager >/dev/null 2>&1; then
+  log "No hay NetworkManager. Lo instalo."
+  apt-get install -y network-manager
+fi
 if ! dpkg -s chromium >/dev/null 2>&1 && ! dpkg -s chromium-browser >/dev/null 2>&1; then
   apt-get install -y chromium || apt-get install -y chromium-browser
 fi
@@ -574,14 +585,19 @@ if [[ -n "$BOOT" && -f "$BOOT/cmdline.txt" ]]; then
   printf '%s\n' "$line" > "$BOOT/cmdline.txt"
 fi
 
-log "IP fija en eth0, sin puerta de enlace y sin tocar el Wi-Fi"
+log "IP fija en eth0, sin puerta, sin DNS y sin ruta por defecto"
+# Un solo fichero nuevo. No se lista, no se edita y no se borra ningún otro perfil.
+# No se recarga NetworkManager: en esta Pi eso vacía el Wi-Fi de Imager en /etc/netplan.
+# El perfil entra al reiniciar. autoconnect-priority lo prefiere a otro perfil de eth0.
 install -d -m 755 /etc/NetworkManager/system-connections
 cat > /etc/NetworkManager/system-connections/orbit-enlace-hp.nmconnection <<'EOF'
 [connection]
 id=orbit-enlace-hp
+uuid=4f6a9c2e-1b70-4d55-8a10-0e0e0e0e0002
 type=ethernet
 interface-name=eth0
 autoconnect=true
+autoconnect-priority=100
 
 [ethernet]
 
@@ -593,21 +609,12 @@ ignore-auto-dns=true
 
 [ipv6]
 method=disabled
+never-default=true
 EOF
 chmod 600 /etc/NetworkManager/system-connections/orbit-enlace-hp.nmconnection
-# shellcheck disable=SC1091
-source "$(dirname "$0")/orbit-nm.sh"
-if command -v nmcli >/dev/null && systemd_up && systemctl is-active --quiet NetworkManager; then
-  nmcli connection reload || true
-  desactivar_autoconnect_eth0 "orbit-enlace-hp"
-  if ip link show eth0 >/dev/null 2>&1; then
-    nmcli connection up orbit-enlace-hp || log "eth0 no ha levantado el perfil. El cable puede no estar; el perfil queda guardado."
-  else
-    log "No hay eth0 ahora. El perfil queda guardado y no pone puerta de enlace."
-  fi
-else
-  log "NetworkManager no está en marcha. eth0 quedará en 10.0.0.2/24 al arrancar, sin puerta ni DNS."
-fi
+log "eth0 quedará en 10.0.0.2/24 al reiniciar. No se ha recargado NetworkManager."
+avisar_si_cambio_la_red "$RED_NM_ANTES" "$RED_NP_ANTES"
+avisar_red
 
 log "Bluetooth"
 # La sesión orbit no arranca el panel, que era quien hacía rfkill unblock.

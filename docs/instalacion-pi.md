@@ -20,7 +20,7 @@ El arranque del kiosco se ha visto en la Pi de Miguel. Moonlight contra el HP, n
 10. Si el script termina bien, reinicia: `sudo reboot`.
 11. Al encender, LightDM abre la sesión `orbit`. Lo primero es un fondo negro y, en cuanto `orbitd` responde, Orbit OS. No se ve la barra ni el fondo del escritorio. El arcoíris y los textos del kernel quedan ocultos (`disable_splash=1` y `quiet` en el arranque), en la medida de lo posible.
 
-El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No pone puerta de enlace ni DNS en eth0, para no romper el Wi-Fi. El usuario es el de Imager, el que ha lanzado `sudo`: no tiene que llamarse `pi`. `LXDE-pi` y `rpd-labwc` son sesiones del escritorio de Raspberry Pi OS, no un usuario. La de Orbit es `orbit` (`/usr/share/wayland-sessions/orbit.desktop`).
+El script se puede repetir. La segunda vez no cambia los tokens de `.env`. eth0 queda en `10.0.0.2/24`, sin puerta de enlace, sin DNS y sin ser la ruta por defecto. No borra ni modifica el Wi-Fi de Imager: no reinstala NetworkManager si ya está, no recarga perfiles y no aplica netplan. El perfil de eth0 entra al reiniciar. El usuario es el de Imager, el que ha lanzado `sudo`: no tiene que llamarse `pi`. `LXDE-pi` y `rpd-labwc` son sesiones del escritorio de Raspberry Pi OS, no un usuario. La de Orbit es `orbit` (`/usr/share/wayland-sessions/orbit.desktop`).
 
 ## Cable interno y emparejar
 
@@ -78,6 +78,23 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 45. En la Pi de Miguel, con la sesión del escritorio, Orbit OS se veía tras unos segundos de barra y fondo. La burbuja de traducir ya no sale. Esta pasada cambia el autologin a la sesión `orbit`. Aún no se ha vuelto a arrancar así, ni Moonlight contra el HP. El script también se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
 46. hp-agent se instala en el HP con una línea de PowerShell como administrador. El detalle está en `docs/instalacion-hp.md`. Lee `ORBIT_HP_TOKEN` del `.env` de la raíz del clon (en esta Pi, `/home/orbit/Control-deck/.env`) por ssh y no lo muestra. La copia de `/etc/orbit/orbitd.env` es de root. Conecta a `ws://10.0.0.2:8765/ws`. La tarea arranca en vivo (`--live`): telemetría, y bloquear, reiniciar y apagar con 60 s. `-DryRun` deja solo la telemetría. La interfaz del kiosco no pide token porque entra por localhost.
 47. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí. Con los Nano enchufados, `sudo bash scripts/detectar-nanos.sh` lista `/dev/serial/by-path` y escribe `/var/lib/orbit/arduino-puertos.json`. Si la carpeta no existe, enchufa la placa y vuelve a lanzarlo.
+
+## Si falta el Wi-Fi
+
+En Raspberry Pi OS reciente, Imager guarda el Wi-Fi con cloud-init en `/etc/netplan` (y en `network-config` de la partición de arranque). NetworkManager, al regenerar, vacía los YAML de `/etc/netplan`. El fichero a mano `orbit-enlace-hp.nmconnection` no entra en ese vaciado, así que `nmcli` puede quedarse solo con ese perfil y con `lo`, y `wlan0` en disconnected. `sudo netplan apply` avisa de los permisos de `/lib/netplan/00-network-manager-all.yaml` y no recupera el Wi-Fi. El instalador ya no dispara esa regeneración.
+
+Estas órdenes no imprimen la contraseña. No pegues la salida de un YAML ni de un `.nmconnection`.
+
+```bash
+nmcli -t -f DEVICE,STATE,CONNECTION device status
+nmcli -t -f NAME,TYPE connection show
+ip -4 route
+ip -4 addr show eth0
+sudo grep -l wifis: /etc/netplan/*.yaml /boot/firmware/network-config /boot/network-config 2>/dev/null || true
+sudo ls -1 /etc/NetworkManager/system-connections /root/NetworkManager.bak/system-connections 2>/dev/null || true
+```
+
+`wlan0` tiene que salir `connected`. La ruta por defecto no debe decir `dev eth0`. eth0 es `10.0.0.2/24`. Si `grep -l` no encuentra `wifis:` y no hay copia en `/root/NetworkManager.bak`, el perfil ya no está: se vuelve a crear en la Pi con `sudo nmtui`, escribiendo ahí la clave del Wi-Fi. No hace falta anotarla en el repo.
 
 ## Primera vez que encienda la Pi
 
