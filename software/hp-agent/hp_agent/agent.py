@@ -24,7 +24,7 @@ log = logging.getLogger("hp_agent")
 
 
 def machine_model() -> str:
-    """Nombre comercial del equipo. En Windows, del registro. Si no se puede leer, queda pendiente."""
+    """Nombre comercial del equipo. En Windows, del registro. Si no se puede leer, queda en HP."""
     if platform.system() == "Windows":
         try:
             import winreg
@@ -35,7 +35,7 @@ def machine_model() -> str:
                 return text[:128]
         except (OSError, ImportError, AttributeError):
             pass
-    return "HP (modelo PENDIENTE)"
+    return "HP"
 
 
 def os_label() -> str:

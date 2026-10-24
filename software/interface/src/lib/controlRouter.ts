@@ -29,7 +29,7 @@ export function route(ev: ControlEventPayload, mapping: MappingPayload | null, p
   if (ev.value === undefined) return null;
   switch (fn) {
     case 'ui.brightness': return { cmd: 'brightness', pct: Math.max(20, potToPct(ev.value)) };
-    case 'ui.led_brightness': return { cmd: 'led_brightness', pct: potToPct(ev.value) };
+    case 'ui.led_brightness': return null;
     case 'ui.scroll': {
       if (prevValue === undefined) return null;
       const step = 96; // ~10 posiciones en todo el recorrido

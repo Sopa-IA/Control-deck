@@ -1,6 +1,7 @@
 import { ACTIONS } from '@shared/ts/protocol';
 import { useEffect, useState } from 'react';
 import { useOrbit } from '../data/OrbitContext';
+import { motivoFuera } from '../lib/equipo';
 
 export function ConfirmDialog() {
   const { state, confirm, cancelConfirm, simulated } = useOrbit();
@@ -20,7 +21,7 @@ export function ConfirmDialog() {
   if (!p) return null;
   const label = ACTIONS[p.action]?.label ?? p.action;
   const detalle = simulated
-    ? 'Estás en MODO SIMULACIÓN: no se ejecutará nada real.'
+    ? 'Estás en simulación: no se hace nada en los equipos.'
     : p.action === 'pi.shutdown'
       ? 'La Raspberry Pi se apaga en el acto, en cuanto confirmes.'
       : p.action === 'pi.restart'
@@ -53,7 +54,7 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
           <li><b>Salir de Moonlight:</b> otra vez el botón B2, el botón «Orbit OS», o <b>Ctrl+Alt+Mayús+Q</b> (atajo del propio Moonlight).</li>
         </ol>
         <p className="callout">Si Moonlight y Sunshine aún no están emparejados, el escritorio del HP no se abre. Hay que emparejarlos una vez. Si Windows no tiene monitor, puede hacer falta un enchufe HDMI falso para que ofrezca 1920×1080; la vista integrada pide 1920×1040.</p>
-        <p className="muted">Moonlight es una aplicación nativa: no se puede meter dentro de la página. La integración es colocar esa ventana encima del marco. Sin probar en la Pi ni en el HP.</p>
+        <p className="muted">Moonlight es un programa aparte: se coloca encima de este marco, no dentro de la página.</p>
         <div className="modal-actions"><button className="btn btn-primary" onClick={onClose} autoFocus>Entendido</button></div>
       </div>
     </div>
@@ -61,20 +62,22 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
 }
 
 export function PowerMenu({ onClose }: { onClose: () => void }) {
-  const { requestAction } = useOrbit();
+  const { state, requestAction } = useOrbit();
+  const sinHp = motivoFuera(state, 'hp');
+  const sinPi = motivoFuera(state, 'pi');
   const go = (a: string) => { requestAction(a); onClose(); };
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="pw-title" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 id="pw-title">Apagado seguro</h2>
         <div className="grid-2">
-          <button className="btn btn-danger big" onClick={() => go('hp.shutdown')}>Apagar HP</button>
-          <button className="btn big" onClick={() => go('hp.restart')}>Reiniciar HP</button>
-          <button className="btn big" onClick={() => go('hp.shutdown_cancel')}>Cancelar apagado HP</button>
-          <button className="btn btn-danger big" onClick={() => go('pi.shutdown')}>Apagar Raspberry Pi</button>
-          <button className="btn big" onClick={() => go('pi.restart')}>Reiniciar Raspberry Pi</button>
+          <button className="btn btn-danger big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.shutdown')}>Apagar HP</button>
+          <button className="btn big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.restart')}>Reiniciar HP</button>
+          <button className="btn big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.shutdown_cancel')}>Anular apagado del HP</button>
+          <button className="btn btn-danger big" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => go('pi.shutdown')}>Apagar Raspberry Pi</button>
+          <button className="btn big" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => go('pi.restart')}>Reiniciar Raspberry Pi</button>
         </div>
-        <p className="muted">Cada acción pide confirmación y orbitd la valida contra la lista blanca.</p>
+        <p className="muted">Apagar y reiniciar piden confirmación. Anular el apagado del HP no la pide: cancela los 60 segundos.</p>
         <div className="modal-actions"><button className="btn" onClick={onClose}>Cerrar</button></div>
       </div>
     </div>

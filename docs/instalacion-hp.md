@@ -16,8 +16,8 @@ El token no se escribe en pantalla ni en el registro. ssh pide la contraseña de
 ```
 
 3. Cuando ssh pregunte la contraseña, escribe la de la Pi (usuario `orbit`, equipo `10.0.0.2`). No se muestra el token.
-4. Al terminar, en Orbit OS, Sistemas, la tarjeta del HP tiene que decir **hp-agent conectado**. La CPU, la memoria, el disco, el tiempo activo y la red se rellenan. La red va en kb/s, igual que la de la Pi: bajada y subida. La temperatura es la de la CPU si LibreHardwareMonitor está en marcha. Si no hay dato, esa fila sigue en raya y lo demás no se cae.
-5. Bloquear está en la tarjeta del HP. Reiniciar y Apagar están en el menú de apagado (Apagar también en la tarjeta). En vivo se ejecutan. Apagar y Reiniciar esperan 60 s. Cancelar es el botón Cancelar apagado HP, o `shutdown /a`.
+4. Al terminar, en Orbit OS, Sistemas, la tarjeta del HP tiene que decir **Conectado**. La CPU, la memoria, el disco, el tiempo activo y la red se rellenan. La red va en kb/s, igual que la de la Pi: bajada y subida. La temperatura es la de la CPU si LibreHardwareMonitor está en marcha. Si no hay dato, esa fila sigue en raya y lo demás no se cae.
+5. Bloquear, Reiniciar, Anular apagado y Apagar están en la tarjeta del HP y en el menú de apagado. En vivo se ejecutan. Apagar y Reiniciar esperan 60 s y piden confirmación. Anular cancela esos 60 s. Reproducir o pausar está en Herramientas y pulsa la tecla de medios de Windows.
 
 La línea se puede repetir. Sin `-DryRun` deja otra vez el modo real. No cambia el token de la Pi.
 
@@ -39,7 +39,7 @@ La línea se puede repetir. Sin `-DryRun` deja otra vez el modo real. No cambia 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p -DryRun
 ```
 
-14. En vivo, Bloquear llama a `rundll32.exe user32.dll,LockWorkStation`. Apagar es `shutdown /s /t 60`. Reiniciar es `shutdown /r /t 60`. Anular es `shutdown /a`. El volumen y el silencio usan el mezclador de Windows (pycaw), sobre la salida por defecto. Reproducir/pausar sigue pendiente. La Pi tiene que actualizarse antes que el HP: si no, orbitd rechaza la telemetría nueva.
+14. En vivo, Bloquear llama a `rundll32.exe user32.dll,LockWorkStation`. Apagar es `shutdown /s /t 60`. Reiniciar es `shutdown /r /t 60`. Anular es `shutdown /a`. El volumen y el silencio usan el mezclador de Windows (pycaw), sobre la salida por defecto. Reproducir o pausar pulsa la tecla de medios. La Pi tiene que actualizarse antes que el HP: si no, orbitd rechaza la telemetría nueva.
 15. Para volver al modo real, otra vez la línea del paso 2, sin `-DryRun`.
 
 ## Comprobar
@@ -47,7 +47,7 @@ La línea se puede repetir. Sin `-DryRun` deja otra vez el modo real. No cambia 
 16. `schtasks /Query /TN OrbitHpAgent /FO LIST /V` muestra la tarea. En los argumentos tiene que aparecer `-m hp_agent --live` (sin `--live` solo si se usó `-DryRun`). Está oculta en la vista simple del Programador.
 17. `schtasks /Query /TN OrbitLibreHardwareMonitor /FO LIST /V` muestra la otra tarea. Está oculta y arranca `LibreHardwareMonitor.exe` al iniciar sesión.
 18. El registro es `%LOCALAPPDATA%\orbit\hp-agent.log`. No contiene el token. Tiene que aparecer una línea de conectado a `ws://10.0.0.2:8765/ws` y `LIVE`. Con `-DryRun`, esa línea dice `DRY-RUN`.
-19. En Sistemas, la tarjeta del HP dice hp-agent conectado. La fila Red tiene bajada y subida en kb/s. La temperatura muestra grados, o una raya si el monitor aún no ha publicado la CPU. Si sigue en «hp-agent no conectado», el log dice si orbitd rechazó la sesión o si no hay cable hasta `10.0.0.2`.
+19. En Sistemas, la tarjeta del HP dice Conectado. La fila Red tiene bajada y subida en kb/s. La temperatura muestra grados, o una raya si el monitor aún no ha publicado la CPU. Si dice No conectado, el registro dice si se rechazó la sesión o si no hay cable hasta `10.0.0.2`.
 
 ## Desinstalar
 

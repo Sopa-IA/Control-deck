@@ -53,6 +53,8 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .sim-tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em;
   color: #1a1200; background: var(--sim); vertical-align: middle; }
 .offline-badge { padding: 8px 14px; border-radius: 999px; font-size: 13px; letter-spacing: 0.12em; color: #ffd9cf; background: rgba(255, 90, 60, 0.18); border: 1px solid rgba(255,90,60,.5); }
+.busy-badge { padding: 8px 14px; border-radius: 999px; font-size: 13px; letter-spacing: 0.08em; color: #1a0d00; background: #ffb347; }
+select:disabled, input:disabled { opacity: 0.45; }
 
 .content { padding: 24px 30px; overflow: auto; min-height: 0; }
 .footbar { display: flex; justify-content: center; align-items: center; font-size: 10px; letter-spacing: 0.5em; color: #6d655b; border-top: 1px solid var(--line); }

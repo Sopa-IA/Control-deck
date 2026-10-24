@@ -68,9 +68,9 @@ def apply_windows(action: str, params: dict, *, live: bool, device: Optional[Vol
     P.check_action(action, params, target="hp")
     if not live:
         if action == "hp.volume_set":
-            text = f"DRY-RUN: pondría el volumen al {int(params['level'])}%"
+            text = f"Preparado. No se ha puesto el volumen al {int(params['level'])}%."
         else:
-            text = "DRY-RUN: alternaría el silencio"
+            text = "Preparado. No se ha cambiado el silencio."
         return {"action": action, "ok": True, "dry_run": True, "simulated": False, "message": text}
     try:
         mixer = device or open_default_device()

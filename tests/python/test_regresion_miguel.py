@@ -7,7 +7,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import hp_agent
 import orbit_protocol as P
+import orbitd
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -110,5 +112,6 @@ def test_el_protocolo_viejo_sigue_entrando_y_las_claves_no_se_renombran():
     for clave in ("host", "simulated", "cpu_pct", "mem_pct", "disk_pct", "uptime_s", "temp_c", "net_up_kbps", "net_down_kbps"):
         assert clave in msg["payload"]
     acciones = json.loads((ROOT / "software/shared/actions.json").read_text(encoding="utf-8"))["actions"]
-    for nombre in ("hp.lock_screen", "hp.shutdown", "hp.volume_set", "hp.volume_mute", "pi.switch_visible"):
+    for nombre in ("hp.lock_screen", "hp.shutdown", "hp.volume_set", "hp.volume_mute", "hp.media_play_pause", "pi.switch_visible"):
         assert nombre in acciones
+    assert hp_agent.__version__ == orbitd.__version__ == P.__version__ == "1.0.0"

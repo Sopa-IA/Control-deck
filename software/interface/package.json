@@ -1,9 +1,9 @@
 {
   "name": "orbit-interface",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Orbit OS Interface v0 (Orbit Terminal)",
+  "description": "Orbit OS 1.0.0 (Orbit Terminal)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

@@ -31,7 +31,7 @@
     "hp.volume_set":      { "kinds": ["pot"],           "label": "Volumen del HP" },
     "ui.scroll":          { "kinds": ["pot"],           "label": "Desplazar lista / foco" },
     "ui.brightness":      { "kinds": ["pot"],           "label": "Brillo de la interfaz (atenuación en pantalla)" },
-    "ui.led_brightness":  { "kinds": ["pot"],           "label": "Brillo de LEDs (pendiente: tira sin identificar)" },
+    "ui.led_brightness":  { "kinds": ["pot"],           "label": "Brillo de la tira (falta conectarla)" },
     "ui.select":          { "kinds": ["button"],        "label": "Seleccionar / aceptar" },
     "ui.back":            { "kinds": ["button"],        "label": "Volver" },
     "ui.next_section":    { "kinds": ["button"],        "label": "Siguiente sección" },

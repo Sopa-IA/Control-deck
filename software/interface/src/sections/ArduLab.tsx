@@ -170,7 +170,7 @@ export function ArduLab() {
   const [lines, setLines] = useState<string[]>([]);
   const [series, setSeries] = useState<Record<string, number[]>>({});
   const [ports, setPorts] = useState<PortRow[]>([]);
-  const [portMsg, setPortMsg] = useState('Aún no se han listado los puertos.');
+  const [portMsg, setPortMsg] = useState('Buscando los puertos…');
   const [tick, setTick] = useState(() => Date.now());
   const docRef = useRef(doc);
   const nameRef = useRef(name);
@@ -287,6 +287,16 @@ export function ArduLab() {
     requestAction('pi.ardu_monitor', { op: 'abrir', baud });
   }
 
+  const practicas = ports.some((p) => p.role === 'practicas' && p.present !== false && !p.blocked);
+  const puertosListos = portMsg !== 'Buscando los puertos…';
+  const sinPracticas = sim || (puertosListos && !practicas);
+  const porqueSubir = sim
+    ? 'En simulación no hay placa.'
+    : !puertosListos
+      ? 'Buscando el Nano de prácticas.'
+      : !practicas
+        ? 'Falta conectar el Nano de prácticas.'
+        : undefined;
   const showDemo = sim && lines.length === 0;
   const drawn = showDemo ? demoSeries(tick) : series;
   const serialText = lines.join('\n');
@@ -306,13 +316,13 @@ export function ArduLab() {
         </div>
         <button className="btn small" onClick={nuevo}>Nuevo</button>
         <button className="btn btn-primary small" disabled={busy} onClick={verificar}>Verificar</button>
-        <button className="btn small" disabled={busy} onClick={subir}>Subir</button>
+        <button className="btn small" disabled={busy || sinPracticas || (!puertosListos && !sim)} title={porqueSubir} onClick={subir}>Subir</button>
         <label className="ardu-baud">Baudios
           <select aria-label="Baudios" value={baud} onChange={(e) => setBaud(Number(e.target.value) as (typeof BAUDS)[number])}>
             {BAUDS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </label>
-        <button className="btn small" onClick={toggleMonitor}>{monitor ? 'Cerrar monitor' : 'Abrir monitor'}</button>
+        <button className="btn small" disabled={!monitor && (sinPracticas || (!sim && !puertosListos))} title={!monitor ? porqueSubir : undefined} onClick={toggleMonitor}>{monitor ? 'Cerrar monitor' : 'Abrir monitor'}</button>
       </div>
       <div className="ardu-pins" aria-label="Pines del Nano de prácticas, como en el panel trasero">
         {TOP.map((pin) => <span key={pin} className="ardu-pin"><i />{pin}</span>)}
@@ -327,6 +337,7 @@ export function ArduLab() {
           <Panel title="Puertos" className="ardu-card">
             <p className="ardu-block">El Nano de mandos queda bloqueado. Solo se sube al de prácticas, por el puerto USB físico.</p>
             <p className="muted">{portMsg}</p>
+            {sinPracticas && <p className="callout">Falta conectar el Nano de prácticas. Verificar sigue compilando. Subir y el monitor esperan a esa placa. El Nano de mandos no se toca.</p>}
             <ul className="ardu-port-list">
               {ports.map((p) => (
                 <li key={p.by_path || p.role}>{p.blocked ? 'Bloqueado' : p.role} · {p.by_path || 'sin anotar'}{p.present === false ? ' · no está enchufado' : ''}</li>

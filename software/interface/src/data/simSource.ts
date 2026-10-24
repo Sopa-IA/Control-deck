@@ -12,7 +12,7 @@ export function simTelemetry(host: 'hp' | 'pi', t: number): TelemetryPayload {
   const fase = s % 3600;
   if (host === 'hp') {
     return {
-      host, simulated: true, hostname: 'hp-simulado', model: 'HP (simulado · modelo PENDIENTE)', os: 'simulado',
+      host, simulated: true, hostname: 'hp-simulado', model: 'HP (simulado)', os: 'simulado',
       cpu_pct: round(18 + 12 * Math.sin(s / 7) + 6 * Math.sin(s / 1.7)), mem_pct: round(41 + 4 * Math.sin(s / 30)),
       mem_used_mb: round(8192 * (41 + 4 * Math.sin(s / 30)) / 100), mem_total_mb: 8192, disk_pct: 63,
       temp_c: round(44 + 6 * Math.sin(s / 11)), uptime_s: Math.round(15_300 + fase), net_up_kbps: round(Math.abs(120 * Math.sin(s / 5))),
@@ -21,7 +21,7 @@ export function simTelemetry(host: 'hp' | 'pi', t: number): TelemetryPayload {
     };
   }
   return {
-    host, simulated: true, hostname: 'pi-simulada', model: 'Raspberry Pi (simulada · modelo PENDIENTE)', os: 'simulado',
+    host, simulated: true, hostname: 'pi-simulada', model: 'Raspberry Pi (simulada)', os: 'simulado',
     cpu_pct: round(4 + 3 * Math.sin(s / 5)), mem_pct: round(19 + 2 * Math.sin(s / 20)), mem_used_mb: round(780 + 60 * Math.sin(s / 20)),
     mem_total_mb: 4096, disk_pct: 22, temp_c: round(47 + 3 * Math.sin(s / 9)), uptime_s: Math.round(7_200 + fase),
   };
@@ -140,7 +140,11 @@ export class SimDataSource implements DataSource {
   private result(action: string, replyTo: string, params?: Record<string, unknown>) {
     const label = ACTIONS[action]?.label ?? action;
     let ok = true;
-    let message = `SIMULADO: no se ha ejecutado «${label}».`;
+    let message = `SIMULADO: no se ha ejecutado ${label}.`;
+    if (action === 'pi.led_mode') {
+      ok = false;
+      message = 'La tira LED no está conectada. No se cambia nada.';
+    }
     let output = '';
     if (action === 'pi.shutdown' || action === 'pi.restart') {
       message = 'SIMULADO: esta máquina no se apaga ni se reinicia.';

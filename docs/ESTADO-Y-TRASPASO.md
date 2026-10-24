@@ -2,7 +2,7 @@
 
 Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se corta), las dos carcasas futuras (no se imprimen ahora) y la bandeja v3 (ventanas para los Dupont). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
-**Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
+**La carcasa no está lista para fabricar.** Los STL llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. **Orbit OS 1.0.0** sí corre en la Pi y en el HP (Windows 10 Home 22H2): ver [`CHANGELOG.md`](../CHANGELOG.md). Lo que no está cableado (potenciómetros, pulsadores, tira de luz, Nano de prácticas) se muestra apagado en la pantalla.
 
 La licencia del repositorio es la de Miguel: **Apache-2.0** (`LICENSE`). No se cambia.
 
@@ -23,7 +23,7 @@ Dentro de la cuña conviven:
 
 **Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
 
-Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). No está probado en hardware.
+Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). Está en uso en la Pi y en el HP.
 
 El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
 

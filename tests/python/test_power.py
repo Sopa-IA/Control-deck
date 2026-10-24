@@ -45,7 +45,7 @@ def test_en_vivo_usa_la_orden_fija():
     assert r["ok"] is True and r["dry_run"] is False
     assert calls == [["sudo", "-n", "/usr/bin/systemctl", "poweroff"]]
     malo = run_power("pi.restart", live=True, sim=False, runner=lambda argv: 1)
-    assert malo["ok"] is False and "sudoers" in malo["message"]
+    assert malo["ok"] is False and "No se ha podido" in malo["message"]
 
 
 def test_sin_permiso_de_ejecucion_no_hay_subprocess(monkeypatch):

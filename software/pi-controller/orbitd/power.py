@@ -76,7 +76,7 @@ def run_power(action: str, *, live: bool, sim: bool, runner=None) -> dict:
     if code == 126 and os.environ.get("ORBIT_POWER_ALLOW_EXEC") != "1":
         return _refused(action, sim)
     if code == 0:
-        return {"action": action, "ok": True, "dry_run": False, "simulated": False,
-                "message": "Orden enviada: " + " ".join(argv)}
+        hecho = "La Raspberry Pi se está apagando." if action == "pi.shutdown" else "La Raspberry Pi se está reiniciando."
+        return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": hecho}
     return {"action": action, "ok": False, "dry_run": False, "simulated": False,
-            "message": f"systemctl ha devuelto {code}. Revisa /etc/sudoers.d/orbit-power."}
+            "message": "No se ha podido. Revisa el permiso de apagado."}

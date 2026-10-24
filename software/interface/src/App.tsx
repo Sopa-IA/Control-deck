@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { Message } from '@shared/ts/protocol';
 import { OrbitProvider, useOrbit } from './data/OrbitContext';
 import { simulatedParts } from './data/state';
+import { etiquetaConexion } from './lib/equipo';
+import { ORBIT_VERSION } from './version';
 import { Marco } from './components/Marco';
 import { Clock, OrbitLogo, SimBadge, StatusDot, useIdleCursor } from './components/ui';
 import { ConfirmDialog, OsdHelp, PowerMenu } from './components/Dialogs';
@@ -32,7 +34,13 @@ function Shell() {
   const mappingRef = useRef(state.mapping);
   mappingRef.current = state.mapping;
 
-  // Controles físicos -> órdenes de interfaz (las hp.* las resuelve orbitd)
+  useEffect(() => orbit.onMessage((m: Message) => {
+    if (m.type !== 'action_result') return;
+    const p = (m as Message<'action_result'>).payload;
+    if (p.action === 'pi.restart_ui' && p.ok && !p.simulated && !p.dry_run) window.location.reload();
+  }), [orbit]);
+
+  // Controles físicos -> órdenes de interfaz (las del HP y de la Pi las resuelve el controlador)
   useEffect(() => orbit.onMessage((m: Message) => {
     if (m.type !== 'control_event') return;
     const ev = (m as Message<'control_event'>).payload;
@@ -77,8 +85,8 @@ function Shell() {
           ))}
         </nav>
         <div className="sidebar-foot">
-          <div><StatusDot ok={state.conn === 'conectado'} sim={state.source === 'sim'} /> {state.source === 'sim' ? 'Simulador local' : `orbitd: ${state.conn}`}</div>
-          <div className="muted">v0.1.0 · prototipo</div>
+          <div><StatusDot ok={state.conn === 'conectado'} sim={state.source === 'sim'} /> {state.source === 'sim' ? 'Simulador' : etiquetaConexion(state.conn)}</div>
+          <div className="muted">v{ORBIT_VERSION}</div>
         </div>
       </aside>
       <div className="main-col">
@@ -86,7 +94,8 @@ function Shell() {
           <h1 className={current?.literal ? 'as-written' : undefined}>{title}</h1>
           <div className="topbar-right">
             {simulated && <SimBadge parts={simulatedParts(state)} />}
-            {state.source === 'ws' && state.conn !== 'conectado' && <div className="offline-badge">SIN CONEXIÓN CON ORBITD</div>}
+            {state.busyAction && !state.pendingConfirm && <div className="busy-badge" role="status">En curso</div>}
+            {state.source === 'ws' && state.conn !== 'conectado' && <div className="offline-badge">Sin conexión con el equipo</div>}
             <span className="tb-icons" aria-hidden>
               <span title="Red">◠</span><span title="Controles">◎</span>
             </span>

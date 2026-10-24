@@ -419,7 +419,7 @@ def render_todo() -> dict[str, Path]:
         ("cmd", "powershell -File instalar-hp.ps1"),
         ("ok", "conectado a ws://10.0.0.2:8765/ws"),
         ("ok", "modo LIVE"),
-        ("dim", "Sistemas: hp-agent conectado."),
+        ("dim", "Sistemas: el HP dice Conectado."),
         ("dim", "-DryRun deja solo la telemetria."),
     ])
     fotos["chk_kiosco"] = terminal(IMG / "chk_kiosco.png", [
@@ -876,8 +876,8 @@ def construir(fotos):
       "El PIN de cuatro cifras se escribe en Sunshine.",
       "soft_pin", "La Pi en 10.0.0.2, el HP en 10.0.0.1.")
     p("Instala hp-agent",
-      "En el HP, PowerShell como administrador, la línea de docs/instalacion-hp.md. La tarea arranca pythonw -m hp_agent --live. Orbit muestra CPU, RAM, disco, tiempo activo y la red en kb/s. LibreHardwareMonitor, en segundo plano, da la temperatura de la CPU. Bloquear, Reiniciar y Apagar (60 s) funcionan. La misma línea terminada en -DryRun deja solo la telemetría. ssh pide la contraseña de la Pi y no muestra el token.",
-      "chk_hpagente", "En Sistemas: hp-agent conectado. El registro dice LIVE.")
+      "En el HP, PowerShell como administrador, la línea de docs/instalacion-hp.md. La tarea arranca pythonw -m hp_agent --live. Orbit OS 1.0.0 muestra CPU, RAM, disco, tiempo activo, la red en kb/s y la temperatura. Bloquear, volumen, silencio, reproducir o pausar, Reiniciar y Apagar (60 s) funcionan. La tira de luz y los mandos físicos salen apagados hasta conectarlos. La misma línea terminada en -DryRun deja solo la telemetría. ssh pide la contraseña de la Pi y no muestra el token.",
+      "chk_hpagente", "En Sistemas: el HP dice Conectado. El registro dice LIVE.")
     p("Vista integrada",
       "Barra de 40 px y Moonlight en el hueco. La completa es la alternativa.",
       "integrada", "ILUSTRACIÓN. 1920×1040 a 60 fps con la barra cerrada.")

@@ -122,8 +122,8 @@ class Hub:
             "mode": self.mode,
             "hp": {"connected": hp_conn or self.cfg.sim_hp, "simulated": (not hp_conn) and self.cfg.sim_hp,
                    "last_seen": self.hp_last_seen,
-                   "detail": "hp-agent conectado" if hp_conn else ("HP simulado" if self.cfg.sim_hp else "hp-agent no conectado")},
-            "pi": {"connected": True, "simulated": False, "last_seen": P.now_ms(), "detail": "orbitd local"},
+                   "detail": "Conectado" if hp_conn else ("Simulado" if self.cfg.sim_hp else "No conectado")},
+            "pi": {"connected": True, "simulated": False, "last_seen": P.now_ms(), "detail": "En este equipo"},
             "arduino": dict(self.arduino),
             "video_input": (self.video.visible if self.video.last_mode == "ddc" else "pi"),
             "visible": self.video.state(),
@@ -333,7 +333,7 @@ class Hub:
                        "message": f"SIMULADO: el HP no está conectado; no se ha ejecutado «{spec['label']}»."}
             else:
                 if c is not None:
-                    await self.error(c, "target_offline", "hp-agent no conectado", reply_to)
+                    await self.error(c, "target_offline", "El HP no está conectado.", reply_to)
                 return
         elif action == "pi.switch_visible":
             res = await self.video.switch()
@@ -347,7 +347,7 @@ class Hub:
         elif action.startswith("pi.ardu_"):
             res = await self._ardu_action(action, params)
         else:
-            res = self._pi_action(action, params, spec)
+            res = self._pi_action(action, spec)
         if c is not None:
             await self.send(c, "action_result", res, reply_to)
 
@@ -373,16 +373,18 @@ class Hub:
             return await asyncio.to_thread(self.ardu.upload_result, str(params.get("sketch", "")), extra)
         return {"action": action, "ok": False, "dry_run": True, "simulated": False, "message": "Acción de Ardu Lab desconocida."}
 
-    def _pi_action(self, action: str, params: dict, spec: dict) -> dict:
+    def _pi_action(self, action: str, spec: dict) -> dict:
         if action == "pi.ping":
-            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "orbitd responde"}
+            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "La Raspberry Pi responde."}
         if action == "pi.led_mode":
-            return {"action": action, "ok": True, "dry_run": True, "simulated": False,
-                    "message": (f"Modo LED «{params['mode']}» registrado. La tira sigue sin identificar "
-                                "(PENDIENTE) y la llevará el ESP8266 con WLED, no el Nano de mandos: no se envía nada.")}
+            return {"action": action, "ok": False, "dry_run": False, "simulated": False,
+                    "message": "La tira LED no está conectada. No se cambia nada."}
         if action == "pi.restart_ui":
-            asyncio.get_event_loop().create_task(self.broadcast_ui("state", self.state_payload()))
-            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recarga solicitada"}
+            try:
+                asyncio.get_running_loop().create_task(self.broadcast_ui("state", self.state_payload()))
+            except RuntimeError:
+                pass
+            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recargando Orbit OS."}
         if action in ("pi.shutdown", "pi.restart"):
             return self._pi_power(action)
         return {"action": action, "ok": False, "dry_run": True, "simulated": False,

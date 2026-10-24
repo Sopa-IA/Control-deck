@@ -1,6 +1,6 @@
 [project]
 name = "hp-agent"
-version = "0.1.0"
+version = "1.0.0"
 description = "Orbit Terminal: agente de telemetría y acciones (lista blanca) para el HP"
 requires-python = ">=3.9"
 dependencies = [

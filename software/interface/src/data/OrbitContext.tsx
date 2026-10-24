@@ -28,6 +28,7 @@ export function OrbitProvider({ children, forceSource, animate = true }: { child
   const [state, dispatch] = useReducer(reduce, initial, initialState);
   const ds = useRef<DataSource | null>(null);
   const listeners = useRef(new Set<(m: Message) => void>());
+  const busyTimer = useRef(0);
 
   useEffect(() => {
     dispatch({ kind: 'reset', source });
@@ -35,26 +36,46 @@ export function OrbitProvider({ children, forceSource, animate = true }: { child
     const d: DataSource = source === 'sim' ? new SimDataSource({ animateControls: animate }) : new WsDataSource(wsUrl, token);
     ds.current = d;
     d.connect(
-      (m) => { dispatch({ kind: 'message', msg: m }); listeners.current.forEach((fn) => fn(m)); },
+      (m) => {
+        if (m.type === 'action_result' || m.type === 'error' || m.type === 'confirm_required') {
+          window.clearTimeout(busyTimer.current);
+          dispatch({ kind: 'busy', action: null });
+        }
+        dispatch({ kind: 'message', msg: m });
+        listeners.current.forEach((fn) => fn(m));
+      },
       (conn, detail) => dispatch({ kind: 'conn', conn, detail }),
     );
     return () => d.close();
   }, [source, wsUrl, animate]);
 
   const send = useCallback((m: Message) => ds.current?.send(m), []);
+  const arm = useCallback((action: string) => {
+    window.clearTimeout(busyTimer.current);
+    dispatch({ kind: 'busy', action });
+    busyTimer.current = window.setTimeout(() => {
+      dispatch({ kind: 'busy', action: null });
+      dispatch({ kind: 'log', entry: { ts: Date.now(), level: 'warn', text: 'No ha habido respuesta. Comprueba que el equipo sigue conectado.' } });
+    }, 8000);
+  }, []);
   const api = useMemo<OrbitApi>(() => ({
     state,
     simulated: isSimulated(state),
-    requestAction: (action, params) => send(makeMessage('action_request', 'ui', params ? { action, params } : { action })),
+    requestAction: (action, params) => {
+      arm(action);
+      send(makeMessage('action_request', 'ui', params ? { action, params } : { action }));
+    },
     confirm: () => {
-      if (state.pendingConfirm) {
-        send(makeMessage('action_confirm', 'ui', { request_id: state.pendingConfirm.request_id, challenge: state.pendingConfirm.challenge }));
-        dispatch({ kind: 'clear_confirm' });
-      }
+      const pend = state.pendingConfirm;
+      if (!pend) return;
+      dispatch({ kind: 'clear_confirm' });
+      arm(pend.action);
+      send(makeMessage('action_confirm', 'ui', { request_id: pend.request_id, challenge: pend.challenge }));
     },
     cancelConfirm: () => {
+      window.clearTimeout(busyTimer.current);
       dispatch({ kind: 'clear_confirm' });
-      dispatch({ kind: 'log', entry: { ts: Date.now(), level: 'info', text: 'Acción cancelada por el usuario' } });
+      dispatch({ kind: 'log', entry: { ts: Date.now(), level: 'info', text: 'Acción cancelada.' } });
     },
     setMapping: (m) => send(makeMessage('mapping_set', 'ui', m)),
     setSource: (k) => { localStorage.setItem('orbit.source', k); setSourceState(k); },
@@ -62,7 +83,7 @@ export function OrbitProvider({ children, forceSource, animate = true }: { child
     wsUrl,
     setWsUrl: (u) => { localStorage.setItem('orbit.wsUrl', u); setWsUrlState(u); },
     onMessage: (fn) => { listeners.current.add(fn); return () => listeners.current.delete(fn); },
-  }), [state, send, wsUrl]);
+  }), [state, send, wsUrl, arm]);
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
 }

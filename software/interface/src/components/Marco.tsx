@@ -3,14 +3,22 @@ import marco from '@shared/marco.json';
 import { useOrbit } from '../data/OrbitContext';
 import { StatusDot, useNow } from './ui';
 import { formatClock, formatPct } from '../lib/format';
+import { motivoFuera } from '../lib/equipo';
+import { TIRA_LED_LISTA } from '../lib/hardwareListo';
 import { useHpVolume } from '../lib/useHpVolume';
 
-const LEDS = ['off', 'ambar', 'respirar', 'sistema'] as const;
+const LEDS = [
+  { mode: 'off', label: 'Apagado' },
+  { mode: 'ambar', label: 'Ámbar' },
+  { mode: 'respirar', label: 'Respirar' },
+  { mode: 'sistema', label: 'Según el sistema' },
+] as const;
 
 /** Marco de la vista integrada: barra de 40 px y hueco para la ventana nativa de Moonlight. */
 export function Marco() {
   const { state, requestAction } = useOrbit();
   const now = useNow(1000);
+  const sinHp = motivoFuera(state, 'hp');
   const { vol, muted, onChange: onVol, onRelease: releaseVol } = useHpVolume((level) => requestAction('hp.volume_set', { level }));
   const [led, setLed] = useState(0);
   const layout = state.visible?.layout ?? 'integrado';
@@ -35,14 +43,15 @@ export function Marco() {
         <span className="marco-stat"><StatusDot ok={state.nodes.hp?.connected} sim={sim} /> HP {formatPct(hp?.cpu_pct)} · {formatPct(hp?.mem_pct)}</span>
         <span className="marco-stat"><StatusDot ok={state.nodes.pi?.connected} sim={state.nodes.pi?.simulated} /> π {formatPct(pi?.cpu_pct)} · {formatPct(pi?.mem_pct)}</span>
         <label className="marco-vol">{muted ? 'Silencio' : 'Vol'}
-          <input type="range" min={0} max={100} value={vol} aria-label="Volumen del HP"
+          <input type="range" min={0} max={100} value={vol} aria-label="Volumen del HP" disabled={!!sinHp}
             onChange={(e) => onVol(Number(e.target.value))} onPointerUp={releaseVol} onKeyUp={releaseVol} onBlur={releaseVol} />
         </label>
-        <button className="marco-btn" onClick={() => {
-          const mode = LEDS[(led + 1) % LEDS.length];
-          setLed((n) => n + 1);
-          requestAction('pi.led_mode', { mode });
-        }}>LED</button>
+        <button className="marco-btn" disabled={!TIRA_LED_LISTA} title={TIRA_LED_LISTA ? LEDS[led % LEDS.length].label : 'Falta conectar la tira de luz.'} onClick={() => {
+          if (!TIRA_LED_LISTA) return;
+          const next = (led + 1) % LEDS.length;
+          setLed(next);
+          requestAction('pi.led_mode', { mode: LEDS[next].mode });
+        }}>Luz</button>
         <span className="marco-gap" />
         {sim && <span className="marco-simtag">SIM</span>}
         <button className="marco-btn" onClick={volver}>Orbit OS</button>
@@ -57,9 +66,9 @@ export function Marco() {
       )}
       <div className="marco-hueco" style={{ left: hole.x, top: hole.y, width: hole.w, height: hole.h }}>
         <div className="marco-fake">
-          <b>Zona del HP · SIMULADA</b>
-          <p>Hueco {hole.w}×{hole.h} a {marco.fps} fps. Aquí va la ventana de Moonlight, sin bordes. No es una captura de Windows.</p>
-          <p>Moonlight es una aplicación nativa y no cabe dentro de esta página: el compositor la coloca encima.</p>
+          <b>{sim ? 'Zona del HP · simulación' : 'Zona del HP'}</b>
+          <p>Hueco {hole.w}×{hole.h}. Aquí va la ventana de Moonlight, sin bordes.</p>
+          <p>Moonlight es un programa aparte y se coloca encima de esta página.</p>
           {unpaired && <p className="marco-warn">El emparejamiento de Moonlight con Sunshine en {marco.hp_host} aún no se ha hecho. Hasta entonces el escritorio del HP no se abre.</p>}
         </div>
       </div>

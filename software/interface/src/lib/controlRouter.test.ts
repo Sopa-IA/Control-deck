@@ -34,4 +34,8 @@ describe('controlRouter', () => {
   it('sin asignación no hace nada', () => {
     expect(route({ control: 'P1', kind: 'pot', value: 3, simulated: false }, null)).toBeNull();
   });
+  it('el brillo de la tira no hace nada mientras no está conectada', () => {
+    const leds = { pots: { P1: 'ui.led_brightness' }, buttons: {} };
+    expect(route({ control: 'P1', kind: 'pot', value: 400, simulated: false }, leds)).toBeNull();
+  });
 });

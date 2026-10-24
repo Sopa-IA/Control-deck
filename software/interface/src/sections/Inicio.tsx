@@ -1,6 +1,7 @@
 import { useOrbit } from '../data/OrbitContext';
 import { Planet, usePlanetMotion } from '../components/Planet';
 import { Clock, Meter, Panel, SimTag, StatusDot, useNow } from '../components/ui';
+import { motivoFuera, etiquetaConexion } from '../lib/equipo';
 import { ago, formatDate, formatPct, formatTemp, formatUptime } from '../lib/format';
 import type { SectionId } from './index';
 
@@ -34,6 +35,8 @@ export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPowe
   const now = useNow(1000);
   const conn = state.conn;
   const [motion] = usePlanetMotion();
+  const sinHp = motivoFuera(state, 'hp');
+  const sinPi = motivoFuera(state, 'pi');
   return (
     <div className="inicio">
       <div className="inicio-left">
@@ -54,9 +57,9 @@ export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPowe
         </Panel>
         <Panel title="Acceso rápido">
           <div className="quick-grid">
-            <button className="quick" onClick={() => requestAction('pi.switch_visible')}><span className="qi">⇄</span>Cambiar sistema</button>
-            <button className="quick" onClick={() => requestAction('hp.volume_mute')}><span className="qi">♪</span>Silenciar HP</button>
-            <button className="quick" onClick={() => requestAction('hp.lock_screen')}><span className="qi">⌧</span>Bloquear HP</button>
+            <button className="quick" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => requestAction('pi.switch_visible')}><span className="qi">⇄</span>Cambiar sistema</button>
+            <button className="quick" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => requestAction('hp.volume_mute')}><span className="qi">♪</span>Silenciar HP</button>
+            <button className="quick" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => requestAction('hp.lock_screen')}><span className="qi">⌧</span>Bloquear HP</button>
             <button className="quick" onClick={() => go('controles')}><span className="qi">◎</span>Controles</button>
             <button className="quick" onClick={() => go('herramientas')}><span className="qi">⚒</span>Herramientas</button>
             <button className="quick danger" onClick={openPower}><span className="qi">⏻</span>Apagado seguro</button>
@@ -78,8 +81,8 @@ export function Inicio({ go, openPower }: { go: (s: SectionId) => void; openPowe
         <SystemCard host="pi" onOpen={() => go('sistemas')} />
         <Panel title="Conexión" className="conn-panel">
           <ul className="conn-list">
-            <li><StatusDot ok={conn === 'conectado'} sim={state.source === 'sim'} /> Orbit hub <span>{state.source === 'sim' ? 'simulador local' : conn}</span></li>
-            <li><StatusDot ok={state.nodes.hp?.connected} sim={state.nodes.hp?.simulated} /> Enlace HP <span>{state.nodes.hp?.detail ?? '—'}</span></li>
+            <li><StatusDot ok={conn === 'conectado'} sim={state.source === 'sim'} /> Orbit OS <span>{state.source === 'sim' ? 'Simulador' : etiquetaConexion(conn)}</span></li>
+            <li><StatusDot ok={state.nodes.hp?.connected} sim={state.nodes.hp?.simulated} /> HP <span>{state.nodes.hp?.connected ? 'Conectado' : 'No conectado'}</span></li>
             <li><StatusDot ok={state.nodes.arduino?.connected} sim={state.nodes.arduino?.simulated} /> Controles <span>{state.nodes.arduino?.connected ? 'Arduino Nano' : (state.nodes.arduino?.detail ?? '—')}</span></li>
             <li><StatusDot ok={state.visible?.pairing === 'hecho'} /> Vídeo <span>{state.visible?.pairing === 'hecho' ? 'MSI en la Pi · Moonlight listo' : 'MSI en la Pi · sin emparejar'}</span></li>
           </ul>

@@ -86,7 +86,7 @@ def simulated_hp_telemetry(t: float | None = None) -> dict:
     cpu = 18 + 12 * math.sin(t / 7) + 6 * math.sin(t / 1.7)
     mem = 41 + 4 * math.sin(t / 30)
     return {
-        "host": "hp", "simulated": True, "hostname": "hp-simulado", "model": "HP (simulado; modelo real PENDIENTE)",
+        "host": "hp", "simulated": True, "hostname": "hp-simulado", "model": "HP (simulado)",
         "os": "simulado", "cpu_pct": round(max(0.0, min(100.0, cpu)), 1), "mem_pct": round(mem, 1),
         "mem_used_mb": round(8192 * mem / 100, 1), "mem_total_mb": 8192.0, "disk_pct": 63.0,
         "temp_c": round(44 + 6 * math.sin(t / 11), 1), "uptime_s": round(t % 86400),

@@ -32,8 +32,8 @@ La telemetría de la Pi es **real**: se lee con psutil del equipo donde corre or
 
 `pi.shutdown` y `pi.restart` piden confirmación en la interfaz. Si se confirman en la Pi, orbitd ejecuta `sudo -n /usr/bin/systemctl poweroff` o `reboot`. El sudoers lo instala `scripts/instalar-pi.sh` y no concede nada más. Con `--sim`, o en un PC, la respuesta dice que no se ha ejecutado. Un botón asignado a esas acciones solo abre el diálogo si se mantiene pulsado.
 
-**Pendiente:**
+**Aún no:**
 
-- `pi.led_mode` no envía nada. La tira sigue sin identificar y, cuando se sepa, la llevará el ESP8266 con WLED, no el Nano de mandos.
+- `pi.led_mode` responde que la tira no está conectada y no envía nada. La interfaz deja esos botones apagados. Cuando se identifique, la llevará el ESP8266 con WLED, no el Nano de mandos.
 - Falta pasar a `wss://`.
-- Apagar de verdad no se ha probado en la Pi: en este repositorio solo se ha comprobado que la orden no sale del simulador ni de un PC.
+- Apagar y reiniciar, en la Pi y tras confirmar, llaman a systemctl. En el simulador y en un PC no.

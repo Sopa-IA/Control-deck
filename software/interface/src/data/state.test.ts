@@ -19,7 +19,8 @@ describe('reductor de estado', () => {
     s = reduce(s, { kind: 'message', msg: makeMessage('error', 'pi', { code: 'not_allowed', message: 'x' }) });
     expect(s.log[0].level).toBe('error');
     s = reduce(s, { kind: 'message', msg: makeMessage('action_result', 'pi', { action: 'hp.ping', ok: true, dry_run: true, message: 'm' }) });
-    expect(s.log[0].text).toContain('DRY-RUN');
+    expect(s.log[0].text).toContain('Comprobar HP');
+    expect(s.log[0].text).not.toContain('DRY-RUN');
   });
 
   it('confirmación pendiente se guarda y se limpia', () => {
@@ -38,6 +39,8 @@ describe('reductor de estado', () => {
     }
     expect(s.log).toHaveLength(1);
     expect(s.log[0].count).toBe(12);
+    expect(s.log[0].text).not.toMatch(/PENDIENTE/);
+    expect(s.log[0].text).toContain('Volumen del HP');
     s = reduce(s, { kind: 'message', msg: makeMessage('action_result', 'pi', { ...line, message: 'volumen al 40%, con sonido' }) });
     expect(s.log).toHaveLength(2);
     expect(s.log[0].text).toContain('volumen al 40%');

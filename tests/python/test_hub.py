@@ -216,7 +216,7 @@ async def test_real_hp_agent_client_dry_run(server):
             assert tel["payload"]["simulated"] is False
             await send(ui, "action_request", {"action": "hp.lock_screen"})
             r = await recv(ui, "action_result")
-            assert r["payload"]["ok"] and r["payload"]["dry_run"] and r["payload"]["message"].startswith("DRY-RUN")
+            assert r["payload"]["ok"] and r["payload"]["dry_run"] and r["payload"]["message"].startswith("Preparado")
     finally:
         agent.cancel()
 

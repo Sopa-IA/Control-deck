@@ -15,6 +15,7 @@ from typing import Any
 
 import jsonschema
 
+__version__ = "1.0.0"
 PROTOCOL_VERSION = 1
 SHARED_DIR = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = SHARED_DIR / "schemas" / "protocol.schema.json"

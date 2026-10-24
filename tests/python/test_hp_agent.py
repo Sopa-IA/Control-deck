@@ -13,6 +13,20 @@ def test_commands_windows_and_linux():
     assert actions.command_for("hp.volume_set", {"level": 30}, "Windows", {}) is None
 
 
+def test_reproducir_en_windows_pulsa_la_tecla_y_en_seco_no(monkeypatch):
+    pulsada = []
+
+    def pulsa():
+        pulsada.append(1)
+
+    monkeypatch.setattr("hp_agent.media.pulsar_play_pausa", pulsa)
+    seco = actions.run_action("hp.media_play_pause", {}, live=False, apps={}, system="Windows")
+    assert seco["ok"] and seco["dry_run"] and seco["message"].startswith("Preparado") and pulsada == []
+    vivo = actions.run_action("hp.media_play_pause", {}, live=True, apps={}, system="Windows")
+    assert vivo["ok"] and not vivo["dry_run"] and "Reproducción" in vivo["message"] and pulsada == [1]
+    assert actions.command_for("hp.media_play_pause", {}, "Linux", {}) == ["playerctl", "play-pause"]
+
+
 def test_dry_run_never_executes(monkeypatch):
     def boom(*a, **k):
         raise AssertionError("no debe ejecutar nada en dry-run")
@@ -20,7 +34,7 @@ def test_dry_run_never_executes(monkeypatch):
     monkeypatch.setattr(subprocess, "Popen", boom)
     for act, params in [("hp.shutdown", {}), ("hp.lock_screen", {}), ("hp.restart", {})]:
         r = actions.run_action(act, params, live=False, apps={}, system="Windows")
-        assert r["ok"] and r["dry_run"] and r["message"].startswith("DRY-RUN")
+        assert r["ok"] and r["dry_run"] and r["message"].startswith("Preparado")
 
 
 def test_rejects_unlisted_and_unknown_app():
@@ -62,7 +76,7 @@ def test_modelo_pendiente_si_windows_no_tiene_registro(monkeypatch):
 
     monkeypatch.setattr(agent.platform, "system", lambda: "Windows")
     # En Linux no existe winreg: el agente no puede morir por eso.
-    assert agent.machine_model() == "HP (modelo PENDIENTE)"
+    assert agent.machine_model() == "HP"
 
 
 def test_config_live_desde_el_toml(tmp_path):
