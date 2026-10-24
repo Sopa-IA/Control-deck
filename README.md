@@ -71,7 +71,7 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
    ```
 
-   Arranca en **dry-run** (solo telemetría). La misma línea terminada en `-Live` permite bloquear y apagar con 60 s.
+   Arranca en vivo: telemetría, y Bloquear, Reiniciar y Apagar (60 s) ya se ejecutan. La misma línea terminada en `-DryRun` deja solo la telemetría.
 4. **Nano de mandos:** `./scripts/compile-arduino.sh` (también compila el ejemplo de prácticas) y luego `arduino-cli upload` con `arduino:avr:nano` o, en clones de bootloader viejo, `arduino:avr:nano:cpu=atmega328old`. Puerto de ejemplo `/dev/ttyUSB0`; si hay más de un USB-serie, `/dev/serial/by-id`. Ver [`software/arduino-controls/README.md`](software/arduino-controls/README.md) y [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
 
 Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` (usa `/usr/bin/google-chrome`, o la ruta que indique `CHROME_PATH`).
@@ -86,7 +86,7 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | HP y controles en orbitd `--sim` | **Simulación** | Marcados con `simulated: true` y distintivo **MODO SIMULACIÓN** |
 | Interfaz Orbit OS (6 secciones, 1920×1080 y 1920×720) | **Implementado** | Con simulador y con orbitd en modo simulación |
 | hp-agent: telemetría y acciones en dry-run | **Implementado** | Probado contra orbitd en local, en este entorno Linux; **no en el HP**. Instalador: `scripts/instalar-hp.ps1` |
-| hp-agent `--live` en Windows: bloquear, apagar o reiniciar con 60 s, cancelar | **Pendiente de validar** | Órdenes fijas sin shell. El instalador las deja apagadas; `-Live` las enciende. No ejecutadas nunca de verdad |
+| hp-agent `--live` en Windows: bloquear, apagar o reiniciar con 60 s, cancelar | **Pendiente de validar** | Órdenes fijas sin shell. El instalador las deja encendidas (`-m hp_agent --live`). `-DryRun` las apaga. No ejecutadas nunca de verdad en el HP |
 | hp-agent en Windows: volumen, silencio, reproducir/pausar | **Pendiente** | No hay orden nativa (habría que usar pycaw o nircmd) |
 | Firmware del Nano de mandos | **Pendiente de validar** | Compila con arduino-cli 1.5.1 para `arduino:avr:nano` y para `cpu=atmega328old` (2982 bytes, 9 % de la flash). Sin HID. Sin probar en placa |
 | Ejemplo OLED del Nano de prácticas | **Pendiente de validar** | `monitor_pines`: 5558 bytes, 18 % de la flash, los dos FQBN. Sin probar en placa ni en pantalla |

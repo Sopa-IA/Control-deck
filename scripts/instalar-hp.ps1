@@ -1,10 +1,10 @@
 ﻿# Instala hp-agent en el HP (Windows 10 o posterior, 64 bits) y lo deja arrancando al iniciar sesión.
-# Se puede repetir. Por defecto solo telemetría (dry-run). -Live permite bloquear y apagar con 60 s.
-# -Desinstalar quita la tarea, la carpeta y la configuración. No desinstala Python.
+# Se puede repetir. Por defecto la tarea lleva --live: telemetría, y bloquear, reiniciar y apagar con 60 s.
+# -DryRun deja solo la telemetría. -Desinstalar quita la tarea, la carpeta y la configuración. No desinstala Python.
 #
 # Una línea, en PowerShell como administrador (la contraseña de la Pi la pide ssh; el token no se muestra):
 #   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
-# Con órdenes reales, la misma línea y al final: -Live
+# Solo mirar, la misma línea y al final: -DryRun
 #
 # El token está en el .env de la raíz del clon. scripts/gen-token.sh lo escribe ahí y
 # scripts/instalar-pi.sh lo copia a /etc/orbit/orbitd.env (ese archivo es de root: orbit no lo lee).
@@ -12,7 +12,7 @@
 #Requires -Version 5.1
 
 param(
-    [switch]$Live,
+    [switch]$DryRun,
     [switch]$Desinstalar,
     [string]$PiHost = '10.0.0.2',
     [string]$PiUser = 'orbit',
@@ -251,7 +251,7 @@ function Write-OrbitToml([string]$Path, [string]$Token, [bool]$EnVivo, [string]$
     & icacls.exe $Path /inheritance:r /grant:r "${env:USERDOMAIN}\${env:USERNAME}:(R,W)" | Out-Null
 }
 
-function Register-OrbitTarea([string]$PythonW, [string]$Trabajo) {
+function Register-OrbitTarea([string]$PythonW, [string]$Trabajo, [string]$Argumentos) {
     $cuenta = "$env:USERDOMAIN\$env:USERNAME"
     function Esc([string]$s) {
         return ($s -replace '&', '&amp;' -replace '<', '&lt;' -replace '>', '&gt;' -replace '"', '&quot;')
@@ -260,7 +260,7 @@ function Register-OrbitTarea([string]$PythonW, [string]$Trabajo) {
 <?xml version="1.0"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Orbit Terminal hp-agent. Telemetría hacia la Pi. Las órdenes reales solo si live está en el toml.</Description>
+    <Description>Orbit Terminal hp-agent. Telemetría hacia la Pi. Órdenes reales si los argumentos llevan --live.</Description>
   </RegistrationInfo>
   <Triggers>
     <LogonTrigger>
@@ -296,7 +296,7 @@ function Register-OrbitTarea([string]$PythonW, [string]$Trabajo) {
   <Actions Context="Author">
     <Exec>
       <Command>$(Esc $PythonW)</Command>
-      <Arguments>-m hp_agent</Arguments>
+      <Arguments>$(Esc $Argumentos)</Arguments>
       <WorkingDirectory>$(Esc $Trabajo)</WorkingDirectory>
     </Exec>
   </Actions>
@@ -387,15 +387,18 @@ if (-not (Test-TokenForma $token)) {
         throw "No hay ORBIT_HP_TOKEN en /home/orbit/Control-deck/.env (raíz del clon, el .env de instalar-pi.sh). SSH tiene que entrar como ${PiUser}@${PiHost}. No se muestra el valor."
     }
 }
+$enVivo = -not $DryRun
+$argumentos = '-m hp_agent'
+if ($enVivo) { $argumentos = '-m hp_agent --live' }
 try {
-    Write-OrbitToml -Path $toml -Token $token -EnVivo ([bool]$Live) -Url $HubUrl
+    Write-OrbitToml -Path $toml -Token $token -EnVivo $enVivo -Url $HubUrl
 } catch {
     throw "No se pudo escribir la configuración de hp-agent. El token no se muestra."
 }
 $token = $null
 
 Write-Paso "Tarea al iniciar sesión, oculta, y la arranco"
-Register-OrbitTarea -PythonW $venvW -Trabajo $Destino
+Register-OrbitTarea -PythonW $venvW -Trabajo $Destino -Argumentos $argumentos
 Start-ScheduledTask -TaskName $Tarea
 Start-Sleep -Seconds 3
 $estado = (Get-ScheduledTask -TaskName $Tarea).State
@@ -403,20 +406,22 @@ $info = Get-ScheduledTaskInfo -TaskName $Tarea
 $log = Join-Path $env:LOCALAPPDATA 'orbit\hp-agent.log'
 
 Write-Host ""
-if ($Live) {
-    Write-Host "Listo. hp-agent está en vivo: Bloquear y Apagar (60 s) sí se ejecutan."
+if ($DryRun) {
+    Write-Host "Listo. hp-agent está en seco: solo telemetría. Bloquear, Reiniciar y Apagar no se ejecutan."
+    Write-Host "En el registro tiene que decir DRY-RUN."
 } else {
-    Write-Host "Listo. hp-agent está en seco: solo telemetría. Bloquear y Apagar no se ejecutan."
+    Write-Host "Listo. hp-agent está en vivo: telemetría, y Bloquear, Reiniciar y Apagar (60 s) sí se ejecutan."
+    Write-Host "En el registro tiene que decir conectado a $HubUrl y LIVE."
 }
 Write-Host "Tarea: $Tarea. Estado: $estado. Último resultado: $($info.LastTaskResult)."
 Write-Host "En Orbit OS, Sistemas, la tarjeta del HP tiene que decir hp-agent conectado."
 Write-Host "La temperatura puede salir como raya: este Windows no da sensores a psutil."
 Write-Host "Registro: $log"
 Write-Host "Comprobar la tarea: schtasks /Query /TN $Tarea /FO LIST /V"
-if ($Live) {
-    Write-Host "Para volver a solo telemetría, lanza otra vez la misma línea sin -Live."
+if ($DryRun) {
+    Write-Host "Para activar bloquear, reiniciar y apagar, lanza otra vez la misma línea sin -DryRun."
 } else {
-    Write-Host "Para bloquear y apagar de verdad, la misma línea y al final -Live."
+    Write-Host "Para dejar solo la telemetría, la misma línea y al final -DryRun."
 }
 Write-Host "Desinstalar: powershell -NoProfile -ExecutionPolicy Bypass -File C:\Orbit\instalar-hp.ps1 -Desinstalar"
 exit 0

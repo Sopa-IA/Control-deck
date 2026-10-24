@@ -414,6 +414,13 @@ def render_todo() -> dict[str, Path]:
         ("out", "PIN de cuatro cifras"),
         ("dim", "Se escribe una vez en Sunshine."),
     ])
+    fotos["chk_hpagente"] = terminal(IMG / "chk_hpagente.png", [
+        ("cmd", "powershell -File instalar-hp.ps1"),
+        ("ok", "conectado a ws://10.0.0.2:8765/ws"),
+        ("ok", "modo LIVE"),
+        ("dim", "Sistemas: hp-agent conectado."),
+        ("dim", "-DryRun deja solo la telemetria."),
+    ])
     fotos["chk_kiosco"] = terminal(IMG / "chk_kiosco.png", [
         ("dim", "Ctrl+Alt+T abre una terminal."),
         ("cmd", "rm /run/orbit/kiosk-pausa"),
@@ -867,6 +874,9 @@ def construir(fotos):
     p("Empareja con el PIN",
       "El PIN de cuatro cifras se escribe en Sunshine.",
       "soft_pin", "La Pi en 10.0.0.2, el HP en 10.0.0.1.")
+    p("Instala hp-agent",
+      "En el HP, PowerShell como administrador, la línea de docs/instalacion-hp.md. La tarea arranca pythonw -m hp_agent --live. Orbit muestra la telemetría, y Bloquear, Reiniciar y Apagar (60 s) funcionan. La misma línea terminada en -DryRun deja solo la telemetría. ssh pide la contraseña de la Pi y no muestra el token.",
+      "chk_hpagente", "En Sistemas: hp-agent conectado. El registro dice LIVE.")
     p("Vista integrada",
       "Barra de 40 px y Moonlight en el hueco. La completa es la alternativa.",
       "integrada", "ILUSTRACIÓN. 1920×1040 a 60 fps con la barra cerrada.")

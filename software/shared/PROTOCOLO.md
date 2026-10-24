@@ -72,7 +72,7 @@ Está definida **una sola vez** en `actions.json`, y la leen la interfaz, orbitd
 1. Se rechaza (`not_allowed`) cualquier acción que no figure en la lista, o cuyo prefijo (`hp.` o `pi.`) no coincida con su `target`.
 2. Los parámetros se validan con el mini-esquema de cada acción (`bad_params`), sin propiedades adicionales.
 3. **Nunca se ejecuta texto arbitrario.** hp-agent traduce cada acción a una orden fija (lista de argumentos, sin shell). `hp.open_app` solo acepta un identificador que exista en la lista de aplicaciones de la configuración local del agente.
-4. hp-agent arranca en **dry-run por defecto**: registra lo que haría y responde `dry_run: true`. Para ejecutar de verdad hace falta `--live`.
+4. Un `python -m hp_agent` a mano arranca en **dry-run por defecto**: registra lo que haría y responde `dry_run: true`. Para ejecutar de verdad hace falta `--live`, o `live = true` en el toml. La tarea que deja `scripts/instalar-hp.ps1` en el HP lleva `--live` y `live = true`. `-DryRun` en ese instalador deja solo la telemetría.
 5. Límite de frecuencia: `hp.volume_set` se agrupa a un máximo de 10 por segundo; el resto de acciones, a 5 por segundo por conexión (`rate_limited`).
 
 ## 6. Apagado seguro (acciones con `confirm: true`)

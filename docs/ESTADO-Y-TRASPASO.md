@@ -80,7 +80,7 @@ No hay cifras de latencia ni de fps: no se han medido.
 | `assets/screenshots/` | Capturas de la interfaz en simulación. |
 | `software/interface/` | Orbit OS: React + TypeScript + Vite. Secciones: Inicio, Sistemas, Hardware, Controles, Herramientas, Configuración. |
 | `software/pi-controller/orbitd/` | Hub de la Pi: `__main__.py` (CLI), `hub.py` (WebSocket y acciones), `serial_events.py` (Arduino), `telemetry.py` (psutil local), `video.py` (modos A/B/C). |
-| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. Por defecto dry-run. En Windows lo instala `scripts/instalar-hp.ps1`. |
+| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. A mano, dry-run salvo `--live` o `live = true`. En Windows, `scripts/instalar-hp.ps1` deja la tarea en vivo; `-DryRun` solo mira. |
 | `software/shared/` | Protocolo v1: `PROTOCOLO.md`, `actions.json`, `controls.default.json`, `schemas/protocol.schema.json`, `ts/protocol.ts`, `python/orbit_protocol`. |
 | `software/arduino-controls/` | Firmware del Nano de mandos. Pines por defecto: P1 A0, P2 A1, B1 D2, B2 D3. Sin HID. |
 | `software/arduino-pruebas/` | Ejemplo del Nano de prácticas: OLED I2C y mapa del panel trasero. No habla con orbitd. |

@@ -45,10 +45,14 @@ def test_una_linea_winget_zip_venv_y_tarea():
     assert "RestartOnFailure" in t
     assert "PT0S" in t
     assert "ExecutionTimeLimit" in t
-    assert "[switch]$Live" in t
+    assert "[switch]$DryRun" in t
+    assert "[switch]$Live" not in t
     assert "[switch]$Desinstalar" in t
     assert "$flag = 'false'" in t
-    assert "EnVivo ([bool]$Live)" in t
+    assert "EnVivo $enVivo" in t
+    assert "-m hp_agent --live" in t
+    assert "<Arguments>-m hp_agent</Arguments>" not in t
+    assert "<Arguments>$(Esc $Argumentos)</Arguments>" in t
     assert "StrictHostKeyChecking=accept-new" in t
     assert "RedirectStandardOutput = $true" in t
     assert "instalar-hp.ps1 -Desinstalar" in t

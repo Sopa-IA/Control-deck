@@ -2,7 +2,7 @@
 
 Agente que corre en el HP. Abre la conexión **hacia** orbitd, envía la telemetría (psutil) cada 2 s y ejecuta solo acciones de la lista blanca (`software/shared/actions.json`). Cada acción se traduce a una orden fija, sin shell.
 
-En el HP de Miguel no se instala a mano. En PowerShell como administrador, la línea de [`docs/instalacion-hp.md`](../../docs/instalacion-hp.md). Deja el agente en `C:\Orbit\Control-deck`, la tarea oculta `OrbitHpAgent` y el token en `%APPDATA%\orbit\hp-agent.toml`. Por defecto solo telemetría (`live = false`). `-Live` en esa línea escribe `live = true`.
+En el HP de Miguel no se instala a mano. En PowerShell como administrador, la línea de [`docs/instalacion-hp.md`](../../docs/instalacion-hp.md). Deja el agente en `C:\Orbit\Control-deck`, la tarea oculta `OrbitHpAgent` con `pythonw.exe -m hp_agent --live`, y el token en `%APPDATA%\orbit\hp-agent.toml` con `live = true`. `-DryRun` en esa línea deja solo la telemetría (`live = false`, sin `--live`). Un `python -m hp_agent` a mano, sin `--live` y sin `live = true` en el toml, sigue en seco.
 
 A mano, para probar en otro equipo:
 

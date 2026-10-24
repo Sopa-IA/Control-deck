@@ -9,7 +9,7 @@ Para regenerarlo, desde la raíz del repo:
 python3 hardware/cad/manual/completo_pdf.py
 ```
 
-PDF: `docs/manual_completo/Orbit_manual_completo.pdf`. Páginas: 92. Pasos numerados: 78.
+PDF: `docs/manual_completo/Orbit_manual_completo.pdf`. Páginas: 93. Pasos numerados: 79.
 
 Cada paso numerado tiene su figura. Lo naranja es lo que se pone en ese paso. Las pantallas de Imager y las cajas de terminal son ilustraciones, rotuladas en la propia figura.
 
@@ -106,6 +106,7 @@ La carcasa y la base ya están impresas y cerradas. No se cortan, no se taladran
 87. 74. El simulador no apaga el PC
 88. 75. Instala Sunshine
 89. 76. Empareja con el PIN
-90. 77. Vista integrada
-91. 78. Enchufe HDMI falso
-92. Si algo no cuadra
+90. 77. Instala hp-agent
+91. 78. Vista integrada
+92. 79. Enchufe HDMI falso
+93. Si algo no cuadra
