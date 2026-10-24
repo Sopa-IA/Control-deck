@@ -256,12 +256,69 @@ def test_bloquear_y_apagar_siguen_igual_en_windows():
     assert actions.command_for("hp.shutdown_cancel", {}, "Windows", {}) == ["shutdown", "/a"]
 
 
-def test_temperatura_acpi_descarta_valores_absurdos():
+def test_en_windows_la_cpu_sale_de_librehardwaremonitor_y_la_red_sigue(monkeypatch):
     import hp_agent.agent as agent
 
-    assert agent.celsius_from_acpi_tenths("3230") == round(3230 / 10 - 273.15, 1)
-    assert agent.celsius_from_acpi_tenths("0\n") is None
-    assert agent.celsius_from_acpi_tenths("no hay sensor") is None
+    monkeypatch.setattr(agent.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(agent.psutil, "sensors_temperatures", lambda: {})
+    monkeypatch.setattr(agent, "windows_cpu_c", lambda: 47.5)
+    assert agent._cpu_temp_c() == 47.5
+    def _falla():
+        raise RuntimeError("wmi")
+
+    monkeypatch.setattr(agent, "windows_cpu_c", _falla)
+    assert agent._cpu_temp_c() is None
+
+
+def test_temperatura_acpi_descarta_valores_absurdos():
+    from hp_agent.temp import celsius_from_acpi_tenths
+
+    assert celsius_from_acpi_tenths("3230") == round(3230 / 10 - 273.15, 1)
+    assert celsius_from_acpi_tenths("0\n") is None
+    assert celsius_from_acpi_tenths("no hay sensor") is None
+
+
+def test_librehardwaremonitor_elige_el_paquete_de_la_cpu_y_no_la_gpu():
+    from hp_agent.temp import cpu_celsius_from_lhm_json, cpu_celsius_from_wmi, parse_celsius
+
+    arbol = {
+        "Children": [
+            {
+                "Text": "NVIDIA",
+                "HardwareId": "/gpu-nvidia/0",
+                "Children": [{
+                    "Text": "GPU Core",
+                    "Type": "Temperature",
+                    "SensorId": "/gpu-nvidia/0/temperature/0",
+                    "Value": "70,0 °C",
+                }],
+            },
+            {
+                "Text": "Intel Core",
+                "HardwareId": "/intelcpu/0",
+                "Children": [{
+                    "Text": "Temperatures",
+                    "Children": [
+                        {"Text": "CPU Core #1", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/1", "Value": "48.0 °C"},
+                        {"Text": "CPU Core #2", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/2", "Value": "61.0 °C"},
+                        {"Text": "CPU Package", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/0", "Value": "55,5 °C"},
+                    ],
+                }],
+            },
+        ]
+    }
+    assert cpu_celsius_from_lhm_json(arbol) == 55.5
+    assert parse_celsius("4 °C") is None
+    assert parse_celsius("200 °C") is None
+    assert cpu_celsius_from_wmi([
+        {"Name": "GPU Core", "Identifier": "/gpu-nvidia/0/temperature/0", "SensorType": "Temperature", "Value": 70},
+        {"Name": "CPU Core #1", "Identifier": "/intelcpu/0/temperature/1", "SensorType": "Temperature", "Value": 40},
+        {"Name": "CPU Core #2", "Identifier": "/intelcpu/0/temperature/2", "SensorType": "Temperature", "Value": 52.2},
+    ]) == 52.2
+    assert cpu_celsius_from_lhm_json({"Children": []}) is None
 
 
 def test_la_telemetria_vieja_sigue_valiendo_y_el_volumen_es_opcional(monkeypatch):

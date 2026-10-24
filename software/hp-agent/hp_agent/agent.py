@@ -7,7 +7,6 @@ import json
 import logging
 import platform
 import socket
-import subprocess
 import time
 
 import aiohttp
@@ -18,6 +17,7 @@ import orbit_protocol as P
 from . import __version__
 from .actions import run_action
 from .config import AgentConfig
+from .temp import windows_cpu_c
 from .volume import read_default
 
 log = logging.getLogger("hp_agent")
@@ -49,29 +49,6 @@ def os_label() -> str:
     return f"{system} {platform.release()}"[:128]
 
 
-_temp_cache: tuple[float, float | None] | None = None
-_TEMP_TTL_S = 30.0
-
-
-def celsius_from_acpi_tenths(raw: str) -> float | None:
-    """MSAcpi_ThermalZoneTemperature.CurrentTemperature viene en décimas de kelvin.
-
-    Fuera de 5–100 °C se descarta: un cero o un valor absurdo no se enseña.
-    """
-    for line in raw.splitlines():
-        piece = line.strip()
-        if not piece:
-            continue
-        try:
-            value = float(piece)
-        except ValueError:
-            continue
-        celsius = value / 10.0 - 273.15
-        if 5.0 <= celsius <= 100.0:
-            return round(celsius, 1)
-    return None
-
-
 def _temp_psutil() -> float | None:
     # En Windows psutil.sensors_temperatures lanza NotImplementedError. No es un fallo del agente.
     try:
@@ -84,39 +61,17 @@ def _temp_psutil() -> float | None:
     return None
 
 
-def _temp_windows_cached() -> float | None:
-    global _temp_cache
-    now = time.monotonic()
-    if _temp_cache is not None and now - _temp_cache[0] < _TEMP_TTL_S:
-        return _temp_cache[1]
-    value = _read_acpi_temp()
-    _temp_cache = (now, value)
-    return value
-
-
-def _read_acpi_temp() -> float | None:
-    if platform.system() != "Windows":
-        return None
-    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    try:
-        done = subprocess.run(
-            ["powershell", "-NoProfile", "-NonInteractive", "-Command",
-             "Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature "
-             "-ErrorAction SilentlyContinue | Select-Object -ExpandProperty CurrentTemperature"],
-            capture_output=True, text=True, timeout=1.5, creationflags=flags,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    return celsius_from_acpi_tenths(done.stdout or "")
-
-
 def _cpu_temp_c() -> float | None:
-    got = _temp_psutil()
-    if got is not None:
-        return got
-    if platform.system() != "Windows":
+    try:
+        got = _temp_psutil()
+        if got is not None:
+            return got
+        if platform.system() != "Windows":
+            return None
+        return windows_cpu_c()
+    except Exception:
+        log.debug("temperatura no disponible", exc_info=True)
         return None
-    return _temp_windows_cached()
 
 
 # Lectura anterior de bytes enviados y recibidos, para pasar de contadores a kb/s.
@@ -124,8 +79,12 @@ _last_net: tuple[float, int, int] | None = None
 
 
 def _nic_cuenta(nombre: str) -> bool:
-    """Suma Wi-Fi (internet) y Ethernet (cable a la Pi). Fuera: loopback y Virtual Display Driver."""
-    n = nombre.strip().lower()
+    """Total de las interfaces reales. Fuera: loopback y Virtual Display Driver.
+
+    En el HP son el Wi-Fi Realtek RTL8723BE y el Ethernet Realtek hacia la Pi.
+    El nombre que da Windows puede ser «Wi-Fi», «Ethernet» o el del chip.
+    """
+    n = nombre.strip().lower().replace("\x00", "")
     if n in {"lo", "lo0"} or "loopback" in n:
         return False
     if "virtual display" in n or "virtualdisplay" in n:

@@ -58,6 +58,12 @@ def test_una_linea_winget_zip_venv_y_tarea():
     assert "instalar-hp.ps1 -Desinstalar" in t
     assert "pycaw>=20230615" in t
     assert "comtypes>=1.2" in t
+    assert "OrbitLibreHardwareMonitor" in t
+    assert "https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/releases/download/v0.9.6/LibreHardwareMonitor.zip" in t
+    assert "086d9f1b5a99e643edc2cfaaac16051685b551e4c5ac0b32a57c58c0e529c001" in t
+    assert "listenerIp = '127.0.0.1'" in t
+    assert "HighestAvailable" in t
+    assert "SHA256 de LibreHardwareMonitor" in t
 
 
 def test_no_imprime_el_token():

@@ -30,6 +30,11 @@ try {
 }
 
 $Tarea = 'OrbitHpAgent'
+$TareaLhm = 'OrbitLibreHardwareMonitor'
+$LhmVersion = 'v0.9.6'
+$LhmUrl = 'https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/releases/download/v0.9.6/LibreHardwareMonitor.zip'
+$LhmSha256 = '086d9f1b5a99e643edc2cfaaac16051685b551e4c5ac0b32a57c58c0e529c001'
+$LhmDir = 'C:\Orbit\LibreHardwareMonitor'
 $PythonUrl = 'https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe'
 $OrbitTokenPy = @'
 import os, pathlib, sys
@@ -102,6 +107,12 @@ function Remove-OrbitInstalacion {
     Write-Paso "Quito la tarea, la carpeta y la configuración"
     Stop-OrbitTarea
     Unregister-ScheduledTask -TaskName $Tarea -Confirm:$false -ErrorAction SilentlyContinue
+    Stop-ScheduledTask -TaskName $TareaLhm -ErrorAction SilentlyContinue
+    Unregister-ScheduledTask -TaskName $TareaLhm -Confirm:$false -ErrorAction SilentlyContinue
+    Get-Process -Name 'LibreHardwareMonitor' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    if (Test-Path -LiteralPath $LhmDir) {
+        Remove-Item -LiteralPath $LhmDir -Recurse -Force
+    }
     if (Test-Path -LiteralPath $Destino) {
         Remove-Item -LiteralPath $Destino -Recurse -Force
     }
@@ -114,7 +125,7 @@ function Remove-OrbitInstalacion {
         $f = Join-Path $logDir $nombre
         if (Test-Path -LiteralPath $f) { Remove-Item -LiteralPath $f -Force }
     }
-    Write-Host "hp-agent desinstalado. Python 3.12, si se instaló, sigue en el equipo."
+    Write-Host "hp-agent desinstalado. Python 3.12, si se instaló, sigue en el equipo. LibreHardwareMonitor también se quita."
     Write-Host "Para instalar otra vez, la misma línea de PowerShell, sin -Desinstalar."
 }
 
@@ -305,6 +316,130 @@ function Register-OrbitTarea([string]$PythonW, [string]$Trabajo, [string]$Argume
     Register-ScheduledTask -TaskName $Tarea -Xml $xml -Force | Out-Null
 }
 
+function Set-LhmConfig([string]$Path) {
+    # Conserva startup/runtime del zip y enciende el servidor local y el arranque minimizado.
+    [xml]$doc = Get-Content -LiteralPath $Path -Encoding UTF8
+    $cfg = $doc.DocumentElement
+    if ($cfg.Name -ne 'configuration') { throw "LibreHardwareMonitor.exe.config no es el esperado." }
+    $apps = $cfg.SelectSingleNode('appSettings')
+    if (-not $apps) {
+        $apps = $doc.CreateElement('appSettings')
+        [void]$cfg.AppendChild($apps)
+    }
+    $wanted = [ordered]@{
+        runWebServerMenuItem = 'true'
+        listenerIp = '127.0.0.1'
+        listenerPort = '8085'
+        authenticationEnabled = 'false'
+        startMinMenuItem = 'true'
+        minTrayMenuItem = 'true'
+        minCloseMenuItem = 'true'
+    }
+    foreach ($key in $wanted.Keys) {
+        $node = $apps.SelectSingleNode("add[@key='$key']")
+        if (-not $node) {
+            $node = $doc.CreateElement('add')
+            $node.SetAttribute('key', $key)
+            [void]$apps.AppendChild($node)
+        }
+        $node.SetAttribute('value', [string]$wanted[$key])
+    }
+    $doc.Save($Path)
+}
+
+function Register-OrbitLhm([string]$Exe) {
+    $cuenta = "$env:USERDOMAIN\$env:USERNAME"
+    $dir = Split-Path -Parent $Exe
+    function Esc([string]$s) {
+        return ($s -replace '&', '&amp;' -replace '<', '&lt;' -replace '>', '&gt;' -replace '"', '&quot;')
+    }
+    $xml = @"
+<?xml version="1.0"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>LibreHardwareMonitor $LhmVersion para la temperatura de la CPU. Solo escucha el agente en 127.0.0.1:8085.</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+      <UserId>$(Esc $cuenta)</UserId>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>$(Esc $cuenta)</UserId>
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>true</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+    <RestartOnFailure>
+      <Interval>PT1M</Interval>
+      <Count>999</Count>
+    </RestartOnFailure>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>$(Esc $Exe)</Command>
+      <WorkingDirectory>$(Esc $dir)</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>
+"@
+    Register-ScheduledTask -TaskName $TareaLhm -Xml $xml -Force | Out-Null
+}
+
+function Install-LibreHardwareMonitor {
+    # Release oficial, versión fija. El SHA256 se comprueba antes de sustituir la carpeta.
+    $zip = Join-Path $env:TEMP "LibreHardwareMonitor-$LhmVersion.zip"
+    $listo = $false
+    if (Test-Path -LiteralPath $zip) {
+        $tiene = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLower()
+        if ($tiene -eq $LhmSha256) { $listo = $true }
+    }
+    if (-not $listo) {
+        Invoke-WebRequest -UseBasicParsing -Uri $LhmUrl -OutFile $zip
+        $tiene = (Get-FileHash -Algorithm SHA256 -LiteralPath $zip).Hash.ToLower()
+        if ($tiene -ne $LhmSha256) {
+            Remove-Item -LiteralPath $zip -Force -ErrorAction SilentlyContinue
+            throw "SHA256 de LibreHardwareMonitor $LhmVersion no coincide. No se instala."
+        }
+    }
+    $stage = Join-Path $env:TEMP ('lhm-' + [guid]::NewGuid().ToString('n'))
+    New-Item -ItemType Directory -Force -Path $stage | Out-Null
+    try {
+        Expand-Archive -LiteralPath $zip -DestinationPath $stage -Force
+        $exeStage = Join-Path $stage 'LibreHardwareMonitor.exe'
+        if (-not (Test-Path -LiteralPath $exeStage)) {
+            throw "El zip no trae LibreHardwareMonitor.exe."
+        }
+        Stop-ScheduledTask -TaskName $TareaLhm -ErrorAction SilentlyContinue
+        Get-Process -Name 'LibreHardwareMonitor' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        New-Item -ItemType Directory -Force -Path $LhmDir | Out-Null
+        Copy-Item -Path (Join-Path $stage '*') -Destination $LhmDir -Recurse -Force
+    } finally {
+        Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    $exe = Join-Path $LhmDir 'LibreHardwareMonitor.exe'
+    $cfg = Join-Path $LhmDir 'LibreHardwareMonitor.exe.config'
+    if (-not (Test-Path -LiteralPath $cfg)) { throw "No está LibreHardwareMonitor.exe.config." }
+    Set-LhmConfig -Path $cfg
+    Register-OrbitLhm -Exe $exe
+    Start-ScheduledTask -TaskName $TareaLhm
+}
+
 if (-not (Test-Admin)) {
     Write-Host "Ábrelo en PowerShell como administrador: clic derecho, Ejecutar como administrador."
     exit 1
@@ -376,6 +511,14 @@ if ($LASTEXITCODE -ne 0) { throw "No se instaló hp-agent. El HP necesita intern
 & $venvPy -m pip install "pycaw>=20230615" "comtypes>=1.2"
 if ($LASTEXITCODE -ne 0) { throw "No se instaló pycaw (volumen de Windows). El HP necesita internet para PyPI." }
 
+Write-Paso "LibreHardwareMonitor $LhmVersion para la temperatura de la CPU"
+try {
+    Install-LibreHardwareMonitor
+} catch {
+    Write-Host "LibreHardwareMonitor no queda instalado: $($_.Exception.Message)"
+    Write-Host "La temperatura seguirá en raya. El agente, la red y el resto siguen."
+}
+
 $toml = Join-Path $env:APPDATA 'orbit\hp-agent.toml'
 Write-Paso "Leo el token en la Pi (no se muestra)"
 $ssh = Ensure-OpenSsh
@@ -418,7 +561,8 @@ if ($DryRun) {
 Write-Host "Tarea: $Tarea. Estado: $estado. Último resultado: $($info.LastTaskResult)."
 Write-Host "En Orbit OS, Sistemas, la tarjeta del HP tiene que decir hp-agent conectado."
 Write-Host "Antes, en la Pi: git pull e instalar-pi.sh. Si el HP se actualiza primero, orbitd viejo puede rechazar la telemetría porque ahora puede llevar volumen."
-Write-Host "La temperatura puede salir como raya: este Windows no da sensores a psutil."
+Write-Host "Red: bajada y subida en kb/s, igual que la Pi. Temperatura: LibreHardwareMonitor en segundo plano. Si no hay dato, la raya se queda."
+Write-Host "Comprobar el monitor: schtasks /Query /TN $TareaLhm /FO LIST /V"
 Write-Host "Registro: $log"
 Write-Host "Comprobar la tarea: schtasks /Query /TN $Tarea /FO LIST /V"
 if ($DryRun) {

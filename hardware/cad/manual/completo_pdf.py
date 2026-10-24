@@ -876,7 +876,7 @@ def construir(fotos):
       "El PIN de cuatro cifras se escribe en Sunshine.",
       "soft_pin", "La Pi en 10.0.0.2, el HP en 10.0.0.1.")
     p("Instala hp-agent",
-      "En el HP, PowerShell como administrador, la línea de docs/instalacion-hp.md. La tarea arranca pythonw -m hp_agent --live. Orbit muestra la telemetría, y Bloquear, Reiniciar y Apagar (60 s) funcionan. La misma línea terminada en -DryRun deja solo la telemetría. ssh pide la contraseña de la Pi y no muestra el token.",
+      "En el HP, PowerShell como administrador, la línea de docs/instalacion-hp.md. La tarea arranca pythonw -m hp_agent --live. Orbit muestra CPU, RAM, disco, tiempo activo y la red en kb/s. LibreHardwareMonitor, en segundo plano, da la temperatura de la CPU. Bloquear, Reiniciar y Apagar (60 s) funcionan. La misma línea terminada en -DryRun deja solo la telemetría. ssh pide la contraseña de la Pi y no muestra el token.",
       "chk_hpagente", "En Sistemas: hp-agent conectado. El registro dice LIVE.")
     p("Vista integrada",
       "Barra de 40 px y Moonlight en el hueco. La completa es la alternativa.",
