@@ -53,7 +53,7 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 ## Salir del kiosco para mantenimiento
 
 31. **Ctrl+Alt+T** pausa Chromium y abre una terminal sobre el fondo negro. No hace falta el escritorio: en esa sesión no hay barra.
-32. Para volver al kiosco: `rm /var/lib/orbit/kiosk-pausa`.
+32. Para volver al kiosco: `rm /run/orbit/kiosk-pausa`. Un reinicio también vuelve: la pausa está en `/run` y no se guarda.
 33. **Ctrl+Alt+Q** cierra labwc. El autologin vuelve a entrar en la sesión `orbit`.
 34. SSH sigue activo con el usuario y el Wi-Fi de Imager. No hace falta salir del kiosco para usarlo.
 35. Para el escritorio normal de Raspberry Pi: `sudo orbit-escritorio` y `sudo reboot`. Vuelve la sesión `rpd-labwc` o, si esa no está, `LXDE-pi-labwc`, con su barra y su fondo. Para regresar a Orbit OS: `sudo bash scripts/instalar-pi.sh` y `sudo reboot`.
@@ -89,6 +89,6 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 6. Apagar desde Orbit OS pide confirmación y, tras ella, la Pi se apaga.
 7. Un toque corto del botón de apagar no apaga. Mantenerlo abre la confirmación.
 8. Moonlight aún hay que emparejarlo una vez.
-9. Ctrl+Alt+T sale del kiosco y abre una terminal. `rm /var/lib/orbit/kiosk-pausa` vuelve. `sudo orbit-escritorio` y un reinicio devuelven el escritorio.
+9. Ctrl+Alt+T sale del kiosco y abre una terminal. `rm /run/orbit/kiosk-pausa` vuelve. Un reinicio también vuelve. `sudo orbit-escritorio` y un reinicio devuelven el escritorio.
 10. En el PC, el simulador no apaga ese PC.
 11. Tras reiniciar, `rfkill list` no muestra Soft blocked. `journalctl -u orbit-bt-autoconnect` muestra los intentos. Si dice Page Timeout, pulsa una tecla o apaga y enciende el teclado. Si dice Permission denied, vuelve a emparejarlo.

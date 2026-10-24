@@ -33,6 +33,7 @@ if [[ -z "$ORBIT_USER" ]]; then
 fi
 ORBIT_HOME="$(getent passwd "$ORBIT_USER" | cut -d: -f6)"
 ORBIT_UID="$(id -u "$ORBIT_USER")"
+ORBIT_GROUP="$(id -gn "$ORBIT_USER")"
 # rc.xml de la sesión orbit. No el de ~/.config: labwc-pi lo mezcla con el escritorio.
 LABWC_RC="/etc/orbit/labwc/rc.xml"
 
@@ -301,12 +302,27 @@ else
 fi
 
 log "Kiosco"
+# /run es tmpfs: la pausa de Ctrl+Alt+T no sobrevive a un reinicio.
+# La marca vieja en /var/lib sí, y dejaba la pantalla negra. Se borra aquí y al arrancar.
+install -d -m 755 /etc/tmpfiles.d
+cat > /etc/tmpfiles.d/orbit.conf <<EOF
+# Pausa del kiosco. /run se vacía al reiniciar.
+d /run/orbit 0755 ${ORBIT_USER} ${ORBIT_GROUP} -
+r /var/lib/orbit/kiosk-pausa - - - -
+EOF
+chmod 644 /etc/tmpfiles.d/orbit.conf
+if command -v systemd-tmpfiles >/dev/null 2>&1; then
+  systemd-tmpfiles --create /etc/tmpfiles.d/orbit.conf || true
+fi
+install -d -m 755 -o "$ORBIT_USER" -g "$ORBIT_GROUP" /run/orbit
+rm -f /var/lib/orbit/kiosk-pausa
 cat > /usr/local/bin/orbit-kiosk <<'EOF'
 #!/bin/bash
 # Chromium a pantalla completa contra orbitd. Sin avisos de sesión y sin salvapantallas.
 set -u
 URL="${ORBIT_KIOSK_URL:-http://127.0.0.1:8765/}"
-if [[ -f /var/lib/orbit/kiosk-pausa ]]; then
+# /run se vacía al reiniciar. La pausa no puede sobrevivir.
+if [[ -f /run/orbit/kiosk-pausa ]]; then
   exit 0
 fi
 for _ in $(seq 1 90); do
@@ -367,8 +383,10 @@ EOF
 
 cat > /usr/local/bin/orbit-kiosk-bucle <<'EOF'
 #!/bin/bash
+# Marca antigua: vivía en /var/lib y seguía tras el reinicio.
+rm -f /var/lib/orbit/kiosk-pausa
 while true; do
-  if [[ -f /var/lib/orbit/kiosk-pausa ]]; then
+  if [[ -f /run/orbit/kiosk-pausa ]]; then
     sleep 2
     continue
   fi
@@ -386,7 +404,7 @@ case "${1:-}" in
     curl -fsS -X POST "http://127.0.0.1:8765/api/local/layout" -H 'content-type: application/json' -d '{}' >/dev/null || true
     ;;
   pausa)
-    touch /var/lib/orbit/kiosk-pausa
+    touch /run/orbit/kiosk-pausa
     pkill -f '/.config/orbit-kiosk' || true
     if command -v lxterminal >/dev/null; then lxterminal &
     elif command -v x-terminal-emulator >/dev/null; then x-terminal-emulator &
@@ -599,7 +617,7 @@ desbloquear_bluetooth
 
 log "Listo. Reinicia la Pi para ver Orbit OS al encender."
 echo "Usuario de la sesión: $ORBIT_USER"
-echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco y abre una terminal). Para volver: rm /var/lib/orbit/kiosk-pausa"
+echo "Mantenimiento: SSH, o Ctrl+Alt+T (pausa el kiosco y abre una terminal). Para volver: rm /run/orbit/kiosk-pausa"
 echo "Escritorio de Raspberry Pi: sudo orbit-escritorio y sudo reboot. Para Orbit OS otra vez: sudo bash scripts/instalar-pi.sh y sudo reboot"
 echo "Bluetooth: orbit-bt-unblock desbloquea y orbit-bt-autoconnect conecta el teclado. docs/instalacion-pi.md"
 echo "Moonlight aún no está emparejado. Pasos en docs/instalacion-pi.md"

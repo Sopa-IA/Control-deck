@@ -155,6 +155,94 @@ def test_sesion_orbit_sin_mezclar_el_escritorio(tmp_path: Path):
     assert "sudo reboot" in escritorio
 
 
+def _trozo(marca: str) -> str:
+    text = INSTALADOR.read_text(encoding="utf-8")
+    return text.split(marca, 1)[1].split("\nEOF", 1)[0]
+
+
+def test_pausa_del_kiosco_no_sobrevive_al_reinicio(tmp_path: Path):
+    pausa = "/run/orbit/kiosk-pausa"
+    vieja = "/var/lib/orbit/kiosk-pausa"
+    kiosk = _trozo("cat > /usr/local/bin/orbit-kiosk <<'EOF'")
+    bucle = _trozo("cat > /usr/local/bin/orbit-kiosk-bucle <<'EOF'")
+    atajo = _trozo("cat > /usr/local/bin/orbit-atajo <<'EOF'")
+    inst = INSTALADOR.read_text(encoding="utf-8")
+    assert f"[[ -f {pausa} ]]" in kiosk
+    assert vieja not in kiosk
+    assert f"rm -f {vieja}" in bucle
+    assert f"[[ -f {pausa} ]]" in bucle
+    assert f"touch {pausa}" in atajo
+    assert vieja not in atajo
+    assert "d /run/orbit 0755 ${ORBIT_USER} ${ORBIT_GROUP} -" in inst
+    assert f"r {vieja} - - - -" in inst
+    assert f"rm -f {vieja}" in inst
+    assert "Para volver: rm /run/orbit/kiosk-pausa" in inst
+    doc = (ROOT / "docs/instalacion-pi.md").read_text(encoding="utf-8")
+    assert doc.count("`rm /run/orbit/kiosk-pausa`") == 2
+    assert vieja not in doc
+    manual = (ROOT / "hardware/cad/manual/completo_pdf.py").read_text(encoding="utf-8")
+    assert manual.count("rm /run/orbit/kiosk-pausa") == 2
+    assert vieja not in manual
+    for nombre in ("orbit-kiosk", "orbit-kiosk-bucle", "orbit-atajo"):
+        proc = subprocess.run(["bash", "-n"], input=_trozo(f"cat > /usr/local/bin/{nombre} <<'EOF'"), text=True, check=False)
+        assert proc.returncode == 0, nombre
+
+    run = tmp_path / "run"
+    marca = run / "kiosk-pausa"
+    resto = tmp_path / "vieja"
+    log = tmp_path / "log"
+    falso = tmp_path / "orbit-kiosk"
+    falso.write_text(f"#!/bin/bash\necho arranco >> {log}\nexit 0\n", encoding="utf-8")
+    falso.chmod(0o755)
+    vivo = (
+        bucle
+        .replace(vieja, str(resto))
+        .replace(pausa, str(marca))
+        .replace("/usr/local/bin/orbit-kiosk", str(falso))
+        .replace("sleep 2", "sleep 0.05")
+    )
+    # La marca vieja se borra y no impide abrir Chromium.
+    resto.write_text("pausado", encoding="utf-8")
+    viejo = subprocess.run(["timeout", "0.3", "bash", "-c", vivo], check=False)
+    assert viejo.returncode == 124
+    assert not resto.exists()
+    assert "arranco" in log.read_text(encoding="utf-8")
+
+    # La pausa de esta sesión sí lo deja parado, y sigue sin la marca vieja.
+    log.write_text("", encoding="utf-8")
+    resto.write_text("pausado", encoding="utf-8")
+    marca.parent.mkdir(parents=True)
+    marca.write_text("esta-sesion", encoding="utf-8")
+    parado = subprocess.run(["timeout", "0.3", "bash", "-c", vivo], check=False)
+    assert parado.returncode == 124
+    assert not resto.exists()
+    assert marca.is_file()
+    assert log.read_text(encoding="utf-8") == ""
+
+    # Un reinicio vacía /run: sin esa marca, el kiosco vuelve.
+    marca.unlink()
+    libre = subprocess.run(["timeout", "0.35", "bash", "-c", vivo], check=False)
+    assert libre.returncode == 124
+    assert "arranco" in log.read_text(encoding="utf-8")
+
+    destino = tmp_path / "marca"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    orden = atajo.replace(pausa, str(destino)).replace(
+        "pkill -f '/.config/orbit-kiosk' || true", "true",
+    )
+    proc = subprocess.run(
+        ["bash", "-c", orden, "orbit-atajo", "pausa"],
+        env={**os.environ, "PATH": "/usr/bin:/bin"},
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert destino.is_file()
+
+    con_marca = kiosk.replace(pausa, str(destino))
+    sale = subprocess.run(["bash", "-c", con_marca], check=False, timeout=5)
+    assert sale.returncode == 0
+
+
 def test_kiosk_traduccion_un_solo_flag_y_lang_es():
     kiosk = _kiosk()
     assert kiosk.count("--disable-features=") == 1

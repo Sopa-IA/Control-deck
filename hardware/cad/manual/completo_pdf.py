@@ -416,7 +416,7 @@ def render_todo() -> dict[str, Path]:
     ])
     fotos["chk_kiosco"] = terminal(IMG / "chk_kiosco.png", [
         ("dim", "Ctrl+Alt+T abre una terminal."),
-        ("cmd", "rm /var/lib/orbit/kiosk-pausa"),
+        ("cmd", "rm /run/orbit/kiosk-pausa"),
         ("ok", "Vuelve Orbit OS."),
         ("dim", "Escritorio: sudo orbit-escritorio"),
     ])
@@ -856,7 +856,7 @@ def construir(fotos):
       "moonlight-qt pair 10.0.0.1 y el PIN en Sunshine.",
       "chk_moon", "8. Solo la primera vez.")
     p("Salir y volver al kiosco",
-      "Ctrl+Alt+T pausa Chromium y abre una terminal. rm /var/lib/orbit/kiosk-pausa vuelve.",
+      "Ctrl+Alt+T pausa Chromium y abre una terminal. rm /run/orbit/kiosk-pausa vuelve.",
       "chk_kiosco", "9. SSH sigue. Escritorio: sudo orbit-escritorio y reinicia.")
     p("El simulador no apaga el PC",
       "En el ordenador de desarrollo, Apagar dice SIMULADO.",
