@@ -1,10 +1,40 @@
 # Estado y traspaso · Orbit Terminal
 
-Fecha de este documento: **2026-10-20**. Actualizado el **2026-10-23** con los adaptadores de la carcasa ya impresa (no se corta), las dos carcasas futuras (no se imprimen ahora) y la bandeja v3 (ventanas para los Dupont). Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+Fecha de este documento: **2026-10-24**. Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
-**La carcasa no está lista para fabricar.** Los STL llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. **Orbit OS 1.0.0** sí corre en la Pi y en el HP (Windows 10 Home 22H2): ver [`CHANGELOG.md`](../CHANGELOG.md). Lo que no está cableado (potenciómetros, pulsadores, tira de luz, Nano de prácticas) se muestra apagado en la pantalla.
+**Todo el software de este estado está en la rama `cursor/bandeja-v2-modular-6d15`, pull request [#9](https://github.com/Sopa-IA/Control-deck/pull/9).** Ese PR es un **borrador**, contra `main`, y **no está fusionado**. **No fusionar sin la aprobación de Miguel.** El título del PR no se cambia.
+
+**La carcasa no está lista para fabricar.** Los STL llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. **Orbit OS 1.0.0** corre en la Pi y en el HP: ver [`CHANGELOG.md`](../CHANGELOG.md) y la sección siguiente. Lo que no está cableado (potenciómetros, pulsadores, tira de luz, Nano de prácticas) se muestra apagado en la pantalla.
 
 La licencia del repositorio es la de Miguel: **Apache-2.0** (`LICENSE`). No se cambia.
+
+Historial de este texto: 2026-10-20 el documento original; 2026-10-23 los adaptadores de la carcasa ya impresa (no se corta), las dos carcasas futuras (no se imprimen ahora) y la bandeja v3 (ventanas para los Dupont); **2026-10-24** el estado real de la Pi y del HP tras Orbit OS 1.0.0. Este archivo no lleva contraseñas, tokens ni domicilio.
+
+---
+
+## Estado comprobado el 2026-10-24
+
+Comprobado en el hardware de Miguel después de Orbit OS 1.0.0. La punta de la rama en ese momento es el commit `39874f3`. Si el historial ha avanzado, mirar `git log` de `cursor/bandeja-v2-modular-6d15` antes de dar nada por hecho.
+
+### Pi
+
+- Arranca directa en Orbit OS. La sesión es `orbit` (`labwc -C /etc/orbit/labwc`). El usuario es `orbit` y el clon está en `/home/orbit/Control-deck`.
+- El Wi-Fi `MOVISTAR_C410` es un perfil de NetworkManager. El perfil antiguo de Raspberry Pi Imager, guardado en netplan, lo borró un instalador anterior. Quedó arreglado en el commit `738be94`: el instalador ya no reinstala NetworkManager si está, no recarga perfiles y no aplica netplan. La clave no se anota en el repo. Si el perfil faltara, se vuelve a crear en la Pi con `sudo nmtui`.
+- `eth0` es el perfil `orbit-enlace-hp`, dirección `10.0.0.2/24`, sin puerta de enlace, sin DNS y sin ser la ruta por defecto. El HP está en `10.0.0.1`. Ese cable no lleva internet.
+- La pausa del kiosco es `/run/orbit/kiosk-pausa`. No es `/var/lib/orbit/kiosk-pausa`: esa ruta vieja sobrevivía al reinicio y dejaba la pantalla negra. Ctrl+Alt+T crea la pausa. `rm /run/orbit/kiosk-pausa` vuelve al kiosco. Un reinicio también vuelve, porque `/run` se vacía. `sudo orbit-escritorio` y un reinicio devuelven el escritorio (`rpd-labwc` o `LXDE-pi-labwc`).
+- El teclado Bluetooth está emparejado con la Pi. La reconexión automática (`orbit-bt-unblock.service` y `orbit-bt-autoconnect.service`) no le basta a Miguel. Quiere un botón en Orbit OS que lo conecte al pulsarlo. Está anotado abajo y **no se implementa** todavía.
+
+### HP
+
+- Windows 10 Home 22H2, compilación **19045.2965**.
+- Sunshine **v2025.924.154138**. Es la última versión compatible con Windows 10. **No actualizar Sunshine.**
+- Virtual Display Driver **25.7.23**, a **1920×1080**. El HDMI del HP no va a ningún monitor: esa pantalla virtual es la que ve Moonlight.
+- Moonlight en la Pi está emparejado y funciona. Orbit lo detecta por `srvcert` en `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, sección `[hosts]`. No usa `pairState`. **Probados en real el 2026-10-24:** Cambiar sistema, la vista integrada y la pantalla completa.
+- hp-agent está instalado con `scripts/instalar-hp.ps1`. La tarea `OrbitHpAgent` está en vivo. **Probados en real:** CPU, RAM, disco, red (kb/s), tiempo activo, Bloquear y Apagar.
+
+En la pantalla real, el 2026-10-24, **siguen sin salir** aunque el código ya exista: la temperatura del HP (la fila se queda en raya pese a LibreHardwareMonitor) y el volumen del HP (el deslizador `hp.volume_set` no cambia el volumen). No se arreglan en este cambio. Ver los pendientes de software.
+
+Los potenciómetros, los pulsadores y la tira LED siguen sin cablear. El Nano de prácticas no consta en la foto. **No grabar el Nano** para retomar este estado.
 
 ---
 
@@ -23,7 +53,7 @@ Dentro de la cuña conviven:
 
 **Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
 
-Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). Está en uso en la Pi y en el HP.
+Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). Ese camino está en uso y quedó comprobado el 2026-10-24: ver el estado al principio de este documento.
 
 El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
 
@@ -80,7 +110,7 @@ No hay cifras de latencia ni de fps: no se han medido.
 | `assets/screenshots/` | Capturas de la interfaz en simulación. |
 | `software/interface/` | Orbit OS: React + TypeScript + Vite. Secciones: Inicio, Sistemas, Hardware, Controles, Herramientas, Configuración. |
 | `software/pi-controller/orbitd/` | Hub de la Pi: `__main__.py` (CLI), `hub.py` (WebSocket y acciones), `serial_events.py` (Arduino), `telemetry.py` (psutil local), `video.py` (modos A/B/C). |
-| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. A mano, dry-run salvo `--live` o `live = true`. En Windows, `scripts/instalar-hp.ps1` deja la tarea en vivo; `-DryRun` solo mira. La red va en kb/s. La temperatura de la CPU la lee de LibreHardwareMonitor 0.9.6 si la tarea `OrbitLibreHardwareMonitor` está en marcha. |
+| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. A mano, dry-run salvo `--live` o `live = true`. En Windows, `scripts/instalar-hp.ps1` deja la tarea `OrbitHpAgent` en vivo; `-DryRun` solo mira. La red va en kb/s. El código lee la temperatura de la CPU en LibreHardwareMonitor 0.9.6 si la tarea `OrbitLibreHardwareMonitor` está en marcha. En el HP real, el 2026-10-24, esa fila sigue en raya. |
 | `software/shared/` | Protocolo v1: `PROTOCOLO.md`, `actions.json`, `controls.default.json`, `schemas/protocol.schema.json`, `ts/protocol.ts`, `python/orbit_protocol`. |
 | `software/arduino-controls/` | Firmware del Nano de mandos. Pines por defecto: P1 A0, P2 A1, B1 D2, B2 D3. Sin HID. |
 | `software/arduino-pruebas/` | Ejemplo del Nano de prácticas: OLED I2C y mapa del panel trasero. No habla con orbitd. |
@@ -93,9 +123,9 @@ No hay cifras de latencia ni de fps: no se han medido.
 | `tests/python/` | pytest: `test_protocol.py`, `test_serial.py`, `test_hub.py`, `test_hp_agent.py`, `test_video.py`. |
 | `.github/workflows/ci.yml` | Dos jobs: Python (ruff + pytest, 3.12) e interfaz (npm ci, tsc, vitest, build, Node 20). En el PR #5 también apareció CodeQL; no está en este workflow. |
 
-`.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. El token de los tests es el fixture que ya existía (`token-de-prueba-0123456789`).
+`.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. Los tests usan un fixture local. No se copia aquí ningún token.
 
-Asignación por defecto (`controls.default.json`, version 2): P1 y P2 en `none`, B1 `ui.power_menu`, B2 `pi.switch_visible`. Un `controls.json` de la version 1 con esos pots de fábrica pasa a `none` una sola vez; lo que se guarde después se queda. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El volumen del HP lo aplica hp-agent.
+Asignación por defecto (`controls.default.json`, version 2): P1 y P2 en `none`, B1 `ui.power_menu`, B2 `pi.switch_visible`. Un `controls.json` de la version 1 con esos pots de fábrica pasa a `none` una sola vez; lo que se guarde después se queda. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El deslizador del HP llama a `hp.volume_set` y hp-agent lo aplica con pycaw. En el HP real, el 2026-10-24, ese deslizador no cambia el volumen.
 
 ---
 
@@ -105,7 +135,7 @@ Sin compras.
 
 | Pieza | Qué se sabe | Etiqueta |
 |---|---|---|
-| HP Slimline 260-a110ns, sacado de la caja | Placa de la familia Iris. Nombre "Iris-A6" es provisional (datos del propietario, 2026-10-18). AMD A6-7310, 8 GB DDR3L, Windows 10 Home. | Datos del propietario 2026-10-18. La ficha oficial de este P/N no se encontró; las hermanas Iris-E2 / Iris-A8 están en `docs/datos-pendientes-hp.md`. |
+| HP Slimline 260-a110ns, sacado de la caja | Placa de la familia Iris. Nombre "Iris-A6" es provisional (datos del propietario, 2026-10-18). AMD A6-7310, 8 GB DDR3L, Windows 10 Home. El 2026-10-24 el sistema en marcha es Windows 10 Home 22H2, compilación 19045.2965. | Datos del propietario 2026-10-18. La compilación la confirma el propio Windows el 2026-10-24. La ficha oficial de este P/N no se encontró; las hermanas Iris-E2 / Iris-A8 están en `docs/datos-pendientes-hp.md`. |
 | Placa | 17 × 17 cm, mini-ITX. | **VERIFICADA** por Miguel, 2026-10-18 (instrumento no indicado). En el CAD: `mitx = 170`. |
 | Altura máxima sobre la placa | 35 mm (disipador con ventilador). | **VERIFICADA** por Miguel, 2026-10-18. `hp_comp_h = 35`. |
 | Agujeros C, F, H, J | Patrón estándar mini-ITX. | **DE FUENTE** (estándar mini-ITX / plano comercial citado en `params.scad`). **VERIFICADA FÍSICAMENTE** el 2026-10-19: Miguel imprimió `PRUEBA_plantilla_agujeros_HP.stl` y los cuatro agujeros cuadraron con su placa. No es una medida de calibre. |
@@ -115,7 +145,7 @@ Sin compras.
 | Alimentación | Adaptador original externo 65 W, 19,5 V. Queda **fuera** de la cuña, sin modificar. | Datos del propietario. El diámetro del jack es **PENDIENTE**. Dentro de la cuña no hay red eléctrica. |
 | DVD | Se retira. No se modela. | Decisión. |
 | HDD Toshiba 3,5", marca de fecha MAR-2017 | El disco real. Miguel lo midió a ojo el 2026-10-20: ~150 × 100 × 25 mm. | Esa medición es **a ojo**. El CAD **no la usa**. Usa SFF-8301: 101,6 × 147 × 26,1 mm (**DE FUENTE**). |
-| Raspberry Pi 4 + HAT VHF | Miguel lo confirma el 2026-10-20. El HAT trae OLED y antena SMA plegable; dice que la carcasa cierra con holgura. Ya da imagen en la MSI; no se sabe por qué entrada. | Placa: **DE FUENTE** (dibujo mecánico de la Pi 4, 85 × 56, agujeros 58 × 49) y dato de Miguel. Altura de la Pi y todo el HAT: **PENDIENTE**. `pi_h = 20` no incluye el HAT. Si el HAT no deja pasar el GPIO, el conector del panel no se cablea. |
+| Raspberry Pi 4 + HAT VHF | Miguel lo confirma el 2026-10-20. El HAT trae OLED y antena SMA plegable; dice que la carcasa cierra con holgura. La MSI va solo a la Pi y Orbit OS arranca directo (comprobado el 2026-10-24). La imagen del HP no entra por el monitor: llega por Moonlight. | Placa: **DE FUENTE** (dibujo mecánico de la Pi 4, 85 × 56, agujeros 58 × 49) y dato de Miguel. Altura de la Pi y todo el HAT: **PENDIENTE**. `pi_h = 20` no incluye el HAT. Si el HAT no deja pasar el GPIO, el conector del panel no se cablea. |
 | Arduino Nano (mandos) | Clon ATmega328P, mini-USB, CH340 probable (dato de Miguel, chip no leído). Lee potenciómetros y botones. | PCB 18 × 45 mm: **DE FUENTE** ([tienda oficial](https://store.arduino.cc/products/arduino-nano)). La placa de la foto no se ha medido. Alturas: **PENDIENTE**. |
 | Arduino Uno | El de la foto. No se monta. | 68,6 × 53,4 mm: **DE FUENTE** ([Uno Rev3](https://store.arduino.cc/products/arduino-uno-rev3)). Cabe solo en el hueco delantero y no cabe bien con el ESP y un cable USB-B. |
 | Segundo Nano (prácticas) | Independiente del de mandos. Pines y OLED en la trasera. | Misma cota de catálogo. **PENDIENTE**: la foto no muestra un segundo Nano. Miguel acepta uno si el Uno no cabe. No es una compra hecha. |
@@ -263,7 +293,9 @@ Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla 
 
 ## 7. Imagen del HP
 
-La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo: el HP en 10.0.0.1 y la Pi en 10.0.0.2. Sunshine corre en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. `ORBIT_REMOTE_CMD` lanza Moonlight sin shell. Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. Está implementado en `video.py` y cubierto por tests. **No** está probado con Sunshine, Moonlight, el HP ni la MSI. Windows 10 Home no trae servidor RDP. No hay cifras de latencia ni de fps.
+La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo: el HP en 10.0.0.1 y la Pi en 10.0.0.2. Sunshine corre en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. `ORBIT_REMOTE_CMD` lanza Moonlight sin shell. Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. Está implementado en `video.py` y cubierto por tests.
+
+**Comprobado en el HP y en la Pi el 2026-10-24.** Sunshine queda en **v2025.924.154138**: es la última versión compatible con Windows 10 y **no se actualiza**. El HDMI del HP no va a ningún monitor. Virtual Display Driver **25.7.23** pone una pantalla de **1920×1080**, que es la que captura Sunshine. Moonlight en la Pi está emparejado. Orbit lo detecta por `srvcert` en la sección `[hosts]` de `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, no por `pairState`. Cambiar sistema, la vista integrada y la pantalla completa se probaron de verdad. Windows 10 Home no trae servidor RDP. No hay cifras de latencia ni de fps.
 
 Cambiar la entrada de la MSI con `ddcutil` (`ORBIT_VIDEO_DDC`) está en el código y apagado. Los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE.
 
@@ -301,25 +333,27 @@ Cambiar la entrada de la MSI con `ddcutil` (`ORBIT_VIDEO_DDC`) está en el códi
 
 1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`. El soporte del Nano de mandos ya está pasado a imprimir; el STL no se ha vuelto a cambiar el 2026-10-21. Si llegó a salir el del Micro, no vale. El soporte 2,5" ya dio un resultado: salió pequeño. La bandeja de servicio ya está impresa y no se regenera. El riel y los tres carros son STL nuevos, sin imprimir.
 2. **Diámetro de pivote** (C 3,8 / F 3,6 / H 3,4 / J 3,2) cuando Miguel pruebe `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl`. Sigue **sin resultado**. Es la pieza 01 de `hardware/impresion/siguientes/README.md`.
-3. **HAT VHF:** medidas, y si deja pasar el cabezal de 40 pines. La Pi es una Pi 4 (Miguel, 2026-10-20). Por qué entrada da imagen en la MSI sigue abierto.
+3. **HAT VHF:** medidas, y si deja pasar el cabezal de 40 pines. La Pi es una Pi 4 (Miguel, 2026-10-20). La MSI va solo a la Pi; la imagen del HP llega por Moonlight, no por otra entrada del monitor.
 4. **Posiciones de los puertos y teclas del canto del MSI.**
 5. **Medidas de los potenciómetros y de los pulsadores** de Miguel (el eje de 6 mm está acordado y sin medir). Medir también el Nano clon, el ESP8266 de la foto y, cuando se elija, el módulo OLED. El segundo Nano no consta en la foto.
 6. **Tipo y tensión de la tira LED.** De eso depende si WLED en el ESP necesita desplazador de nivel. GPIO2 (D4 en la mayoría de NodeMCU) es el dato por defecto de WLED y tiene que estar en alto al arrancar.
 7. **Patillaje del botón de encendido del HP** (polímetro, H-6). No se inventa.
 8. **BIOS:** Wake-on-LAN y «After Power Loss» (H-11).
-9. **Instalar y arrancar en la Pi** (aún no hecho):
+9. **La Pi y el HP ya arrancan Orbit OS 1.0.0** (comprobado el 2026-10-24). Para actualizar o volver atrás, usar los comandos de la sección 11. No hace falta clonar de nuevo ni grabar el Nano. En un PC de desarrollo, la simulación sigue siendo `./scripts/setup-dev.sh` y `./scripts/dev-sim.sh`.
 
-```bash
-sudo apt install -y git nodejs npm python3-venv
-git clone https://github.com/Sopa-IA/Control-deck
-cd Control-deck
-./scripts/setup-dev.sh
-./scripts/dev-sim.sh
-```
+También siguen abiertos: el calibre de cada conector trasero del HP (la placa usa la foto del 2026-10-23, ±2 mm; la prueba lo comprueba antes de pegar), los agujeros reales de la pestaña del I/O frontal (el marco trae dos a 60 mm y se taladra la chapa), antenas, cables SATA, diámetro del jack, probar en la Pi el apagado desde Orbit OS (el software ya llama a `systemctl poweroff` tras confirmar; no se ha hecho en la Pi), `wss://`, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el cuerpo real de las regletas (el modelo usa 5,1 × 8,5 mm de catálogo), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente. El volumen del HP en Windows es el pendiente de software de abajo: el deslizador ya está en el código y en el HP real no responde.
 
-Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y Moonlight.
+### Pendientes de software anotados por Miguel el 2026-10-24
 
-También siguen abiertos: el calibre de cada conector trasero del HP (la placa usa la foto del 2026-10-23, ±2 mm; la prueba lo comprueba antes de pegar), los agujeros reales de la pestaña del I/O frontal (el marco trae dos a 60 mm y se taladra la chapa), antenas, cables SATA, diámetro del jack, probar en la Pi el apagado desde Orbit OS (el software ya llama a `systemctl poweroff` tras confirmar; no se ha hecho en el hardware), volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el cuerpo real de las regletas (el modelo usa 5,1 × 8,5 mm de catálogo), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
+**No implementar todavía.** Solo quedan escritos para el siguiente agente.
+
+1. Un botón en Orbit OS que, al pulsarlo, conecte el teclado Bluetooth. La reconexión automática no le basta. El teclado ya está emparejado.
+2. La temperatura del HP sigue sin salir en Orbit, pese a LibreHardwareMonitor. La fila se queda en raya. CPU, RAM, disco, red y tiempo activo sí salen.
+3. El volumen del HP desde Orbit no funciona en real. El deslizador es la acción `hp.volume_set`. Bloquear y Apagar sí funcionan.
+
+### Pendientes de hardware que se mantienen
+
+Potenciómetros y pulsadores sin cablear y sin medir. Tira LED sin tipo ni tensión. Compras **FALTA**, sin comprar nada hasta que Miguel lo diga: Dupont hembra acodado a 90° (uno por pin; 30 por cada Nano, y los del ESP al contarlos), step-down LM2596 de 43 × 21 mm a 5 V, regleta macho 2×20, regleta macho 2×12 (pines de al menos 11 mm) y cables Dupont hembra-hembra. El detalle de impresión, pivotes, HAT y el resto de la lista de arriba no se borra.
 
 De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el módulo real del step-down (el CAD usa un LM2596 típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina); el ESP de la foto (58 × 31); el tramo sin pines del canto corto (el apoyo es de 2,0 mm); el largo de las clavijas y el HAT. El riel suelto y los carros no se montan. La guía de los insertos cortos de las torretas DC era de esa bahía y ya no aplica a esta bandeja.
 
@@ -327,7 +361,54 @@ De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el
 
 ## 11. Cómo lo retoma un agente
 
-Desde la raíz del repo. OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
+La rama de trabajo es `cursor/bandeja-v2-modular-6d15` (PR #9, borrador). No fusionar sin Miguel. No grabar el Nano. No actualizar Sunshine. No hace falta contraseña, token ni domicilio para seguir estas líneas: el instalador del HP pide la contraseña de la Pi en el momento y no la escribe en pantalla.
+
+### Cómo actualizar la Pi
+
+El proceso de orbitd que ya está en marcha no carga el Python nuevo. El instalador construye la interfaz y hace `daemon-reload`, y no hace `systemctl restart orbitd`. Hace falta reiniciar.
+
+```bash
+cd /home/orbit/Control-deck
+git pull
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+### Cómo actualizar el HP
+
+En el HP, PowerShell **como administrador**. Volver a pegar la línea basta: el instalador se puede repetir y no borra la configuración. Siempre baja el zip de la **punta** de `cursor/bandeja-v2-modular-6d15`. Un `git checkout` en la Pi no cambia lo que hay en el HP. El cable `10.0.0.1` no lleva internet: el HP baja por su Wi-Fi. Actualizar la Pi antes que el HP. Si el agente nuevo habla con un orbitd viejo, la telemetría entera puede rechazarse.
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
+```
+
+### Cómo volver a una versión anterior
+
+El punto conocido anterior a la red en kb/s, el volumen y la puerta de ruido de los potenciómetros es **`738be94`** («El instalador de la Pi ya no toca el perfil Wi-Fi»). No usar `de6ffba`: es anterior y deshace ese arreglo del Wi-Fi, la pausa del kiosco en `/run` y el instalador del HP.
+
+Solo si **no** se ha vuelto a lanzar `instalar-hp.ps1` después de este checkout. Si el HP ya tiene el agente nuevo (`volume_pct` y `volume_muted`) y la Pi vuelve a `738be94`, orbitd rechaza **toda** la telemetría y la CPU desaparece hasta regresar a la rama y reinstalar en la Pi. El instalador del HP no baja un commit viejo: un checkout en la Pi no vuelve atrás el HP. Mientras no se haya relanzado ese instalador, el agente viejo del HP sigue coincidiendo con `738be94`.
+
+```bash
+cd /home/orbit/Control-deck
+git checkout 738be94
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+Para volver a la rama:
+
+```bash
+cd /home/orbit/Control-deck
+git checkout cursor/bandeja-v2-modular-6d15
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+Después, si el HP se había quedado en el agente viejo y hace falta el de la rama, repetir la línea de PowerShell de arriba.
+
+### CAD y pruebas, desde la raíz del repo
+
+OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
 
 ```bash
 # Ver el ensamblaje (no exporta)
