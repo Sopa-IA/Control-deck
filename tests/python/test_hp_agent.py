@@ -42,6 +42,86 @@ def test_live_uses_argument_list(monkeypatch):
     assert r["ok"] and not r["dry_run"] and seen == {"cmd": ["shutdown", "-h", "+1"], "shell": False}
 
 
+def test_temperatura_ausente_no_rompe_la_telemetria(monkeypatch):
+    import hp_agent.agent as agent
+
+    def boom(*_a, **_k):
+        raise NotImplementedError("sensors_temperatures")
+
+    monkeypatch.setattr(agent.psutil, "sensors_temperatures", boom)
+    data = agent.telemetry()
+    assert data["temp_c"] is None
+    assert data["host"] == "hp"
+    assert isinstance(data["cpu_pct"], float)
+    assert data["disk_pct"] >= 0
+
+
+def test_modelo_pendiente_si_windows_no_tiene_registro(monkeypatch):
+    import hp_agent.agent as agent
+
+    monkeypatch.setattr(agent.platform, "system", lambda: "Windows")
+    # En Linux no existe winreg: el agente no puede morir por eso.
+    assert agent.machine_model() == "HP (modelo PENDIENTE)"
+
+
+def test_config_live_desde_el_toml(tmp_path):
+    f = tmp_path / "a.toml"
+    f.write_text('hub_url = "ws://10.0.0.2:8765/ws"\ntoken = "t"\nlive = true\n', encoding="utf-8")
+    assert config.load(f, env={}).live is True
+    f.write_text('token = "t"\nlive = false\n', encoding="utf-8")
+    assert config.load(f, env={}).live is False
+    f.write_text('token = "t"\nlive = "si"\n', encoding="utf-8")
+    assert config.load(f, env={}).live is True
+    f.write_text('token = "t"\n', encoding="utf-8")
+    assert config.load(f, env={}).live is False
+
+
+def test_cli_live_solo_enciende(tmp_path, monkeypatch):
+    import logging
+
+    f = tmp_path / "a.toml"
+    f.write_text('token = "token-de-prueba-cli-0123456789"\nlive = false\n', encoding="utf-8")
+    visto = {}
+
+    async def falso(cfg):
+        visto["live"] = cfg.live
+
+    monkeypatch.setattr("hp_agent.__main__.run_forever", falso)
+    from hp_agent.__main__ import _Redact, main
+
+    try:
+        main(["--config", str(f)])
+        assert visto["live"] is False
+        main(["--config", str(f), "--live"])
+        assert visto["live"] is True
+    finally:
+        raiz = logging.getLogger()
+        raiz.filters = [flt for flt in raiz.filters if not isinstance(flt, _Redact)]
+
+
+def test_el_log_no_repite_el_token():
+    import logging
+
+    from hp_agent.__main__ import _Redact
+
+    registro = logging.getLogger("test.hp.redact")
+    registro.addFilter(_Redact("secreto-largo-de-prueba"))
+    registro.setLevel(logging.INFO)
+    encontrado = []
+
+    class _Coge(logging.Handler):
+        def emit(self, record):
+            encontrado.append(record.getMessage())
+
+    registro.addHandler(_Coge())
+    try:
+        registro.info("conectado token %s", "secreto-largo-de-prueba")
+    finally:
+        registro.handlers.clear()
+        registro.filters.clear()
+    assert encontrado == ["conectado token ***"]
+
+
 def test_config_env_overrides_file(tmp_path):
     f = tmp_path / "a.toml"
     f.write_text('hub_url = "ws://x:1/ws"\ntoken = "archivo"\n[apps]\nnav = ["firefox"]\n', encoding="utf-8")

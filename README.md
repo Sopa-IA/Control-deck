@@ -65,12 +65,13 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
 
 1. **Token:** `./scripts/gen-token.sh` lo guarda en `.env` (ignorado por git). Hay que copiarlo al HP por un canal seguro.
 2. **Raspberry Pi:** en la Pi, con Wi-Fi, `sudo bash scripts/instalar-pi.sh` y reinicia. El detalle, el emparejamiento y cómo salir del kiosco están en [`docs/instalacion-pi.md`](docs/instalacion-pi.md).
-3. **HP:**
-   ```bash
-   pip install -e software/shared/python -e software/hp-agent
-   ORBIT_HP_TOKEN=... python -m hp_agent --hub ws://<ip-pi>:8765/ws
+3. **HP (Windows 10):** en PowerShell como administrador, una línea. Hace falta internet en el HP; el cable `10.0.0.1` no lo da. ssh pide la contraseña de la Pi y no muestra el token. Guía: [`docs/instalacion-hp.md`](docs/instalacion-hp.md).
+
+   ```powershell
+   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
    ```
-   Arranca en **dry-run**; con `--live` ejecuta las órdenes de verdad.
+
+   Arranca en **dry-run** (solo telemetría). La misma línea terminada en `-Live` permite bloquear y apagar con 60 s.
 4. **Nano de mandos:** `./scripts/compile-arduino.sh` (también compila el ejemplo de prácticas) y luego `arduino-cli upload` con `arduino:avr:nano` o, en clones de bootloader viejo, `arduino:avr:nano:cpu=atmega328old`. Puerto de ejemplo `/dev/ttyUSB0`; si hay más de un USB-serie, `/dev/serial/by-id`. Ver [`software/arduino-controls/README.md`](software/arduino-controls/README.md) y [`software/arduino-pruebas/README.md`](software/arduino-pruebas/README.md).
 
 Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` (usa `/usr/bin/google-chrome`, o la ruta que indique `CHROME_PATH`).
@@ -84,8 +85,8 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | Telemetría de la Pi (psutil) | **Implementado** | Lee el equipo donde corre orbitd; si no es una Pi, lo indica |
 | HP y controles en orbitd `--sim` | **Simulación** | Marcados con `simulated: true` y distintivo **MODO SIMULACIÓN** |
 | Interfaz Orbit OS (6 secciones, 1920×1080 y 1920×720) | **Implementado** | Con simulador y con orbitd en modo simulación |
-| hp-agent: telemetría y acciones en dry-run | **Implementado** | Probado contra orbitd en local, en este entorno Linux; **no en el HP** |
-| hp-agent `--live` en Windows: bloquear, apagar o reiniciar con 60 s, cancelar | **Pendiente de validar** | Órdenes fijas sin shell; no ejecutadas nunca de verdad |
+| hp-agent: telemetría y acciones en dry-run | **Implementado** | Probado contra orbitd en local, en este entorno Linux; **no en el HP**. Instalador: `scripts/instalar-hp.ps1` |
+| hp-agent `--live` en Windows: bloquear, apagar o reiniciar con 60 s, cancelar | **Pendiente de validar** | Órdenes fijas sin shell. El instalador las deja apagadas; `-Live` las enciende. No ejecutadas nunca de verdad |
 | hp-agent en Windows: volumen, silencio, reproducir/pausar | **Pendiente** | No hay orden nativa (habría que usar pycaw o nircmd) |
 | Firmware del Nano de mandos | **Pendiente de validar** | Compila con arduino-cli 1.5.1 para `arduino:avr:nano` y para `cpu=atmega328old` (2982 bytes, 9 % de la flash). Sin HID. Sin probar en placa |
 | Ejemplo OLED del Nano de prácticas | **Pendiente de validar** | `monitor_pines`: 5558 bytes, 18 % de la flash, los dos FQBN. Sin probar en placa ni en pantalla |
@@ -96,7 +97,7 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | HP: **HP Slimline 260-a110ns** (A6-7310, 8 GB, HDMI + VGA, adaptador externo 19,5 V 65 W) | **Identificado y abierto** | **Medido por Miguel:** placa 17 × 17 cm, altura máxima 35 mm. Agujeros: patrón estándar mini-ITX (coincide visualmente con la foto, no medido). Sin escudo I/O. Faltan posición de conectores traseros, botón de encendido, antenas y BIOS: **requieren intervención humana** (`docs/datos-pendientes-hp.md` §A2, con nota de seguridad) |
 | Pi 4 confirmada (2026-10-20) con HAT VHF; conexión a la MSI, medidas del HAT y si deja pasar el GPIO | **Requiere intervención humana** | El HAT no está modelado. Ver `software/arduino-pruebas/README.md` |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
-| Servicios systemd (Pi), servicio o arranque automático (HP), Chromium en kiosco | **Pendiente** | — |
+| Servicios systemd (Pi) y Chromium en kiosco | **Hecho en el instalador de la Pi** | `orbitd` y la sesión `orbit`. En el HP, la tarea `OrbitHpAgent` la crea `scripts/instalar-hp.ps1`; aún no se ha lanzado en el equipo real |
 | CAD (cuña 456,3 × 300,5 × 153,9 mm, 20 STL para Bambu Lab A1 en PLA+ negro mate) | **Pendiente de validar** | Disco vigente: **HDD 3,5"** (SFF-8301; la medición a ojo de ~150 × 100 × 25 mm no entra en el modelo). Separadores mini-ITX con agujero de inserto abierto por arriba; plantilla de agujeros **comprobada en la placa el 2026-10-19**. Base completa en impresión el 2026-10-20, sin resultado. Plantilla de pivotes (C 3,8 / F 3,6 / H 3,4 / J 3,2) **sin resultado**. STEP para SolidWorks en `hardware/impresion/`, sin regenerar el CAD. **NO apto para fabricación**. Detalle en [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md) |
 | Medidas de potenciómetros, pulsadores y puertos/teclas del MSI | **Requiere intervención humana** | Medir las piezas de Miguel y ajustar `params.scad`/`lib.scad` |
 

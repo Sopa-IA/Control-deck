@@ -20,26 +20,56 @@ from .config import AgentConfig
 log = logging.getLogger("hp_agent")
 
 
+def machine_model() -> str:
+    """Nombre comercial del equipo. En Windows, del registro. Si no se puede leer, queda pendiente."""
+    if platform.system() == "Windows":
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"HARDWARE\DESCRIPTION\System\BIOS") as key:
+                value, _ = winreg.QueryValueEx(key, "SystemProductName")
+            text = str(value).strip()
+            if text:
+                return text[:128]
+        except (OSError, ImportError, AttributeError):
+            pass
+    return "HP (modelo PENDIENTE)"
+
+
+def os_label() -> str:
+    system = platform.system()
+    if system == "Windows":
+        ver = platform.version()
+        text = f"Windows {platform.release()}"
+        if ver:
+            text = f"{text} ({ver})"
+        return text[:128]
+    return f"{system} {platform.release()}"[:128]
+
+
+def _cpu_temp_c() -> float | None:
+    # En Windows psutil.sensors_temperatures lanza NotImplementedError. No es un fallo del agente.
+    try:
+        readings = psutil.sensors_temperatures() or {}
+    except (AttributeError, OSError, NotImplementedError):
+        return None
+    for values in readings.values():
+        if values:
+            return round(values[0].current, 1)
+    return None
+
+
 def telemetry() -> dict:
     vm = psutil.virtual_memory()
     try:
         disk = psutil.disk_usage("C:\\" if platform.system() == "Windows" else "/").percent
     except OSError:
         disk = 0.0
-    temp = None
-    try:
-        for v in (psutil.sensors_temperatures() or {}).values():
-            if v:
-                temp = round(v[0].current, 1)
-                break
-    except (AttributeError, OSError):
-        pass
     import time
     return {"host": "hp", "simulated": False, "hostname": socket.gethostname()[:64],
-            "model": "HP (modelo PENDIENTE)", "os": f"{platform.system()} {platform.release()}"[:128],
+            "model": machine_model(), "os": os_label(),
             "cpu_pct": round(psutil.cpu_percent(interval=None), 1), "mem_pct": round(vm.percent, 1),
             "mem_used_mb": round((vm.total - vm.available) / 2**20, 1), "mem_total_mb": round(vm.total / 2**20, 1),
-            "disk_pct": round(disk, 1), "temp_c": temp, "uptime_s": round(time.time() - psutil.boot_time())}
+            "disk_pct": round(disk, 1), "temp_c": _cpu_temp_c(), "uptime_s": round(time.time() - psutil.boot_time())}
 
 
 async def run_once(cfg: AgentConfig) -> None:
@@ -72,7 +102,8 @@ async def run_once(cfg: AgentConfig) -> None:
                         await ws.send_str(json.dumps(P.make("pong", "hp", {"seq": msg["payload"]["seq"]}, msg["id"])))
                     elif msg["type"] == "action":
                         p = msg["payload"]
-                        res = await asyncio.get_event_loop().run_in_executor(
+                        # get_running_loop: en 3.12 get_event_loop() avisa y, fuera de un bucle, falla.
+                        res = await asyncio.get_running_loop().run_in_executor(
                             None, functools.partial(run_action, p["action"], p.get("params", {}), live=cfg.live, apps=cfg.apps))
                         await ws.send_str(json.dumps(P.make("action_result", "hp", res, msg["id"])))
                     elif msg["type"] == "error":
