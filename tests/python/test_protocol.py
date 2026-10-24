@@ -32,6 +32,9 @@ def test_telemetry_requires_simulated_flag():
     with pytest.raises(P.ProtocolError):
         P.make("telemetry", "hp", {"host": "hp", "cpu_pct": 1, "mem_pct": 2})
     P.make("telemetry", "hp", {"host": "hp", "simulated": True, "cpu_pct": 1, "mem_pct": 2})
+    P.make("telemetry", "hp", {"host": "hp", "simulated": False, "cpu_pct": 1, "mem_pct": 2,
+                               "disk_pct": 3, "uptime_s": 4, "temp_c": None,
+                               "net_up_kbps": 1, "net_down_kbps": 2, "volume_pct": 40, "volume_muted": False})
 
 
 def test_whitelist():
@@ -57,6 +60,7 @@ def test_destructive_actions_require_confirm():
 
 def test_mapping_validation():
     m = P.load_default_mapping()
+    assert m["pots"] == {"P1": "none", "P2": "none"}
     assert set(m["pots"]) == {"P1", "P2"}
     assert set(m["buttons"]) == {"B1", "B2"}
     assert P.check_mapping(m) is m
@@ -64,6 +68,8 @@ def test_mapping_validation():
         P.check_mapping({"pots": {"P1": "ui.select"}, "buttons": {}})   # función de botón en pot
     with pytest.raises(P.ProtocolError):
         P.check_mapping({"pots": {}, "buttons": {"B1": "hp.shutdown"}})  # no es función asignable
+    assert P.check_mapping({"pots": {}, "buttons": {"B1": "pi.shutdown"}})["buttons"]["B1"] == "pi.shutdown"
+    assert P.check_mapping({"pots": {}, "buttons": {"B1": "pi.restart"}})["buttons"]["B1"] == "pi.restart"
 
 
 def test_tokens_equal():

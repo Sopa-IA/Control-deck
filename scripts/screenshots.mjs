@@ -21,13 +21,17 @@ const shots = [
   { name: 'controles_1920x1080', s: 'controles', w: 1920, h: 1080 },
   { name: 'sistemas_1920x1080', s: 'sistemas', w: 1920, h: 1080 },
   { name: 'inicio_1920x720', s: 'inicio', w: 1920, h: 720 },
+  { name: 'integrado_1920x1080', s: 'inicio', vista: 'integrado', w: 1920, h: 1080 },
+  { name: 'ardulab_1920x1080', s: 'ardulab', w: 1920, h: 1080 },
 ];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? '/usr/bin/google-chrome', args: ['--no-sandbox'] });
 for (const sh of shots) {
   const page = await browser.newPage({ viewport: { width: sh.w, height: sh.h }, deviceScaleFactor: 1 });
-  const sep = base.includes('?') ? '&' : '?';
-  await page.goto(`${base}${sep}s=${sh.s}`, { waitUntil: 'networkidle' });
+  const q = new URLSearchParams({ s: sh.s, source: 'sim' });
+  if (sh.vista) q.set('vista', sh.vista);
+  const root = base.endsWith('/') ? base : `${base}/`;
+  await page.goto(`${root}?${q}`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(4500); // deja llegar telemetría y eventos de control
   const file = resolve(out, `${sh.name}.png`);
   await page.screenshot({ path: file });

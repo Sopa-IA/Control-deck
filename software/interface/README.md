@@ -1,6 +1,6 @@
 # Orbit OS Interface v0
 
-Interfaz web de Orbit Terminal, hecha con React, TypeScript y Vite. Tema negro mate con acentos ámbar. Está pensada para 1920×1080 (MSI PRO MP161 E2U) y también se adapta a 1920×720. Los controles son grandes para que sirva con pantalla táctil, aunque el monitor del prototipo no lo es y por ahora se usa con ratón y la consola de potenciómetros y botones.
+Orbit OS 1.0.0, hecha con React, TypeScript y Vite. Tema negro mate con acentos ámbar. Está pensada para 1920×1080 (MSI PRO MP161 E2U) y también se adapta a 1920×720. Se usa con ratón. Los potenciómetros, los pulsadores y la tira de luz se muestran apagados hasta que estén conectados.
 
 ```bash
 npm ci

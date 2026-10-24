@@ -1,111 +1,30 @@
 # Conmutación de vídeo entre HP y Raspberry Pi
 
-> Documento: `docs/conmutacion-video-usb.md` · Versión **HP v3, 2026-10-18** · Lo no verificado figura como **PENDIENTE de verificar**.
-> **§V (plan vigente) prevalece** sobre las secciones 0–7, que son el estudio original de la fase 1 (KVM y pantallas táctiles) y se conservan como histórico.
+> Documento: `docs/conmutacion-video-usb.md` · El plan vigente es el de [`instalacion-pi.md`](instalacion-pi.md).
+> Las secciones 0–7 son el estudio original de la fase 1 (KVM y pantallas táctiles) y se conservan como histórico. **§V prevalece.**
 
 ## V. Plan vigente: la Pi lo controla todo, cambio automático desde Orbit OS
 
+**Montaje del 2026-10-22.** Lo que se instala en la Pi está en [`instalacion-pi.md`](instalacion-pi.md). La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo: el HP en 10.0.0.1 y la Pi en 10.0.0.2, con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi.
+
 **Requisito de Miguel (el más importante):** la Pi lo controla todo y el cambio entre la Pi y el HP es **automático, desde Orbit OS**. Miguel **nunca** toca el menú OSD de la MSI. El HP y la Pi funcionan **a la vez y de forma independiente** (el HP con su Windows 10 Home); cambiar de sistema visible no reinicia ni apaga nada.
 
-### V.1 Datos de partida (verificados o pendientes)
+### V.1 Datos de partida
 
 | Equipo | Vídeo | Fuente |
 |---|---|---|
 | HP Slimline 260-a110ns (placa Iris-A6) | **HDMI + VGA**; sin DisplayPort ni USB-C | Datos del propietario 2026-10-18; I/O trasero oficial de placas hermanas (`datos-pendientes-hp.md`) |
-| Raspberry Pi 4/5 | micro-HDMI (×2); su USB-C es **solo alimentación** (no da vídeo DP Alt) | Documentación oficial de Raspberry Pi. Modelo exacto de la Pi de Miguel: PENDIENTE |
+| Raspberry Pi 4 | micro-HDMI (×2); su USB-C es **solo alimentación** (no da vídeo DP Alt) | Documentación oficial de Raspberry Pi. Confirmada por Miguel el 2026-10-20 |
 | MSI PRO MP161 E2U | 1 × Mini-HDMI + 2 × USB-C (DP Alt Mode; una USB-C puede alimentarla con PD) | Manual MSI (ver `pantallas.md`). **Si se le da vídeo por HDMI, necesita alimentación USB-C PD** (> 15 W según el manual) |
 
-**Resumen (2026-10-18):**
+La MSI va solo a la Pi: cable micro-HDMI de la Pi al Mini-HDMI, y la MSI alimentada por un cargador USB-C PD certificado. La entrada se deja fija.
 
-| Modo | Cómo se ve el HP | Hardware extra | Estado |
-|---|---|---|---|
-| **C — capturadora** | Imagen del HDMI del HP capturada por USB en la Pi | Capturadora HDMI→USB (UVC), ~14,69 € (Amazon.es, visto el 2026-10-18) | **Recomendado** como opción automática con imagen real del HP. Sin probar |
-| **A — remoto** | Escritorio del HP por red (Sunshine + Moonlight) | Ninguno | **Recomendado** como base sin compras. Sin probar |
-| **B — DDC/CI** | Imagen directa, la MSI cambia de entrada | Adaptador HDMI→USB-C (DP Alt) | **Poco probable**: los manuales de la MSI no documentan DDC/CI |
+`pi.switch_visible` (botón B2 y la sección Sistemas) abre Moonlight o lo cierra. `ORBIT_REMOTE_CMD` es la orden fija, sin shell. Si no hay orden, el cambio se registra y la interfaz enseña el panel. No está probado con Sunshine, Moonlight, el HP ni la MSI. No hay cifras de latencia ni de fps. Windows 10 Home no trae servidor RDP. Windows sin monitor puede no ofrecer 1920×1080; puede hacer falta un enchufe HDMI falso.
 
-En los modos A y C **la MSI se queda siempre en la entrada de la Pi**, así que no dependen de la MSI.
-
-### V.2 Modo A — BASE (funciona seguro, sin adaptador)
-
-- La **MSI muestra siempre la Pi**: cable micro-HDMI (Pi) → Mini-HDMI (MSI), y la MSI alimentada por un cargador USB-C PD certificado en una de sus USB-C. La entrada se deja fija y no se vuelve a tocar.
-- El HP **no necesita cable de vídeo** en este modo. Ojo: Windows sin monitor conectado puede no generar escritorio a la resolución deseada para Sunshine; puede hacer falta un **emulador HDMI ("dummy plug")** en el HDMI del HP (compra) o un controlador de pantalla virtual. PENDIENTE de probar.
-- "Ver el HP" = Orbit OS abre en la Pi un **visor del escritorio del HP por el Ethernet interno** (cable de red corto HP ↔ Pi, ver V.6):
-  - **Sunshine en el HP + Moonlight en la Pi** (recomendado). Ambos son libres; Moonlight tiene cliente para Raspberry Pi OS.
-  - **RDP: NO disponible tal cual**, porque **Windows 10 Home no incluye servidor de Escritorio remoto** (solo Pro/Enterprise). Requeriría actualizar a Pro (compra: decisión de Miguel).
-  - **VNC** (servidor VNC en Windows, cliente en la Pi): alternativa de respaldo, sin aceleración de vídeo.
-- A pantalla completa o en ventana, **con las superposiciones de Orbit encima** (indicadores, volumen, menú). Cómo se superponen en Raspberry Pi OS (compositor Wayland/labwc, ventana del visor + interfaz Orbit en Chromium) está **PENDIENTE de prototipar**.
-- **Teclado y ratón:** en modo A están en la Pi y el visor los reenvía al HP; no hace falta conmutador USB.
-- **Limitaciones honestas:** no se ve la BIOS ni el arranque del HP (solo el escritorio una vez iniciado Windows y Sunshine); el rendimiento depende del HP: **la codificación por hardware de Sunshine con la Radeon R4 (A6-7310) no está verificada**; si no está disponible, Sunshine codifica por software en una CPU de 15 W. **No se dan cifras de latencia ni de fps**: se medirán en la Fase 3.
-- Audio: Moonlight transmite el audio del HP a la Pi (sale por la MSI si la Pi le manda audio por HDMI). PENDIENTE de probar.
-
-### V.2b Modo C — RECOMENDADO: capturadora HDMI→USB en la Pi
-
-```
-HP  HDMI ── cable HDMI (sale por la ventana I/O, vuelve por el pasacables) ──► capturadora HDMI→USB (UVC)
-capturadora ── USB-A (o USB-C) ──────────────────────────────────────────────► USB de la Pi
-Pi  micro-HDMI ── cable/adaptador ── Mini-HDMI ──────────────────────────────► MSI Mini-HDMI (entrada fija)
-Cargador USB-C PD certificado (> 15 W) ──────────────────────────────────────► MSI USB-C (alimentación)
-Teclado y ratón del HP ──────────────────────────────────────────────────────► USB del HP (aparte)
-```
-
-- **Idea:** la capturadora se ve en la Pi como una cámara web (`/dev/videoN`, clase UVC). "Ver el HP" = orbitd abre un visor de vídeo de ese dispositivo a pantalla completa (o en ventana); "volver" = lo cierra. La MSI no cambia nunca de entrada y el HP no necesita software extra.
-- **Referencia vista** (captura de Miguel, Amazon.es, 2026-10-18): marca **SUOFEIXIANG**, "Tarjeta de captura HDMI 4K a 30 Hz, captura de vídeo 1080p", cable con USB-A 3.0 y USB-C, **14,69 €**. Sin URL. Las cifras "4K30 de entrada / 1080p" son del anuncio, **no verificadas**. **Comprar o no lo decide Miguel.**
-- **Ventajas:** imagen real del HP, incluidas la BIOS y el arranque (lo que el modo A no ve); no depende de Sunshine ni de la Radeon R4; no depende de DDC/CI.
-- **Limitaciones honestas:**
-  - **Latencia y fps sin medir.** Este tipo de capturadora suele anunciar 1080p a 30 fps: válido para escritorio, peor para vídeo rápido o juegos. Se medirá en la Fase 3; no se dan cifras.
-  - **Teclado y ratón** no pasan por la capturadora: el teclado y el ratón del HP van conectados al HP. Los mandos de Orbit siguen en la Pi.
-  - **Rendimiento en la Pi:** depende del modelo (desconocido) y de si la capturadora entrega MJPEG o YUYV y por qué puerto (USB 3.0 en Pi 4/5). PENDIENTE de probar.
-  - **Audio del HP:** la capturadora lo recibe por HDMI y la Pi lo vería como tarjeta de sonido USB; que se reproduzca a la vez que la imagen depende del visor. PENDIENTE.
-  - La capturadora normalmente presenta su propio EDID al HP, así que en principio no hace falta emulador HDMI (PENDIENTE de comprobar).
-- **Configuración en orbitd** (local, nunca desde la interfaz): `ORBIT_CAPTURE_DEVICE=/dev/video0` (o un enlace estable `/dev/v4l/by-id/...`) y `ORBIT_CAPTURE_CMD`, una orden de visor que se ejecuta **sin shell**; el elemento literal `{device}` se sustituye por el dispositivo. Ejemplo **sin verificar en la Pi de Miguel**: `mpv --profile=low-latency --untimed --fs av://v4l2:{device}`. Si el dispositivo no existe o el visor no arranca, orbitd vuelve solo al modo A.
-- **CAD:** reserva de espacio de 72 × 30 × 20 mm en la bandeja de servicio, delante del hueco del adaptador del modo B (ver V.6). Medidas reales del aparato: PENDIENTES.
-
-### V.3 Modo B — POCO PROBABLE, imagen directa (sin verificar)
-
-> **2026-10-18:** los manuales de la MSI PRO MP161 E2U revisados **no mencionan DDC ni MCCS**. Sí documentan un ajuste **Auto Scan** (búsqueda automática de la entrada con señal). DDC/CI no está descartado, pero es poco probable: se comprobará con `ddcutil` si algún día se prueba. *Auto Scan* no sirve para el requisito: con las dos fuentes encendidas, la MSI no sabría cuál elegir.
-
-```
-HP  HDMI ──── cable HDMI ↔ Mini-HDMI ───────────────► MSI Mini-HDMI
-Pi  micro-HDMI ─► adaptador HDMI→USB-C (DP Alt) ────► MSI USB-C 1
-Cargador USB-C PD certificado (> 15 W) ─────────────► MSI USB-C 2 (alimentación)
-Pi ── ddcutil setvcp 60 <entrada> (DDC/CI por el HDMI de la Pi) ──► MSI
-```
-- **Adaptador de la Pi:** tiene que ser **activo y de este sentido: entrada HDMI → salida USB-C DP Alt Mode**. Son raros; la mayoría de los que se venden son del sentido contrario (USB-C → HDMI) y **no sirven**. Miguel tiene uno de **UGREEN, sin verificar y probablemente del sentido contrario**: comprobar el modelo exacto en su etiqueta antes de probarlo. Algunos adaptadores HDMI→USB-C necesitan alimentación USB propia: PENDIENTE.
-- **Cambio de entrada:** orbitd ejecuta `ddcutil setvcp 60 <valor>` (VCP 0x60 "Input Source", estándar MCCS). **Que la MSI MP161 E2U admita DDC/CI y el cambio de entrada no está verificado**; los valores de cada entrada se leen con `ddcutil capabilities` y se configuran en `ORBIT_DDC_HP` / `ORBIT_DDC_PI`. Si la MSI pone la otra entrada, la Pi deja de verse: DDC/CI sigue funcionando por el cable de la Pi aunque la entrada no esté activa **solo si el monitor lo admite** (PENDIENTE; es la prueba clave).
-- **Teclado y ratón** en modo B: los del HP deben ir al HP (o un conmutador USB). PENDIENTE de decidir; en modo A no hace falta.
-- **Si DDC/CI falla**, orbitd intenta devolver la MSI a la Pi y **pasa automáticamente al modo C** (si está configurado) **o al A**. El menú OSD **no** forma parte del flujo normal (solo como recuperación manual de emergencia en el banco de pruebas).
-- **Alternativa de hardware a valorar (compra):** un conmutador HDMI 2→1 delante de la Mini-HDMI (HP y Pi por HDMI; la USB-C de la MSI solo para alimentación). Elimina el adaptador raro, pero la Pi solo podría manejarlo si el conmutador tiene un control documentado (IR, serie). PENDIENTE; no se compra nada sin decisión de Miguel.
-
-### V.4 Botón y acción "Cambiar sistema visible" (implementado en orbitd)
-
-- Acción de la lista blanca **`pi.switch_visible`** (sin parámetros; alterna HP ↔ Pi). La función de control homónima se asigna por defecto al **botón B2** (`controls.default.json`). La interfaz (sección Sistemas) tiene el mismo botón y muestra qué sistema está visible y en qué modo.
-- orbitd elige el modo disponible (`software/pi-controller/orbitd/video.py`):
-  1. **ddc** si `ORBIT_VIDEO_DDC=1`, `ddcutil` está instalado y `ORBIT_DDC_HP`/`ORBIT_DDC_PI` son valores hexadecimales válidos;
-  2. si no, o si ddcutil falla, **captura** si `ORBIT_CAPTURE_DEVICE` es un nodo V4L2 válido (`/dev/videoN` o `/dev/v4l/by-id|by-path/<nombre>`) y hay `ORBIT_CAPTURE_CMD`: abre el visor de la capturadora (sin shell, `{device}` sustituido) y lo cierra al volver. Si el dispositivo no existe o el visor no arranca, sigue al punto 3;
-  3. si no, **remoto**: abre la orden fija del visor `ORBIT_REMOTE_CMD` (p. ej. `moonlight stream <ip-del-HP> Desktop`; la escribe el instalador, nunca la interfaz, y se ejecuta sin shell) y la cierra al volver a Orbit OS. Sin orden configurada, el cambio se registra como *dry-run* y la interfaz muestra el panel del HP.
-- El estado `state` lleva `visible: {system, mode, detail}` con `mode` = `remoto` | `captura` | `ddc`. Probado con pruebas unitarias e integración (sin ddcutil, capturadora ni visor reales; el dispositivo se simula en las pruebas).
-
-### V.5 Pruebas pendientes (Fase 3, banco)
-
-1. `ddcutil detect` / `ddcutil capabilities` contra la MSI por el HDMI de la Pi: ¿DDC/CI? ¿VCP 0x60 escribible? ¿valores de Mini-HDMI y USB-C?
-2. ¿Sigue respondiendo la MSI por DDC/CI cuando su entrada activa es la otra?
-3. Adaptador HDMI→USB-C: modelo exacto del UGREEN de Miguel y sentido; imagen de la Pi en la USB-C de la MSI.
-4. Sunshine en el HP (Windows 10 Home, Radeon R4): ¿codificación por hardware? Moonlight en la Pi: estabilidad, uso de CPU, **latencia y fps medidos** (no se estiman).
-5. Superposición de la interfaz Orbit sobre la ventana de Moonlight en el compositor de la Pi.
-6. **Modo C:** `v4l2-ctl --list-devices` y `--list-formats-ext` con la capturadora; visor (mpv u otro) a pantalla completa; **latencia y fps medidos**; carga de CPU de la Pi; audio del HP; y medidas reales del aparato para ajustar la reserva del CAD.
-
-### V.6 Cableado y huecos en el CAD (HP v3)
-
-Desde v3, los cables ilustrativos de los renders muestran el cableado del **modo C** (`usar_capturadora = true`); con `usar_capturadora = false` vuelven a mostrar el del modo B.
-
-- **Modo C:** el HDMI del HP sale por la ventana I/O trasera (el HDMI queda en el lado de la Pi según la foto) y vuelve a entrar por el **pasacables trasero** hasta la capturadora. **Reserva nominal de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`captura`, `cap_x/y/z`); se fija con velcro o brida (sin pieza impresa nueva). Desde el 2026-10-21 la caja que cabe junto al riel mide 67,2 mm de ancho. USB corto de la capturadora a la Pi. La Pi va a la Mini-HDMI de la MSI (adaptador Mini-HDMI → HDMI hembra de Miguel + cable HDMI ↔ micro-HDMI si es Pi 4/5).
-
-- **Modo A:** micro-HDMI de la Pi → Mini-HDMI de la MSI por dentro (sin pasar por el pasacables).
-- **Modo B — HDMI del HP:** sale por la ventana I/O trasera y vuelve a entrar por el **pasacables trasero** (40 × 16 mm) hacia la Mini-HDMI de la MSI. Por el mismo pasacables entra el cable del **cargador USB-C PD** de la MSI (USB-C 2).
-- **Modo B — adaptador HDMI→USB-C de la Pi:** **hueco reservado de 72 × 32 × 16 mm** en la bandeja de servicio, delante de la Pi (medidas reales PENDIENTES); cable corto micro-HDMI → adaptador y USB-C → MSI USB-C 1.
-- **Ethernet interno HP ↔ Pi:** cable de red corto. El RJ45 del HP está en su I/O trasero (mirando hacia fuera), así que el latiguillo sale por la ventana y entra por el pasacables o va al RJ45 de la Pi por detrás. Con enlace directo, la Pi sale a Internet por Wi-Fi (o se añade un conmutador de red pequeño: compra, PENDIENTE). Direccionamiento IP fijo/enlace local: PENDIENTE de configurar.
+Cambiar la entrada de la MSI con `ddcutil` está en el código y apagado. Los manuales de la MSI no documentan DDC/CI.
 
 ---
+
 
 ## 0. Aclaración fundamental
 

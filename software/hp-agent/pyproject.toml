@@ -1,9 +1,15 @@
 [project]
 name = "hp-agent"
-version = "0.1.0"
+version = "1.0.0"
 description = "Orbit Terminal: agente de telemetría y acciones (lista blanca) para el HP"
 requires-python = ">=3.9"
-dependencies = ["aiohttp>=3.9", "psutil>=5.9", "orbit-protocol"]
+dependencies = [
+  "aiohttp>=3.9",
+  "psutil>=5.9",
+  "orbit-protocol",
+  "pycaw>=20230615; platform_system == 'Windows'",
+  "comtypes>=1.2; platform_system == 'Windows'",
+]
 
 [project.scripts]
 orbit-hp-agent = "hp_agent.__main__:main"

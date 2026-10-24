@@ -24,9 +24,23 @@ module carcasa_superior() {
                     refuerzos_mandos();
                 }
             }
+            // Postes de la tapa de la Pi. Entran 0,4 mm en el techo para quedar unidos a la piel.
+            for (y = [tapa_y0 + 12, tapa_y1 - 12])
+                translate([tapa_x1 + 8, y, H - pared - 7.6]) cylinder(d = 10, h = 8, $fn = 28);
         }
         // --- vaciados ---
         alojamiento_pantalla();
+        // Hueco de la tapa, solo en el lomo plano, a la derecha de la pantalla.
+        translate([tapa_x0, tapa_y0, H - pared - 1])
+            cube([tapa_x1 - tapa_x0, tapa_y1 - tapa_y0, pared + 4]);
+        // Postes de la tapa. Solo existen en carcasa_x1_y1 (x = 404).
+        // Autorroscante: guía Ø rosca_d, 9 mm desde la cara exterior, dentro
+        // de un poste Ø10 (pared 3,75 mm). Quedan 1,6 mm de fondo cerrado.
+        for (y = [tapa_y0 + 12, tapa_y1 - 12])
+            if (fijacion == "autorroscante")
+                translate([tapa_x1 + 8, y, H - 9]) cylinder(d = rosca_d, h = 10, $fn = 20);
+            else
+                translate([tapa_x1 + 8, y, H - 6]) cylinder(d = inserto_d, h = 12, $fn = 20);
         mandos_vaciado();
         canal_luz_frontal();
         ventilacion();
@@ -34,8 +48,18 @@ module carcasa_superior() {
         cortes_panel_practicas();
         ranura_pod();
         pasadores_union();
-        // insertos de orejetas (desde abajo)
-        for (p = orejetas) translate([p[0], p[1], suelo - 0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
+        // Orejetas. El tornillo entra desde la base, que ya está impresa
+        // con paso Ø3,4. Las de carcasa_x1_y1 también están impresas: el STL
+        // no se regenera y el modelo sigue con la guía Ø2,5 de `fijacion`.
+        // El taco mide 11 mm: guía de 9 mm y 2 mm de tapa.
+        // Las otras tres carcasas conservan el inserto Ø4 × 5,7 con el que se imprimieron.
+        for (p = orejetas)
+            if (fijacion == "autorroscante" && p[0] >= corte_x(1) && p[1] >= corte_y(1)) {
+                echo(str("ROSCA_OREJETA;", p[0], ";", p[1], ";d;", rosca_d, ";h;9"));
+                translate([p[0], p[1], suelo - 0.01]) cylinder(d = rosca_d, h = 9.01, $fn = 24);
+            }
+            else
+                translate([p[0], p[1], suelo - 0.01]) cylinder(d = inserto_d, h = inserto_l + 0.5);
     }
 }
 
@@ -150,8 +174,13 @@ module _ventilacion() {
     for (z = [H - 40 : 6 : H - 14]) {
         translate([22, D - pared - 1, z]) cube([hp_w - 10, pared + 2, 3]);
         if (usar_kvm) translate([kvm_x + 4, D - pared - 1, z]) cube([kvm_w - 8, pared + 2, 3]);
-        else translate([pi_x + 4, D - pared - 1, z]) cube([pi_w - 8, pared + 2, 3]);   // sobre la Pi
     }
+    // Salida de la Pi, alineada en X con la placa (x = pi_x+4, ancho pi_w−8).
+    // Baja hasta z = H−64 (con H ≈ 154, z ≈ 90), por encima de las clavijas
+    // (z ≈ 30) y de las orejetas (z ≈ 15). El techo de la rejilla sigue en
+    // z = H−14: no llega al hueco de la tapa.
+    for (z = [H - 64 : 6 : H - 14])
+        translate([pi_x + 4, D - pared - 1, z]) cube([pi_w - 8, pared + 2, 3]);
 }
 
 // --- Panel de prácticas (cara trasera) -------------------------------
@@ -174,6 +203,13 @@ module cortes_panel_practicas() {
     // el recorte del conector de panel que se compre es [PENDIENTE].
     translate([panel_x0 + panel_w - 18, D - pared - 1, panel_z0 + panel_h - 20])
         cube([14, pared + 2, 8]);
+    if (carcasa_futura) {
+        // Ranuras del tamaño del cuerpo de la regleta, para que el plástico
+        // pare por dentro y los enchufes queden en la cara. Sin careta aparte.
+        // Pi 2×20, en el sitio de los Ø1,6. Nano 2×15, centrado en esa franja.
+        translate([254, D - pared - 1, 81.2]) cube([51, pared + 2, 6.2]);
+        translate([251, D - pared - 1, 102.2]) cube([40, pared + 2, 6.2]);
+    } else {
     // Visto desde fuera, +X queda a la izquierda. La columna 0 es ese extremo
     // izquierdo: se numera restando, no sumando.
     // Nano: fila de arriba (mayor z) D2..D13 de izquierda a derecha; fila de
@@ -193,6 +229,7 @@ module cortes_panel_practicas() {
     rotulo_trasero(panel_x0 + 18, panel_z0 + 44, "ARD 5V", 2.2);
     rotulo_trasero(panel_x0 + 28, panel_z0 + 24, "PI 3V3", 2.2);
     rotulo_trasero(panel_x0 + 36, panel_z0 + 5, "NO UNIR", 2.6);
+    }
 }
 
 // --- Conectores traseros ---------------------------------------------
@@ -229,20 +266,87 @@ conectores = let(z0 = usar_kvm ? pi_z + pi_h + 12 : suelo + 20,
     ["dc_in",  x0 + 68,  z0 + 20, 11.5, 11.5, "c"]
 ];
 echo(str("PANEL_CONECTORES;", conectores[0][1] - 3.25, ";", conectores[8][1] + 5.75, ";PI_X;", pi_x, ";", conectores[0][2] - 4, ";", pi_z + pi_h));
+
+// Tapa de los USB y del RJ45. La carcasa ya impresa no se toca.
+// La placa queda dentro del lomo plano, con margen. El tetón entra en el
+// hueco de 72 × 42 y la centra. Se abre quitando los dos tornillos.
+// Los agujeros Ø3,4 no se mueven: los postes de x1_y1 ya están ahí.
+module tapa_pi() {
+    // Lomo geométrico: y_pend1 .. D. El radio de 5 mm deja el plano útil
+    // más adentro. Por delante se pide y ≥ 248,5. Por detrás, antes de la
+    // curva y siempre ≤ 298,5.
+    x0 = 319;
+    x1 = 411;
+    y0 = 248.5;
+    y1 = min(298.5, D - radio_borde - 0.2);
+    r = 3.5;
+    ch = 0.6;
+    tet = 2.2;
+    holg = 0.3;
+    cx = (tapa_x0 + tapa_x1) / 2;
+    cy = (tapa_y0 + tapa_y1) / 2;
+    echo(str("TAPA_PI;x;", x0, ";", x1, ";y;", y0, ";", y1,
+             ";plano;", y_pend1 + radio_borde * tan(15), ";", D - radio_borde));
+    module losa(ax, ay, bx, by, z, h, rr) {
+        translate([ax, ay, z]) caja_r([bx - ax, by - ay, h], rr);
+    }
+    difference() {
+        union() {
+            // 0,3 mm por lado menos que el hueco. Esquinas redondas: no se clavan.
+            losa(tapa_x0 + holg, tapa_y0 + holg, tapa_x1 - holg, tapa_y1 - holg, 0, tet, 1.5);
+            hull() {
+                losa(x0, y0, x1, y1, tet, tapa_t - ch, r);
+                losa(x0 + ch, y0 + ch, x1 - ch, y1 - ch, tet + tapa_t - ch, ch, r - ch);
+            }
+        }
+        for (yy = [tapa_y0 + 12, tapa_y1 - 12])
+            translate([tapa_x1 + 8, yy, -1]) cylinder(d = tornillo_d, h = tet + tapa_t + 2, $fn = 24);
+        // Ranuras de salida, las de antes, dentro del hueco.
+        for (b = [[328, 11], [354, 13], [382, 10]])
+            for (xx = [b[0] : 3.2 : b[0] + b[1]])
+                translate([xx, 258, -1]) cube([1.6, 32, tet + tapa_t + 2]);
+        for (xx = [342 : 3.2 : 376])
+            translate([xx, 266, -1]) cube([1.6, 14, tet + tapa_t + 2]);
+        // 40 × 40 (paso 32) y 30 × 30 (paso 24). Sin ventilador siguen siendo agujeros.
+        for (sx = [-1, 1], sy = [-1, 1]) {
+            translate([cx + sx * vent_paso_40 / 2, cy + sy * vent_paso_40 / 2, -1])
+                cylinder(d = vent_ag_d, h = tet + tapa_t + 2, $fn = 16);
+            translate([cx + sx * vent_paso_30 / 2, cy + sy * vent_paso_30 / 2, -1])
+                cylinder(d = vent_ag_d, h = tet + tapa_t + 2, $fn = 16);
+        }
+        // Muesca pequeña en el canto −X. No llega al tetón ni al canto delantero.
+        translate([x0 - 1, cy - 6, tet - 0.2]) cube([3.2, 12, tapa_t + 2]);
+    }
+}
 module cortes_traseros() {
+    echo(str("CARCASA_FUTURA;", carcasa_futura));
     translate([ventana_hp_x, D - pared - 1, ventana_hp_z]) rotate([-90, 0, 0])
         translate([0, -ventana_hp[1], 0]) caja_r([ventana_hp[0], ventana_hp[1], pared + 2], 2);
     // HP v2: lateral izquierdo: ventana del I/O frontal del HP, pulsador de encendido y LED [PENDIENTE medidas]
     if (hp_desnuda) {
-        translate([-1, io_frontal_y + 4, io_frontal_z + 4]) cube([pared + 2, io_frontal[1] - 8, io_frontal[2] - 8]);
+        if (carcasa_futura)
+            // 94 × 18: caben audio, USB y lector. Solo en el STL futuro.
+            translate([-1, io_frontal_corte_y0, io_frontal_corte_z0])
+                cube([pared + 2, io_frontal_corte_y1 - io_frontal_corte_y0,
+                      io_frontal_corte_z1 - io_frontal_corte_z0]);
+        else
+            // Ventana ya impresa: 62 × 18. No se toca.
+            translate([-1, io_impresa_y0, io_impresa_z0])
+                cube([pared + 2, io_impresa_w, io_impresa_h]);
         translate([-1, boton_hp_y, boton_hp_z]) rotate([0, 90, 0]) cylinder(d = boton_hp_d + 0.2, h = pared + 2);
         translate([-1, boton_hp_y, boton_hp_z + 14]) rotate([0, 90, 0]) cylinder(d = 3.1, h = pared + 2);   // LED 3 mm
     }
     translate([pasacables_x, D - pared - 1, pasacables_z]) rotate([-90, 0, 0])
         translate([0, -pasacables[1], 0]) caja_r([pasacables[0], pasacables[1], pared + 2], 4);
-    for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])
-        if (c[5] == "c") cylinder(d = c[3], h = pared + 2);
-        else translate([-c[3]/2, -c[4]/2, 0]) caja_r([c[3], c[4], pared + 2], 1.2);
+    if (carcasa_futura) {
+        // Paso de cable delante de los USB y del RJ45 de la Pi. Sin el panel genérico.
+        for (h = [pi_futuro_rj, pi_futuro_usb])
+            translate([h[0], D - pared - 1, h[1]]) cube([h[2], pared + 2, h[3]]);
+    } else {
+        for (c = conectores) translate([c[1], D + 1, c[2]]) rotate([90, 0, 0])
+            if (c[5] == "c") cylinder(d = c[3], h = pared + 2);
+            else translate([-c[3]/2, -c[4]/2, 0]) caja_r([c[3], c[4], pared + 2], 1.2);
+    }
 }
 
 // Agujeros para pasadores Ø3 en los planos de corte (dentro de las costillas)

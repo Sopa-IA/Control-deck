@@ -3,6 +3,7 @@ import { CONTROL_FUNCTIONS, canAssign, type MappingPayload } from '@shared/ts/pr
 import { useOrbit } from '../data/OrbitContext';
 import { Dial, Panel, SimTag } from '../components/ui';
 import { ago } from '../lib/format';
+import { MANDOS_CABLEADOS, TIRA_LED_LISTA } from '../lib/hardwareListo';
 
 const fnOptions = (kind: 'pot' | 'button') => Object.entries(CONTROL_FUNCTIONS).filter(([k]) => canAssign(k, kind));
 
@@ -18,17 +19,19 @@ export function Controles() {
 
   return (
     <div className="controles">
-      <Panel title="Potenciómetros" right={<span className="muted">Arduino Nano · A0–A1 · 0–1023</span>}>
+      <Panel title="Potenciómetros" right={<span className="muted">A0 y A1 del Nano de mandos</span>}>
+        {!MANDOS_CABLEADOS && <p className="callout">Falta cablear los potenciómetros. Hasta entonces no cambian nada.</p>}
         <div className="pot-grid">
           {potIds.map((id) => {
             const c = state.controls[id];
             return (
               <div key={id} className="pot-card">
                 <div className="pot-head"><b>{id}</b><SimTag show={c?.simulated} /></div>
-                <Dial value={c?.value} label={id} />
+                <Dial value={MANDOS_CABLEADOS ? c?.value : undefined} label={id} />
+                {!MANDOS_CABLEADOS && <p className="muted">Falta cablearlo.</p>}
                 <label className="field"><span>Función</span>
-                  <select value={draft?.pots[id] ?? 'none'} onChange={(e) => set('pots', id, e.target.value)}>
-                    {fnOptions('pot').map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                  <select value={draft?.pots[id] ?? 'none'} disabled={!MANDOS_CABLEADOS} onChange={(e) => set('pots', id, e.target.value)}>
+                    {fnOptions('pot').map(([k, v]) => <option key={k} value={k} disabled={!TIRA_LED_LISTA && k === 'ui.led_brightness'}>{v.label}</option>)}
                   </select>
                 </label>
               </div>
@@ -36,7 +39,8 @@ export function Controles() {
           })}
         </div>
       </Panel>
-      <Panel title="Botones" right={<span className="muted">D2 · D3 · pulsación larga ≥ 800 ms</span>}>
+      <Panel title="Pulsadores" right={<span className="muted">D2 y D3 · mantener 800 ms para apagar</span>}>
+        {!MANDOS_CABLEADOS && <p className="callout">Falta cablear los pulsadores. Hasta entonces no hacen nada.</p>}
         <div className="btn-grid">
           {btnIds.map((id) => {
             const c = state.controls[id];
@@ -44,21 +48,22 @@ export function Controles() {
             return (
               <div key={id} className="btnmap-card">
                 <div className={`hw-button ${lit ? 'lit' : ''}`} aria-label={`${id} ${lit ? 'pulsado' : 'en reposo'}`}>{id}</div>
+                {!MANDOS_CABLEADOS && <p className="muted">Falta cablearlo.</p>}
                 <label className="field"><span>Función</span>
-                  <select value={draft?.buttons[id] ?? 'none'} onChange={(e) => set('buttons', id, e.target.value)}>
+                  <select value={draft?.buttons[id] ?? 'none'} disabled={!MANDOS_CABLEADOS} onChange={(e) => set('buttons', id, e.target.value)}>
                     {fnOptions('button').map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                   </select>
                 </label>
-                {injectControl && (
-                  <button className="btn small" onClick={() => { injectControl({ control: id, kind: 'button', event: 'press' }); setTimeout(() => injectControl({ control: id, kind: 'button', event: 'release' }), 180); }}>Simular pulsación</button>
+                {injectControl && MANDOS_CABLEADOS && (
+                  <button className="btn small" onClick={() => { injectControl({ control: id, kind: 'button', event: 'press' }); setTimeout(() => injectControl({ control: id, kind: 'button', event: 'release' }), 180); }}>Probar pulsación</button>
                 )}
               </div>
             );
           })}
         </div>
         <div className="row-actions">
-          <button className="btn btn-primary" disabled={!dirty || !draft} onClick={() => draft && setMapping(draft)}>Guardar asignación</button>
-          <button className="btn" disabled={!dirty} onClick={() => setDraft(state.mapping)}>Descartar cambios</button>
+          <button className="btn btn-primary" disabled={!MANDOS_CABLEADOS || !dirty || !draft} onClick={() => draft && setMapping(draft)}>Guardar asignación</button>
+          <button className="btn" disabled={!MANDOS_CABLEADOS || !dirty} onClick={() => setDraft(state.mapping)}>Descartar cambios</button>
         </div>
       </Panel>
       <Panel title="Últimos eventos" className="ev-panel">
@@ -68,7 +73,7 @@ export function Controles() {
             <li key={e.control}><b>{e.control}</b> {e.kind === 'pot' ? `= ${e.value}` : e.event} <span className="muted">{ago(e.ts)}</span> <SimTag show={e.simulated} /></li>
           ))}
         </ul>
-        <p className="muted small-note">Los encoders se han sustituido por potenciómetros + botones leídos por un Arduino Nano. El Nano no tiene USB nativo: no hay volumen HID. El volumen del HP lo aplica orbitd a través de hp-agent.</p>
+        <p className="muted small-note">Cuando estén cableados, elige la función aquí o en Configuración y guarda. Un cambio menor del 3 % no cuenta, una entrada que salta al azar no dispara acciones y el mismo nivel no se repite.</p>
       </Panel>
     </div>
   );

@@ -8,18 +8,28 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from aiohttp import WSMsgType, web
 
 import orbit_protocol as P
 
 from . import __version__
+from .ardu_lab import FQBN_OLD, ArduLab
+from .power import power_allowed, read_device_model, run_power
+from .pots import PotGate, normalize_mapping
 from .serial_events import NANO_RESET_WAIT_S, Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
 from .video import VideoConfig, VideoSwitcher
 
 log = logging.getLogger("orbitd")
+
+
+def is_loopback(host: str | None) -> bool:
+    if not host:
+        return False
+    h = host.split("%", 1)[0]
+    return h in {"127.0.0.1", "::1", "localhost"} or h.startswith("::ffff:127.")
 
 
 @dataclass
@@ -40,6 +50,15 @@ class Config:
     heartbeat_timeout_s: float = P.HEARTBEAT_TIMEOUT_S
     telemetry_period_s: float = 2.0
     video: VideoConfig = field(default_factory=VideoConfig)
+    ardu_ports_file: Optional[Path] = None
+    ardu_sketch_dir: Optional[Path] = None
+    ardu_cli: str = "arduino-cli"
+    ardu_fqbn: str = FQBN_OLD
+    ardu_by_path: Path = field(default_factory=lambda: Path("/dev/serial/by-path"))
+    # ORBIT_POWER_LIVE=1 lo escribe el instalador solo en una Pi. None lee /proc.
+    power_live: bool = False
+    device_model: Optional[str] = None
+    power_runner: Optional[Callable[[list[str]], int]] = None
 
     def check(self) -> None:
         if self.host not in ("127.0.0.1", "localhost", "::1") and not (self.hp_token and self.ui_token):
@@ -70,8 +89,15 @@ class Hub:
         self.pending_results: dict[str, Client] = {}
         self.mapping = self._load_mapping()
         self.video = VideoSwitcher(cfg.video)
+        self.video.on_exit = self._video_exited
+        self.ardu = ArduLab(
+            ports_file=cfg.ardu_ports_file or (cfg.state_dir / "arduino-puertos.json"),
+            sketch_dir=cfg.ardu_sketch_dir or (cfg.state_dir / "ardu-lab"),
+            by_path=cfg.ardu_by_path, cli=cfg.ardu_cli, fqbn=cfg.ardu_fqbn, serial_fallback=cfg.serial_port or "")
         self._last_volume_sent = 0.0
+        self._last_volume_level: Optional[int] = None
         self._volume_pending: Optional[int] = None
+        self._pot_gate = PotGate()
         self._tasks: list[asyncio.Task] = []
         self._serial: Optional[SerialReader] = None
         self.sim_controls = (
@@ -96,8 +122,8 @@ class Hub:
             "mode": self.mode,
             "hp": {"connected": hp_conn or self.cfg.sim_hp, "simulated": (not hp_conn) and self.cfg.sim_hp,
                    "last_seen": self.hp_last_seen,
-                   "detail": "hp-agent conectado" if hp_conn else ("HP simulado" if self.cfg.sim_hp else "hp-agent no conectado")},
-            "pi": {"connected": True, "simulated": False, "last_seen": P.now_ms(), "detail": "orbitd local"},
+                   "detail": "Conectado" if hp_conn else ("Simulado" if self.cfg.sim_hp else "No conectado")},
+            "pi": {"connected": True, "simulated": False, "last_seen": P.now_ms(), "detail": "En este equipo"},
             "arduino": dict(self.arduino),
             "video_input": (self.video.visible if self.video.last_mode == "ddc" else "pi"),
             "visible": self.video.state(),
@@ -108,11 +134,20 @@ class Hub:
         return self.cfg.state_dir / "controls.json"
 
     def _load_mapping(self) -> dict:
-        try:
-            m = json.loads(self._mapping_path().read_text(encoding="utf-8"))
-            return P.check_mapping({"version": 1, "pots": m["pots"], "buttons": m["buttons"]})
-        except (OSError, ValueError, KeyError, P.ProtocolError):
+        path = self._mapping_path()
+        if not path.is_file():
             return P.load_default_mapping()
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            mapping, changed = normalize_mapping(raw)
+            mapping = P.check_mapping(mapping)
+        except (OSError, ValueError, KeyError, TypeError, P.ProtocolError):
+            # Un archivo ilegible no se borra: se usa el de fábrica solo en memoria.
+            return P.load_default_mapping()
+        self.mapping = mapping
+        if changed:
+            self._save_mapping()
+        return mapping
 
     def _save_mapping(self) -> None:
         try:
@@ -166,7 +201,8 @@ class Hub:
                     raise P.ProtocolError("auth_failed", "orbitd sin ORBIT_HP_TOKEN configurado: no acepta hp-agent")
                 if not P.tokens_equal(token, self.cfg.hp_token):
                     raise P.ProtocolError("auth_failed", "token incorrecto")
-            elif self.cfg.ui_token and not P.tokens_equal(token, self.cfg.ui_token):
+            elif (role == "ui" and self.cfg.ui_token and not is_loopback(request.remote)
+                  and not P.tokens_equal(token, self.cfg.ui_token)):
                 raise P.ProtocolError("auth_failed", "token de interfaz incorrecto")
         except P.ProtocolError as exc:
             log.warning("conexión rechazada: %s", exc.message)
@@ -244,7 +280,8 @@ class Hub:
             return
         # --- interfaz
         if t == "action_request":
-            if not self._rate_ok(c, 10 if p["action"] == "hp.volume_set" else 5):
+            limit = 10 if p["action"] in ("hp.volume_set", "pi.ardu_monitor") else 5
+            if not self._rate_ok(c, limit):
                 await self.error(c, "rate_limited", "demasiadas peticiones", msg["id"])
                 return
             spec = P.check_action(p["action"], p.get("params"))
@@ -262,9 +299,20 @@ class Hub:
                     or not P.tokens_equal(p["challenge"], pend["challenge"])):
                 await self.error(c, "confirm_expired", "confirmación caducada o incorrecta", msg["id"])
                 return
+            self.pending_confirm = {
+                k: v for k, v in self.pending_confirm.items() if v["action"] != pend["action"]
+            }
             await self.execute(pend["action"], pend["params"], c, msg["id"])
         elif t == "mapping_set":
-            m = P.check_mapping({"version": 1, "pots": p["pots"], "buttons": p["buttons"]})
+            # version 2: los pots de fábrica ya pasaron a none. No volver a escribir 1,
+            # o el siguiente arranque desharía lo que el usuario acaba de guardar.
+            try:
+                version = int(p.get("version") or 2)
+            except (TypeError, ValueError):
+                version = 2
+            if version < 2:
+                version = 2
+            m = P.check_mapping({"version": version, "pots": p["pots"], "buttons": p["buttons"]})
             self.mapping = m
             self._save_mapping()
             await self.broadcast_ui("mapping", m)
@@ -285,28 +333,82 @@ class Hub:
                        "message": f"SIMULADO: el HP no está conectado; no se ha ejecutado «{spec['label']}»."}
             else:
                 if c is not None:
-                    await self.error(c, "target_offline", "hp-agent no conectado", reply_to)
+                    await self.error(c, "target_offline", "El HP no está conectado.", reply_to)
                 return
         elif action == "pi.switch_visible":
             res = await self.video.switch()
             await self.broadcast_ui("state", self.state_payload())
+        elif action == "pi.stream_layout":
+            res = await self.video.set_layout(str(params.get("layout", "")))
+            await self.broadcast_ui("state", self.state_payload())
+        elif action == "pi.marco_sidebar":
+            res = await self.video.set_sidebar(params.get("sidebar") == "abierto")
+            await self.broadcast_ui("state", self.state_payload())
+        elif action.startswith("pi.ardu_"):
+            res = await self._ardu_action(action, params)
         else:
-            res = self._pi_action(action, params, spec)
+            res = self._pi_action(action, spec)
         if c is not None:
             await self.send(c, "action_result", res, reply_to)
 
-    def _pi_action(self, action: str, params: dict, spec: dict) -> dict:
+    def _ardu_blocked(self) -> list[str]:
+        extra = []
+        if self.cfg.serial_port:
+            extra.append(self.cfg.serial_port)
+        if self._serial is not None:
+            extra.append(self._serial.port)
+        return extra
+
+    async def _ardu_action(self, action: str, params: dict) -> dict:
+        extra = self._ardu_blocked()
+        if action == "pi.ardu_ports":
+            return self.ardu.ports_result()
+        if action == "pi.ardu_sketch":
+            return self.ardu.sketch_result(str(params.get("op", "")), str(params.get("sketch", "")), str(params.get("source", "")))
+        if action == "pi.ardu_monitor":
+            return self.ardu.monitor_result(str(params.get("op", "")), int(params.get("baud", 0)), extra)
+        if action == "pi.ardu_compile":
+            return await asyncio.to_thread(self.ardu.compile_result, str(params.get("sketch", "")))
+        if action == "pi.ardu_upload":
+            return await asyncio.to_thread(self.ardu.upload_result, str(params.get("sketch", "")), extra)
+        return {"action": action, "ok": False, "dry_run": True, "simulated": False, "message": "Acción de Ardu Lab desconocida."}
+
+    def _pi_action(self, action: str, spec: dict) -> dict:
         if action == "pi.ping":
-            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "orbitd responde"}
+            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "La Raspberry Pi responde."}
         if action == "pi.led_mode":
-            return {"action": action, "ok": True, "dry_run": True, "simulated": False,
-                    "message": (f"Modo LED «{params['mode']}» registrado. La tira sigue sin identificar "
-                                "(PENDIENTE) y la llevará el ESP8266 con WLED, no el Nano de mandos: no se envía nada.")}
+            return {"action": action, "ok": False, "dry_run": False, "simulated": False,
+                    "message": "La tira LED no está conectada. No se cambia nada."}
         if action == "pi.restart_ui":
-            asyncio.get_event_loop().create_task(self.broadcast_ui("state", self.state_payload()))
-            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recarga solicitada"}
-        return {"action": action, "ok": True, "dry_run": True, "simulated": False,
-                "message": f"«{spec['label']}» confirmado, pero NO ejecutado: apagar la Pi requiere configurar permisos (PENDIENTE)."}
+            try:
+                asyncio.get_running_loop().create_task(self.broadcast_ui("state", self.state_payload()))
+            except RuntimeError:
+                pass
+            return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": "Recargando Orbit OS."}
+        if action in ("pi.shutdown", "pi.restart"):
+            return self._pi_power(action)
+        return {"action": action, "ok": False, "dry_run": True, "simulated": False,
+                "message": f"«{spec['label']}» no tiene ejecución en la Pi."}
+
+    def _pi_power(self, action: str) -> dict:
+        sim = bool(self.cfg.sim_hp or self.cfg.sim_controls)
+        model = read_device_model() if self.cfg.device_model is None else self.cfg.device_model
+        live = power_allowed(sim=sim, power_live=self.cfg.power_live, model=model)
+        return run_power(action, live=live, sim=sim, runner=self.cfg.power_runner)
+
+    async def _ask_confirm(self, action: str, params: dict) -> int:
+        """Pide confirmación en cada interfaz conectada. Sin interfaz, no ejecuta."""
+        uis = [c for c in self.clients.values() if c.role == "ui"]
+        if not uis:
+            log.warning("«%s» desde un botón y sin interfaz: no se ejecuta", action)
+            return 0
+        for c in uis:
+            rid, ch = uuid.uuid4().hex[:12], P.new_challenge()
+            self.pending_confirm[rid] = {"action": action, "params": params, "challenge": ch,
+                                         "expires": time.monotonic() + P.CONFIRM_TTL_S, "client": c}
+            await self.send(c, "confirm_required", {"request_id": rid, "action": action, "challenge": ch,
+                                                    "expires_in_s": P.CONFIRM_TTL_S})
+        return len(uis)
 
     # -------------------------------------------------------- controles
     async def on_serial_line(self, line: str, simulated: bool = False) -> None:
@@ -320,14 +422,35 @@ class Hub:
             self.arduino["detail"] = f"{ev.firmware} v{ev.version}: {ev.pots} pots, {ev.buttons} botones"
             await self.broadcast_ui("state", self.state_payload())
             return
+        if ev["kind"] == "pot" and not simulated:
+            decision = self._pot_gate.feed(ev["control"], int(ev.get("value") or 0))
+            if decision.show is None:
+                return
+            ev = dict(ev, value=decision.show)
+            self.last_controls[ev["control"]] = ev
+            await self.broadcast_ui("control_event", ev)
+            fn = self.mapping["pots"].get(ev["control"], "none")
+            if fn == "hp.volume_set" and decision.act and decision.level is not None:
+                if decision.level != self._last_volume_level:
+                    self._last_volume_level = decision.level
+                    self._volume_pending = decision.level
+            return
         if ev["kind"] == "pot":
             self.last_controls[ev["control"]] = ev
         await self.broadcast_ui("control_event", ev)
         fn = (self.mapping["pots"] if ev["kind"] == "pot" else self.mapping["buttons"]).get(ev["control"], "none")
         if fn == "hp.volume_set" and ev["kind"] == "pot":
-            self._volume_pending = round(ev["value"] * 100 / 1023)
-        elif ev["kind"] == "button" and ev.get("event") == "press" and fn in P.ACTIONS and not P.ACTIONS[fn]["confirm"]:
-            await self.execute(fn, {}, None, None)
+            lvl = round(ev["value"] * 100 / 1023)
+            if lvl != self._last_volume_level:
+                self._last_volume_level = lvl
+                self._volume_pending = lvl
+        elif ev["kind"] == "button" and fn in P.ACTIONS:
+            if P.ACTIONS[fn]["confirm"]:
+                # Un toque corto no apaga. Mantener pulsado pide la confirmación en pantalla.
+                if ev.get("event") == "long":
+                    await self._ask_confirm(fn, {})
+            elif ev.get("event") == "press":
+                await self.execute(fn, {}, None, None)
 
     async def _volume_loop(self) -> None:
         while True:
@@ -374,24 +497,30 @@ class Hub:
             for line in self.sim_controls.step():
                 await self.on_serial_line(line, simulated=True)
 
+    async def _video_exited(self) -> None:
+        await self.broadcast_ui("state", self.state_payload())
+
     async def start(self, app: web.Application) -> None:
         loop = asyncio.get_event_loop()
         self._tasks = [loop.create_task(self._heartbeat_loop()), loop.create_task(self._telemetry_loop()),
                        loop.create_task(self._volume_loop())]
         if self.sim_controls:
             self._tasks.append(loop.create_task(self._sim_controls_loop()))
-        elif self.cfg.serial_port:
-            def on_line(line: str) -> None:
-                loop.create_task(self.on_serial_line(line))
-            self._serial = SerialReader(self.cfg.serial_port, self.cfg.serial_baud, loop, on_line, self._serial_status,
-                                         reset_wait_s=self.cfg.serial_reset_wait_s)
-            self._serial.start()
+        else:
+            port = self.ardu.mandos_link() or self.cfg.serial_port
+            if port:
+                def on_line(line: str) -> None:
+                    loop.create_task(self.on_serial_line(line))
+                self._serial = SerialReader(port, self.cfg.serial_baud, loop, on_line, self._serial_status,
+                                             reset_wait_s=self.cfg.serial_reset_wait_s)
+                self._serial.start()
 
     async def stop(self, app: web.Application) -> None:
         for t in self._tasks:
             t.cancel()
         if self._serial:
             self._serial.stop()
+        self.ardu.monitor.close()
         await self.video.close()
         for c in list(self.clients.values()):
             await c.ws.close()
@@ -410,6 +539,38 @@ def build_app(cfg: Config) -> web.Application:
         return web.json_response({"ok": True, "version": __version__, "mode": hub.mode})
 
     app.router.add_get("/api/health", health)
+
+    def _local(request: web.Request) -> bool:
+        return is_loopback(request.remote)
+
+    async def local_layout(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        res = await hub.video.toggle_layout()
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    async def local_sidebar(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        try:
+            body = await request.json()
+        except json.JSONDecodeError:
+            body = {}
+        res = await hub.video.set_sidebar(body.get("sidebar") == "abierto")
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    async def local_switch(request: web.Request) -> web.Response:
+        if not _local(request):
+            return web.json_response({"ok": False, "message": "solo localhost"}, status=403)
+        res = await hub.video.switch()
+        await hub.broadcast_ui("state", hub.state_payload())
+        return web.json_response(res)
+
+    app.router.add_post("/api/local/layout", local_layout)
+    app.router.add_post("/api/local/sidebar", local_sidebar)
+    app.router.add_post("/api/local/switch", local_switch)
     if cfg.static_dir and (cfg.static_dir / "index.html").exists():
         index = cfg.static_dir / "index.html"
 

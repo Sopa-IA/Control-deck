@@ -25,7 +25,17 @@ describe('controlRouter', () => {
     expect(route({ control: 'P2', kind: 'pot', value: 400, simulated: false }, mapping, 200)).toEqual({ cmd: 'scroll', delta: 2 });
     expect(route({ control: 'P2', kind: 'pot', value: 10, simulated: false }, mapping, 200)).toEqual({ cmd: 'scroll', delta: -2 });
   });
+  it('apagar la Pi no se dispara con un toque en la interfaz', () => {
+    const apagar = { pots: {}, buttons: { B1: 'pi.shutdown', B2: 'pi.restart' } };
+    expect(route({ control: 'B1', kind: 'button', event: 'press', simulated: false }, apagar)).toBeNull();
+    expect(route({ control: 'B1', kind: 'button', event: 'long', simulated: false }, apagar)).toBeNull();
+    expect(route({ control: 'B2', kind: 'button', event: 'press', simulated: false }, apagar)).toBeNull();
+  });
   it('sin asignación no hace nada', () => {
     expect(route({ control: 'P1', kind: 'pot', value: 3, simulated: false }, null)).toBeNull();
+  });
+  it('el brillo de la tira no hace nada mientras no está conectada', () => {
+    const leds = { pots: { P1: 'ui.led_brightness' }, buttons: {} };
+    expect(route({ control: 'P1', kind: 'pot', value: 400, simulated: false }, leds)).toBeNull();
   });
 });

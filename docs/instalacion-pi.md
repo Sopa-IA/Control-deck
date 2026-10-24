@@ -1,0 +1,111 @@
+# Instalar Orbit OS en la Raspberry Pi
+
+Un paso por línea. La Pi 4 arranca directo a Orbit OS, a pantalla completa, sin enseñar el escritorio de Raspberry. LightDM entra en la sesión `orbit`: labwc con su propia configuración, fondo negro, sin la barra `wf-panel-pi` ni el fondo de `pcmanfm`. La vista del HP por defecto es la **integrada**: una barra de Orbit OS y, debajo, Moonlight sin bordes. La pantalla completa es la alternativa.
+
+Moonlight es un programa aparte. No se puede meter dentro de la página web: el compositor coloca su ventana encima del marco.
+
+El arranque del kiosco se ha visto en la Pi de Miguel. Moonlight contra el HP, no.
+
+## Grabar y ver Orbit OS
+
+1. Abre Raspberry Pi Imager en el PC.
+2. Elige Raspberry Pi OS de 64 bits **con escritorio** (Bookworm o Trixie, el actual, con labwc).
+3. En las opciones de Imager pon el usuario, la contraseña y el Wi-Fi, y activa SSH.
+4. Graba la microSD.
+5. Enciende la Pi con esa tarjeta y espera a que tenga Wi-Fi. El cable al HP puede esperar.
+6. Entra por SSH con el usuario que pusiste en Imager.
+7. Clona la rama del PR #9, que aún no está fusionada: `git clone -b cursor/bandeja-v2-modular-6d15 https://github.com/Sopa-IA/Control-deck.git`.
+8. Entra en la carpeta: `cd Control-deck`.
+9. Ejecuta una vez, con internet: `sudo bash scripts/instalar-pi.sh`. Si dice que no está `/dev/serial/by-path`, el Nano no estaba enchufado: no es un fallo y el script sigue.
+10. Si el script termina bien, reinicia: `sudo reboot`.
+11. Al encender, LightDM abre la sesión `orbit`. Lo primero es un fondo negro y, en cuanto `orbitd` responde, Orbit OS. No se ve la barra ni el fondo del escritorio. El arcoíris y los textos del kernel quedan ocultos (`disable_splash=1` y `quiet` en el arranque), en la medida de lo posible.
+
+El script se puede repetir. La segunda vez no cambia los tokens de `.env`. eth0 queda en `10.0.0.2/24`, sin puerta de enlace, sin DNS y sin ser la ruta por defecto. No borra ni modifica el Wi-Fi de Imager: no reinstala NetworkManager si ya está, no recarga perfiles y no aplica netplan. El perfil de eth0 entra al reiniciar. El usuario es el de Imager, el que ha lanzado `sudo`: no tiene que llamarse `pi`. `LXDE-pi` y `rpd-labwc` son sesiones del escritorio de Raspberry Pi OS, no un usuario. La de Orbit es `orbit` (`/usr/share/wayland-sessions/orbit.desktop`).
+
+## Cable interno y emparejar
+
+12. Conecta el Ethernet interno: la Pi queda en `10.0.0.2/24` y el HP en `10.0.0.1`, sin puerta de enlace por ese cable.
+13. En el HP instala Sunshine y abre `https://10.0.0.1:47990` desde el navegador de la Pi. El certificado es el de Sunshine: hay que aceptarlo.
+14. Comprueba que existe la aplicación `Desktop`. Si no está, créala como el escritorio de Windows.
+15. En la Pi, fuera del kiosco, empareja: `moonlight-qt pair 10.0.0.1`.
+16. Escribe en Sunshine el PIN de cuatro cifras que muestra Moonlight.
+17. Hasta que ese emparejamiento no esté hecho, Cambiar sistema no abre el HP y Orbit OS lo dice en la pantalla. Moonlight lo anota en `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, sección `[hosts]`: la clave es `srvcert`, no `pairState`. Para comprobarlo sin enseñar el certificado, desde la carpeta del repo: `.venv/bin/python -c 'from orbitd.video import moonlight_paired; print("emparejado" if moonlight_paired("10.0.0.1") else "sin emparejar")'`. Tiene que imprimir `emparejado`. Después, `sudo systemctl restart orbitd` para que Sistemas lo vea.
+
+## Resoluciones, para que no se vea borroso
+
+18. La vista integrada pide un stream de **1920×1040 a 60 fps** (la MSI es 1920×1080 y la barra de Orbit OS mide 40 px).
+19. En Windows, pon la pantalla del HP a 1920×1040 y 60 Hz antes de usar esa vista.
+20. Si abres la barra lateral (48 px), el hueco pasa a **1872×1040** y Moonlight se vuelve a abrir a ese tamaño.
+21. La pantalla completa pide **1920×1080 a 60 fps**. Para verla nítida, Windows tiene que estar a 1920×1080 y 60 Hz.
+22. Moonlight pide el tamaño. Si Windows no coincide, la imagen se escala. Para que se vea nítida, las dos cifras tienen que ser las mismas.
+23. Si Sunshine trae pantalla virtual, crea ahí esa resolución y selecciónala.
+24. Si Windows sin monitor no ofrece 1920×1080, pon un **enchufe HDMI falso** en el HDMI del HP.
+25. Muchos enchufes anuncian 1920×1080. Para 1920×1040, crea esa resolución en Windows y déjala elegida.
+
+## Cómo se cambia de vista y cómo se vuelve
+
+26. El botón físico del Nano asignado a Cambiar sistema (B2) abre Moonlight desde Orbit OS.
+27. Con Moonlight abierto, el mismo botón lo cierra y devuelve Orbit OS al frente.
+28. El botón «Pantalla completa» y **Ctrl+Alt+Mayús+X** cambian entre la vista integrada y la completa. Mayús es la tecla Shift.
+29. **Ctrl+Alt+Mayús+Q** cierra Moonlight (atajo del propio programa) y se vuelve a Orbit OS.
+30. En la vista integrada el ratón no queda capturado: pasa de la barra de Orbit a Windows. El teclado va a Windows cuando esa ventana tiene el foco.
+
+## Salir del kiosco para mantenimiento
+
+31. **Ctrl+Alt+T** pausa Chromium y abre una terminal sobre el fondo negro. No hace falta el escritorio: en esa sesión no hay barra.
+32. Para volver al kiosco: `rm /run/orbit/kiosk-pausa`. Un reinicio también vuelve: la pausa está en `/run` y no se guarda.
+33. **Ctrl+Alt+Q** cierra labwc. El autologin vuelve a entrar en la sesión `orbit`.
+34. SSH sigue activo con el usuario y el Wi-Fi de Imager. No hace falta salir del kiosco para usarlo.
+35. Para el escritorio normal de Raspberry Pi: `sudo orbit-escritorio` y `sudo reboot`. Vuelve la sesión `rpd-labwc` o, si esa no está, `LXDE-pi-labwc`, con su barra y su fondo. Para regresar a Orbit OS: `sudo bash scripts/instalar-pi.sh` y `sudo reboot`.
+36. El servicio se llama `orbitd`. Pararlo: `sudo systemctl stop orbitd`. Arrancarlo: `sudo systemctl start orbitd`.
+
+## Teclado Bluetooth
+
+37. Por SSH, con el teclado en modo de emparejamiento y sin estar conectado a otro aparato (un PC o un teléfono: si sigue unido, la Pi no lo ve). Entra en `bluetoothctl` y, en este orden: `power on`, `agent on`, `default-agent`, `scan on`. Cuando salga el teclado, anota su dirección y sigue: `pair AA:BB:CC:DD:EE:FF`, `trust AA:BB:CC:DD:EE:FF`, `connect AA:BB:CC:DD:EE:FF`, `scan off`, `exit`. En cada arranque, `orbit-bt-unblock.service` (después de `bluetooth.service` y de `systemd-rfkill.service`) ejecuta `rfkill unblock bluetooth` y `bluetoothctl power on`: sin el escritorio, hci0 volvía a salir bloqueado. En `/etc/bluetooth/main.conf` quedan `AutoEnable=true`, `ReconnectAttempts=7` y `ReconnectIntervals=1, 2, 4, 8, 16, 32, 64`. En `/etc/bluetooth/input.conf` queda `ClassicBondedOnly=false`, para teclados baratos. Se puede repetir el instalador. Si no hay Bluetooth, no cambia nada y el script sigue. Si `power on` responde `org.bluez.Error.Failed`, el bloqueo sigue: `sudo rfkill unblock bluetooth` y otra vez `power on`.
+38. `orbit-bt-autoconnect.service` arranca después de ese desbloqueo. Durante unos 3 minutos intenta `bluetoothctl connect` a menudo; luego cada 30 s mientras no haya un teclado conectado, y más tarde se espacia. Recorre `bluetoothctl devices Trusted` y, si BlueZ no acepta ese filtro, `devices Paired`. Los intentos quedan en `journalctl -u orbit-bt-autoconnect`. Si el journal dice Page Timeout, el teclado no contesta: pulsa una tecla, o apágalo y enciéndelo. Si dice Permission denied, hay que volver a emparejarlo: `remove AA:BB:CC:DD:EE:FF`, `scan on`, `pair`, `trust`, `connect`.
+
+## Apagar y reiniciar desde Orbit OS
+
+39. En Sistemas, o en el menú de apagado, Apagar Pi y Reiniciar Pi piden confirmación en pantalla.
+40. Al confirmar, la Pi se apaga o se reinicia en el acto. No hay 60 segundos para cancelar. Eso de los 60 segundos es solo del HP.
+41. El script deja en `/etc/sudoers.d/orbit-power` dos órdenes y nada más: `systemctl poweroff` y `systemctl reboot`, sin contraseña, para el usuario de orbitd.
+42. En el simulador del PC esas acciones no apagan la máquina.
+43. Si asignas Apagar la Pi o Reiniciar la Pi a un botón del Nano, un toque corto no hace nada. Hay que mantenerlo pulsado: entonces sale el mismo diálogo. Sin la pantalla de Orbit OS abierta, no se apaga.
+
+## Qué no hace esta instalación
+
+44. No empareja Sunshine: el PIN lo escribe Miguel. Tampoco empareja el teclado: el emparejamiento es el paso 37. Al arrancar sí intenta conectar los que ya tienen trust (paso 38).
+45. En la Pi de Miguel, con la sesión del escritorio, Orbit OS se veía tras unos segundos de barra y fondo. La burbuja de traducir ya no sale. Esta pasada cambia el autologin a la sesión `orbit`. Aún no se ha vuelto a arrancar así, ni Moonlight contra el HP. El script también se ha ejecutado dos veces, sin errores, en un Debian Bookworm arm64 con qemu-user. No es la imagen de Raspberry Pi OS: en esa imagen labwc ya viene, y en Debian Bookworm el script solo deja escrito que el paquete no está. La segunda pasada no cambió los tokens de `.env`. qemu-user no honra el setuid de `sudo`, así que la prueba se lanzó como root con el usuario de Imager en `SUDO_USER`. No se ha llamado a `systemctl poweroff` ni a `reboot`.
+46. hp-agent se instala en el HP con una línea de PowerShell como administrador. El detalle está en `docs/instalacion-hp.md`. Lee `ORBIT_HP_TOKEN` del `.env` de la raíz del clon (en esta Pi, `/home/orbit/Control-deck/.env`) por ssh y no lo muestra. La copia de `/etc/orbit/orbitd.env` es de root. Conecta a `ws://10.0.0.2:8765/ws`. La tarea arranca en vivo (`--live`): telemetría, y bloquear, reiniciar y apagar con 60 s. `-DryRun` deja solo la telemetría. La interfaz del kiosco no pide token porque entra por localhost.
+47. Para programar el Nano de prácticas desde Orbit OS, sigue `docs/ardu-lab.md`. Hay que anotar antes el puerto USB físico. El de mandos no se programa desde ahí. Con los Nano enchufados, `sudo bash scripts/detectar-nanos.sh` lista `/dev/serial/by-path` y escribe `/var/lib/orbit/arduino-puertos.json`. Si la carpeta no existe, enchufa la placa y vuelve a lanzarlo.
+
+## Si falta el Wi-Fi
+
+En Raspberry Pi OS reciente, Imager guarda el Wi-Fi con cloud-init en `/etc/netplan` (y en `network-config` de la partición de arranque). NetworkManager, al regenerar, vacía los YAML de `/etc/netplan`. El fichero a mano `orbit-enlace-hp.nmconnection` no entra en ese vaciado, así que `nmcli` puede quedarse solo con ese perfil y con `lo`, y `wlan0` en disconnected. `sudo netplan apply` avisa de los permisos de `/lib/netplan/00-network-manager-all.yaml` y no recupera el Wi-Fi. El instalador ya no dispara esa regeneración.
+
+Estas órdenes no imprimen la contraseña. No pegues la salida de un YAML ni de un `.nmconnection`.
+
+```bash
+nmcli -t -f DEVICE,STATE,CONNECTION device status
+nmcli -t -f NAME,TYPE connection show
+ip -4 route
+ip -4 addr show eth0
+sudo grep -l wifis: /etc/netplan/*.yaml /boot/firmware/network-config /boot/network-config 2>/dev/null || true
+sudo ls -1 /etc/NetworkManager/system-connections /root/NetworkManager.bak/system-connections 2>/dev/null || true
+```
+
+`wlan0` tiene que salir `connected`. La ruta por defecto no debe decir `dev eth0`. eth0 es `10.0.0.2/24`. Si `grep -l` no encuentra `wifis:` y no hay copia en `/root/NetworkManager.bak`, el perfil ya no está: se vuelve a crear en la Pi con `sudo nmtui`, escribiendo ahí la clave del Wi-Fi. No hace falta anotarla en el repo.
+
+## Primera vez que encienda la Pi
+
+1. SSH entra con el usuario de Imager.
+2. `systemctl status orbitd` está activo y la pantalla muestra Orbit OS.
+3. El Wi-Fi sigue teniendo internet.
+4. `ip route` no muestra una puerta por eth0. eth0 es `10.0.0.2/24`.
+5. `grep dialout /etc/group` incluye al usuario de Imager.
+6. Apagar desde Orbit OS pide confirmación y, tras ella, la Pi se apaga.
+7. Un toque corto del botón de apagar no apaga. Mantenerlo abre la confirmación.
+8. Moonlight aún hay que emparejarlo una vez.
+9. Ctrl+Alt+T sale del kiosco y abre una terminal. `rm /run/orbit/kiosk-pausa` vuelve. Un reinicio también vuelve. `sudo orbit-escritorio` y un reinicio devuelven el escritorio.
+10. En el PC, el simulador no apaga ese PC.
+11. Tras reiniciar, `rfkill list` no muestra Soft blocked. `journalctl -u orbit-bt-autoconnect` muestra los intentos. Si dice Page Timeout, pulsa una tecla o apaga y enciende el teclado. Si dice Permission denied, vuelve a emparejarlo.

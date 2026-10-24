@@ -70,7 +70,7 @@ def principled(nombre, color, rough=0.5, metal=0.0, spec=0.5, coat=0.0, bevel=0.
     return m, nt, b
 
 def petg(nombre, color, rough=0.62, capa=0.2, fuerza=0.6):
-    """PETG negro mate con textura de capas (bandas en Z de 'capa' mm) + bevel de aristas."""
+    """PLA+ negro mate con textura de capas (bandas en Z de 'capa' mm) + bevel de aristas."""
     m, nt, b = principled(nombre, color, rough=rough, spec=0.45)
     tc = nt.nodes.new("ShaderNodeTexCoord")
     wave = nt.nodes.new("ShaderNodeTexWave"); wave.wave_type = 'BANDS'; wave.bands_direction = 'Z'
@@ -90,10 +90,10 @@ def petg(nombre, color, rough=0.62, capa=0.2, fuerza=0.6):
     return m
 
 M = {}
-M["petg"] = petg("PETG negro mate", (0.018, 0.018, 0.02))
-M["petg_bisel"] = petg("PETG negro bisel", (0.012, 0.012, 0.013), rough=0.5)
-M["petg_int"] = petg("PETG gris oscuro (piezas internas)", (0.035, 0.035, 0.038))
-M["pomo"] = petg("PETG pomo", (0.02, 0.02, 0.022), rough=0.55, capa=0.16)
+M["petg"] = petg("PLA+ negro mate", (0.018, 0.018, 0.02))
+M["petg_bisel"] = petg("PLA+ negro mate bisel", (0.012, 0.012, 0.013), rough=0.5)
+M["petg_int"] = petg("PLA+ negro mate (piezas internas)", (0.035, 0.035, 0.038))
+M["pomo"] = petg("PLA+ negro mate (pomo)", (0.02, 0.02, 0.022), rough=0.55, capa=0.16)
 AMB = (1.0, 0.50, 0.08)
 M["ambar_led"], _, _ = principled("Guía de luz ámbar (LED encendido)", (1.0, 0.6, 0.2), rough=0.35, emis=AMB, emis_str=14)
 M["ambar_suave"], _, _ = principled("Ámbar suave", (1.0, 0.6, 0.2), rough=0.4, emis=AMB, emis_str=4)
@@ -188,9 +188,9 @@ importar_stl(S("io_frontal"), M["plastico_negro"], "comp", "I/O frontal HP")
 importar_stl(S("boton_hp"), M["aluminio"], "comp", "Pulsador HP")
 importar_stl(S("cables"), M["goma"], "comp", "Cables", ang=60)
 importar_stl(S("pies"), M["goma"], "pies")
-importar_stl(S("captura_cuerpo"), M["monitor"], "comp", "Capturadora")
-importar_stl(S("captura_clavija"), M["plastico_negro"], "comp", "Clavija HDMI capturadora")
-res = importar_stl(S("captura_reserva"), M["reserva"], "reserva", "Reserva capturadora")
+importar_stl(S("captura_cuerpo"), M["monitor"], "comp", "Cuerpo")
+importar_stl(S("captura_clavija"), M["plastico_negro"], "comp", "Clavija HDMI")
+res = importar_stl(S("captura_reserva"), M["reserva"], "reserva", "Reserva")
 
 # pantalla: área activa del MSI en el sistema de la pendiente (UV = imagen completa)
 def pantalla():

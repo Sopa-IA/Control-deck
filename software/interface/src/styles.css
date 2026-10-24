@@ -8,6 +8,7 @@
   --touch: 56px;
 }
 * { box-sizing: border-box; }
+html.cursor-idle, html.cursor-idle * { cursor: none !important; }
 html, body, #root { height: 100%; margin: 0; }
 body {
   background: radial-gradient(1200px 700px at 58% 40%, #1a1008 0%, #0a0909 45%, var(--bg) 100%);
@@ -32,6 +33,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .nav-item:hover { background: rgba(255, 255, 255, 0.03); }
 .nav-item.active { color: #ffe2b8; border-color: rgba(255, 165, 58, 0.45); background: linear-gradient(90deg, rgba(255, 140, 0, 0.18), rgba(255, 140, 0, 0.03));
   box-shadow: inset 3px 0 0 var(--amber), 0 0 24px rgba(255, 140, 0, 0.08); }
+.nav-item.as-written, .topbar h1.as-written { text-transform: none; letter-spacing: 0.06em; }
 .nav-icon { width: 22px; text-align: center; color: var(--amber); font-size: 18px; }
 .sidebar-foot { margin-top: auto; font-size: 13px; display: flex; flex-direction: column; gap: 6px; padding: 0 8px; }
 
@@ -51,6 +53,8 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .sim-tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em;
   color: #1a1200; background: var(--sim); vertical-align: middle; }
 .offline-badge { padding: 8px 14px; border-radius: 999px; font-size: 13px; letter-spacing: 0.12em; color: #ffd9cf; background: rgba(255, 90, 60, 0.18); border: 1px solid rgba(255,90,60,.5); }
+.busy-badge { padding: 8px 14px; border-radius: 999px; font-size: 13px; letter-spacing: 0.08em; color: #1a0d00; background: #ffb347; }
+select:disabled, input:disabled { opacity: 0.45; }
 
 .content { padding: 24px 30px; overflow: auto; min-height: 0; }
 .footbar { display: flex; justify-content: center; align-items: center; font-size: 10px; letter-spacing: 0.5em; color: #6d655b; border-top: 1px solid var(--line); }
@@ -101,7 +105,7 @@ input[type="range"] { accent-color: var(--amber); width: 100%; height: 32px; }
 .inicio { display: grid; grid-template-columns: 360px 1fr 420px; gap: 24px; height: 100%; min-height: 0; }
 .inicio-left, .inicio-right { display: flex; flex-direction: column; gap: 18px; min-height: 0; }
 .inicio-center { position: relative; display: flex; align-items: flex-end; justify-content: center; min-height: 0; overflow: hidden; border-radius: 22px; }
-.planet { position: absolute; top: -2%; left: 50%; transform: translateX(-46%); width: min(100%, 860px); height: auto; opacity: 0.95; pointer-events: none; }
+.planet { position: absolute; top: -2%; left: 50%; transform: translateX(-46%); width: min(100%, 860px); height: auto; aspect-ratio: 1; display: block; opacity: 0.95; pointer-events: none; }
 .hero { position: relative; z-index: 1; text-align: left; width: 100%; padding: 0 22px 18px; }
 .hero-tag { font-size: 13px; letter-spacing: 0.5em; color: #d6c7b0; border-top: 1px solid rgba(255, 165, 58, 0.25); padding-top: 14px; margin-bottom: 10px; }
 .clock-big { display: block; font-size: 112px; line-height: 1; font-weight: 200; letter-spacing: 0.02em; color: #fff3e2; text-shadow: 0 0 40px rgba(255, 150, 30, 0.25); }
@@ -179,7 +183,61 @@ table.inv { width: 100%; border-collapse: collapse; font-size: 15px; }
 .modal h2 { margin: 0 0 12px; font-weight: 500; letter-spacing: 0.06em; color: #ffe2b8; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
 .steps { line-height: 1.7; }
+.callout { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 90, 60, 0.55); background: rgba(255, 90, 60, 0.1); color: #ffd0c4; }
+
+.marco { position: fixed; inset: 0; background: #07070a; color: var(--text); z-index: 5; }
+.marco-bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #0c0b10; border-bottom: 1px solid rgba(255, 165, 58, 0.35); overflow: hidden; }
+.marco-clock { font-family: var(--mono); font-weight: 500; color: #ffe2b8; font-size: 13px; }
+.marco-stat { font-size: 12px; color: #d9d0c4; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.marco-vol { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
+.marco-vol input { width: 72px; accent-color: var(--amber); }
+.marco-gap { flex: 1; }
+.marco-simtag { font-size: 10px; letter-spacing: 0.12em; color: #1a0d00; background: var(--sim); border-radius: 6px; padding: 2px 5px; }
+.marco-btn { height: 28px; min-height: 28px; padding: 0 8px; border-radius: 8px; border: 1px solid rgba(255, 165, 58, 0.35); background: transparent; color: #ffe2b8; font-size: 12px; cursor: pointer; }
+.marco-btn-amber { background: linear-gradient(180deg, #ffb347, #ff8a00); color: #1a0d00; border: none; font-weight: 600; }
+.marco-side { position: absolute; top: 40px; left: 0; bottom: 0; width: 48px; display: flex; flex-direction: column; gap: 8px; align-items: center; padding-top: 8px; background: #0c0b10; border-right: 1px solid rgba(255, 165, 58, 0.35); z-index: 2; }
+.marco-hueco { position: absolute; overflow: hidden; }
+.marco-fake { height: 100%; display: grid; place-content: center; gap: 8px; padding: 28px; text-align: center;
+  background: repeating-linear-gradient(-45deg, #120e09, #120e09 14px, #1a140c 14px, #1a140c 28px); border: 1px dashed rgba(255, 165, 58, 0.45); }
+.marco-fake b { letter-spacing: 0.14em; color: #ffe2b8; }
+.marco-fake p { margin: 0; max-width: 640px; color: #d9d0c4; }
+.marco-warn { color: #ffd0c4 !important; }
 .dimmer { position: fixed; inset: 0; background: #000; pointer-events: none; z-index: 30; transition: opacity 0.3s; }
+
+.content:has(.ardu) { display: flex; flex-direction: column; overflow: hidden; }
+.ardu { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.ardu-out { flex: none; height: 108px; }
+.ardu-sim { padding: 7px 12px; border-radius: 10px; font-size: 13px; letter-spacing: 0.04em; color: #1a1200; font-weight: 700;
+  background: repeating-linear-gradient(-45deg, var(--sim) 0 10px, #ffb800 10px 20px); }
+.ardu-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ardu-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.ardu-tab { min-height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12); background: transparent; color: #d9d0c4; cursor: pointer; font-size: 13px; }
+.ardu-tab.on { border-color: rgba(255, 165, 58, 0.7); color: #ffe2b8; background: rgba(255, 140, 0, 0.12); }
+.ardu-baud { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.ardu-baud select { min-height: 32px; border-radius: 8px; border: 1px solid rgba(255, 165, 58, 0.35); background: #121117; color: var(--text); padding: 0 8px; }
+.ardu-pins { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px 6px; }
+.ardu-pin { display: flex; flex-direction: column; align-items: center; gap: 2px; font-family: var(--mono); font-size: 11px; color: #e7dccb; }
+.ardu-pin i { width: 9px; height: 9px; border-radius: 50%; background: #1a140c; border: 1px solid #ffa53a; }
+.ardu-pin small { color: var(--amber); font-size: 9px; letter-spacing: 0.04em; }
+.ardu-pin.gnd { color: #8d867c; } .ardu-pin.gnd i { border-color: #8d867c; }
+.ardu-pin.pwr { color: #ffb0a0; } .ardu-pin.pwr i { border-color: #ff5a3c; }
+.ardu-pin.oled { color: #ffa53a; }
+.ardu-pin-note { margin: 0; font-size: 12.5px; }
+.ardu-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 12px; min-height: 0; }
+.ardu-editor { min-height: 0; height: 100%; border: 1px solid rgba(255, 165, 58, 0.28); border-radius: 12px; overflow: hidden; background: #0c0b10; }
+.ardu-cm, .ardu-cm .cm-editor { height: 100%; }
+.ardu-fallback { width: 100%; height: 100%; min-height: 220px; border: 0; resize: none; background: #0c0b10; color: #ece6dc; font-family: var(--mono); padding: 12px; }
+.ardu-side { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow: auto; }
+.ardu-card { padding: 10px 12px; }
+.ardu-card .panel-head { margin-bottom: 6px; }
+.ardu-card p { margin: 0 0 6px; font-size: 13px; }
+.ardu-block { color: #ffd0c4; }
+.ardu-port-list { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: 12px; color: #d9d0c4; }
+.ardu-serial { margin: 0; max-height: 88px; overflow: auto; font-family: var(--mono); font-size: 12.5px; color: #ffe2b8; white-space: pre-wrap; }
+.ardu-graph { width: 100%; height: 110px; display: block; border-radius: 8px; }
+.ardu-legend { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+.ardu-out { margin: 0; overflow: auto; padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(255, 165, 58, 0.2); background: #100e14; font-family: var(--mono); font-size: 12.5px; color: #d9d0c4; white-space: pre-wrap; }
+.ardu-err { color: #ff9b85; }
 
 /* ---------- 1920×720 (pantalla panorámica baja) ---------- */
 @media (max-height: 820px) {

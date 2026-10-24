@@ -9,7 +9,22 @@ def test_commands_windows_and_linux():
     assert actions.command_for("hp.shutdown", {}, "Linux", {}) == ["shutdown", "-h", "+1"]
     assert actions.command_for("hp.shutdown_cancel", {}, "Windows", {}) == ["shutdown", "/a"]
     assert actions.command_for("hp.volume_set", {"level": 30}, "Linux", {})[-1] == "30%"
-    assert actions.command_for("hp.volume_set", {"level": 30}, "Windows", {}) is None  # PENDIENTE
+    # En Windows no hay una orden de consola: el volumen va por el mezclador.
+    assert actions.command_for("hp.volume_set", {"level": 30}, "Windows", {}) is None
+
+
+def test_reproducir_en_windows_pulsa_la_tecla_y_en_seco_no(monkeypatch):
+    pulsada = []
+
+    def pulsa():
+        pulsada.append(1)
+
+    monkeypatch.setattr("hp_agent.media.pulsar_play_pausa", pulsa)
+    seco = actions.run_action("hp.media_play_pause", {}, live=False, apps={}, system="Windows")
+    assert seco["ok"] and seco["dry_run"] and seco["message"].startswith("Preparado") and pulsada == []
+    vivo = actions.run_action("hp.media_play_pause", {}, live=True, apps={}, system="Windows")
+    assert vivo["ok"] and not vivo["dry_run"] and "Reproducción" in vivo["message"] and pulsada == [1]
+    assert actions.command_for("hp.media_play_pause", {}, "Linux", {}) == ["playerctl", "play-pause"]
 
 
 def test_dry_run_never_executes(monkeypatch):
@@ -19,7 +34,7 @@ def test_dry_run_never_executes(monkeypatch):
     monkeypatch.setattr(subprocess, "Popen", boom)
     for act, params in [("hp.shutdown", {}), ("hp.lock_screen", {}), ("hp.restart", {})]:
         r = actions.run_action(act, params, live=False, apps={}, system="Windows")
-        assert r["ok"] and r["dry_run"] and r["message"].startswith("DRY-RUN")
+        assert r["ok"] and r["dry_run"] and r["message"].startswith("Preparado")
 
 
 def test_rejects_unlisted_and_unknown_app():
@@ -40,6 +55,300 @@ def test_live_uses_argument_list(monkeypatch):
     monkeypatch.setattr(subprocess, "run", fake_run)
     r = actions.run_action("hp.shutdown", {}, live=True, apps={}, system="Linux")
     assert r["ok"] and not r["dry_run"] and seen == {"cmd": ["shutdown", "-h", "+1"], "shell": False}
+
+
+def test_temperatura_ausente_no_rompe_la_telemetria(monkeypatch):
+    import hp_agent.agent as agent
+
+    def boom(*_a, **_k):
+        raise NotImplementedError("sensors_temperatures")
+
+    monkeypatch.setattr(agent.psutil, "sensors_temperatures", boom)
+    data = agent.telemetry()
+    assert data["temp_c"] is None
+    assert data["host"] == "hp"
+    assert isinstance(data["cpu_pct"], float)
+    assert data["disk_pct"] >= 0
+
+
+def test_modelo_pendiente_si_windows_no_tiene_registro(monkeypatch):
+    import hp_agent.agent as agent
+
+    monkeypatch.setattr(agent.platform, "system", lambda: "Windows")
+    # En Linux no existe winreg: el agente no puede morir por eso.
+    assert agent.machine_model() == "HP"
+
+
+def test_config_live_desde_el_toml(tmp_path):
+    f = tmp_path / "a.toml"
+    f.write_text('hub_url = "ws://10.0.0.2:8765/ws"\ntoken = "t"\nlive = true\n', encoding="utf-8")
+    assert config.load(f, env={}).live is True
+    f.write_text('token = "t"\nlive = false\n', encoding="utf-8")
+    assert config.load(f, env={}).live is False
+    f.write_text('token = "t"\nlive = "si"\n', encoding="utf-8")
+    assert config.load(f, env={}).live is True
+    f.write_text('token = "t"\n', encoding="utf-8")
+    assert config.load(f, env={}).live is False
+
+
+def test_cli_live_solo_enciende(tmp_path, monkeypatch):
+    import logging
+
+    f = tmp_path / "a.toml"
+    f.write_text('token = "token-de-prueba-cli-0123456789"\nlive = false\n', encoding="utf-8")
+    visto = {}
+
+    async def falso(cfg):
+        visto["live"] = cfg.live
+
+    monkeypatch.setattr("hp_agent.__main__.run_forever", falso)
+    from hp_agent.__main__ import _Redact, main
+
+    try:
+        main(["--config", str(f)])
+        assert visto["live"] is False
+        main(["--config", str(f), "--live"])
+        assert visto["live"] is True
+    finally:
+        raiz = logging.getLogger()
+        raiz.filters = [flt for flt in raiz.filters if not isinstance(flt, _Redact)]
+
+
+def test_el_log_no_repite_el_token():
+    import logging
+
+    from hp_agent.__main__ import _Redact
+
+    registro = logging.getLogger("test.hp.redact")
+    registro.addFilter(_Redact("secreto-largo-de-prueba"))
+    registro.setLevel(logging.INFO)
+    encontrado = []
+
+    class _Coge(logging.Handler):
+        def emit(self, record):
+            encontrado.append(record.getMessage())
+
+    registro.addHandler(_Coge())
+    try:
+        registro.info("conectado token %s", "secreto-largo-de-prueba")
+    finally:
+        registro.handlers.clear()
+        registro.filters.clear()
+    assert encontrado == ["conectado token ***"]
+
+
+class _Contadores:
+    def __init__(self, sent, recv):
+        self.bytes_sent = sent
+        self.bytes_recv = recv
+
+
+def _fija_red(monkeypatch, muestras, tiempos):
+    import hp_agent.agent as agent
+
+    agent._last_net = None
+    cursor = {"i": 0}
+
+    def falso(*, pernic=False):
+        i = min(cursor["i"], len(muestras) - 1)
+        cursor["i"] += 1
+        return muestras[i]
+
+    reloj = {"i": 0}
+
+    def ahora():
+        i = min(reloj["i"], len(tiempos) - 1)
+        reloj["i"] += 1
+        return tiempos[i]
+
+    monkeypatch.setattr(agent.psutil, "net_io_counters", falso)
+    monkeypatch.setattr(agent.time, "monotonic", ahora)
+    return agent
+
+
+def test_la_red_suma_wifi_y_ethernet_y_omite_loopback_y_virtual(monkeypatch):
+    import orbit_protocol as P
+
+    # Wi-Fi RTL8723BE (internet) y Ethernet hacia la Pi. El virtual y el loopback no entran.
+    cero = {
+        "Wi-Fi": _Contadores(0, 0),
+        "Ethernet": _Contadores(0, 0),
+        "Loopback Pseudo-Interface 1": _Contadores(10**12, 10**12),
+        "Virtual Display Driver": _Contadores(10**12, 10**12),
+        "VirtualDisplayDriver": _Contadores(10**12, 10**12),
+    }
+    luego = {
+        "Wi-Fi": _Contadores(1000, 2000),
+        "Ethernet": _Contadores(3000, 5000),
+        "Loopback Pseudo-Interface 1": _Contadores(10**12 + 9_000_000, 10**12),
+        "Virtual Display Driver": _Contadores(10**12 + 8_000_000, 10**12),
+        "VirtualDisplayDriver": _Contadores(10**12 + 7_000_000, 10**12),
+    }
+    agent = _fija_red(monkeypatch, [cero, luego], [100.0, 102.0])
+    primera = agent.telemetry()
+    assert primera["net_up_kbps"] == 0.0
+    assert primera["net_down_kbps"] == 0.0
+    segunda = agent.telemetry()
+    # 4000 B enviados y 7000 B recibidos en 2 s → kb/s como en la Pi (× 8 / 1000 / dt).
+    assert segunda["net_up_kbps"] == 16.0
+    assert segunda["net_down_kbps"] == 28.0
+    P.make("telemetry", "hp", segunda)
+
+
+def test_si_no_hay_contadores_por_interfaz_usa_el_total(monkeypatch):
+    import hp_agent.agent as agent
+
+    agent._last_net = None
+    muestras = [_Contadores(0, 0), _Contadores(125_000, 250_000)]
+    i = {"n": 0}
+
+    def falso(*, pernic=False):
+        if pernic:
+            raise NotImplementedError("pernic")
+        v = muestras[min(i["n"], 1)]
+        i["n"] += 1
+        return v
+
+    tiempos = iter([10.0, 11.0])
+    monkeypatch.setattr(agent.psutil, "net_io_counters", falso)
+    monkeypatch.setattr(agent.time, "monotonic", lambda: next(tiempos))
+    assert agent.telemetry()["net_down_kbps"] == 0.0
+    dato = agent.telemetry()
+    # 125000 B y 250000 B en 1 s → kb/s como en la Pi (× 8 / 1000).
+    assert dato["net_up_kbps"] == 1000.0
+    assert dato["net_down_kbps"] == 2000.0
+
+
+def test_un_contador_que_retrocede_no_sale_negativo(monkeypatch):
+    agent = _fija_red(
+        monkeypatch,
+        [{"Ethernet": _Contadores(5_000, 9_000)}, {"Ethernet": _Contadores(100, 50)}],
+        [1.0, 3.0],
+    )
+    assert agent._net_kbps() == (0.0, 0.0)
+    assert agent._net_kbps() == (0.0, 0.0)
+
+
+class _Mezclador:
+    def __init__(self):
+        self.level = 10
+        self.muted = False
+        self.touched = False
+
+    def get(self):
+        return self.level, self.muted
+
+    def set_level(self, level):
+        self.touched = True
+        self.level = level
+
+    def set_muted(self, muted):
+        self.touched = True
+        self.muted = muted
+
+
+def test_volumen_windows_en_seco_no_toca_el_mezclador():
+    mix = _Mezclador()
+    r = actions.run_action("hp.volume_set", {"level": 30}, live=False, apps={}, system="Windows", volume_device=mix)
+    assert r["ok"] and r["dry_run"] and not mix.touched
+    assert "30%" in r["message"]
+
+
+def test_volumen_windows_pone_el_nivel_y_alterna_el_silencio():
+    mix = _Mezclador()
+    r = actions.run_action("hp.volume_set", {"level": 30}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert r["ok"] and not r["dry_run"] and mix.level == 30 and "volumen al 30%" in r["message"]
+    mute = actions.run_action("hp.volume_mute", {}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert mute["ok"] and mix.muted and "silenciado" in mute["message"]
+    otra = actions.run_action("hp.volume_mute", {}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert otra["ok"] and not mix.muted and "con sonido" in otra["message"]
+
+
+def test_bloquear_y_apagar_siguen_igual_en_windows():
+    assert actions.command_for("hp.lock_screen", {}, "Windows", {}) == ["rundll32.exe", "user32.dll,LockWorkStation"]
+    assert actions.command_for("hp.shutdown", {}, "Windows", {}) == ["shutdown", "/s", "/t", "60"]
+    assert actions.command_for("hp.shutdown_cancel", {}, "Windows", {}) == ["shutdown", "/a"]
+
+
+def test_en_windows_la_cpu_sale_de_librehardwaremonitor_y_la_red_sigue(monkeypatch):
+    import hp_agent.agent as agent
+
+    monkeypatch.setattr(agent.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(agent.psutil, "sensors_temperatures", lambda: {})
+    monkeypatch.setattr(agent, "windows_cpu_c", lambda: 47.5)
+    assert agent._cpu_temp_c() == 47.5
+    def _falla():
+        raise RuntimeError("wmi")
+
+    monkeypatch.setattr(agent, "windows_cpu_c", _falla)
+    assert agent._cpu_temp_c() is None
+
+
+def test_temperatura_acpi_descarta_valores_absurdos():
+    from hp_agent.temp import celsius_from_acpi_tenths
+
+    assert celsius_from_acpi_tenths("3230") == round(3230 / 10 - 273.15, 1)
+    assert celsius_from_acpi_tenths("0\n") is None
+    assert celsius_from_acpi_tenths("no hay sensor") is None
+
+
+def test_librehardwaremonitor_elige_el_paquete_de_la_cpu_y_no_la_gpu():
+    from hp_agent.temp import cpu_celsius_from_lhm_json, cpu_celsius_from_wmi, parse_celsius
+
+    arbol = {
+        "Children": [
+            {
+                "Text": "NVIDIA",
+                "HardwareId": "/gpu-nvidia/0",
+                "Children": [{
+                    "Text": "GPU Core",
+                    "Type": "Temperature",
+                    "SensorId": "/gpu-nvidia/0/temperature/0",
+                    "Value": "70,0 °C",
+                }],
+            },
+            {
+                "Text": "Intel Core",
+                "HardwareId": "/intelcpu/0",
+                "Children": [{
+                    "Text": "Temperatures",
+                    "Children": [
+                        {"Text": "CPU Core #1", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/1", "Value": "48.0 °C"},
+                        {"Text": "CPU Core #2", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/2", "Value": "61.0 °C"},
+                        {"Text": "CPU Package", "Type": "Temperature",
+                         "SensorId": "/intelcpu/0/temperature/0", "Value": "55,5 °C"},
+                    ],
+                }],
+            },
+        ]
+    }
+    assert cpu_celsius_from_lhm_json(arbol) == 55.5
+    assert parse_celsius("4 °C") is None
+    assert parse_celsius("200 °C") is None
+    assert cpu_celsius_from_wmi([
+        {"Name": "GPU Core", "Identifier": "/gpu-nvidia/0/temperature/0", "SensorType": "Temperature", "Value": 70},
+        {"Name": "CPU Core #1", "Identifier": "/intelcpu/0/temperature/1", "SensorType": "Temperature", "Value": 40},
+        {"Name": "CPU Core #2", "Identifier": "/intelcpu/0/temperature/2", "SensorType": "Temperature", "Value": 52.2},
+    ]) == 52.2
+    assert cpu_celsius_from_lhm_json({"Children": []}) is None
+
+
+def test_la_telemetria_vieja_sigue_valiendo_y_el_volumen_es_opcional(monkeypatch):
+    import orbit_protocol as P
+    import hp_agent.agent as agent
+
+    monkeypatch.setattr(agent, "read_default", lambda: None)
+    agent._last_net = None
+    sin = agent.telemetry()
+    assert "volume_pct" not in sin
+    P.make("telemetry", "hp", {k: sin[k] for k in ("host", "simulated", "cpu_pct", "mem_pct", "disk_pct", "uptime_s")})
+    monkeypatch.setattr(agent, "read_default", lambda: (35, True))
+    con = agent.telemetry()
+    assert con["volume_pct"] == 35 and con["volume_muted"] is True
+    assert con["cpu_pct"] >= 0 and con["disk_pct"] >= 0 and con["uptime_s"] >= 0
+    P.make("telemetry", "hp", con)
 
 
 def test_config_env_overrides_file(tmp_path):

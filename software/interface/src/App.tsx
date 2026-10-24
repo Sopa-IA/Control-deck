@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import type { Message } from '@shared/ts/protocol';
 import { OrbitProvider, useOrbit } from './data/OrbitContext';
 import { simulatedParts } from './data/state';
-import { Clock, OrbitLogo, SimBadge, StatusDot } from './components/ui';
+import { etiquetaConexion } from './lib/equipo';
+import { ORBIT_VERSION } from './version';
+import { Marco } from './components/Marco';
+import { Clock, OrbitLogo, SimBadge, StatusDot, useIdleCursor } from './components/ui';
 import { ConfirmDialog, OsdHelp, PowerMenu } from './components/Dialogs';
 import { route } from './lib/controlRouter';
 import { SECTIONS, nextSection, type SectionId } from './sections';
@@ -11,6 +14,7 @@ import { Sistemas } from './sections/Sistemas';
 import { Hardware } from './sections/Hardware';
 import { Controles } from './sections/Controles';
 import { Herramientas } from './sections/Herramientas';
+import { ArduLab } from './sections/ArduLab';
 import { Configuracion } from './sections/Configuracion';
 
 function initialSection(): SectionId {
@@ -19,6 +23,7 @@ function initialSection(): SectionId {
 }
 
 function Shell() {
+  useIdleCursor();
   const orbit = useOrbit();
   const { state, simulated } = orbit;
   const [section, setSection] = useState<SectionId>(initialSection);
@@ -29,7 +34,13 @@ function Shell() {
   const mappingRef = useRef(state.mapping);
   mappingRef.current = state.mapping;
 
-  // Controles físicos -> órdenes de interfaz (las hp.* las resuelve orbitd)
+  useEffect(() => orbit.onMessage((m: Message) => {
+    if (m.type !== 'action_result') return;
+    const p = (m as Message<'action_result'>).payload;
+    if (p.action === 'pi.restart_ui' && p.ok && !p.simulated && !p.dry_run) window.location.reload();
+  }), [orbit]);
+
+  // Controles físicos -> órdenes de interfaz (las del HP y de la Pi las resuelve el controlador)
   useEffect(() => orbit.onMessage((m: Message) => {
     if (m.type !== 'control_event') return;
     const ev = (m as Message<'control_event'>).payload;
@@ -54,7 +65,11 @@ function Shell() {
     }
   }), [orbit]);
 
-  const title = SECTIONS.find((s) => s.id === section)?.label ?? '';
+  const current = SECTIONS.find((s) => s.id === section);
+  const title = current?.label ?? '';
+  const forzarMarco = new URLSearchParams(window.location.search).get('vista') === 'integrado';
+  const hpAbierto = state.visible?.system === 'hp';
+  if (forzarMarco || hpAbierto) return <Marco />;
   return (
     <div className="app" data-section={section}>
       <aside className="sidebar">
@@ -64,22 +79,23 @@ function Shell() {
         </div>
         <nav aria-label="Secciones">
           {SECTIONS.map((s) => (
-            <button key={s.id} className={`nav-item ${s.id === section ? 'active' : ''}`} onClick={() => setSection(s.id)} aria-current={s.id === section ? 'page' : undefined}>
+            <button key={s.id} className={`nav-item ${s.id === section ? 'active' : ''} ${s.literal ? 'as-written' : ''}`} onClick={() => setSection(s.id)} aria-current={s.id === section ? 'page' : undefined}>
               <span className="nav-icon">{s.icon}</span>{s.label}
             </button>
           ))}
         </nav>
         <div className="sidebar-foot">
-          <div><StatusDot ok={state.conn === 'conectado'} sim={state.source === 'sim'} /> {state.source === 'sim' ? 'Simulador local' : `orbitd: ${state.conn}`}</div>
-          <div className="muted">v0.1.0 · prototipo</div>
+          <div><StatusDot ok={state.conn === 'conectado'} sim={state.source === 'sim'} /> {state.source === 'sim' ? 'Simulador' : etiquetaConexion(state.conn)}</div>
+          <div className="muted">v{ORBIT_VERSION}</div>
         </div>
       </aside>
       <div className="main-col">
         <header className="topbar">
-          <h1>{title}</h1>
+          <h1 className={current?.literal ? 'as-written' : undefined}>{title}</h1>
           <div className="topbar-right">
             {simulated && <SimBadge parts={simulatedParts(state)} />}
-            {state.source === 'ws' && state.conn !== 'conectado' && <div className="offline-badge">SIN CONEXIÓN CON ORBITD</div>}
+            {state.busyAction && !state.pendingConfirm && <div className="busy-badge" role="status">En curso</div>}
+            {state.source === 'ws' && state.conn !== 'conectado' && <div className="offline-badge">Sin conexión con el equipo</div>}
             <span className="tb-icons" aria-hidden>
               <span title="Red">◠</span><span title="Controles">◎</span>
             </span>
@@ -87,10 +103,11 @@ function Shell() {
           </div>
         </header>
         <main className="content">
-          {section === 'inicio' && <Inicio go={setSection} openOsd={() => setOsd(true)} openPower={() => setPower(true)} />}
+          {section === 'inicio' && <Inicio go={setSection} openPower={() => setPower(true)} />}
           {section === 'sistemas' && <Sistemas openOsd={() => setOsd(true)} />}
           {section === 'hardware' && <Hardware />}
           {section === 'controles' && <Controles />}
+          {section === 'ardulab' && <ArduLab />}
           {section === 'herramientas' && <Herramientas />}
           {section === 'configuracion' && <Configuracion brightness={brightness} setBrightness={setBrightness} />}
         </main>

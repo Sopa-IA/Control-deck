@@ -8,9 +8,21 @@ from typing import Optional
 
 import orbit_protocol as P
 
+from .volume import VolumeDevice, apply_windows
+
 log = logging.getLogger("hp_agent.actions")
 
-PENDIENTE = None  # marcador: sin implementación real en este sistema operativo
+SIN_ORDEN = None  # no hay una orden de consola: el volumen y la tecla de medios van aparte
+
+_HECHO = {
+    "hp.lock_screen": "Sesión bloqueada.",
+    "hp.shutdown": "El equipo se apagará en un minuto. Puedes anularlo.",
+    "hp.restart": "El equipo se reiniciará en un minuto. Puedes anularlo.",
+    "hp.shutdown_cancel": "Apagado anulado.",
+    "hp.open_app": "Aplicación abierta.",
+    "hp.ping": "El HP responde.",
+    "hp.media_play_pause": "Reproducción o pausa enviada.",
+}
 
 
 def command_for(action: str, params: dict, system: str, apps: dict[str, list[str]]) -> Optional[list[str]]:
@@ -23,11 +35,11 @@ def command_for(action: str, params: dict, system: str, apps: dict[str, list[str
     if action == "hp.lock_screen":
         return ["rundll32.exe", "user32.dll,LockWorkStation"] if win else ["loginctl", "lock-session"]
     if action == "hp.volume_set":
-        return PENDIENTE if win else ["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{int(params['level'])}%"]
+        return SIN_ORDEN if win else ["pactl", "set-sink-volume", "@DEFAULT_SINK@", f"{int(params['level'])}%"]
     if action == "hp.volume_mute":
-        return PENDIENTE if win else ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"]
+        return SIN_ORDEN if win else ["pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle"]
     if action == "hp.media_play_pause":
-        return PENDIENTE if win else ["playerctl", "play-pause"]
+        return SIN_ORDEN if win else ["playerctl", "play-pause"]
     if action == "hp.open_app":
         cmd = apps.get(params["app"])
         if not cmd or not isinstance(cmd, list) or not all(isinstance(x, str) for x in cmd):
@@ -43,33 +55,44 @@ def command_for(action: str, params: dict, system: str, apps: dict[str, list[str
 
 
 def run_action(action: str, params: dict, *, live: bool, apps: dict[str, list[str]],
-               system: Optional[str] = None) -> dict:
+               system: Optional[str] = None, volume_device: Optional[VolumeDevice] = None) -> dict:
     """Ejecuta (o simula en dry-run) una acción. Devuelve payload de action_result."""
     system = system or platform.system()
+    if system == "Windows" and action in ("hp.volume_set", "hp.volume_mute"):
+        try:
+            return apply_windows(action, params, live=live, device=volume_device)
+        except P.ProtocolError as exc:
+            return {"action": action, "ok": False, "dry_run": not live, "simulated": False, "message": exc.message}
+    if system == "Windows" and action == "hp.media_play_pause":
+        from .media import apply_play_pause
+        try:
+            return apply_play_pause(live=live)
+        except P.ProtocolError as exc:
+            return {"action": action, "ok": False, "dry_run": not live, "simulated": False, "message": exc.message}
     try:
         cmd = command_for(action, params, system, apps)
     except P.ProtocolError as exc:
         return {"action": action, "ok": False, "dry_run": not live, "simulated": False, "message": exc.message}
     if cmd == []:
-        return {"action": action, "ok": True, "dry_run": not live, "simulated": False, "message": "HP responde"}
+        return {"action": action, "ok": True, "dry_run": not live, "simulated": False, "message": "El HP responde."}
     if cmd is None:
         return {"action": action, "ok": False, "dry_run": not live, "simulated": False,
-                "message": f"{action}: sin implementación real en {system} (PENDIENTE)"}
+                "message": f"No está disponible en {system}."}
     pretty = " ".join(cmd)
     if not live:
         log.info("DRY-RUN %s -> %s", action, pretty)
-        return {"action": action, "ok": True, "dry_run": True, "simulated": False, "message": f"DRY-RUN: ejecutaría «{pretty}»"}
+        return {"action": action, "ok": True, "dry_run": True, "simulated": False,
+                "message": "Preparado. No se ha ejecutado."}
     try:
         if action == "hp.open_app":
             subprocess.Popen(cmd, shell=False)  # noqa: S603 - orden de la lista local
-            out = "lanzada"
         else:
             r = subprocess.run(cmd, shell=False, capture_output=True, text=True, timeout=10)  # noqa: S603
             if r.returncode != 0:
+                detalle = (r.stderr or r.stdout).strip()[:200]
                 return {"action": action, "ok": False, "dry_run": False, "simulated": False,
-                        "message": f"falló ({r.returncode}): {(r.stderr or r.stdout).strip()[:300]}"}
-            out = "ok"
-        extra = "; usa hp.shutdown_cancel para anular" if action in ("hp.shutdown", "hp.restart") else ""
-        return {"action": action, "ok": True, "dry_run": False, "simulated": False, "message": f"{out}: «{pretty}»{extra}"}
+                        "message": f"No se ha podido.{(' ' + detalle) if detalle else ''}"}
+        return {"action": action, "ok": True, "dry_run": False, "simulated": False,
+                "message": _HECHO.get(action, "Hecho.")}
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"action": action, "ok": False, "dry_run": False, "simulated": False, "message": f"error: {exc}"[:500]}

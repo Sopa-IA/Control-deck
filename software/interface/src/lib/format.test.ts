@@ -14,6 +14,7 @@ describe('format', () => {
     expect(formatUptime(2 * 86400 + 5 * 3600)).toBe('2 d 5 h');
     expect(formatUptime(undefined)).toBe('—');
     expect(formatUptime(-1)).toBe('—');
+    expect(formatUptime(1_794_000_000)).toBe('—');
   });
   it('porcentajes, temperatura y memoria', () => {
     expect(formatPct(12.6)).toBe('13%');
@@ -34,9 +35,9 @@ describe('format', () => {
     expect(potToPct(512)).toBe(50);
   });
   it('nombre del modo de cambio de sistema', () => {
-    expect(videoModeLabel('remoto')).toBe('remoto');
+    expect(videoModeLabel('remoto')).toBe('Moonlight');
     expect(videoModeLabel('ddc')).toBe('DDC/CI');
-    expect(videoModeLabel('captura')).toBe('capturadora');
+    expect(videoModeLabel('captura')).toBe('vídeo');
     expect(videoModeLabel(undefined)).toBe('desconocido');
   });
 });

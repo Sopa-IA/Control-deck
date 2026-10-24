@@ -3,7 +3,8 @@
 // Uso: openscad -D 'parte="carcasa"' -D 'ix=0' -D 'iy=0' -o x.stl partes.scad
 include <piezas.scad>
 
-parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | soporte_arduino | soporte_disco | pletina | riel | carro_nano | carro_esp | carro_proto
+parte = "carcasa";   // carcasa | base | bisel | bandeja | guia | pomo | anillo | grapa | soporte_arduino | soporte_disco | pletina | riel | tapa_pi | placa_io_hp | prueba_placa_io_hp | marco_io_frontal | placa_puertos_pi | panel_pines | boton_encendido | soporte_boton | prueba_boton
+// OBSOLETO, no imprimir: carro_nano | carro_esp | carro_proto | retenedor_nano (bahía v2)
 ix = 0; iy = 0;      // índice de trozo en la rejilla
 k  = 0;              // tramo de guía de luz
 
@@ -31,16 +32,33 @@ else if (parte == "bandeja") bandeja_servicio();
 else if (parte == "guia") let(t = tramo_guia(k))
     rotate([90, 0, 0]) guia_luz_frontal(t[0], t[1], k == 0 ? 3 : 0, k == n_guia - 1 ? 3 : 0);
 else if (parte == "pomo")   rotate([180, 0, 0]) pomo();
+else if (parte == "grapa") grapa_esquina();
 else if (parte == "anillo") anillo_luz();
 else if (parte == "soporte_arduino") translate([-ard_cx, -sop_ard_y0, -sop_ard_z0]) soporte_arduino();
 // Riel boca abajo: el cajeado de las torretas queda abierto hacia arriba y no hay que puentearlo.
 else if (parte == "riel")
     translate([1, riel_y1 - riel_y0 + 1, riel_h]) rotate([180, 0, 0])
         translate([-riel_x0a, -riel_y0, -suelo]) riel_placas();
-// Carros con la cama sobre la base de impresión. El tetón (2 mm) queda en voladizo.
-else if (parte == "carro_nano") translate([pr_l + 8, pr_w/2 + 4, 0]) carro_imprimible(pr_l, pr_w);
-else if (parte == "carro_esp") translate([esp_l + 8, esp_w/2 + 4, 0]) carro_imprimible(esp_l, esp_w);
-else if (parte == "carro_proto") translate([proto_l + 8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w);
+// OBSOLETO. Carros de la bahía v2: la bandeja ya no tiene cajeado. No imprimir.
+else if (parte == "carro_nano") translate([8, pr_w/2 + 4, 0]) carro_imprimible(pr_l, pr_w, pr_pcb_z, "bordes");
+else if (parte == "carro_esp") translate([8, esp_w/2 + 4, 0]) carro_imprimible(esp_l, esp_w, esp_pcb_z, "columnas");
+else if (parte == "carro_proto") translate([8, proto_w/2 + 4, 0]) carro_imprimible(proto_l, proto_w, proto_pcb_z, "bordes");
+else if (parte == "retenedor_nano") translate([-(ard_cx - ard_w/2 - 6), -(ard_y - 4), -(ard_pcb_z + ard_pcb - 4.2)]) retenedor_nano();
+else if (parte == "tapa_pi") translate([-tapa_x0 + tapa_sol + 2, -tapa_y0 + tapa_sol + 2, 0]) tapa_pi();
+// Reborde en el origen de la cama. La esquina de la ventana queda a (labio, labio_inf).
+else if (parte == "placa_io_hp")
+    translate([io_placa_labio, io_placa_labio_inf, 0]) placa_io_hp();
+else if (parte == "prueba_placa_io_hp") prueba_placa_io_hp();
+// Marco frontal: cara de fuera en la cama. El faldón queda hacia arriba.
+else if (parte == "marco_io_frontal") marco_io_frontal();
+// Tapa de los agujeros viejos: reborde en la cama, tetones hacia arriba.
+else if (parte == "placa_puertos_pi") placa_puertos_pi();
+// Careta de pines: cara de fuera en la cama. Los ganchos quedan hacia arriba.
+else if (parte == "panel_pines") panel_pines();
+// Capuchón: pestaña en la cama, símbolo arriba. Soporte: suelo en la cama.
+else if (parte == "boton_encendido") boton_encendido();
+else if (parte == "soporte_boton") soporte_boton_impresion();
+else if (parte == "prueba_boton") prueba_boton();
 else if (parte == "pletina") pletina_empalme();
 else if (parte == "soporte_disco") translate([-disco_x, -disco_y, -suelo - 2]) soporte_disco();
 else if (parte == "info") {

@@ -6,13 +6,123 @@
 >
 > **2026-10-20, más tarde:** los mandos pasan de Arduino Micro a **Nano** (PCB de catálogo 18 × 45 mm). Entran un ESP8266, un segundo Nano de prácticas, un panel de pines en la trasera y una OLED 0,96". Las torretas y el canal USB de la bandeja impresa no se mueven. Los párrafos de abajo que dicen «Micro», «48 × 17,7» o «micro-USB del Arduino» describen el diseño anterior. La geometría vigente está en `params.scad`.
 >
-> **2026-10-21:** el ESP y el Nano de prácticas dejan el velcro y pasan a carros de una bahía atornillada a las dos torretas que ya están a la izquierda de la canaleta. El soporte del Nano de mandos no se ha tocado. El detalle está en la sección siguiente.
+> **2026-10-21, bandeja v2:** Miguel reimprime la bandeja entera. La Pi gira (USB y RJ45 hacia +Y, en la mitad izquierda) y la bahía queda integrada en la plancha. La sección «Bahía modular» de más abajo describe el riel suelto de la bandeja v1: **no se imprime**. El STL `PROVISIONAL_riel_placas` se ha retirado.
+>
+> **2026-10-22, huecos fijos:** la bahía de carros, la cuna y el retenedor salen de la bandeja. Cada placa va en un bolsillo. La Pi, la rejilla, la tapa y `carcasa_x1_y1` no se mueven. Los párrafos de carros de «Bandeja v2» describen esa bahía: **no se imprimen**. Lo vigente está en «Huecos fijos».
+
+## Bandeja v2 (2026-10-21)
+
+La base ya está impresa. No se reimprime. El hueco y los 4 M3 siguen en x = 318,26 y 436,26, y = 49 y 278,492. El ala de la bandeja mide 126,00 × 237,49 mm, la misma envolvente que entra por ese hueco.
+
+Foto de Miguel, desde arriba, con la trasera (+Y) en la parte de arriba: la Pi suelta está en la mitad izquierda, los dos USB y el RJ45 miran a +Y (hacia la rejilla), los micro-HDMI y el USB-C miran a +X, la micro-SD al frente (−Y) y la antena SMA del HAT apunta a +X, tumbada. Esa es la orientación del modelo. [FOTO]
+
+La foto deja las clavijas casi en el borde trasero del hueco (y = 274,5). Detrás de ese borde la pared interior está a 23 mm (y = 297,5): una clavija recta no cabe. La placa se adelanta hasta dejar 42 mm entre la cara del conector y la pared (36 mm de clavija USB-A [DISEÑO] + 6 mm). El centro de la placa queda en x = 358, entre el HDD (acaba en x = 294,6) y la canaleta (x = 420).
+
+| Qué | Dónde |
+|---|---|
+| Pi 4, PCB 56 × 85 | x = 330 a 386, y = 167,5 a 252,5. Separadores de 8 mm. Cara de los USB en y = 255,5. Las clavijas de 36 mm acaban en y = 291,5 |
+| GPIO / lado del OLED del HAT | canto −X. El HAT no se modela: no está medido [PENDIENTE] |
+| micro-HDMI y USB-C | canto +X, hacia el frente de ese canto. Reserva de clavija 26 mm, hasta x = 412. La canaleta empieza en x = 420. Un USB-C recto más largo que eso no cabe: hace falta un conector en ángulo [PENDIENTE de medir el cable] |
+| micro-SD | canto −Y. Muesca en el suelo, 18 × 20 mm, delante de la placa. La posición exacta de la ranura en el plano es [PENDIENTE] |
+| Nano de mandos | Cuna impresa en la bandeja, abajo a la derecha (eje x = 418,26, PCB y = 70 a 115). El soporte suelto ya impreso no encaja: la v2 no trae sus torretas |
+| Nano de prácticas | Carro, puesto y = 90. USB hacia +X. Pines hacia abajo, hueco de 17,5 mm |
+| ESP8266 de la tira, o proto 30 × 70 | El otro carro, puesto y = 124. No van los dos a la vez. El ESP es 58 × 31 mm [PENDIENTE], estimación de la foto, no un DEVKIT 1.0 |
+| Capturadora | Nido 26 × 32 × 14 mm en x = 390, y = 220. La reserva de 72 mm no entra. El hueco del adaptador HDMI→USB-C se quita de la bandeja [PENDIENTE] |
+| Cable del Nano de mandos | Canaleta en x = 420, desde y = 142, y giro a −X en y = 258 hasta el USB derecho de la Pi. No sale de la bandeja |
+
+La rejilla de entrada de la base sigue bajo el HP (x = 47 a 157). La bandeja no la tapa. El ventilador que hay en el modelo es el del disipador del HP: un marcador de 50 × 50 × 10 mm sobre esa placa, en x = 75 a 125 e y = 202 a 252. Es ilustrativo; el sentido real sigue en H-5 [PENDIENTE]. El HDD (x = 193 a 294,6) queda entre ese ventilador y la Pi. Esas ranuras alimentan la zona del HP.
+
+La Pi tiene su propio camino. El HAT tapa la cara de arriba, así que el aire entra por debajo y sale por detrás:
+
+| Tramo | Dónde |
+|---|---|
+| Entrada | Ranuras en el suelo de la bandeja, bajo el SoC. Ocho columnas de 2,0 mm, paso 3,6 mm, de x = 343 a 370. Dos tramos en Y: 183 a 197 y 199 a 215, con un nervio de 2 mm. Atraviesan el ala y el suelo (6 mm). En la cama son agujeros verticales |
+| SoC | 15 × 15 mm, x = 346 a 361, y = 189,25 a 204,25. [FUENTE] plano mecánico de la Pi 4, vía el modelo process1183 que lo cita. La RAM y el PMIC no están en ese plano: la banda los cubre alrededor del SoC. La cota del PMIC es [PENDIENTE] |
+| Bajo la PCB | Separadores de 8 mm. El cuerpo de un ventilador de 10 mm no cabe ahí |
+| Entre placas | Lo deja el separador del HAT. La altura del HAT no está medida [PENDIENTE] |
+| Salida alta | Ranuras en `tapa_pi`, dentro del hueco de 72 × 42 mm. La rejilla trasera de `carcasa_x1_y1`, alineada en X con la Pi (x = 334 a 382), baja hasta z = H−64 (z ≈ 90) y sigue hasta z ≈ 140. Queda por encima de las clavijas (z ≈ 30) y no corta el panel de pines |
+| Ventilador opcional | En la tapa, sin montarlo: cuatro agujeros Ø3,2 a 32 mm (ventilador 40 × 40) y otros cuatro a 24 mm (30 × 30). [DISEÑO] Patrón habitual; el ventilador no está elegido |
+
+Los postes M2.5 (Ø6, ejes en x = 333,5 y 382,5, y = 171 y 229) quedan a más de 9 mm de las ranuras. La muesca de la micro-SD acaba en y = 171,5. Los pies de la base miden 1 mm: el aire de la rejilla entra por debajo del chasis, por esa holgura [PENDIENTE de ver si basta]. La base no se reimprime.
+
+Tapa: hueco 72 × 42 mm en el lomo plano (x = 324 a 396, y = 252 a 294), solo en `carcasa_x1_y1`. Dos M3 en una oreja a la derecha del hueco, con paso libre Ø3,4 en la tapa y guía Ø2,5 × 9 mm en cada poste Ø10 (pared 3,75 mm). Tornillo M3×8 de cabeza de botón, JINZEYOU [DISEÑO]: la tapa mide 2,4 mm y entran unos 5,6 mm en la guía, sin llegar al fondo. Las tres orejetas de esta pieza que apoyan en la base (325, 292,5), (420, 292,5) y (448,3, 205) llevan la misma guía, de 9 mm, en un taco de 12 × 12 × 11 mm (pared 4,75 mm). El tornillo entra desde abajo por el paso ya impreso de la base: M3×8 avellanado wugongshan [DISEÑO]. Las otras tres carcasas, la base, el soporte y los biseles conservan el agujero de inserto con el que se imprimieron: ahora se les mete el inserto de latón, sin reimprimirlos. En la carcasa impresa el panel de pines y la OLED no se cortan: la careta va por fuera. El STL futuro, que no se imprime ahora, sustituye los Ø1,6 por ranuras de regleta. Una orejeta trasera de la carcasa (x = 325, y = 292, 11 mm de alto) queda a 1 mm del sobremolde modelado del RJ45; el cuerpo de la clavija pasa por encima. Si el capuchón es gordo, se enchufa hacia arriba.
+
+Retención de la placa, de la bahía v2 (sustituida por los huecos fijos). Los carros llevan cuatro uñas en las esquinas de la PCB y una pestaña sobre el conector, para que la placa no se levante al tirar del USB. Bajo la PCB hay 17,5 mm: cabe un Dupont hembra de 14,5 mm más el separador negro de 2,5 mm [DISEÑO]; los cables de Miguel no se han medido. El Nano de mandos usa otra pieza, `PROVISIONAL_retenedor_nano`: engancha unos rebordes de la cuna, pisa las cuatro esquinas y lleva un tope sobre el mini-USB. El ESP apoya en cuatro columnas (agujeros de esquina, a 3,5 mm [DISEÑO], no medidos).
+
+Sujeción del carro a la bandeja. Cada puesto (y = 90 y y = 124, sin moverlos) lleva un cajeado de 6,4 × 14 mm en el riel y dos tornillos en diagonal, a 9 mm en Y y 1,6 mm en X: en (327,2, 85,5) y (328,8, 94,5) para el Nano, y en (327,2, 119,5) y (328,8, 128,5) para el ESP o la proto. La zapata del carro entra con 0,15 mm por lado [DISEÑO]. El carro sigue con paso libre Ø3,4. Miguel no usa insertos (`fijacion = "autorroscante"`): cada tornillo rosca en una guía Ø2,5. En esta plancha solo hay 6 mm de plástico (suelo 4 + ala 2), así que la guía mide 5,2 mm y deja 0,8 mm de piel; no llega a los 8 mm pedidos. El tornillo es un M3×10 de cabeza cilíndrica [DISEÑO]: 7 mm de paso en la zapata y unos 3 mm de rosca. Un M3×12 tocaría el fondo. La pared hasta el borde del suelo, en el agujero de x = 327,2, queda en 3,4 mm. El ESP y la proto comparten el puesto y = 124: se cambia uno por el otro soltando esos dos tornillos. Los cuatro M3 que atan la bandeja a la base no se tocan. Las uñas, la pestaña y los 17,5 mm bajo la PCB siguen igual. El agarre del autorroscante es [PENDIENTE] de probar.
+
+La proto de 70 mm acaba en x = 401, a unos 3 mm del retenedor de mandos. [PENDIENTE] medir esa placa antes de imprimir el carro.
+
+`comprobar_interferencias.py` (2026-10-21, bandeja v2): salida 0 con `nano_esp` (23 cajas) y con `nano_proto` (22 cajas). Las clavijas USB-A de la Pi quedan a ≥ 5 mm de la pared. El carro del Nano de prácticas, a ≥ 1 mm de la tina. `comprobar_stl.py`: todas las mallas del directorio caben en la cama y están cerradas. No es un montaje.
+
+### Qué se imprime (bandeja v2)
+
+OpenSCAD 2021.01. No se ha lanzado `exportar.sh`. Cajas al centésima, de los vértices.
+
+| STL | Caja (mm) | Volumen | Nota |
+|---|---|---|---|
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 30,20 | 167,53 cm³ | Sustituye a la bandeja ya impresa. Mismos 4 M3 a la base. Cuatro guías Ø2,5 para los carros (antes 167,36 cm³, con agujero de inserto) |
+| `PROVISIONAL_carro_nano` | 51,45 × 16,40 × 25,10 | 6,54 cm³ | Cama abajo. Dos M3. La caja en X es más corta por el lado del riel; la PCB y el USB no se mueven |
+| `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 cm³ | Igual. Mismos dos agujeros que la proto |
+| `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 cm³ | Igual. Placa de diseño. Mismo puesto y = 124 |
+| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 cm³ | Clip del Nano de mandos. Sin cambios |
+| `PROVISIONAL_tapa_pi` | 92,00 × 46,79 × 4,60 | 12,43 cm³ | Placa en el lomo plano y tetón en el hueco 72 × 42 (antes 94,00 × 54,00 × 2,40, 9,70 cm³) |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,81 cm³ | Guías Ø2,5 en los dos postes de la tapa y en las tres orejetas de esta pieza (antes 233,65 cm³). Las otras tres carcasas no |
+
+No se reimprime la base. No se imprime el riel suelto (el STL se ha quitado). El `PROVISIONAL_soporte_arduino` ya impreso no se monta en esta bandeja. La fila de `PROVISIONAL_bandeja_servicio` de la tabla es la exportación de la bahía de carros (30,20 mm, 167,53 cm³). La vigente está abajo.
+
+## Huecos fijos (2026-10-22)
+
+Miguel aprueba el concepto de un bolsillo por placa, con paredes bajas y un tornillo en cada esquina. La foto de referencia no está a escala y tiene tres columnas: aquí los huecos van a lo largo, en dos columnas. El contorno no cambia (ala 126,00 × 237,49 mm). Los 4 M3 a la base siguen en x = 318,26 y 436,26, y = 49 y 278,492, con paso libre Ø3,4. Roscan en la base ya impresa. La carcasa y `tapa_pi` no se han tocado.
+
+La bandeja que Miguel imprimió (paredes largas cerradas hasta la PCB) queda obsoleta: el STL se guarda como `OBSOLETA_bandeja_huecos_v2_ya_impresa` y no se corta. La vigente es la v3, mismo archivo `PROVISIONAL_bandeja_servicio`, con ventana en cada canto largo.
+
+La Pi no se mueve. Sigue en x = 330 a 386, y = 167,5 a 252,5, USB y RJ45 hacia +Y, a 12 mm del suelo sobre los cuatro postes Ø6 (agujero Ø2,7, paso del M2,5). La rejilla bajo el SoC y la muesca de la micro-SD siguen igual. Las paredes de la Pi llegan a ras de la PCB (z = 13,5), sin reborde sobre la rejilla. El canto +Y queda abierto. El canto +X solo lleva pared de y = 216 a 250, por detrás de los HDMI. El HAT sigue sin modelar [PENDIENTE].
+
+| Hueco | Esquina −X −Y de la PCB | PCB | USB | Cara inferior |
+|---|---|---|---|---|
+| Pi 4 | 330, 167,5 | 56 × 85 [FUENTE] | +Y | z = 12, postes de 8 mm |
+| ESP8266 | 346, 86 | 31 × 58 [PENDIENTE] [FOTO] | +Y | z = 17 (`pin_bajo_pcb` = 13 sobre el suelo) |
+| Nano de prácticas | 399, 66 | 18 × 45 [FUENTE] | −Y | z = 17 |
+| LM2596 (FALTA) | 399, 124 | 21 × 43 [PENDIENTE] | — | z = 7 |
+| Nano de mandos | 400, 222 | 18 × 45 [FUENTE] | +Y | z = 17 |
+
+Holgura 0,5 mm por lado (`b3_holg`). Pared 2,2 mm solo en los cantos cortos y en un retorno de esquina. En las tres placas con pines macho hacia abajo, la pared larga está abierta desde el suelo hasta la cara superior de la PCB. El retorno llega hasta `pin_extremo` = 2,5 mm (el dibujo empieza a 2,4 mm) y no tapa pines. El claro de la ventana es 13 mm de alto y, en Y, 40 mm en cada Nano y 53 mm en el ESP. Desde la cara inferior de la PCB hasta el suelo hay `pin_bajo_pcb` = 13 mm: 11,5 mm del pin más largo, separador incluido, más 1,5 mm de aire [PENDIENTE] de medir. Un Dupont hembra recto (carcasa ~14,5 mm) no entra: faltan 1,5 mm y el hilo no tiene curva. Subirlo 7,5 mm para dejar ~6 mm de curva no cabe en el ESP (4,8 mm hasta la tina en la esquina delantera). El conector es un Dupont hembra acodado a 90° (FALTA: comprar), uno por pin. El apoyo es un escalón de 2,0 mm en la banda central del canto corto. En el canto del mini-USB de los dos Nano ese escalón no llega a 1,6 mm y no se imprime: sujetan las grapas. El ESP sí lo lleva a los dos lados del conector. El canto del USB sigue partido 10 mm. El hueco de 43 × 21 mm no lleva regleta: reborde a ras de la PCB y 3 mm para las soldaduras [DISEÑO]. Un borne de arriba no queda encerrado. No hay step-down en el inventario: FALTA comprar un LM2596 de 43 × 21 mm a 5 V. Lo que está en ese hueco es un convertidor ZERO/SPAN de 4–20 mA.
+
+La columna derecha (x = 399) queda fuera de la tina. El ESP queda debajo de la pantalla: con la bandeja en las torretas, el borde delantero de su PCB tiene 4,8 mm hasta el suelo de la tina, y el módulo dibujado (3 mm, centrado) tiene 14 mm. Delante de y ≈ 85 y a la izquierda de x ≈ 380 el suelo se queda bajo: ahí la tina no deja pared alta.
+
+Tornillos de los kits. Guía Ø2,5 en los postes de fuera, poste Ø7,6 (pared 2,55 mm). La Pi se atornilla por sus agujeros reales, con inserto M2.5. La grapa de 1,6 mm sustituye a la arandela Ø9, que no está en los kits. `fijacion` sigue en `autorroscante` solo para no cambiar un futuro export de `carcasa_x1_y1`.
+
+| Sitio | Dónde (ejes) | Guía | Tornillo |
+|---|---|---|---|
+| Pi, agujeros reales | (333,5, 171), (382,5, 171), (333,5, 229), (382,5, 229) | Ø3,0 × 7 mm, ciego, desde la cara del poste. [sin probar] | Inserto M2.5 4×3,5 y M2.5×8 botón |
+| Pi, plan B | (328,0, 165,2), (388,0, 165,2), (327,8, 254,2), (388,6, 254,2) | Ø2,5 × 13 mm | M3×12 botón + grapa. No entra en la cuenta |
+| ESP, cuatro esquinas | (344,5, 83), (378,5, 83), (344,5, 147), (378,5, 147) | Ø2,5 × 13 mm, desde z = 18,6 | M3×12 botón + grapa 1,6 mm |
+| Nano de prácticas | (397,5, 63), (418,5, 63), (397,5, 114), (418,5, 114) | Ø2,5 × 13 mm | M3×12 botón + grapa |
+| Nano de mandos | (398,5, 219), (419,5, 219), (398,5, 270), (419,5, 270) | Ø2,5 × 13 mm | M3×12 botón + grapa |
+| Buck, agujeros del módulo | (402,5, 127,5) y (416,5, 163,5), a 3,5 mm de la esquina [PENDIENTE] | Ø2,5 × 7 mm, desde la cara inferior (z = 7). No atraviesa el ala | M3×8 botón. Atraviesa la PCB (1,6 mm) y entran 6,4 mm |
+| Buck, las otras dos esquinas | (421,5, 121) y (397,5, 166). Esta última va en el canto −X: por detrás chocaría con el HDMI | Ø2,5 × 8 mm, desde z = 8,6 | M3×8 botón + grapa |
+| Bandeja a la base | (318,26, 49), (436,26, 49), (318,26, 278,492), (436,26, 278,492) | Inserto M3 6×5 en la torreta, agujero Ø4,0 | M3×8 botón. No es M3×16: el kit trae 20 y 17 ya están contados |
+
+Los postes M2.5 de la Pi son la fijación: inserto M2.5 4×3,5 en un agujero Ø3,0 × 7 mm, y tornillo M2.5×8 de cabeza de botón. Los cuatro postes de fuera se quedan como plan B.
+
+Canales. La ventana de cada fila desemboca en el suelo. Siete puentes (dos postes y una barra a 4,2 mm del suelo, luz de unos 4 mm) sujetan el cable: entre prácticas y buck (x = 402 y 409), en el corredor entre el ESP y la columna derecha (y = 100 y 132), y en el canto derecho (x = 423,5, y = 148, 198 y 238), por fuera del sobremolde HDMI (acaba en x = 412). El canto −X del ESP mira a la Pi. El hilo, de cerca de 1,2 mm, cabe en la luz del puente.
+
+La proto 30 × 70 se queda sin puesto.
+
+`PROVISIONAL_bandeja_servicio` (v3, 2026-10-23): 126,00 × 237,49 × 20,60 mm, 173,2 cm³, malla cerrada, z de −2 a 18,6. La v2 impresa, de paredes cerradas, queda en `OBSOLETA_bandeja_huecos_v2_ya_impresa` (181,71 cm³) y no se reimprime ni se corta. Cabe en la cama de la A1 (256 × 256, margen 10): el lado largo mide 237,49 y el límite con margen es 246. Estimación sin laminar, hilo 0,2 × 0,42 mm a 40 mm/s de media: unos 173 cm³ salen en unas 14 horas. Es pieza de noche. No es un tiempo de laminador. `comprobar_interferencias.py` (2026-10-22, tras bajar las tres PCB a 13 mm): salida 0, 23 cajas. Esa comprobación no suma los 11 mm de las torretas ni las ventanas de la v3: las cajas de las placas no se han movido. Con la bandeja montada, el Nano de prácticas (USB de 4 mm, y = 66) queda a 12,6 mm del techo interior; el ESP, bajo la tina, tiene 4,8 mm en la esquina delantera de la PCB y 14 mm en el módulo dibujado; el Nano de mandos queda a 117 mm del techo de x1_y1. El hueco de la tapa acaba en x = 396. El Nano de mandos empieza en x = 400 y el de prácticas queda más adelante: el límite de esas placas sigue siendo el techo. La carcasa no se ha tocado. No es un montaje.
+
+No se han regenerado la carcasa, los carros ni el retenedor. La tapa sí, el 2026-10-23: `PROVISIONAL_tapa_pi` mide 92,00 × 46,79 × 4,60 mm (12,43 cm³), con el canto delantero en y = 248,5 y el trasero en y = 295,29, dentro del plano del lomo (y 247,83–295,49). El tetón mide 71,4 × 41,4 × 2,2 mm, con 0,3 mm de holgura por lado en el hueco de 72 × 42. La tapa ya impresa no se usa. Siguen **obsoletos** y no se imprimen `PROVISIONAL_carro_nano`, `PROVISIONAL_carro_esp`, `PROVISIONAL_carro_proto30x70` ni `PROVISIONAL_retenedor_nano`.
+
+[PENDIENTE] de esta bandeja: el largo real de los pines macho (el canal usa 11,5 mm más 1,5 mm); cuántos milímetros del canto corto y del canto largo están libres de pines (el canal usa 3,2 mm y deja 2,5 mm en el extremo); el módulo real del step-down y si lleva pines (43 × 21 mm, agujeros a 3,5 mm de la esquina y Ø3 son cifras típicas); el ESP de la foto (58 × 31, y si el micro-USB va centrado); el largo real de las clavijas y el HAT. El agarre del M3 en la guía Ø2,5 y el del inserto en el Ø4,0 no se han probado.
 
 Fecha: 2026-10-18 (UTC+1). Fuentes comprobadas el 2026-10-18 salvo que se indique otra cosa.
 
-## Bahía modular (2026-10-21)
+## Bahía modular de la bandeja v1 (2026-10-21, sustituida)
 
-Miguel pide una bahía para ir cambiando placas de programación y de prueba, atornillada a los **dos tornillos que quedan a la izquierda de la canaleta** en la bandeja ya impresa. No se reimprime la bandeja. El soporte del Nano de mandos (`PROVISIONAL_soporte_arduino`) ya está pasado a imprimir: **no se ha modificado** ni su módulo ni su STL.
+Esta sección describe el riel suelto de la bandeja que Miguel ya tiene impresa. **La bandeja v2 lo deja fuera.** No imprimir `PROVISIONAL_riel_placas`: el archivo se ha retirado del directorio de STL. Lo que se imprime ahora está en «Bandeja v2», arriba.
+
+Miguel pidió una bahía atornillada a los **dos tornillos que quedan a la izquierda de la canaleta** en la bandeja v1. El soporte del Nano de mandos (`PROVISIONAL_soporte_arduino`) se imprimió para esa bandeja. En la v2 la cuna va en la propia plancha y ese soporte no tiene donde atornillar.
 
 ### Qué tornillos son
 
@@ -45,7 +155,7 @@ Cuatro STL nuevos. OpenSCAD 2021.01, sin pasar `exportar.sh` (ese script borra l
 
 El riel tiene dos tramos. El delantero (y = 58 a 130) mide 7,1 mm de ancho y acaba 0,9 mm antes del soporte de mandos. El de anclaje (desde y = 129,8 hasta y = 201,492, delante de la Pi en y = 214,492) es el que abraza las dos torretas: cajeado Ø8,4 (0,2 mm de holgura radial, **DISEÑO**) y 1,6 mm de pared. Su cara derecha queda a 3,2 mm de la pared del canal. La cabeza del M3 apoya encima; no hay avellanado, porque un cajeado Ø6,2 dejaba un techo de medio milímetro.
 
-Cada carro lleva la placa hacia −X (el enchufe se aleja del canal y de la capturadora), un tetón que entra en el mortise y un tornillo M3 a un inserto del riel. La cabeza apoya en la pestaña. Bajo cada mortise el agujero del inserto tiene unos 3,3 mm de fondo: el inserto de 5,7 mm tampoco cabe ahí. **PENDIENTE.**
+Cada carro lleva la placa hacia −X (el enchufe se aleja del canal), un tetón que entra en el mortise y un tornillo M3 a un inserto del riel. La cabeza apoya en la pestaña. Bajo cada mortise el agujero del inserto tiene unos 3,3 mm de fondo: el inserto de 5,7 mm tampoco cabe ahí. **PENDIENTE.**
 
 ### Cuántas placas caben
 
@@ -60,25 +170,22 @@ Hay tres puestos, en y = 76, 90 y 105. A la vez caben **dos**, en el 76 y en el 
 
 El Nano de mandos no es un carro. Sigue en su soporte, con el cable en el canal que ya existe.
 
-La reserva de la capturadora y la del adaptador siguen escritas como 72 mm en `params.scad`. La caja que se comprueba acaba en x = 395,46 (donde empieza el riel): **67,2 mm** útiles. Un aparato de 72 mm ya chocaría con las torretas Ø8 impresas, que empiezan en x = 397,26. No se ha medido la capturadora.
-
 El carro de 30 × 70, con su margen de 1 mm por lado, acaba en x = 324,86. El suelo de la bandeja empieza en x = 322,56. Quedan **2,3 mm**. **PENDIENTE** con la placa real: si es más ancha, o si el cable sale por ese lado, no cabe.
 
 `comprobar_interferencias.py` (2026-10-21): sin interferencias, 23 cajas, en `nano_esp` y en `nano_proto`. El carro del Nano queda a ≥ 3 mm de la tina. El tramo de anclaje queda a ≥ 3 mm del canal. `comprobar_stl.py`: las 24 mallas caben en la cama y están cerradas. Nada de esto se ha montado.
 
-## 0c. HP v3: primeras medidas reales y capturadora (2026-10-18)
+## 0c. HP v3: primeras medidas reales (2026-10-18)
 
 | Cambio | Detalle | Origen |
 |---|---|---|
 | Tamaño de la placa | 170 × 170 mm confirmado | **Medido por Miguel** (17 × 17 cm) |
 | Altura de componentes | `hp_comp_h` 38 → **35 mm** (disipador + ventilador, lo más alto). Holgura a la tina de la pantalla ≈ **9 mm** (límite del modelo: 41 mm con 3 mm) | **Medido por Miguel** |
 | Agujeros de anclaje | **Patrón estándar mini-ITX; coincide visualmente con los 4 tornillos de la foto, no medido.** Corregido el agujero F: está **22,86 mm más adentro** que C (33,02 mm del borde I/O); v2 lo ponía alineado con C. Cambia solo `PROVISIONAL_base_x0_y1` | Estándar mini-ITX (`datos-pendientes-hp.md` §A2, fuente 9) |
-| I/O trasero | La placa **no tiene escudo I/O** (los conectores asomaban por la chapa de la caja HP). La ventana de Orbit es una **abertura libre**; para cerrar el hueco hará falta una **placa I/O impresa a medida** (pendiente de medir los conectores; no se modela). Orden observado: audio a la izquierda … jack DC a la derecha, con el HDMI en el lado de la Pi | Foto de Miguel (observación) |
+| I/O trasero | La placa **no tiene escudo I/O**. La ventana ya impresa no se toca. `PROVISIONAL_placa_io_hp` (2026-10-23) entra por dentro. Mirando la trasera, la foto del 2026-10-23 pone el VGA a la izquierda y el jack DC a la derecha (antes se había leído al revés). ±2 mm. La prueba se apoya por fuera antes de pegar | Foto de Miguel |
 | Disposición de la placa | Marcador ilustrativo según la foto: 2 DDR3L paralelos al borde delantero, Wi-Fi M.2, disipador central (la altura total = 35 mm) | Foto (ilustrativo) |
-| Capturadora (modo C) | **Reserva de 72 × 30 × 20 mm** en la bandeja de servicio, delante del hueco del adaptador (`usar_capturadora`, `captura`). Sin pieza nueva: velcro o brida. Cables ilustrativos del modo C | Diseño; medidas reales PENDIENTES |
 | Envolvente | Sin cambios: 456,3 × 300,5 × 153,9 mm | — |
 
-Comprobación de interferencias v3: **sin interferencias** (15 cajas, sin solapes); capturadora con holgura ≥ 10 mm. STL: 20 piezas que caben en la A1 y son mallas cerradas. Renders regenerados: `01b`, `02`, `03`, `04`, `05`, `05b` (los demás no cambian).
+Comprobación de interferencias v3: **sin interferencias** (15 cajas, sin solapes). STL: 20 piezas que caben en la A1 y son mallas cerradas. Renders regenerados: `01b`, `02`, `03`, `04`, `05`, `05b` (los demás no cambian).
 
 ## 0b. HP v2: HP Slimline 260-a110ns desmontado (2026-10-18)
 
@@ -89,14 +196,14 @@ El HP de Miguel es un **HP Slimline 260-a110ns** (torre estrecha de ~307 × 100 
 | Placa mini-ITX 170 × 170 | En horizontal, atrás a la izquierda (`hp_x` = 17 mm, borde trasero a 3 mm de la pared), componentes hacia arriba | Formato: fuente HP (hermanas) |
 | Separadores | 4 torretas impresas en la base, Ø9, **6,35 mm** (estándar ATX), con inserto M3, en el **patrón estándar mini-ITX** (C a 6,35 mm del lateral y 10,16 mm del borde I/O; F a +157,48 / +22,86 mm; H y J a +154,94 mm) | v3: patrón estándar, coincide visualmente con la foto, **no medido** (H-2) |
 | Altura de componentes | v3: caja de **35 mm** sobre la PCB (medido). El modelo admite **hasta 41 mm con 3 mm de holgura** a la tina de la pantalla (43 mm con 1 mm; 45 mm interfiere) | **Medido** (H-3) |
-| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa; sustituye la ventana genérica de v1. El jack DC del adaptador de 19,5 V entra por aquí | v3: **sin escudo** (foto); abertura libre, placa I/O impresa pendiente; posición de cada conector **PENDIENTE** (H-4) |
+| Ventana I/O trasera | Abertura estándar de escudo I/O **158,75 × 44,45 mm** (+1 mm de holgura) a ras de la placa. `carcasa_x0_y1` ya está impresa: la abertura no se toca. Huecos de la placa: foto del 2026-10-23, VGA a la izquierda y DC a la derecha, ±2 mm | v3: **sin escudo**. Placa regenerada; el calibre sigue abierto (H-4) |
 | Flujo de aire | **Entrada:** ranuras de la base bajo la placa y ranuras bajas del lateral izquierdo (zona trasera, hasta z ≈ 60 mm). **Salida:** rejilla superior trasera sobre la placa (el aire caliente sube). Se conserva el disipador/ventilador original | Sentido real del ventilador: **PENDIENTE** (H-5); térmica: U-20 |
 | Disco | **SSD 2,5"** (100,45 × 69,85 × 9,5, SFF-8201) en un **soporte impreso** nuevo (`PROVISIONAL_soporte_disco`), a la derecha de la placa, sobre 4 torretas; la plancha queda 3 mm por encima de las torretas de empalme. **Opción HDD 3,5"** (`usar_hdd_35 = true`, 101,6 × 147 × 26,1, SFF-8301) en el mismo sitio, también sin interferencias | Agujeros de los discos: **PENDIENTE** (colisos en el soporte) |
 | DVD | **Retirado**; no se modela | — |
 | Fuente | **No hay fuente dentro**: adaptador externo 65 W 19,5 V al jack DC de la placa (`usar_distribucion = false`: desaparece la caja de distribución DC de v1) | Datos del propietario + HP |
-| I/O frontal del HP | Ventana de 62 × 18 mm en el **lateral izquierdo** (zona trasera alta, detrás de la tina) para la placa original de USB 2.0 / audio / lector SD; marcador de 16 × 70 × 26 mm | **PENDIENTE** (H-7) |
+| I/O frontal del HP | Ventana impresa 62 × 18 mm. No se agranda. `PROVISIONAL_marco_io_frontal` entra a presión. Se pierden los dos jacks; quedan los dos USB y, si cabe, el lector. El STL `FUTURO_carcasa_x0_y1_sin_adaptadores` abre 94 × 18 y **no se imprime ahora** | Alto y ancho de la cara metálica: foto 2026-10-23. Si el lector asoma de verdad: **PENDIENTE** (H-7) |
 | Encendido del HP | **Pulsador de panel Ø12** + **LED de 3 mm** en el lateral izquierdo, cableados en paralelo al cabezal del botón original (contacto seco) | Patillaje: **PENDIENTE con polímetro** (H-6) |
-| Vídeo / cables | **Pasacables trasero ampliado a 40 × 16 mm** (HDMI del HP → Mini-HDMI de la MSI y cargador USB-C PD de la MSI). **Hueco reservado de 72 × 32 × 16 mm** en la bandeja, delante de la Pi, para el **adaptador HDMI→USB-C** del modo B | Ver `conmutacion-video-usb.md` §V |
+| Vídeo / cables | **Pasacables trasero de 40 × 16 mm** (sigue en el CAD). La MSI va solo a la Pi, micro-HDMI a mini-HDMI. La imagen del HP llega por el cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine y Moonlight. El hueco de 72 × 32 × 16 mm sigue en el CAD y no se dibuja (`usar_adaptador_video = false`) | Ver `instalacion-pi.md` |
 | Empalmes de la base (corte Y) | Se desplazan a la derecha de la placa (x = 201 y 258 mm) para no quedar bajo la PCB; la propia placa, atornillada a los dos trozos de base, refuerza la junta | — |
 
 **Resultado del encaje:** la placa desnuda **cabe sin cambiar la envolvente: 456,3 × 300,5 × 153,9 mm** (157,9 mm con pies). Sin interferencias en la configuración por defecto ni con `usar_hdd_35`, `disposicion_mandos="fila"` (484,3 mm de ancho) o `pot_tipo="16mm"`. **No validado:** `usar_kvm = true` (la bahía del KVM choca con el soporte del disco y el corte X cae sobre la zona I/O; el KVM ya no está en el plan) y `usar_distribucion = true` (choca con el disco y con el hueco del adaptador; ya no hace falta).
@@ -108,7 +215,7 @@ Renders regenerados (HP v2): `assets/renders/01_msi_frontal_3-4.png`, `02_msi_la
 
 | Tema | v0 | v1 |
 |---|---|---|
-| Impresora | Cama genérica 256³ | **Bambu Lab A1**: 256 × 256 × 256 mm, marco abierto ([especificaciones](https://bambulab.com/en/a1/tech-specs)). Bambu clasifica PLA/PETG/TPU como "ideal" y ABS/ASA como "no recomendado" en la A1 → **material por defecto: PETG** (`impresora`, `material` en `params.scad`) |
+| Impresora | Cama genérica 256³ | **Bambu Lab A1**: 256 × 256 × 256 mm, marco abierto ([especificaciones](https://bambulab.com/en/a1/tech-specs)). Bambu clasifica PLA/PETG/TPU como "ideal" y ABS/ASA como "no recomendado" en la A1 → **material de impresión: PLA+ negro mate** (`impresora`, `material` en `params.scad`) |
 | KVM | Bahía de 140 × 90 × 30 | **Sin KVM** (`usar_kvm = false`; con `true` vuelve la bahía y la carcasa crece a 510 mm de ancho). El cambio HP/Pi se hace en el **OSD del MSI** |
 | Mandos | 2 encoders PEC11R lado a lado + 2 tapas impresas | **2 potenciómetros rotativos genéricos** (16 o 24 mm, eje de 6 mm, `pot_tipo`) en **columna** + **2 pulsadores de panel genéricos** (12 o 16 mm, `boton_tipo`) en fila. Todo **PENDIENTE de medir**. Se elimina la tapa de botón impresa (los pulsadores de panel traen actuador) |
 | Electrónica de mandos | Encoders a GPIO de la Pi | **Arduino Micro** (48 × 18 mm, [tienda oficial](https://store.arduino.cc/products/arduino-micro)) en un **soporte impreso** bajo la consola, sobre la bandeja de servicio, con **canal para el cable micro-USB** hasta la Pi |
@@ -221,19 +328,19 @@ Qué fija cada cota en v1:
 - **Fondo:** lo fija la holgura entre el HP y la tina de la pantalla. `lomo_base` baja de 60 a 54 mm, el mínimo que mantiene ≥ 3 mm. Con 48 mm el margen es de 0 mm.
 - **Altura:** no cambia; depende de la pantalla y de la inclinación de 30°.
 
-### 3.2 Piezas imprimibles (Bambu Lab A1: 256 × 256 × 256 mm, margen de 10 mm, PETG)
+### 3.2 Piezas imprimibles (Bambu Lab A1: 256 × 256 × 256 mm, margen de 10 mm, PLA+ negro mate)
 
 | Pieza (STL en `hardware/cad/export/stl/`) | Cant. | Caja envolvente (mm) | Material sugerido |
 |---|---|---|---|
-| `PROVISIONAL_carcasa_x{0,1}_y{0,1}` | 4 trozos | ≤ 228,1 × 150,2 × 150,9 | PETG negro mate |
-| `PROVISIONAL_base_x{0,1}_y{0,1}` | 4 trozos | ≤ 228,1 × 150,1 × 18 | PETG negro |
-| `PROVISIONAL_bisel_x{0,1}_y{0,1}` (impreso plano, cara vista abajo) | 4 trozos | 190,8 × 126,6 × 3,6 | PETG negro |
-| `PROVISIONAL_bandeja_servicio` (Pi, distribución, soporte del Arduino y canal USB) | 1 | 157 × 237,5 × 14 | PETG |
-| `PROVISIONAL_soporte_arduino` (**nuevo**) | 1 | 25,7 × 70 × 19,1 | PETG |
+| `PROVISIONAL_carcasa_x{0,1}_y{0,1}` | 4 trozos | ≤ 228,1 × 150,2 × 150,9 | PLA+ negro mate |
+| `PROVISIONAL_base_x{0,1}_y{0,1}` | 4 trozos | ≤ 228,1 × 150,1 × 18 | PLA+ negro mate |
+| `PROVISIONAL_bisel_x{0,1}_y{0,1}` (impreso plano, cara vista abajo) | 4 trozos | 190,8 × 126,6 × 3,6 | PLA+ negro mate |
+| `PROVISIONAL_bandeja_servicio` (Pi, distribución, soporte del Arduino y canal USB) | 1 | 157 × 237,5 × 14 | PLA+ negro mate |
+| `PROVISIONAL_soporte_arduino` (**nuevo**) | 1 | 25,7 × 70 × 19,1 | PLA+ negro mate |
 | `PROVISIONAL_guia_luz_frontal_{0,1}` | 2 tramos | 201,1 × 9 × 7 | PETG translúcido natural |
 | `PROVISIONAL_anillo_luz_x2` | imprimir 2 | 41 × 41 × 5,6 | PETG translúcido natural |
-| `PROVISIONAL_pomo_x2` | imprimir 2 | Ø30 × 17 | PETG o PLA negro (o pomo comercial) |
-| `PROVISIONAL_pletina_empalme_x4` | imprimir 4 | 30 × 10 × 3 | PETG |
+| `PROVISIONAL_pomo_x2` | imprimir 2 | Ø30 × 17 | PLA+ negro mate (o pomo comercial) |
+| `PROVISIONAL_pletina_empalme_x4` | imprimir 4 | 30 × 10 × 3 | PLA+ negro mate |
 
 `PROVISIONAL_tapa_boton_x2` **se elimina**: los pulsadores de panel traen su propio actuador.
 
@@ -241,7 +348,7 @@ Volumen de material sólido (cada archivo una vez): unos **1423 cm³** (v0: 1496
 
 **Notas de impresión para la A1 (marco abierto):**
 
-- PETG sobre la placa PEI texturizada incluida.
+- PLA+ negro mate sobre la placa PEI texturizada incluida.
 - La A1 no debe cerrarse en un armario según el FAQ de Bambu Lab, así que se evitan ASA y ABS en las piezas grandes.
 - Las 4 carcasas son las piezas más altas (150,9 mm). Conviene orientarlas con la cara de corte sobre la cama y probar antes una esquina.
 
@@ -255,11 +362,7 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 - **2 potenciómetros de eje de 6 mm**.
 - **2 pulsadores de panel**.
 - Tira LED (tipo **PENDIENTE**).
-- Tornillería:
-  - Insertos térmicos M3 y tornillos M3: unos 12 para el bisel, unos 13 orejetas carcasa-base, 4 para la bandeja, 8 para las pletinas, 2 para el soporte del Arduino y 4 para la distribución.
-  - 1 prisionero M3 por pomo.
-  - Pasadores de acero Ø3 × 16.
-  - 1 brida de 3,6 mm.
+- Tornillería: la cuenta vigente está en el manual (`docs/manual_montaje/`), contra los tres kits. No hay prisioneros ni arandelas Ø9. El disco pide 4× 6-32 UNC × 1/4\", que no están en los kits.
 - 4 pies de goma Ø12.
 - Cables:
   - Mini-HDMI (de serie, en L).
@@ -268,11 +371,11 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 
 ### 3.3 Uniones y montaje
 
-1. **Carcasa en 4 trozos.** Los planos de corte se calculan solos según la cama (`nx_cortes`, `ny_cortes`). Junto a cada corte hay una costilla interior de 8 mm pegada a la pared, con agujeros Ø3,2 para **pasadores de alineación de Ø3 × 16 mm**. Los trozos se pegan (adhesivo para PETG o ABS/ASA) y quedan alineados por los pasadores.
+1. **Carcasa en 4 trozos.** Los planos de corte se calculan solos según la cama (`nx_cortes`, `ny_cortes`). Junto a cada corte hay una costilla interior de 8 mm pegada a la pared, con agujeros Ø3,2 para **pasadores de alineación de Ø3 × 16 mm**. Los trozos se pegan (adhesivo para PLA+) y quedan alineados por los pasadores.
 2. **Base en 4 trozos**, unida por dentro con 4 pletinas atornilladas a torretas con inserto M3. La base se atornilla desde abajo, con tornillos avellanados, a orejetas con inserto M3 de la carcasa. Las orejetas frontales son columnas hasta el techo, detrás del carril LED.
 3. **Bisel en 4 trozos**, cada uno con 3 tornillos M3 avellanados propios a insertos de la carcasa. No necesita uniones entre trozos.
 4. **Bandeja de servicio:** la Pi (separadores M2.5 con el patrón de 58 × 49 mm), la distribución DC y, en v1, el **soporte del Arduino Micro** y el **canal del cable micro-USB** van montados en la bandeja, que se quita desde abajo con 4 tornillos M3 sin abrir la carcasa (la comprobación verifica que el soporte pasa por la abertura). Hay que dejar holgura en los cables dupont entre el Arduino y los mandos, o usar un conector, para poder bajar la bandeja.
-5. **Potenciómetros:** atornillados con su tuerca desde fuera. Panel de 3 mm + refuerzo automático (`refuerzo_pot`, 1,5 mm con el genérico de 24 mm y 0 mm con el de 16 mm) para dejar ≥ 4,5 mm de rosca libre. Hueco anti-giro ciego a `pot_antigiro_r` (**PENDIENTE**). Los pomos llevan agujero de 6 mm, plano en D opcional (`pomo_eje_D`) y **prisionero M3 radial**, así que valen para eje liso o en D. Con eje estriado conviene un pomo comercial.
+5. **Potenciómetros:** atornillados con su tuerca desde fuera. Panel de 3 mm + refuerzo automático (`refuerzo_pot`, 1,5 mm con el genérico de 24 mm y 0 mm con el de 16 mm) para dejar ≥ 4,5 mm de rosca libre. Hueco anti-giro ciego a `pot_antigiro_r` (**PENDIENTE**). Los pomos llevan agujero de 6 mm, plano en D opcional (`pomo_eje_D`) e inserto M3 4×5 radial con un M3×12 de cabeza de botón. Con eje estriado, si ese tornillo no frena, conviene un pomo comercial.
 6. **Pulsadores de panel:** se fijan con su tuerca en la pared de 3 mm.
 7. **Arduino Micro:**
    - La PCB apoya por sus extremos en dos bloques con labios de centrado y se sujeta con una brida.
@@ -297,10 +400,9 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 | HP real (HP Slimline 260-a110ns), placa mini-ITX desnuda | 170 × 170; separadores 6,35; patrón C-F-H-J estándar (157,48 / 154,94; F +22,86) | Formato: **medido** (17 × 17 cm, Miguel, 2026-10-18); patrón: estándar mini-ITX, coincide visualmente con la foto, **no medido**; separadores: estándar ATX | `datos-pendientes-hp.md` §A2 |
 | Altura de componentes de la placa HP | 35 (máx. 41 con 3 mm de holgura) | **Medido** (Miguel, 2026-10-18) | H-3 |
 | SSD 2,5" / HDD 3,5" (opción) | 100,45 × 69,85 × 9,5 / 101,6 × 147 × 26,1 | **Con fuente** (SFF-8201 / SFF-8301, formatos estándar) | `usar_hdd_35` |
-| I/O frontal HP, pulsador Ø12 + LED 3 mm | Marcador 16 × 70 × 26; ventana 62 × 18 | **PENDIENTE** | H-6, H-7 |
-| Adaptador HDMI→USB-C (hueco, modo B) | 72 × 32 × 16 | **PENDIENTE** (modelo sin verificar) | `adap_video` |
-| Capturadora HDMI→USB (reserva, modo C) | 72 × 30 × 20 | **Reserva de diseño**; medidas del aparato **PENDIENTES** | `captura` |
-| HP, ventana I/O trasera | 159,75 × 45,45 (abertura de escudo I/O 158,75 × 44,45 + 1 mm), abertura libre | **Con fuente** (estándar ATX); la placa HP no tiene escudo (foto); posición de conectores **PENDIENTE** (H-4) | `hp_io_*` |
+| I/O frontal HP, pulsador Ø12 + LED 3 mm | Ventana impresa 62 × 18, sin tocarla. Marco 67,4 × 26,0 × 3,8 (1,58 cm³), boca 59,8 × 15,8. La futura, no imprimir ahora, abre 94 × 18 | Foto 2026-10-23. El lector puede no asomar | H-6, H-7 |
+| Hueco de adaptador HDMI→USB-C (`adap_video`) | 72 × 32 × 16 | En el CAD y apagado (`usar_adaptador_video = false`). No es el camino de la imagen | `adap_video` |
+| HP, ventana I/O trasera | 159,75 × 45,45, sin agrandar. Placa 171,75 × 55,95 × 2,80 (15,71 cm³) y prueba 159,75 × 45,45 × 1,40 (3,52 cm³) | Abertura: estándar ATX. Huecos: foto 2026-10-23, ±2 mm (H-4) | `hp_io_*`, `io_huecos` |
 | Raspberry Pi | Placa 85 × 56; agujeros 58 × 49 a 3,5 mm del borde, Ø2,7 | **Con fuente** | https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf |
 | Raspberry Pi, altura con conectores | 20 | **PENDIENTE** | Según el modelo que tenga Miguel |
 | KVM (opcional, desactivado) | 140 × 90 × 30 | **PENDIENTE** | Solo con `usar_kvm = true`. El fabricante no publica medidas (ver `conmutacion-video-usb.md`) |
@@ -314,7 +416,7 @@ Componentes comprados o reutilizados (marcadores, no se imprimen):
 | Insertos M3 | Agujero Ø4,0 × 5,7 | **PENDIENTE** | Según el fabricante del inserto |
 | Tira LED | 10,4 mm de ancho | **PENDIENTE** | Tira existente de Miguel, tipo desconocido |
 | Huecos de los prolongadores de panel (USB, HDMI, RJ45, DC, audio) | Orientativos | **PENDIENTE** | Ajustar a los prolongadores comprados |
-| Bambu Lab A1 | Volumen 256 × 256 × 256; PETG ideal, ASA/ABS no recomendado | **Con fuente** | https://bambulab.com/en/a1/tech-specs y https://wiki.bambulab.com/en/a1/manual/faq |
+| Bambu Lab A1 | Volumen 256 × 256 × 256; PLA y PETG ideales según Bambu; el material de impresión es PLA+ negro mate. ASA/ABS no recomendado | **Con fuente** | https://bambulab.com/en/a1/tech-specs y https://wiki.bambulab.com/en/a1/manual/faq |
 | Paredes, suelo, inclinación, marcos, radios | 3 / 4 / 30° / 14 / 5 | Decisión de diseño | Modificables en `params.scad` |
 
 ---
@@ -381,7 +483,7 @@ Holguras que conviene revisar con piezas reales:
 - Componentes de la placa HP frente a la tina: ≈ 9 mm con los 35 mm medidos (la caja envolvente ocupa toda la placa a 35 mm: conservador).
 - Canal USB frente a la Pi: unos 3 mm.
 - Pulsador exterior frente a la pared derecha: unos 4,5 mm.
-- Conectores traseros del HP (sin escudo I/O): a ras por dentro de la pared de 3 mm; comprobar que las clavijas (HDMI, DC, RJ45, USB) entran hasta el fondo a través de 3 mm de PETG (PENDIENTE; si no, rebajar la pared alrededor de la ventana).
+- Conectores traseros del HP (sin escudo I/O): a ras por dentro de la pared de 3 mm; comprobar que las clavijas (HDMI, DC, RJ45, USB) entran hasta el fondo a través de 3 mm de PLA+ (PENDIENTE; si no, rebajar la pared alrededor de la ventana).
 
 ---
 
@@ -428,7 +530,7 @@ Herramientas usadas: OpenSCAD 2021.01, con `xvfb-run` para trabajar sin pantalla
 
 ## 7. Pendiente antes de fabricar (lista no exhaustiva)
 
-1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). ~~Tamaño y altura~~ medidos (§0c). Falta: posición real de los agujeros (H-2), **posición de cada conector trasero para diseñar la placa I/O impresa** (H-4), `io_frontal`, `boton_hp_*` (H-6, H-7) y antenas Wi-Fi (H-9).
+1. ~~Identificar el HP real~~ → HP Slimline 260-a110ns, desmontado (§0b). ~~Tamaño y altura~~ medidos (§0c). Falta: posición real de los agujeros (H-2), **calibre de cada conector trasero para corregir `io_huecos`** (H-4; la placa ya está modelada desde la foto), `io_frontal`, `boton_hp_*` (H-6, H-7) y antenas Wi-Fi (H-9).
 2. **Medir el MSI de Miguel:**
    - posición de los puertos y de las teclas OSD a lo largo del canto derecho (`puertos_v0/1`, `osd_v0/1`);
    - marcos y desplazamiento del área activa;
@@ -448,12 +550,12 @@ Herramientas usadas: OpenSCAD 2021.01, con `xvfb-run` para trabajar sin pantalla
    - USB-C → HP/fuente por el pasacables;
    - micro-USB → Pi.
    Añadir alivio de tensión. En los renders están **dibujados**, no validados.
-6. **Vídeo:** modo C recomendado (capturadora en la bandeja: reserva de 72 × 30 × 20 mm, medidas reales **PENDIENTES**), modo A (visor remoto, sin cambios mecánicos) o modo B, poco probable (hueco de 72 × 32 × 16 mm para el adaptador).
+6. **Vídeo:** la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi.
 7. Medidas reales de la **distribución DC** y de los **prolongadores de panel**. Ajustar los huecos traseros.
 8. **Térmica:** con la placa desnuda, comprobar el sentido del ventilador del disipador, medir temperaturas abierta y cerrada y, si hace falta, añadir un ventilador de extracción en la rejilla trasera (alimentación y modelo PENDIENTES).
 9. **Rigidez:** el hueco de la pantalla y ahora las aberturas del tramo de puertos debilitan la pendiente. Revisar si flexa una vez impresa y quizá añadir nervios.
 10. Juntas visibles de los cortes: decidir el acabado.
-11. Pies de goma, burlete del bisel, tolerancias con la **A1 y el PETG reales** y calibración de los insertos.
+11. Pies de goma, burlete del bisel, tolerancias con la **A1 y el PLA+ negro mate reales** y calibración de los insertos.
 12. Seguridad eléctrica: **no se diseña ningún circuito de red**. Toda la alimentación es por fuentes externas homologadas. Batería: solo como estudio futuro.
 13. **Impresión de prueba de una esquina** (por ejemplo la consola con un potenciómetro y un pulsador) antes de imprimir el conjunto.
 14. Preset `waveshare_12_3`: sin mantener en v1 (interfiere).

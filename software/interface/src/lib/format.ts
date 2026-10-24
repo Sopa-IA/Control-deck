@@ -15,6 +15,8 @@ export function formatDate(d: Date): string {
 
 export function formatUptime(s: number | undefined): string {
   if (s === undefined || !Number.isFinite(s) || s < 0) return '—';
+  // Un arranque real no llega a diez años. La época unix salía como «20748 d».
+  if (s > 10 * 365 * 86400) return '—';
   const d = Math.floor(s / 86400);
   const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -54,10 +56,10 @@ export function ago(ts: number | null | undefined, now = Date.now()): string {
 /** Valor de potenciómetro 0..1023 -> porcentaje 0..100 */
 export const potToPct = (v: number) => Math.round((clamp(v, 0, 1023) * 100) / 1023);
 
-/** Nombre visible del modo de cambio de sistema (remoto = A, ddc = B, captura = C). */
+/** Nombre visible del modo de cambio de sistema. */
 export function videoModeLabel(mode: string | undefined): string {
   if (mode === 'ddc') return 'DDC/CI';
-  if (mode === 'captura') return 'capturadora';
-  if (mode === 'remoto') return 'remoto';
+  if (mode === 'captura') return 'vídeo';
+  if (mode === 'remoto') return 'Moonlight';
   return 'desconocido';
 }

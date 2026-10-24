@@ -1,5 +1,6 @@
 import { useOrbit } from '../data/OrbitContext';
 import { Panel, SimTag, StatusDot } from '../components/ui';
+import { motivoFuera } from '../lib/equipo';
 import { ago, formatMb, formatPct, formatTemp, formatUptime, videoModeLabel } from '../lib/format';
 import { SystemCard } from './Inicio';
 
@@ -8,8 +9,9 @@ function Detail({ host }: { host: 'hp' | 'pi' }) {
   const t = state.telemetry[host];
   const n = state.nodes[host];
   const sim = !!(t?.simulated || n?.simulated);
+  const fuera = motivoFuera(state, host);
   const rows: [string, string][] = [
-    ['Equipo', t?.hostname ?? '—'], ['Modelo', t?.model ?? 'PENDIENTE'], ['Sistema', t?.os ?? '—'],
+    ['Equipo', t?.hostname ?? '—'], ['Modelo', t?.model ?? '—'], ['Sistema', t?.os ?? '—'],
     ['CPU', formatPct(t?.cpu_pct)], ['Memoria', `${formatPct(t?.mem_pct)} · ${formatMb(t?.mem_used_mb, t?.mem_total_mb)}`],
     ['Disco', formatPct(t?.disk_pct)], ['Temperatura', formatTemp(t?.temp_c)], ['Tiempo activo', formatUptime(t?.uptime_s)],
     ['Red', t?.net_down_kbps !== undefined ? `↓ ${t.net_down_kbps} kb/s · ↑ ${t.net_up_kbps ?? 0} kb/s` : '—'],
@@ -17,17 +19,20 @@ function Detail({ host }: { host: 'hp' | 'pi' }) {
   ];
   return (
     <Panel title={<>{host === 'hp' ? 'HP · sistema principal' : 'Raspberry Pi · Orbit OS'} <SimTag show={sim} /></>}
-      right={<span className="muted"><StatusDot ok={n?.connected} sim={sim} /> {n?.detail ?? 'sin estado'}</span>}>
+      right={<span className="muted"><StatusDot ok={n?.connected} sim={sim} /> {n?.connected ? 'Conectado' : 'No conectado'}</span>}>
       <dl className="kv">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       <div className="row-actions">
         {host === 'hp' ? (<>
-          <button className="btn" onClick={() => requestAction('hp.ping')}>Comprobar</button>
-          <button className="btn" onClick={() => requestAction('hp.lock_screen')}>Bloquear sesión</button>
-          <button className="btn btn-danger" onClick={() => requestAction('hp.shutdown')}>Apagar (60 s)</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('hp.ping')}>Comprobar</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('hp.lock_screen')}>Bloquear sesión</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('hp.restart')}>Reiniciar (60 s)</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('hp.shutdown_cancel')}>Anular apagado</button>
+          <button className="btn btn-danger" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('hp.shutdown')}>Apagar (60 s)</button>
         </>) : (<>
-          <button className="btn" onClick={() => requestAction('pi.ping')}>Comprobar</button>
-          <button className="btn" onClick={() => requestAction('pi.restart_ui')}>Recargar interfaz</button>
-          <button className="btn btn-danger" onClick={() => requestAction('pi.shutdown')}>Apagar Pi</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('pi.ping')}>Comprobar</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('pi.restart_ui')}>Recargar interfaz</button>
+          <button className="btn" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('pi.restart')}>Reiniciar Pi</button>
+          <button className="btn btn-danger" disabled={!!fuera} title={fuera ?? undefined} onClick={() => requestAction('pi.shutdown')}>Apagar Pi</button>
         </>)}
       </div>
     </Panel>
@@ -37,20 +42,27 @@ function Detail({ host }: { host: 'hp' | 'pi' }) {
 export function Sistemas({ openOsd }: { openOsd: () => void }) {
   const { state, requestAction } = useOrbit();
   const visible = state.visible;
+  const sinPi = motivoFuera(state, 'pi');
   return (
     <div className="sistemas">
       <div className="col"><SystemCard host="hp" /><Detail host="hp" /></div>
       <div className="col"><SystemCard host="pi" /><Detail host="pi" /></div>
-      <Panel title="Pantalla compartida" className="span-2">
-        <p>Orbit OS cambia de sistema por ti; nunca hace falta tocar el menú del <b>MSI PRO MP161 E2U</b>.
-          Modo <b>remoto</b> (base): el escritorio del HP se ve en un visor de la Pi por el Ethernet interno.
-          Modo <b>capturadora</b> (recomendado): el HDMI del HP entra en una capturadora USB de la Pi y Orbit OS muestra su imagen (latencia sin medir).
-          Modo <b>DDC/CI</b> (poco probable): la Pi cambia la entrada del monitor (sin documentar en los manuales de la MSI; sin verificar).</p>
+      <Panel title="Pantalla" className="span-2">
+        <p>La MSI va solo a la Pi, por el cable micro-HDMI a mini-HDMI. El HP no entra en el monitor: su imagen llega por un cable de red directo, con <b>Sunshine</b> en el HP (<b>10.0.0.1</b>) y <b>Moonlight</b> en la Pi (<b>10.0.0.2</b>). El teclado y el ratón son Bluetooth, emparejados con la Pi.</p>
+        <p>La vista por defecto es la <b>integrada</b>: Orbit OS se queda de fondo con una barra de 40 px y Moonlight ocupa el hueco
+          {visible?.hole ? <> ({visible.hole.w}×{visible.hole.h})</> : null}, sin bordes.
+          La pantalla completa (1920×1080 a 60 fps) es la alternativa.</p>
+        {visible?.pairing !== 'hecho' && (
+          <p className="callout">El emparejamiento de Moonlight con Sunshine aún no se ha hecho. Hasta hacerlo, Cambiar sistema no abre el escritorio del HP.</p>
+        )}
         <p>Visible ahora: <b>{visible ? (visible.system === 'hp' ? 'HP' : 'Raspberry Pi (Orbit OS)') : 'desconocido'}</b>
-          {visible ? <> · modo <b>{videoModeLabel(visible.mode)}</b></> : null}
+          {visible ? <> · <b>{videoModeLabel(visible.mode)}</b>{visible.layout ? <> · vista <b>{visible.layout === 'integrado' ? 'integrada' : 'completa'}</b></> : null}</> : null}
           {visible?.detail ? <span className="muted"> · {visible.detail}</span> : null}</p>
         <div className="row-actions">
-          <button className="btn btn-primary" onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema visible</button>
+          <button className="btn btn-primary" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => requestAction('pi.switch_visible')}>Cambiar sistema</button>
+          <button className="btn" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => requestAction('pi.stream_layout', { layout: visible?.layout === 'completa' ? 'integrado' : 'completa' })}>
+            {visible?.layout === 'completa' ? 'Vista integrada' : 'Pantalla completa'}
+          </button>
           <button className="btn" onClick={openOsd}>Cómo funciona</button>
         </div>
       </Panel>

@@ -16,12 +16,9 @@ Estado: **borrador implementado en v0**, validado solo con tests y simulación. 
 
 - **orbitd** (en la Pi) es el *hub*. Sirve la interfaz estática, acepta WebSockets de la interfaz (`role: ui`) y del agente del HP (`role: hp-agent`), lee el Arduino por serie, aplica la **lista blanca** y reenvía acciones.
 - **hp-agent** abre la conexión **hacia** orbitd (sale del HP), así que el HP no expone ningún puerto.
-- El vídeo **no** pasa por este protocolo. El cambio de «sistema visible» lo hace **orbitd** con la acción `pi.switch_visible` (botón B2 por defecto); Miguel nunca toca el menú OSD del MSI. Hay tres modos (ver `docs/conmutacion-video-usb.md`):
-  - **remoto** (modo A, base): la MSI muestra siempre la Pi; el escritorio del HP se abre en un visor de la Pi por el Ethernet interno (p. ej. Moonlight contra Sunshine en el HP). orbitd lanza la orden fija de `ORBIT_REMOTE_CMD` (configuración local, nunca desde la interfaz) y la cierra al volver a Orbit OS.
-  - **ddc** (modo B, opcional): orbitd ejecuta `ddcutil setvcp 60 <valor>` con los valores de `ORBIT_DDC_HP` / `ORBIT_DDC_PI` (solo si `ORBIT_VIDEO_DDC=1`, ddcutil existe y los valores son hexadecimales válidos). Si ddcutil falla, pasa al modo captura (si está configurado) o al remoto. Soporte DDC/CI del MSI (los manuales no lo documentan) y adaptador HDMI→USB-C: **PENDIENTES de verificar**; poco probable.
-  - **captura** (modo C, recomendado junto al A): el HDMI del HP entra en una capturadora HDMI→USB (UVC) conectada a la Pi; la MSI muestra siempre la Pi y orbitd abre un visor del dispositivo de captura. Configuración local: `ORBIT_CAPTURE_DEVICE` (solo `/dev/videoN` o `/dev/v4l/by-id|by-path/<nombre>`) y `ORBIT_CAPTURE_CMD` (orden fija sin shell; el elemento `{device}` se sustituye por el dispositivo). Si el dispositivo no existe o el visor no arranca, vuelve solo al modo remoto. Latencia y fps: **sin medir**.
-  - Prioridad: `ddc` (si está listo) > `captura` (si está configurada) > `remoto`.
-  - El estado `state` lleva `visible: {system: "hp"|"pi", mode: "remoto"|"ddc"|"captura", detail}` y `video_input` (entrada física: `pi` en modos remoto y captura).
+- El vídeo **no** pasa por este protocolo. El cambio de «sistema visible» lo hace **orbitd** con la acción `pi.switch_visible` (botón B2 por defecto); Miguel nunca toca el menú OSD del MSI. La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2): Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. orbitd lanza la orden fija de `ORBIT_REMOTE_CMD` (configuración local, nunca desde la interfaz) y la cierra al volver a Orbit OS. Ver `docs/instalacion-pi.md`.
+  - Cambiar la entrada de la MSI con `ddcutil` está en el código y apagado (`ORBIT_VIDEO_DDC`). Los manuales de la MSI no documentan DDC/CI.
+  - El estado `state` lleva `visible: {system: "hp"|"pi", mode: "remoto"|"ddc"|"captura", detail}`. El instalador deja `mode` en `remoto`.
 
 ## 2. Sobre común
 
@@ -48,7 +45,7 @@ Todos los mensajes son objetos JSON de texto de 16 KiB como máximo. El esquema 
 | `error` | cualquiera | `auth_failed`, `bad_message`, `not_allowed`, `bad_params`, `target_offline`, `confirm_expired`, `rate_limited` o `internal` |
 | `ping` / `pong` | orbitd ↔ cliente | Latido |
 | `state` | orbitd → ui | Estado de nodos (hp, pi, arduino): `connected`, `simulated`, `last_seen` |
-| `telemetry` | hp → orbitd → ui; orbitd → ui (pi) | CPU, RAM, disco, temperatura, uptime. **`simulated` es obligatorio** |
+| `telemetry` | hp → orbitd → ui; orbitd → ui (pi) | CPU, RAM, disco, temperatura, uptime, red. Volumen (`volume_pct`, `volume_muted`) opcional. **`simulated` es obligatorio**. Un agente viejo, sin esas claves, sigue valiendo |
 | `control_event` | orbitd → ui | Potenciómetro (`value` de 0 a 1023) o botón (`press`, `release` o `long`), con `simulated` |
 | `action_request` | ui → orbitd | Petición de acción de la lista blanca |
 | `confirm_required` | orbitd → ui | La acción es destructiva y requiere confirmación con un desafío |
@@ -75,8 +72,8 @@ Está definida **una sola vez** en `actions.json`, y la leen la interfaz, orbitd
 1. Se rechaza (`not_allowed`) cualquier acción que no figure en la lista, o cuyo prefijo (`hp.` o `pi.`) no coincida con su `target`.
 2. Los parámetros se validan con el mini-esquema de cada acción (`bad_params`), sin propiedades adicionales.
 3. **Nunca se ejecuta texto arbitrario.** hp-agent traduce cada acción a una orden fija (lista de argumentos, sin shell). `hp.open_app` solo acepta un identificador que exista en la lista de aplicaciones de la configuración local del agente.
-4. hp-agent arranca en **dry-run por defecto**: registra lo que haría y responde `dry_run: true`. Para ejecutar de verdad hace falta `--live`.
-5. Límite de frecuencia: `hp.volume_set` se agrupa a un máximo de 10 por segundo; el resto de acciones, a 5 por segundo por conexión (`rate_limited`).
+4. Un `python -m hp_agent` a mano arranca en **dry-run por defecto**: registra lo que haría y responde `dry_run: true`. Para ejecutar de verdad hace falta `--live`, o `live = true` en el toml. La tarea que deja `scripts/instalar-hp.ps1` en el HP lleva `--live` y `live = true`. `-DryRun` en ese instalador deja solo la telemetría.
+5. Límite de frecuencia: `hp.volume_set` se agrupa a un máximo de 10 por segundo; el resto de acciones, a 5 por segundo por conexión (`rate_limited`). Un potenciómetro no repite el mismo nivel. Por defecto P1 y P2 están en `none`. Un cambio menor del 3 %, o una entrada que salta al azar, no dispara la acción.
 
 ## 6. Apagado seguro (acciones con `confirm: true`)
 
@@ -91,7 +88,9 @@ ui <──action_result{ok, dry_run, "Apagado programado en 60 s; hp.shutdown_ca
 
 - Un desafío caducado o incorrecto da `confirm_expired`, y el desafío se descarta tras un solo uso.
 - `hp.shutdown_cancel` anula el apagado (Windows: `shutdown /a`; Linux: `shutdown -c`).
-- `pi.shutdown` sigue el mismo flujo. En v0, orbitd solo lo simula o registra; ejecutar `systemctl poweroff` requiere configurar permisos (**pendiente**).
+- `pi.shutdown` y `pi.restart` usan el mismo diálogo. Tras confirmar, orbitd ejecuta solo `sudo -n /usr/bin/systemctl poweroff` o `sudo -n /usr/bin/systemctl reboot`. El instalador deja esa pareja en `/etc/sudoers.d/orbit-power`, para el usuario del servicio, y nada más. La Pi se apaga o reinicia en el acto: no hay 60 s de margen.
+- En simulación (`--sim`) o si el equipo no es una Raspberry Pi, esas dos acciones responden y no llaman a systemctl.
+- Un botón del Nano asignado a `pi.shutdown` o `pi.restart` no actúa con un toque corto. Mantenerlo pulsado abre el mismo diálogo. Si no hay una interfaz conectada, no se apaga.
 
 ## 7. Arduino → orbitd (serie)
 

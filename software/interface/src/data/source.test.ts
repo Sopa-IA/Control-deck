@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Message } from '@shared/ts/protocol';
 import { chooseSource, defaultWsUrl } from './source';
-import { SimDataSource } from './simSource';
+import { SimDataSource, simTelemetry } from './simSource';
 
 describe('elección de fuente', () => {
   it('prioridad: URL > guardada > entorno', () => {
@@ -14,6 +14,17 @@ describe('elección de fuente', () => {
   it('URL del WebSocket según protocolo', () => {
     expect(defaultWsUrl({ protocol: 'http:', host: 'pi.local:8765' })).toBe('ws://pi.local:8765/ws');
     expect(defaultWsUrl({ protocol: 'https:', host: 'x' })).toBe('wss://x/ws');
+  });
+});
+
+describe('simTelemetry', () => {
+  it('el tiempo activo no es la época unix', () => {
+    const ahora = Date.now();
+    for (const host of ['hp', 'pi'] as const) {
+      const u = simTelemetry(host, ahora).uptime_s ?? 0;
+      expect(u).toBeGreaterThan(0);
+      expect(u).toBeLessThan(86400);
+    }
   });
 });
 

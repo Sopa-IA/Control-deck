@@ -108,33 +108,276 @@ module pletina_empalme() { difference() { caja_r([30, 10, 3], 2);
     for (x = [6, 24]) translate([x, 5, -1]) cylinder(d = tornillo_d, h = 5); } }
 
 // ---------------------------------------------------------------------
-// BANDEJA DE SERVICIO: lleva la Raspberry Pi y la distribución de energía
+// BANDEJA DE SERVICIO. Huecos fijos (2026-10-22): Pi, dos Nano, ESP8266
+// y el step-down. Sin carros. El contorno, el ala y los 4 M3 a la base
+// no se mueven. La rejilla bajo el SoC tampoco.
 // ---------------------------------------------------------------------
+function tornillos_placa(b) = [
+    for (sx = [-1, 1], sy = [-1, 1])
+        [sx < 0 ? b[0] - b3_torn_lx : b[0] + b[2] + b3_torn_lx,
+         sy < 0 ? b[1] - b3_torn_ly : b[1] + b[3] + b3_torn_ly]
+];
+// Agujeros del módulo, en esquinas opuestas. El centro a la esquina es
+// buck_ag_ins [PENDIENTE]. Los otros dos cantos llevan brida.
+function agujeros_buck() = [
+    [b3_buck[0] + buck_ag_ins, b3_buck[1] + buck_ag_ins],
+    [b3_buck[0] + b3_buck[2] - buck_ag_ins, b3_buck[1] + b3_buck[3] - buck_ag_ins]
+];
+// La brida trasera no puede salir por detrás: el sobremolde HDMI empieza
+// en y = 171,5. Va en el canto −X, 1 mm antes del borde trasero de la PCB.
+function bridas_buck() = [
+    [b3_buck[0] + b3_buck[2] + b3_torn_lx, b3_buck[1] - b3_torn_ly],
+    [b3_buck[0] - b3_torn_lx, b3_buck[1] + b3_buck[3] - 1]
+];
+
+module guia_m3(x, y, z_techo, prof) {
+    if (fijacion == "autorroscante")
+        translate([x, y, z_techo - prof])
+            cylinder(d = rosca_d, h = prof + 0.6, $fn = 24);
+    else
+        translate([x, y, z_techo - inserto_l])
+            cylinder(d = inserto_d, h = inserto_l + 0.6, $fn = 24);
+}
+// Puente de cable: dos postes y una barra. El cable entra por debajo.
+// La barra salva unos 6 mm; en la cama es un puente corto, sin soporte.
+module puente_cable(x, y, dx, dy) {
+    z0 = suelo - 0.2;
+    zb = suelo + 4.2;
+    translate([x, y, z0]) cube([2, 2, zb + 1.6 - z0]);
+    translate([x + dx, y + dy, z0]) cube([2, 2, zb + 1.6 - z0]);
+    hull() {
+        translate([x, y, zb]) cube([2, 2, 1.6]);
+        translate([x + dx, y + dy, zb]) cube([2, 2, 1.6]);
+    }
+}
+// Bolsillo de una placa con pines macho hacia abajo (bandeja v3, 2026-10-23).
+// Las paredes largas ya no cierran el canal: cada fila sale por una ventana
+// desde el suelo hasta la cara superior de la PCB. Quedan los postes de
+// esquina, un retorno corto en la zona sin pines (pin_extremo) y el apoyo
+// del canto corto. La PCB no sube: bajo la carcasa ya impresa el ESP solo
+// tiene 4,8 mm en la esquina delantera hasta la tina, y un Dupont recto
+// (carcasa 14,5 mm) no cabe en los 13 mm. El cable sale en horizontal con
+// un Dupont hembra acodado a 90°. usb_sy = −1 el conector mira a −Y; +1 a +Y.
+module bolsillo_pines(b, usb_sy, pcb_t) {
+    x0 = b[0]; y0 = b[1]; lx = b[2]; ly = b[3];
+    z0 = suelo - 0.2;
+    z_pcb = suelo + b3_pin_z;
+    z1 = z_pcb + pcb_t;
+    h = z1 - z0;
+    // Retorno de esquina, solo hasta pin_extremo: no tapa ningún pin y
+    // deja la holgura de 0,5 mm. Va pegado al poste; no es un puente.
+    ret_y = b3_holg + b3_pared + pin_extremo;
+    echo(str("VENTANA_PINES;ly;", ly, ";claro_y;", ly - 2*pin_extremo,
+             ";claro_z;", b3_pin_z, ";desde_suelo_hasta_pcb"));
+    difference() {
+        union() {
+            for (sx = [x0 - b3_holg - b3_pared, x0 + lx + b3_holg]) {
+                translate([sx, y0 - b3_holg - b3_pared, z0])
+                    cube([b3_pared, ret_y, h]);
+                translate([sx, y0 + ly - pin_extremo, z0])
+                    cube([b3_pared, ret_y, h]);
+            }
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            apoyo_centro(x0, y0 - b3_holg - 0.3, y0 + b3_apoyo, lx, z0, z_pcb, usb_sy < 0);
+            apoyo_centro(x0, y0 + ly - b3_apoyo, y0 + ly + b3_holg + 0.3, lx, z0, z_pcb, usb_sy > 0);
+            for (p = tornillos_placa(b))
+                translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+        }
+        // La PCB entra desde arriba. El poste no pisa la placa.
+        translate([x0 - 0.01, y0 - 0.01, z_pcb - 0.01]) cube([lx + 0.02, ly + 0.02, 40]);
+        // Paso del conector, en el canto usb_sy.
+        translate([x0 + lx/2 - b3_usb/2,
+                   usb_sy < 0 ? y0 - b3_holg - b3_pared - 0.4 : y0 + ly + b3_holg - 0.2,
+                   z_pcb - 0.6])
+            cube([b3_usb, b3_pared + 0.8, 20]);
+        // Canal de cada fila. El cilindro no se resta: deja rosca_pared
+        // alrededor de la guía, y ese cilindro no llega a pin_extremo.
+        difference() {
+            union() {
+                translate([x0, y0, z0 - 0.01]) cube([pin_fila_w, ly, z_pcb - z0 + 0.02]);
+                translate([x0 + lx - pin_fila_w, y0, z0 - 0.01]) cube([pin_fila_w, ly, z_pcb - z0 + 0.02]);
+            }
+            for (p = tornillos_placa(b))
+                translate([p[0], p[1], z0 - 0.2])
+                    cylinder(d = rosca_d + 2*rosca_pared, h = z_pcb - z0 + 1, $fn = 24);
+        }
+    }
+}
+// Escalón en la banda central. No entra en la huella de las filas.
+// En el canto del USB, cada lado tiene que medir al menos 1,6 mm.
+module apoyo_centro(x0, y_lo, y_hi, lx, z0, z_pcb, abrir_usb) {
+    xL = x0 + pin_fila_w;
+    xR = x0 + lx - pin_fila_w;
+    hh = z_pcb - z0;
+    dy = y_hi - y_lo;
+    if (abrir_usb) {
+        xa = x0 + lx/2 - b3_usb/2;
+        xb = xa + b3_usb;
+        if (xa - xL >= 1.6)
+            translate([xL, y_lo, z0]) cube([xa - xL, dy, hh]);
+        if (xR - xb >= 1.6)
+            translate([xb, y_lo, z0]) cube([xR - xb, dy, hh]);
+    } else
+        translate([xL, y_lo, z0]) cube([xR - xL, dy, hh]);
+}
+// Hueco 43 × 21 mm. En el modelo no hay regleta: solo buck_suelda bajo la PCB.
+// El reborde acaba a ras de la PCB (z = 8,6). Un borne de tornillo va encima
+// de la placa y el hilo sale por arriba: el reborde no lo encierra. No se
+// abren ventanas aquí. Lo que Miguel tiene puesto es un convertidor ZERO/SPAN
+// de 4–20 mA, no el step-down. El LM2596 43 × 21 mm a 5 V es FALTA: comprar.
+// Reborde perimetral, dos tornillos por los agujeros del módulo y dos bridas.
+module bolsillo_buck() {
+    x0 = b3_buck[0]; y0 = b3_buck[1]; lx = b3_buck[2]; ly = b3_buck[3];
+    z0 = suelo - 0.2;
+    z_pcb = suelo + buck_suelda;
+    z1 = z_pcb + buck_pcb;
+    h = z1 - z0;
+    lab = 2.2;
+    sol = b3_holg + 0.3;
+    difference() {
+        union() {
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 + lx + b3_holg, y0 - b3_holg - b3_pared, z0])
+                cube([b3_pared, ly + 2*b3_holg + 2*b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 - b3_holg - b3_pared, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - b3_holg - b3_pared, y0 + ly + b3_holg, z0])
+                cube([lx + 2*b3_holg + 2*b3_pared, b3_pared, h]);
+            translate([x0 - sol, y0 - sol, z0]) cube([lx + 2*sol, lab + sol, z_pcb - z0]);
+            translate([x0 - sol, y0 + ly - lab, z0]) cube([lx + 2*sol, lab + sol, z_pcb - z0]);
+            translate([x0 - sol, y0, z0]) cube([lab + sol, ly, z_pcb - z0]);
+            translate([x0 + lx - lab, y0, z0]) cube([lab + sol, ly, z_pcb - z0]);
+            for (p = agujeros_buck())
+                translate([p[0], p[1], z0]) cylinder(d = 8, h = z_pcb - z0, $fn = 24);
+            for (p = bridas_buck())
+                translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+        }
+        translate([x0 - 0.01, y0 - 0.01, z_pcb - 0.01]) cube([lx + 0.02, ly + 0.02, 30]);
+    }
+}
+// Paredes de la Pi. Bajas, a ras de la PCB: el HAT no está medido.
+// Sin reborde sobre la rejilla. El canto +Y (USB/RJ45) queda abierto.
+// El canto +X solo por detrás de los HDMI.
+module paredes_pi() {
+    z0 = suelo - 0.2;
+    z1 = pi_z + 1.5;
+    h = z1 - z0;
+    translate([pi_x0 - b3_holg - b3_pared, pi_y0 - b3_holg - b3_pared, z0])
+        cube([b3_pared, pi_d + 2*b3_holg + 2*b3_pared, h]);
+    // −Y partido: la muesca de la micro-SD queda libre (x = 346 a 368).
+    translate([pi_x0 - b3_holg - b3_pared, pi_y0 - b3_holg - b3_pared, z0])
+        cube([346 - (pi_x0 - b3_holg - b3_pared), b3_pared, h]);
+    translate([368, pi_y0 - b3_holg - b3_pared, z0])
+        cube([pi_x0 + pi_w + b3_holg + b3_pared - 368, b3_pared, h]);
+    translate([pi_x0 + pi_w + b3_holg, 216, z0])
+        cube([b3_pared, 34, h]);
+    for (p = b3_pi_torn)
+        translate([p[0], p[1], z0]) cylinder(d = b3_boss, h = h, $fn = 24);
+}
+
 module bandeja_servicio() {
     difference() {
         union() {
-            translate([serv_x + 0.3, serv_y + 0.3, 0]) cube([serv_w - 0.6, serv_d - 0.6, suelo]);
+            // 0,2 mm dentro del ala: si no, el suelo y el ala solo se tocan.
+            translate([serv_x + 0.3, serv_y + 0.3, -0.2]) cube([serv_w - 0.6, serv_d - 0.6, suelo + 0.2]);
             translate([serv_x - serv_ala, serv_y - serv_ala, -serv_ala_t])
                 caja_r([serv_w + 2*serv_ala, serv_d + 2*serv_ala, serv_ala_t], 3);
-            // separadores de la Pi (M2.5)
-            for (p = agujeros_pi()) translate([p[0], p[1], suelo - 0.01]) cylinder(d = 6, h = pi_z - suelo);
-            // torretas para la distribución [PENDIENTE: placa elegida]
-            for (x = [psu_x + 6, psu_x + psu_w - 6], y = [psu_y + 6, psu_y + psu_d - 6])
-                translate([x, y, suelo - 0.01]) torreta(4);
-            // v1: torretas del soporte del Arduino (y = 63 y y = 125; la bandeja impresa no se mueve)
-            for (p = agujeros_soporte_ard()) translate([p[0], p[1], suelo - 0.01]) torreta(sop_ard_z0 - suelo + 0.01);
-            // v1: canal del cable micro-USB (Arduino -> USB de la Pi), dos paredes de 8 mm
-            for (sx = [-1, 1]) translate([ard_cx + sx*(canal_usb_ancho/2 + 0.8) - 0.8, canal_usb_y0, suelo - 0.01])
-                cube([1.6, canal_usb_y1 - canal_usb_y0, 8]);
-            // grapas del canal (puentes cada 30 mm; el cable entra a presión por el lateral)
-            for (y = [canal_usb_y0 + 10 : 30 : canal_usb_y1 - 5]) translate([ard_cx - canal_usb_ancho/2 - 1.6, y, suelo + 6.5])
-                difference() { cube([canal_usb_ancho/2 + 1.6 + 2, 4, 1.5]); }
+            for (p = agujeros_pi())
+                translate([p[0], p[1], suelo - 0.2]) cylinder(d = 6, h = pi_z - (suelo - 0.2));
+            paredes_pi();
+            bolsillo_pines(b3_esp, +1, esp_pcb);
+            bolsillo_pines(b3_prac, -1, ard_pcb);
+            bolsillo_pines(b3_man, +1, ard_pcb);
+            bolsillo_buck();
+            // Canales: el hueco entre paredes es el canal. Estos puentes lo sujetan.
+            puente_cable(402, 115.2, 0, 6);
+            puente_cable(409, 115.2, 0, 6);
+            puente_cable(383, 100, 6, 0);
+            puente_cable(383, 132, 6, 0);
+            puente_cable(423.5, 148, 6, 0);
+            puente_cable(423.5, 198, 6, 0);
+            puente_cable(423.5, 238, 6, 0);
         }
-        for (p = agujeros_pi()) translate([p[0], p[1], 1.5]) cylinder(d = 2.7, h = 20);   // rosca/inserto M2.5 [PENDIENTE]
+        // Inserto M2.5 4×3,5. Ciego, 7 mm desde la cara del poste. El M2.5×8
+        // (largo bajo la cabeza) deja 6,4 mm de rosca: 4 en el inserto y 2,4
+        // de punta, con 0,6 mm de aire. [sin probar] Ø inserto_m25_d.
+        for (p = agujeros_pi())
+            translate([p[0], p[1], pi_z - 7]) cylinder(d = inserto_m25_d, h = 7.6, $fn = 24);
         for (p = torretas_bandeja()) translate([p[0], p[1], -5]) cylinder(d = tornillo_d, h = 10);
-        // rejilla bajo la Pi
-        for (y = [pi_y + 12 : 7 : pi_y + pi_d - 12]) translate([pi_x + 15, y, -5]) caja_r([pi_w - 30, 3.5, 12], 1.6);
+        // dedo para la micro-SD, que sale hacia −Y. La ranura exacta es [PENDIENTE]:
+        // el plano la sitúa junto a ox = 0; la muesca cubre oy ≈ 20–38.
+        translate([pi_x0 + 18, pi_y0 - 16, -1]) cube([18, 20, suelo + 2]);
+        // Rejilla bajo el SoC. Atraviesa el ala (z = −2) y el suelo (z = 0 a 4).
+        // En la cama son agujeros verticales: no piden soporte. Dos tramos en Y
+        // con un nervio de 2 mm en medio, para que la plancha no quede en tiras.
+        for (i = [0 : pi_rej_n - 1], tramo = [[183, 14], [199, 16]])
+            translate([pi_rej_x0 + i * pi_rej_paso, tramo[0], -2.4])
+                cube([pi_rej_ancho, tramo[1], 7]);
+        // Los postes exteriores no entran en la PCB: son el plan B (grapa).
+        translate([pi_x0, pi_y0, pi_z]) cube([pi_w, pi_d, 30]);
+        for (p = b3_pi_torn) {
+            echo(str("ROSCA_BOLSILLO;Pi-planB;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x12;grapa;1.6"));
+            guia_m3(p[0], p[1], pi_z + 1.5, b3_rosca);
+        }
+        for (nom = [["ESP", b3_esp], ["Practicas", b3_prac], ["Mandos", b3_man]])
+            for (p = tornillos_placa(nom[1])) {
+                echo(str("ROSCA_BOLSILLO;", nom[0], ";", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca, ";tornillo;M3x12;grapa;1.6"));
+                guia_m3(p[0], p[1], suelo + b3_pin_z + ard_pcb, b3_rosca);
+            }
+        for (p = agujeros_buck()) {
+            echo(str("ROSCA_BOLSILLO;Buck-pasante;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_buck_rosca, ";tornillo;M3x8"));
+            guia_m3(p[0], p[1], suelo + buck_suelda, b3_buck_rosca);
+        }
+        for (p = bridas_buck()) {
+            echo(str("ROSCA_BOLSILLO;Buck-brida;", p[0], ";", p[1], ";d;", rosca_d, ";prof;", b3_rosca_baja, ";tornillo;M3x8;grapa;1.6"));
+            guia_m3(p[0], p[1], suelo + buck_suelda + buck_pcb, b3_rosca_baja);
+        }
     }
+}
+// OBSOLETO (2026-10-22). La cuna, el riel y la canaleta de la bahía v2
+// ya no se llaman desde bandeja_servicio(). No imprimirlos. El código se
+// queda para que las piezas viejas sigan compilando.
+// Cuna del Nano de mandos, impresa con la bandeja. La PCB apoya en los dos
+// extremos; los pines cuelgan hasta el suelo (20 mm: entra un Dupont de 17).
+// Cada poste tiene un reborde hacia fuera para el retenedor.
+module cuna_nano_mandos() {
+    x0 = ard_cx - sop_ard_w/2;
+    union() {
+        for (yb = [[ard_y - 3.2, 6.2], [ard_y + ard_l - 3.0, 6.2]])
+            translate([x0, yb[0], suelo - 0.2]) cube([sop_ard_w, yb[1], ard_pcb_z - suelo + 0.6]);
+        for (sx = [-1, 1], sy = [0, 1]) {
+            py = sy == 0 ? ard_y - 3.2 : ard_y + ard_l - 3.0;
+            px = ard_cx + sx * (ard_w/2 + 0.5);
+            translate([sx < 0 ? px - 3.4 : px, py, suelo - 0.2])
+                cube([3.4, 6.2, ard_pcb_z - suelo + ard_pcb + 2.8]);
+            // reborde: el gancho del retenedor entra por debajo
+            translate([sx < 0 ? px - 4.5 : px + 3.2, py + 1.1, ard_pcb_z + ard_pcb - 2.4])
+                cube([2.0, 4.0, 1.8]);
+        }
+    }
+}
+// Riel de los carros. En cada puesto, un cajeado para la zapata. Los dos
+// tornillos roscan en el suelo, bajo el cajeado (guía o inserto, según
+// fijacion). [PENDIENTE] probar el agarre del autorroscante.
+module riel_bahia() {
+    y0 = bay_est[0] - 22;
+    y1 = bay_est[1] + 22;
+    translate([bay_x - 5, y0, suelo - 0.2]) cube([10, y1 - y0, 6.2]);
+}
+// Canaleta del mini-USB de mandos. Ribetes de 1,6 mm, paso 8 mm, 5 mm de alto.
+// Sube por x = 420 y gira hacia el USB derecho de la Pi. No sale de la bandeja.
+module canal_bandeja_v2() {
+    z = suelo - 0.2;
+    x1 = canal_x0 + canal_rib + canal_paso;
+    y1 = canal_giro_y0 + canal_rib + canal_paso;
+    for (x = [canal_x0, x1])
+        translate([x, canal_y0, z]) cube([canal_rib, y1 + canal_rib - canal_y0, 5.2]);
+    for (y = [canal_giro_y0, y1])
+        translate([canal_giro_x0, y, z]) cube([x1 + canal_rib - canal_giro_x0, canal_rib, 5.2]);
 }
 function agujeros_soporte_ard() = [[ard_cx, sop_ard_y0 + sop_tab/2], [ard_cx, sop_ard_y0 + sop_ard_l - sop_tab/2]];
 // Boca del canal USB de la bandeja YA IMPRESA. Con el Micro salía
@@ -183,7 +426,8 @@ module soporte_arduino() {
 // Marcador del Arduino Nano de mandos (PCB + pines + clavija mini-USB).
 // Filas de pines a 15,24 mm: cota de protoboard, no medida en el clon [PENDIENTE].
 module arduino_marcador() {
-    translate([ard_cx - ard_w/2, ard_y, ard_pcb_z]) {
+    // Hueco de mandos (b3_man). La cuna vieja, en ard_cx / ard_y, ya no se usa.
+    translate([b3_man[0], b3_man[1], suelo + b3_pin_z]) {
         color([0.05, 0.35, 0.55]) cube([ard_w, ard_l, ard_pcb]);
         color([0.15, 0.15, 0.16]) translate([2, 8, ard_pcb]) cube([ard_w - 4, 22, ard_arriba]);
         color([0.8, 0.75, 0.3]) for (sx = [ard_w/2 - 7.62, ard_w/2 + 7.62]) translate([sx - 1.25, 2.4, -ard_pines]) cube([2.5, ard_l - 4.8, ard_pines]);
@@ -240,82 +484,122 @@ module riel_placas() {
     }
 }
 
-// Carro. Origen local: el tornillo está en (0, 0) y z = 0 es la cara de la bandeja.
-// `largo` corre hacia -X (la placa se aleja del riel). `ancho` es Y.
-module carro_solido(largo, ancho) {
-    x_riel = riel_x0 - riel_hueco_x;          // cara izquierda del riel, en local
-    x1 = x_riel - 0.4;                        // la cama no toca el riel
-    x0 = x1 - (largo + 2*carro_holg);
-    y0 = -(ancho/2 + carro_holg);
-    y1 =  (ancho/2 + carro_holg);
-    hueco = min(12, max(0, y1 - y0 - 2*carro_labio_t));
-    ala = (y1 - y0 - hueco) / 2;
+// OBSOLETO (2026-10-22). Carro de la bahía v2. No imprimir: la bandeja
+// ya no tiene cajeado. Origen local: tornillo en (0, 0), z = 0 sobre la bandeja.
+// La placa crece hacia +X y su USB mira a +X. modo "bordes" (Nano y proto) o
+// "columnas" (ESP, cuatro postes en los agujeros de esquina). Bajo la PCB hay
+// pcb_z = 17,5 mm: cabe un Dupont de 17 mm. Cuatro uñas pisan las esquinas de
+// la PCB (no el USB ni el ICSP) y una pestaña queda sobre el conector.
+bay_pcb0 = 3;
+module carro_solido(largo, ancho, pcb_z, modo = "bordes") {
+    x0 = bay_pcb0;
+    x1 = bay_pcb0 + largo;
+    yb = ancho/2;
+    zap_x = bay_caj_x - 2*bay_holg;
+    zap_y = bay_caj_y - 2*bay_holg;
     union() {
-        translate([x0, y0, 0]) cube([x1 - x0, y1 - y0, carro_cama_t]);
-        // labios en Y, a todo el largo
-        translate([x0, y0, carro_cama_t - 0.01]) cube([x1 - x0, carro_labio_t, carro_labio_h + 0.01]);
-        translate([x0, y1 - carro_labio_t, carro_cama_t - 0.01]) cube([x1 - x0, carro_labio_t, carro_labio_h + 0.01]);
-        // labio del lado del enchufe, abierto en el centro
-        if (ala > 0.4) {
-            translate([x0, y0, carro_cama_t - 0.01]) cube([carro_labio_t, ala, carro_labio_h + 0.01]);
-            translate([x0, y1 - ala, carro_cama_t - 0.01]) cube([carro_labio_t, ala, carro_labio_h + 0.01]);
+        // Zapata: entra en el cajeado. El collar deja plano para la cabeza M3.
+        translate([-zap_x/2, -zap_y/2, 0]) cube([zap_x, zap_y, 4]);
+        translate([-2.6, -6.6, 3.8]) cube([5.2, 13.2, 3.2]);
+        if (modo == "columnas") {
+            for (sx = [-1, 1], sy = [-1, 1]) {
+                cx = (x0 + x1)/2 + sx * (largo/2 - esp_ag_inset);
+                cy = sy * (ancho/2 - esp_ag_inset);
+                translate([cx, cy, 0]) cylinder(d = 5.6, h = pcb_z, $fn = 24);
+                translate([cx, cy, pcb_z - 0.2]) cylinder(d = 2.4, h = 2.4, $fn = 18);
+            }
+            translate([x0 - 1, -(yb - 2.4), 0]) cube([6.8, 2*(yb - 2.4), 3.2]);
+            translate([x1 - 5.8, -(yb - 2.4), 0]) cube([6, 2*(yb - 2.4), 3.2]);
+            translate([x0, -2.2, 0]) cube([largo, 4.4, 2.8]);
+        } else {
+            for (sy = [-1, 1])
+                translate([x0, sy * (yb - 3.2) - 1.3, 0]) cube([largo, 2.6, pcb_z]);
+            translate([x0 - 1, -(yb - 0.8), 0]) cube([5.2, 2*(yb - 0.8), pcb_z]);
+            translate([x1 - 4.2, -(yb - 0.8), 0]) cube([4.2, 2*(yb - 0.8), pcb_z]);
         }
-        // nervio junto al riel. No entra en su X: el puente, por encima, une con la pestaña.
-        translate([x1 - 2.6, -3.2, carro_cama_t - 0.2])
-            cube([2.6, 6.4, carro_pest_z0 + carro_pest_h - (carro_cama_t - 0.2)]);
-        translate([x_riel - 0.9, -3.2, carro_pest_z0])
-            cube([carro_pest_x0 - (x_riel - 0.9) + 0.9, 6.4, 2.2]);
-        translate([carro_pest_x0, -carro_pest_y, carro_pest_z0])
-            cube([carro_pest_x1 - carro_pest_x0, 2*carro_pest_y, carro_pest_h]);
-        translate([-riel_mort_x/2 + 0.45, -riel_mort_y/2 + 0.4, riel_h - riel_mort_z + 0.2])
-            cube([riel_mort_x - 0.9, riel_mort_y - 0.8, riel_mort_z + 0.2]);
+        for (sx = [0, 1], sy = [-1, 1]) {
+            fy = sy * (yb - 2.6) - 1.2;
+            fx = sx == 0 ? x0 - 0.4 : x1 - 2.0;
+            translate([fx, fy, 0]) cube([2.4, 2.4, pcb_z + 3.2]);
+            translate([sx == 0 ? x0 + 0.4 : x1 - 2.6, fy, pcb_z + 1.85]) cube([2.2, 2.4, 1.3]);
+        }
+        translate([x1 - 3.6, -4, pcb_z + 6.0]) cube([2.8, 8, 1.4]);
+        translate([x1 - 1.4, -1.2, 0]) cube([1.6, 2.4, pcb_z + 7.6]);
     }
 }
-
-module carro_imprimible(largo, ancho) {
+module carro_imprimible(largo, ancho, pcb_z, modo = "bordes") {
     difference() {
-        carro_solido(largo, ancho);
-        translate([0, 0, riel_h - 0.2]) cylinder(d = tornillo_d, h = 8, $fn = 24);
+        carro_solido(largo, ancho, pcb_z, modo);
+        for (p = bay_torn)
+            translate([p[0], p[1], -0.2]) cylinder(d = tornillo_d, h = 12, $fn = 24);
     }
 }
-
-module carro_en_puesto(i, largo, ancho, clavija) {
-    translate([riel_hueco_x, riel_est[i], suelo]) {
-        carro_imprimible(largo, ancho);
-        // marcador de la placa y del enchufe hacia -X. No forma parte del STL.
-        x_riel = riel_x0 - riel_hueco_x;
-        x1 = x_riel - 0.4;
-        color([0.15, 0.35, 0.55])
-            translate([x1 - carro_holg - largo, -(ancho/2), carro_cama_t]) cube([largo, ancho, 1.6]);
-        if (clavija > 0)
+module carro_en_puesto(i, largo, ancho, pcb_z, modo = "bordes", icsp = false) {
+    translate([bay_x, bay_est[i], suelo]) {
+        carro_imprimible(largo, ancho, pcb_z, modo);
+        color([0.15, 0.45, 0.62])
+            translate([bay_pcb0, -ancho/2, pcb_z]) cube([largo, ancho, 1.6]);
+        color([0.75, 0.75, 0.78])
+            translate([bay_pcb0 + largo - 2, -4, pcb_z + 1.6]) cube([3, 8, 4]);
+        if (icsp)
             color([0.1, 0.1, 0.1])
-                translate([x1 - carro_holg - largo - clavija, -5, carro_cama_t]) cube([clavija, 10, 4]);
+                translate([bay_pcb0 + 1, -pr_icsp[1]/2, pcb_z + 1.6]) cube(pr_icsp);
+        if (modo == "columnas")
+            color([0.15, 0.15, 0.16])
+                translate([bay_pcb0 + largo/2 - esp_mod[0]/2, -esp_mod[1]/2, pcb_z + 1.6]) cube(esp_mod);
+    }
+}
+function carro_caja(i, largo, ancho, pcb_z) = [
+    bay_x - 5,
+    bay_est[i] - ancho/2 - 1,
+    suelo,
+    bay_pcb0 + largo + 5,
+    ancho + 2,
+    pcb_z + 1.6 + 6.2
+];
+function carro_usb_caja(i, ancho, pcb_z, clavija, largo) = [
+    bay_x + bay_pcb0 + largo,
+    bay_est[i] - 5,
+    suelo + pcb_z + 1.6,
+    clavija,
+    10,
+    6
+];
+// OBSOLETO (2026-10-22). Retenedor del Nano de mandos. No imprimir:
+// el hueco nuevo lo pisan cuatro tornillos. Enganchaba los rebordes de la
+// cuna, pisa las cuatro esquinas de la PCB y lleva un tope sobre el mini-USB.
+module retenedor_nano() {
+    x0 = ard_cx - ard_w/2;
+    ztop = ard_pcb_z + ard_pcb;
+    union() {
+        // dos barras de canto a canto, por fuera de la PCB, unen los cuatro ganchos
+        for (sx = [-1, 1])
+            translate([ard_cx + sx * (ard_w/2 + 2.6) - 1.1, ard_y - 3, ztop - 3.4])
+                cube([2.2, ard_l + 6, 2.4]);
+        for (sy = [0, 1]) {
+            py = sy == 0 ? ard_y - 3.2 : ard_y + ard_l - 4.2;
+            translate([x0 - 4.9, py, ztop - 2.2]) cube([ard_w + 10.9, 5.2, 2.2]);
+            translate([x0 + 0.8, py + 1.4, ztop - 0.2]) cube([3.4, 2.4, 1.4]);
+            translate([x0 + ard_w - 4.2, py + 1.4, ztop - 0.2]) cube([3.4, 2.4, 1.4]);
+            for (sx = [-1, 1]) {
+                hx = ard_cx + sx * (ard_w/2 + 1.2);
+                translate([sx < 0 ? hx - 4.0 : hx + 2.4, py + 0.6, ztop - 4.2])
+                    cube([2.6, 4.0, 4.4]);
+            }
+        }
+        // tope sobre el mini-USB, unido a la barra trasera
+        translate([ard_cx - 4, ard_y + ard_l - 4.2, ztop + 4.6]) cube([8, 6.4, 1.4]);
+        translate([ard_cx - 1.2, ard_y + ard_l - 4.2, ztop - 2.2]) cube([2.4, 3.2, 8.4]);
     }
 }
 
-// Caja de la cama, la placa y el enchufe. Queda a la izquierda del riel.
-// La pestaña va en carro_pestana_caja(): empieza por encima del riel, así
-// las dos cajas no se solapan. El tetón vive dentro del mortise (hueco) y
-// no entra en ninguna caja.
-function carro_caja(i, largo, ancho, alto, clavija) =
-    let(
-        x1 = riel_x0 - 0.4,
-        x0 = x1 - (largo + 2*carro_holg + clavija),
-        y0 = riel_est[i] - ancho/2 - carro_holg
-    )
-    [x0, y0, suelo, x1 - x0, ancho + 2*carro_holg, carro_cama_t + alto];
-
-function carro_pestana_caja(i) = [
-    riel_hueco_x + carro_pest_x0,
-    riel_est[i] - carro_pest_y,
-    suelo + carro_pest_z0,
-    carro_pest_x1 - carro_pest_x0,
-    2*carro_pest_y,
-    carro_pest_h
+// Agujeros de la Pi ya girada. Oficial (ox, oy) → mundo (pi_x0 + 56 − oy, pi_y0 + ox).
+function agujeros_pi() = [
+    [pi_x0 + 52.5, pi_y0 + 3.5],
+    [pi_x0 + 3.5,  pi_y0 + 3.5],
+    [pi_x0 + 3.5,  pi_y0 + 61.5],
+    [pi_x0 + 52.5, pi_y0 + 61.5]
 ];
-
-function agujeros_pi() = [for (dx = [0, pi_agujeros[0]], dy = [0, pi_agujeros[1]])
-    [pi_x + pi_agujero_borde + dx, pi_y + pi_agujero_borde + dy]];
 
 // ---------------------------------------------------------------------
 // GUÍA DE LUZ FRONTAL (PETG translúcido natural) con canal para tira LED
@@ -346,13 +630,34 @@ module pomo() {   // pomo Ø30 moleteado, eje de 6 mm
             translate([0, 0, knob_h - 2]) cylinder(d1 = knob_d, d2 = knob_d - 3, h = 2, $fn = 72);
         }
         for (a = [0 : 10 : 359]) rotate([0, 0, a]) translate([knob_d/2 + 0.2, 0, -1]) cylinder(d = 1.6, h = knob_h - 3, $fn = 8);
-        // eje de 6 mm: agujero redondo + plano en D opcional + prisionero M3 radial
-        // (vale para eje en D o liso; estriado: usar pomo comercial) [PENDIENTE medir eje]
+        // eje de 6 mm: agujero redondo + plano en D opcional.
+        // Estriado: el tornillo radial aprieta el eje; si no entra, pomo comercial. [PENDIENTE medir eje]
         difference() { translate([0, 0, -1]) cylinder(d = eje_pot_d + 0.2, h = 14);
             if (pomo_eje_D) translate([1.5 + 0.1, -5, -2]) cube([10, 10, 20]); }
-        translate([0, 0, 6]) rotate([0, 90, 0]) cylinder(d = 2.5, h = knob_d);   // prisionero M3 (rosca a mano o inserto)
+        // Retención radial. De la piel (x = 15) al eje (x = 3,1) hay 12 mm:
+        // un avellanado M3×4 o ×5 no llega. Cabeza de botón M3×12 (ISO 7380,
+        // Ø5,7 × 1,65) en un cajeado Ø6,5 × 1,8, paso Ø3,4, y bolsillo Ø4,0 × 4,5
+        // para el inserto M3 4×5, a ras del eje. La punta entra ~1,9 mm en el eje.
+        // [sin probar] el Ø4,0.
+        translate([knob_d/2 - 1.8, 0, 6]) rotate([0, 90, 0]) cylinder(d = 6.5, h = 2.6, $fn = 24);
+        translate([(eje_pot_d + 0.2)/2 + 4.3, 0, 6]) rotate([0, 90, 0]) cylinder(d = tornillo_d, h = 12, $fn = 20);
+        translate([(eje_pot_d + 0.2)/2 - 0.2, 0, 6]) rotate([0, 90, 0]) cylinder(d = inserto_d, h = 4.7, $fn = 24);
         translate([0, 0, -1]) cylinder(d = 12, h = 2.5);
         translate([0, knob_d/2 - 5, knob_h - 0.8]) cylinder(d = 2.4, h = 2);   // marca de posición (relleno ámbar)
+    }
+}
+// Grapa de esquina, 1,6 mm. Sustituye a la arandela Ø9, que solo pisaba
+// 1,1 mm. El agujero es el del tornillo. La lengüeta (+X) cae sobre la PCB.
+// La punta queda a 6,2 mm del eje: la esquina está a ~3,4 mm, así que entran
+// unos 2,8 mm, dentro de pin_extremo (2,5 mm) si se apunta a la esquina.
+// Una pieza. En cada esquina se gira para que la lengüeta mire a la placa.
+module grapa_esquina() {
+    difference() {
+        hull() {
+            cylinder(d = 8.5, h = grapa_t, $fn = 32);
+            translate([2.6, 0, 0]) cylinder(d = 7.2, h = grapa_t, $fn = 24);
+        }
+        translate([0, 0, -0.3]) cylinder(d = tornillo_d, h = grapa_t + 0.8, $fn = 24);
     }
 }
 module anillo_luz() {  // guía de luz anular bajo cada pomo (PETG translúcido)
@@ -367,3 +672,441 @@ module anillo_luz() {  // guía de luz anular bajo cada pomo (PETG translúcido)
 }
 // v1: la tapa de botón impresa desaparece: los pulsadores de panel genéricos traen
 // su propio actuador (modelo [PENDIENTE]).
+
+// ---------------------------------------------------------------------
+// PLACA I/O DEL HP (ventana ya impresa de carcasa_x0_y1; esa pieza no se toca)
+// Origen: esquina inferior izquierda de la ventana. x a la derecha mirando
+// la trasera, y hacia arriba, z hacia fuera. Reborde sobre la cama.
+// ---------------------------------------------------------------------
+io_nervio = 3.2;   // [DISEÑO] marco de la prueba
+io_anillo = 2.6;   // [DISEÑO] plástico alrededor de cada hueco de la prueba
+io_espina = 3.0;   // [DISEÑO] nervio de cada hueco hasta el marco superior
+
+module placa_io_hp() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    t = io_placa_t;
+    echo(str("PLACA_IO;ventana;", Ww, ";", Wh, ";z0;", ventana_hp_z,
+             ";t;", t, ";labio;", io_placa_labio, ";", io_placa_labio_inf,
+             ";holg;", io_placa_holg, ";suelo_bajo_ventana;", ventana_hp_z - suelo));
+    for (h = io_huecos)
+        echo(str("HUECO_IO;", h[0], ";", h[1], ";", h[2], ";", h[3], ";", h[4]));
+    difference() {
+        union() {
+            translate([-io_placa_labio, -io_placa_labio_inf, 0])
+                caja_r([Ww + 2*io_placa_labio,
+                        Wh + io_placa_labio + io_placa_labio_inf, t], 3);
+            // Tetón: mismo centro de arco que la ventana (r = 2) y 0,4 mm dentro.
+            translate([io_placa_holg, io_placa_holg, t - 0.25])
+                caja_r([Ww - 2*io_placa_holg, Wh - 2*io_placa_holg, t + 0.25],
+                       2 - io_placa_holg);
+        }
+        for (h = io_huecos)
+            translate([h[1], h[2], -0.3])
+                caja_r([h[3], h[4], 2*t + 1], min(1.2, h[3]/2 - 0.4, h[4]/2 - 0.4));
+    }
+}
+
+module _cuerpo_prueba_io() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    t = io_placa_t;
+    difference() {
+        caja_r([Ww, Wh, t], 2);
+        translate([io_nervio, io_nervio, -0.4])
+            cube([Ww - 2*io_nervio, Wh - 2*io_nervio, t + 0.8]);
+    }
+    for (h = io_huecos)
+        intersection() {
+            caja_r([Ww, Wh, t], 2);
+            translate([h[1] - io_anillo, h[2] - io_anillo, 0])
+                cube([h[3] + 2*io_anillo, h[4] + 2*io_anillo, t]);
+        }
+    for (h = io_huecos)
+        translate([h[1] + h[3]/2 - io_espina/2,
+                   h[2] + h[4] + io_anillo - 0.3, 0])
+            cube([io_espina, Wh - io_nervio - (h[2] + h[4] + io_anillo) + 0.6, t]);
+}
+
+module prueba_placa_io_hp() {
+    Ww = ventana_hp[0];
+    Wh = ventana_hp[1];
+    echo(str("PRUEBA_IO;ventana;", Ww, ";", Wh, ";t;", io_placa_t,
+             ";nervio;", io_nervio, ";anillo;", io_anillo));
+    difference() {
+        _cuerpo_prueba_io();
+        for (h = io_huecos)
+            translate([h[1], h[2], -0.4])
+                caja_r([h[3], h[4], io_placa_t + 0.8],
+                       min(1.2, h[3]/2 - 0.4, h[4]/2 - 0.4));
+    }
+}
+
+// Rótulo hundido en la cara que apoya en la cama (z = 0). Esa cara queda
+// fuera: el espejo en X lo deja legible al mirarla.
+module _rotulo_cama(x, y, s, tam = 2.2) {
+    translate([x, y, -0.02]) mirror([1, 0, 0])
+        linear_extrude(0.42)
+            text(s, size = tam, font = "Noto Sans", halign = "center", valign = "center");
+}
+
+// ---------------------------------------------------------------------
+// MARCO DEL I/O FRONTAL. Entra a presión en la ventana YA impresa de
+// 62 × 18. No se corta ni se taladra la carcasa. z = 0 es la cara de
+// fuera (en la cama). +z es el faldón, hacia dentro del hueco.
+// El reborde de atrás mide 0,4 mm: el Ø12,2 empieza 0,9 mm después.
+// ---------------------------------------------------------------------
+module marco_io_frontal() {
+    w = io_impresa_w;
+    h = io_impresa_h;
+    xf = marco_labio_frente;
+    xr = marco_labio_atras;
+    yi = marco_labio_inf;
+    ys = marco_labio_sup;
+    W = xf + w + xr;
+    H = yi + h + ys;
+    boca = 0.8;
+    echo(str("MARCO_IO;ventana;", w, ";", h,
+             ";pieza;", W, ";", H,
+             ";boca;", w - 2 * marco_holg - 2 * boca, ";", h - 2 * marco_holg - 2 * boca,
+             ";faldon;", marco_tet));
+    difference() {
+        union() {
+            cube([W, H, marco_t]);
+            translate([xf + marco_holg, yi + marco_holg, marco_t - 0.05])
+                cube([w - 2 * marco_holg, h - 2 * marco_holg, marco_tet + 0.05]);
+            // Nervios de 0,4 mm: asoman 0,1 mm del hueco. Si aprietan, se lijan ellos.
+            for (p = [[xf + 14, yi + marco_holg - 0.4, 10, 0.55],
+                      [xf + w - 24, yi + marco_holg - 0.4, 10, 0.55],
+                      [xf + 14, yi + h - marco_holg - 0.15, 10, 0.55],
+                      [xf + w - 24, yi + h - marco_holg - 0.15, 10, 0.55]])
+                translate([p[0], p[1], marco_t]) cube([p[2], p[3], marco_tet * 0.65]);
+        }
+        translate([xf + marco_holg + boca, yi + marco_holg + boca, -0.4])
+            cube([w - 2 * marco_holg - 2 * boca, h - 2 * marco_holg - 2 * boca, marco_t + marco_tet + 2]);
+        _rotulo_cama(xf + 18, yi / 2, "USB", 2.2);
+        _rotulo_cama(xf + w - 16, yi / 2, "SD", 2.2);
+    }
+}
+
+// ---------------------------------------------------------------------
+// TAPA DE LOS AGUJEROS VIEJOS de x1_y1. No son la Pi. Placa maciza,
+// por dentro, con un tetón en cada hueco que ya existe. z = 0 es la
+// cara interior (en la cama). +z entra en la pared. No hay ranuras.
+// ---------------------------------------------------------------------
+module placa_puertos_pi() {
+    holg = tapa_pi_huecos_holg;
+    t = tapa_pi_huecos_t;
+    tet = tapa_pi_huecos_tet;
+    L = tapa_pi_huecos_labio;
+    x0 = min([for (c = conectores) c[1] - c[3] / 2]) - L;
+    x1 = max([for (c = conectores) c[1] + c[3] / 2]) + L;
+    z0 = min([for (c = conectores) c[2] - c[4] / 2]) - L;
+    z1 = max([for (c = conectores) c[2] + c[4] / 2]) + L;
+    echo(str("PLACA_PI;tapa;", x1 - x0, ";", z1 - z0,
+             ";mundo;", x0, ";", x1, ";", z0, ";", z1,
+             ";huecos;", len(conectores)));
+    union() {
+        caja_r([x1 - x0, z1 - z0, t], 3);
+        for (c = conectores)
+            if (c[5] == "c")
+                translate([c[1] - x0, c[2] - z0, t - 0.05])
+                    cylinder(d = c[3] - 2 * holg, h = tet + 0.05, $fn = 32);
+            else
+                translate([c[1] - c[3] / 2 + holg - x0,
+                           c[2] - c[4] / 2 + holg - z0, t - 0.05])
+                    caja_r([c[3] - 2 * holg, c[4] - 2 * holg, tet + 0.05],
+                           min(0.8, (min(c[3], c[4]) - 2 * holg) / 2 - 0.2));
+    }
+}
+
+// Lengüeta que atraviesa un hueco ya impreso y hace un diente a 45°.
+// nx0..nx1 es el cuerpo; wx0..wx1 es el diente, más ancho, al final.
+module _gancho_hueco(nx0, nx1, wx0, wx1, y0, y1) {
+    hull() {
+        translate([nx0, y0, careta_t - 0.05])
+            cube([nx1 - nx0, y1 - y0, pared - careta_gancho + 0.05]);
+        translate([wx0, y0, careta_t + pared - 0.12])
+            cube([wx1 - wx0, y1 - y0, 0.12]);
+    }
+}
+
+// ---------------------------------------------------------------------
+// CARETA DEL PANEL DE PINES. Por fuera, sobre el campo ya impreso.
+// z = 0 es la cara de fuera (en la cama). Los ganchos (+z) pasan por
+// las ventanas de OLED y de PRG, que ya existen. No se lima el grabado.
+// ---------------------------------------------------------------------
+module panel_pines() {
+    L = careta_labio;
+    t = careta_t;
+    ox = panel_x0 - L;
+    oz = panel_z0 - L;
+    W = panel_w + 2 * L;
+    H = panel_h + 2 * L;
+    function lx(x) = x - ox;
+    function lz(z) = z - oz;
+    pi_xa = panel_x0 + 4 - 0.9;
+    pi_xb = panel_x0 + 4 + 19 * 2.54 + 0.9;
+    pi_z1 = panel_z0 + 14;
+    pi_z2 = pi_z1 + 2.54;
+    na_xa = panel_x0 + 6 - 0.9;
+    na_xb = panel_x0 + 6 + 11 * 2.54 + 0.9;
+    na_z1 = panel_z0 + 36;
+    na_z2 = na_z1 + 2.54;
+    // OLED y PRG, en mundo. La boca de la careta es 1,5 mm más pequeña.
+    oled_x0 = panel_x0 + 8;
+    oled_z0 = panel_z0 + panel_h - 22;
+    prg_x0 = panel_x0 + panel_w - 18;
+    prg_z0 = panel_z0 + panel_h - 20;
+    echo(str("PANEL_PINES;pieza;", W, ";", H,
+             ";pi;", pi_xa, ";", pi_xb, ";", pi_z1, ";", pi_z2,
+             ";nano;", na_xa, ";", na_xb, ";", na_z1, ";", na_z2));
+    difference() {
+        union() {
+            cube([W, H, t]);
+            // Ganchos en los cantos de la OLED (24 × 14). El diente pasa del borde del hueco.
+            _gancho_hueco(lx(oled_x0) + 0.25, lx(oled_x0) + 1.45,
+                          lx(oled_x0) - 0.95, lx(oled_x0) + 1.45,
+                          lz(oled_z0) + 4, lz(oled_z0) + 10);
+            _gancho_hueco(lx(oled_x0 + 24) - 1.45, lx(oled_x0 + 24) - 0.25,
+                          lx(oled_x0 + 24) - 1.45, lx(oled_x0 + 24) + 0.95,
+                          lz(oled_z0) + 4, lz(oled_z0) + 10);
+            // Ganchos en los cantos de PRG (14 × 8).
+            _gancho_hueco(lx(prg_x0) + 0.25, lx(prg_x0) + 1.15,
+                          lx(prg_x0) - 0.95, lx(prg_x0) + 1.15,
+                          lz(prg_z0) + 2.4, lz(prg_z0) + 5.6);
+            _gancho_hueco(lx(prg_x0 + 14) - 1.15, lx(prg_x0 + 14) - 0.25,
+                          lx(prg_x0 + 14) - 1.15, lx(prg_x0 + 14) + 0.95,
+                          lz(prg_z0) + 2.4, lz(prg_z0) + 5.6);
+        }
+        // Una ranura por fila. El pin de 0,64 mm pasa; el plástico de la regleta no.
+        for (zc = [pi_z1, pi_z2])
+            translate([lx(pi_xa), lz(zc) - 0.8, -0.3]) cube([pi_xb - pi_xa, 1.6, t + 0.8]);
+        for (zc = [na_z1, na_z2])
+            translate([lx(na_xa), lz(zc) - 0.8, -0.3]) cube([na_xb - na_xa, 1.6, t + 0.8]);
+        // Boca 1,5 mm dentro del hueco impreso. El gancho ocupa ese marco.
+        translate([lx(oled_x0) + 1.5, lz(oled_z0) + 1.5, -0.4])
+            cube([oled_ventana[0] - 3, oled_ventana[1] - 3, t + pared + 2]);
+        translate([lx(prg_x0) + 1.3, lz(prg_z0) + 1.3, -0.4])
+            cube([14 - 2.6, 8 - 2.6, t + pared + 2]);
+        _rotulo_cama((lx(pi_xa) + lx(pi_xb)) / 2, lz(pi_z1) - 5, "PI", 2.6);
+        _rotulo_cama((lx(na_xa) + lx(na_xb)) / 2, lz(na_z2) + 5, "NANO", 2.4);
+        _rotulo_cama(lx(panel_x0 + 40), (lz(pi_z2) + lz(na_z1)) / 2, "NO UNIR", 2.4);
+    }
+}
+
+// ---------------------------------------------------------------------
+// BOTÓN DE ENCENDIDO (provisional, 2026-10-22)
+// La carcasa x0_y1 ya está impresa: estos módulos no la modifican.
+// Capuchón por el Ø12,2, soporte pegado por dentro, prueba de ajuste.
+// ---------------------------------------------------------------------
+
+function x_empuje() = pared + cap_brida_t;
+function x_tope_boton() = x_empuje() + cap_recorrido;
+function x_punta_sw() = x_empuje() + cap_recorrido - sw_carrera;
+function x_sw0() = x_punta_sw() + sw_vastago_h();
+function x_sw1() = x_sw0() + sw_cuerpo_h();
+function sop_z0() = boton_hp_z - sop_bajo;
+function sop_y0() = boton_hp_y - sop_ala;
+function guia_x0() = pared - guia_entra;
+
+// Símbolo IEC 60417-5009 hundido. El palo va en +X de la pieza de impresión:
+// al montar, ese +X mira hacia arriba.
+module _simbolo_encendido() {
+    h = cap_simbolo_h + 0.5;
+    difference() {
+        cylinder(d = 7.2, h = h, $fn = 48);
+        translate([0, 0, -0.2]) cylinder(d = 4.9, h = h + 0.4, $fn = 48);
+        translate([1.45, -1.75, -0.2]) cube([3.6, 3.5, h + 0.4]);
+    }
+    translate([0.15, -0.65, 0]) cube([3.9, 1.3, h]);
+}
+
+// Impresión: pestaña en z = 0, vástago hacia arriba, símbolo en la cara de arriba.
+module boton_encendido() {
+    echo(str("CAP;vastago;", cap_vastago_d, ";brida;", cap_brida_d,
+             ";alto;", cap_brida_t + cap_vastago_l, ";recorrido;", cap_recorrido,
+             ";sale;", cap_sale));
+    difference() {
+        union() {
+            cylinder(d = cap_brida_d, h = cap_brida_t + 0.02, $fn = 64);
+            translate([0, 0, cap_brida_t - 0.02])
+                cylinder(d = cap_vastago_d, h = cap_vastago_l + 0.02, $fn = 64);
+        }
+        translate([0, 0, cap_brida_t + cap_vastago_l - cap_simbolo_h])
+            _simbolo_encendido();
+    }
+}
+
+// En la carcasa, en reposo (pulsado = 0) o hundido. +X es hacia dentro.
+module boton_encendido_montado(pulsado = 0) {
+    translate([x_empuje() + pulsado, boton_hp_y, boton_hp_z])
+        rotate([0, -90, 0]) boton_encendido();
+}
+
+// Agujero horizontal con lágrima a 45°: pasa un disco de diámetro d y se imprime sin soportes.
+// La punta queda hacia +Z. El eje del agujero es +X.
+module gota_x(d, h) {
+    r = d / 2;
+    s = sin(45);
+    rotate([0, 90, 0]) linear_extrude(h, convexity = 4) {
+        circle(d = d, $fn = 48);
+        polygon([[-r / s, 0], [-r * s, r * s], [-r * s, -r * s]]);
+    }
+}
+
+// Rombo centrado, extruido de x0 a x1. Cabe en el Ø3,1 si diag <= 2,5.
+module rombo_x(x0, x1, y, z, diag) {
+    r = diag / 2;
+    translate([x0, y, z]) rotate([0, 90, 0])
+        linear_extrude(x1 - x0, convexity = 4)
+            polygon([[0, r], [r, 0], [0, -r], [-r, 0]]);
+}
+
+module _hoja_boton(signo) {
+    w = 2.0;
+    y0 = boton_hp_y + (signo > 0 ? 3.4 : -3.4 - w);
+    z0 = sop_z0() + sop_suelo_t;
+    z1 = boton_hp_z + 1.0;
+    x_libre = x_empuje() + 0.15;
+    x_raiz = x_libre + 1.30;
+    hull() {
+        translate([x_libre, y0, z1]) cube([0.8, w, 0.35]);
+        translate([x_raiz, y0, z0 - 0.35]) cube([0.8, w, 0.7]);
+    }
+}
+
+module _guia_led() {
+    ay = boton_hp_y;
+    lz = boton_hp_z + led_hp_dz;
+    // Tramo recto por la placa, y cuña a 50° que entra 1,25 mm en la pared.
+    rombo_x(guia_x0() + 0.85, pared + sop_t + 0.4, ay, lz, guia_diag);
+    hull() {
+        rombo_x(guia_x0() + 0.85, guia_x0() + 1.15, ay, lz, guia_diag);
+        translate([guia_x0(), ay - 0.32, lz + 0.15]) cube([0.45, 0.64, 0.64]);
+    }
+    // Abocardado dentro de la placa: une la guía con las paredes del portalámparas.
+    rombo_x(pared + sop_t - 0.4, pared + sop_t + 0.55, ay, lz, 4.2);
+}
+
+module _portaled() {
+    ay = boton_hp_y;
+    lz = boton_hp_z + led_hp_dz;
+    x0 = pared + sop_t - 0.3;
+    ancho = 3.30;                 // cuerpo Ø3,0 [FUENTE T-1] + 0,3
+    brida = 4.40;                 // brida ~Ø4 [DISEÑO] + holgura
+    pt = 1.35;
+    // De la punta a la brida, 5,0 mm [DISEÑO]. La punta queda junto a la guía.
+    x_hombro = x0 + 0.7 + 5.0;
+    zf = lz - ancho / 2;
+    difference() {
+        union() {
+            translate([x0, ay - ancho / 2 - pt, zf - pt])
+                cube([x_hombro - x0 + 1.6, ancho + 2 * pt, ancho / 2 + pt + 2.4]);
+            translate([x_hombro - 0.3, ay - brida / 2 - pt, lz - brida / 2 - pt])
+                cube([2.4, brida + 2 * pt, brida / 2 + pt + 2.2]);
+        }
+        // Canal abierto por arriba. No llega a comerse la guía.
+        translate([x0 + 0.55, ay - ancho / 2, zf - 0.2])
+            cube([x_hombro - x0, ancho, 8]);
+        translate([x_hombro - 0.05, ay - brida / 2, lz - brida / 2 - 0.2])
+            cube([6, brida, 8]);
+    }
+}
+
+module _jaula_sw() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    semi = sw_lado() / 2 + sw_holg;
+    x0 = x_sw0();
+    x1 = x_sw1();
+    t = 1.5;
+    z0 = sop_z0() + sop_suelo_t;
+    z_piso = az - semi;
+    z1 = az + semi + 0.4;
+    y0 = ay - semi;
+    // Piso del cajeado, por encima del suelo, para no rozar la pestaña.
+    translate([x0 - 0.4, y0 - t, z0 - 0.2])
+        cube([x1 - x0 + t + 1.4, 2 * semi + 2 * t, z_piso - z0 + 0.2]);
+    // Laterales. Salen 1,2 mm por delante del cuerpo para hacer de tope.
+    translate([x0 - 1.2, y0 - t, z_piso]) cube([x1 - x0 + 1.2 + t, t, z1 - z_piso]);
+    translate([x0 - 1.2, y0 + 2 * semi, z_piso]) cube([x1 - x0 + 1.2 + t, t, z1 - z_piso]);
+    // Labio inferior: el cuerpo no pasa, el vástago sí.
+    translate([x0 - 1.2, y0, z_piso])
+        cube([1.2, 2 * semi, az - sw_vastago_d() / 2 - 0.55 - z_piso]);
+    // Marco trasero con ventana para las patillas (salen por la cara opuesta al vástago).
+    difference() {
+        translate([x1, y0 - t, z_piso])
+            cube([t, 2 * semi + 2 * t, z1 - z_piso]);
+        translate([x1 - 0.2, ay - (sw_lado() - 3.2) / 2, az - (sw_lado() - 3.2) / 2])
+            cube([t + 0.6, sw_lado() - 3.2, sw_lado() - 3.2]);
+    }
+    // Tetones: el pulsador entra por arriba y no se sale. 0,4 mm.
+    for (s = [-1, 1])
+        translate([x0 + 1.2, ay + s * (semi - 0.15) - (s > 0 ? 0 : 0.4), z1 - 2.2])
+            cube([2.2, 0.4, 1.1]);
+}
+
+module _topes_boton() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    z0 = sop_z0() + sop_suelo_t;
+    for (s = [-1, 1])
+        translate([x_tope_boton(), ay + s * 7.35 - (s > 0 ? 0 : 1.5), z0 - 0.2])
+            cube([1.5, 1.5, az + cap_brida_d / 2 + 0.8 - z0]);
+}
+
+module _placa_boton() {
+    ay = boton_hp_y;
+    az = boton_hp_z;
+    z0 = sop_z0();
+    y0 = sop_y0();
+    // Hasta detrás de las patillas, para que el suelo sea la base de impresión.
+    x_fin = x_sw1() + 1.5 + 8;
+    difference() {
+        union() {
+            translate([pared, y0, z0])
+                cube([sop_t, 2 * sop_ala, az + led_hp_dz + 6 - z0]);
+            translate([pared, y0, z0])
+                cube([x_fin - pared, 2 * sop_ala, sop_suelo_t]);
+        }
+        // Paso de la pestaña Ø16, con 0,3 mm por lado. Lágrima para no poner soportes.
+        translate([pared - 0.4, ay, az]) gota_x(cap_brida_d + 0.6, sop_t + 1.2);
+        // Plan B. El tornillo atraviesa el soporte y muerde la pared.
+        for (s = [-1, 1])
+            translate([pared - 0.4, ay + s * taladro_b_y, az])
+                gota_x(taladro_b_d, sop_t + 1.2);
+    }
+}
+
+// En coordenadas de la carcasa. Cara de pegar en x = pared.
+module soporte_boton() {
+    echo(str("SOP;tipo;", sw_tipo, ";z0;", sop_z0(), ";y0;", sop_y0(),
+             ";guia_x;", guia_x0(), ";tope_x;", x_tope_boton(),
+             ";sw_x;", x_sw0(), ";", x_sw1()));
+    union() {
+        _placa_boton();
+        _jaula_sw();
+        _topes_boton();
+        _hoja_boton(1);
+        _hoja_boton(-1);
+        _guia_led();
+        _portaled();
+    }
+}
+
+// Suelo en la cama. La guía queda horizontal; su cara inferior sube a ~50°.
+module soporte_boton_impresion() {
+    translate([-guia_x0(), -sop_y0(), -sop_z0()]) soporte_boton();
+}
+
+// Placa del espesor de la pared, con los dos agujeros a 14 mm.
+// Impresión: plana. Comprueba el capuchón; la guía, en el agujero pequeño.
+module prueba_boton() {
+    echo(str("PRUEBA_BOTON;agujero;", boton_hp_d + 0.2, ";led;3.1;sep;", led_hp_dz));
+    difference() {
+        translate([-14, -16, 0]) cube([28, 46, pared]);
+        translate([0, 0, -0.5]) cylinder(d = boton_hp_d + 0.2, h = pared + 1, $fn = 48);
+        translate([0, led_hp_dz, -0.5]) cylinder(d = 3.1, h = pared + 1, $fn = 24);
+    }
+}

@@ -13,6 +13,12 @@ except ModuleNotFoundError:  # pragma: no cover
     tomllib = None  # type: ignore
 
 
+def _as_bool(value: object) -> bool:
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "si", "sí"}
+    return bool(value)
+
+
 def default_config_path() -> Path:
     if platform.system() == "Windows":
         return Path(os.environ.get("APPDATA", Path.home())) / "orbit" / "hp-agent.toml"
@@ -38,6 +44,8 @@ def load(path: Optional[Path] = None, env: Optional[dict] = None) -> AgentConfig
         cfg.token = data.get("token") or None
         cfg.telemetry_period_s = float(data.get("telemetry_period_s", cfg.telemetry_period_s))
         cfg.apps = {k: list(v) for k, v in data.get("apps", {}).items()}
+        if "live" in data:
+            cfg.live = _as_bool(data.get("live"))
     if env.get("ORBIT_HUB_URL"):
         cfg.hub_url = env["ORBIT_HUB_URL"]
     if env.get("ORBIT_HP_TOKEN"):

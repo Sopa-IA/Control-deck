@@ -13,4 +13,4 @@ for VAR in ORBIT_HP_TOKEN ORBIT_UI_TOKEN; do
   { grep -v "^$VAR=" .env || true; echo "$VAR=$T"; } > .env.tmp && mv .env.tmp .env && chmod 600 .env
   echo "$VAR generado"
 done
-echo "Tokens en $(pwd)/.env (no se suben al repositorio). Copia ORBIT_HP_TOKEN al HP por un canal seguro."
+echo "Tokens en $(pwd)/.env (no se suben al repositorio). En el HP, scripts/instalar-hp.ps1 lee ORBIT_HP_TOKEN por ssh y no lo muestra."

@@ -59,7 +59,7 @@ def local_telemetry(host: str = "pi") -> dict:
         disk = psutil.disk_usage("/").percent
     except OSError:
         disk = 0.0
-    return {
+    out = {
         "host": host, "simulated": False,
         "hostname": socket.gethostname()[:64],
         "model": board_model()[:128],
@@ -70,9 +70,14 @@ def local_telemetry(host: str = "pi") -> dict:
         "mem_total_mb": round(vm.total / 2**20, 1),
         "disk_pct": round(disk, 1),
         "temp_c": _temp(),
-        "uptime_s": round(time.time() - psutil.boot_time()),
         "net_up_kbps": up, "net_down_kbps": down,
     }
+    boot = psutil.boot_time()
+    uptime = time.time() - boot
+    # boot_time 0 convierte la época unix en «20748 d». Un arranque real cabe en diez años.
+    if boot > 1 and 0 <= uptime < 10 * 365 * 86400:
+        out["uptime_s"] = round(uptime)
+    return out
 
 
 def simulated_hp_telemetry(t: float | None = None) -> dict:
@@ -81,7 +86,7 @@ def simulated_hp_telemetry(t: float | None = None) -> dict:
     cpu = 18 + 12 * math.sin(t / 7) + 6 * math.sin(t / 1.7)
     mem = 41 + 4 * math.sin(t / 30)
     return {
-        "host": "hp", "simulated": True, "hostname": "hp-simulado", "model": "HP (simulado; modelo real PENDIENTE)",
+        "host": "hp", "simulated": True, "hostname": "hp-simulado", "model": "HP (simulado)",
         "os": "simulado", "cpu_pct": round(max(0.0, min(100.0, cpu)), 1), "mem_pct": round(mem, 1),
         "mem_used_mb": round(8192 * mem / 100, 1), "mem_total_mb": 8192.0, "disk_pct": 63.0,
         "temp_c": round(44 + 6 * math.sin(t / 11), 1), "uptime_s": round(t % 86400),

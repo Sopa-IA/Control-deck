@@ -16,17 +16,20 @@ export type MessageType = (typeof MESSAGE_TYPES)[number];
 
 export interface NodeState { connected: boolean; simulated: boolean; last_seen?: number | null; detail?: string }
 export interface StatePayload { mode: Mode; hp: NodeState; pi: NodeState; arduino: NodeState; video_input?: 'hp' | 'pi' | 'desconocida';
-  visible?: { system: 'hp' | 'pi'; mode: 'remoto' | 'ddc' | 'captura'; detail?: string } }
+  visible?: { system: 'hp' | 'pi'; mode: 'remoto' | 'ddc' | 'captura'; detail?: string;
+    pairing?: 'pendiente' | 'hecho'; layout?: 'integrado' | 'completa'; sidebar?: 'cerrado' | 'abierto';
+    hole?: { x: number; y: number; w: number; h: number } } }
 export interface TelemetryPayload {
   host: 'hp' | 'pi'; simulated: boolean; hostname?: string; model?: string; os?: string;
   cpu_pct: number; mem_pct: number; mem_used_mb?: number; mem_total_mb?: number; disk_pct?: number;
   temp_c?: number | null; uptime_s?: number; net_up_kbps?: number; net_down_kbps?: number;
+  volume_pct?: number; volume_muted?: boolean;
 }
 export interface ControlEventPayload { control: string; kind: 'pot' | 'button'; value?: number; event?: 'press' | 'release' | 'long'; simulated: boolean }
 export interface ActionRequestPayload { action: string; params?: Record<string, unknown>; dry_run?: boolean }
 export interface ConfirmRequiredPayload { request_id: string; action: string; challenge: string; expires_in_s: number }
 export interface ActionConfirmPayload { request_id: string; challenge: string }
-export interface ActionResultPayload { action: string; ok: boolean; dry_run: boolean; simulated?: boolean; message: string }
+export interface ActionResultPayload { action: string; ok: boolean; dry_run: boolean; simulated?: boolean; message: string; output?: string }
 export interface MappingPayload { version?: number; pots: Record<string, string>; buttons: Record<string, string> }
 export interface WelcomePayload { session: string; server_time: number; heartbeat_s: number; mode: Mode }
 export interface ErrorPayload { code: string; message: string }

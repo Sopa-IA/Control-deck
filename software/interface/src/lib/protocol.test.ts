@@ -22,6 +22,10 @@ describe('protocolo compartido', () => {
     for (const [, fn] of Object.entries(controlsDefault.pots)) expect(canAssign(fn, 'pot')).toBe(true);
     for (const [, fn] of Object.entries(controlsDefault.buttons)) expect(canAssign(fn, 'button')).toBe(true);
     expect(canAssign('ui.select', 'pot')).toBe(false);
+    expect(canAssign('pi.shutdown', 'button')).toBe(true);
+    expect(canAssign('pi.restart', 'button')).toBe(true);
+    expect(canAssign('hp.shutdown', 'button')).toBe(false);
+    expect(canAssign('pi.shutdown', 'pot')).toBe(false);
     expect(Object.keys(CONTROL_FUNCTIONS)).not.toContain('$comment');
   });
   it('makeMessage produce sobres válidos', () => {

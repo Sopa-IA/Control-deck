@@ -1,6 +1,7 @@
 import { ACTIONS } from '@shared/ts/protocol';
 import { useEffect, useState } from 'react';
 import { useOrbit } from '../data/OrbitContext';
+import { motivoFuera } from '../lib/equipo';
 
 export function ConfirmDialog() {
   const { state, confirm, cancelConfirm, simulated } = useOrbit();
@@ -19,11 +20,18 @@ export function ConfirmDialog() {
   }, [p, cancelConfirm]);
   if (!p) return null;
   const label = ACTIONS[p.action]?.label ?? p.action;
+  const detalle = simulated
+    ? 'Estás en simulación: no se hace nada en los equipos.'
+    : p.action === 'pi.shutdown'
+      ? 'La Raspberry Pi se apaga en el acto, en cuanto confirmes.'
+      : p.action === 'pi.restart'
+        ? 'La Raspberry Pi se reinicia en el acto, en cuanto confirmes.'
+        : 'El HP se apagará o reiniciará con 60 s de margen y se podrá cancelar.';
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="cf-title">
       <div className="modal">
         <h2 id="cf-title">Confirmar: {label}</h2>
-        <p>Acción protegida. {simulated ? 'Estás en MODO SIMULACIÓN: no se ejecutará nada real.' : 'El sistema se apagará con 60 s de margen y se podrá cancelar.'}</p>
+        <p>Acción protegida. {detalle}</p>
         <p className="muted">La confirmación caduca en {left} s.</p>
         <div className="modal-actions">
           <button className="btn" onClick={cancelConfirm}>Cancelar</button>
@@ -38,14 +46,15 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="osd-title" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2 id="osd-title">Cómo cambia Orbit de sistema</h2>
-        <p>El botón <b>Cambiar sistema visible</b> (B2 por defecto) lo hace todo desde Orbit OS; no hace falta tocar el menú del monitor.</p>
+        <h2 id="osd-title">Cómo se ve el HP</h2>
+        <p>La MSI muestra siempre la Pi. El botón <b>Cambiar sistema</b> (el B2 del Nano) abre Moonlight contra el HP en 10.0.0.1 y, si Moonlight ya está abierto, lo cierra y devuelve Orbit OS al frente.</p>
         <ol className="steps">
-          <li><b>Modo remoto</b> (base, siempre disponible): la pantalla muestra siempre la Pi y el escritorio del HP aparece en un visor (p. ej. Moonlight con Sunshine en el HP) por el cable Ethernet interno.</li>
-          <li><b>Modo capturadora</b> (recomendado junto al remoto): el HDMI del HP entra en una capturadora HDMI→USB conectada a la Pi y Orbit OS muestra su imagen a pantalla completa. La pantalla sigue siempre en la Pi; teclado y ratón van al HP por separado. Si la capturadora no está, Orbit vuelve solo al modo remoto.</li>
-          <li><b>Modo DDC/CI</b> (opcional, poco probable): si está configurado y el monitor lo acepta, la Pi cambia la entrada del MSI (HP por Mini-HDMI, Pi por USB-C con adaptador HDMI→USB-C). Los manuales del MSI no documentan DDC/CI. Si falla, Orbit pasa a la capturadora o al modo remoto.</li>
+          <li><b>Vista integrada</b> (la de por defecto): la barra de Orbit OS se queda arriba y Moonlight entra, sin bordes, en el hueco de 1920×1040 a 60 fps. El ratón pasa de la barra a Windows porque Moonlight no captura el puntero. El teclado va a Windows cuando esa ventana tiene el foco.</li>
+          <li><b>Pantalla completa</b>: el botón «Pantalla completa» o <b>Ctrl+Alt+Mayús+X</b> pasan a 1920×1080 a 60 fps. El mismo atajo vuelve a la vista integrada.</li>
+          <li><b>Salir de Moonlight:</b> otra vez el botón B2, el botón «Orbit OS», o <b>Ctrl+Alt+Mayús+Q</b> (atajo del propio Moonlight).</li>
         </ol>
-        <p className="muted">PENDIENTE de verificar: soporte DDC/CI del MSI MP161 E2U, adaptador HDMI→USB-C (DP Alt), latencia y fps de la capturadora (sin medir) y rendimiento del visor remoto en el HP (AMD A6-7310).</p>
+        <p className="callout">Si Moonlight y Sunshine aún no están emparejados, el escritorio del HP no se abre. Hay que emparejarlos una vez. Si Windows no tiene monitor, puede hacer falta un enchufe HDMI falso para que ofrezca 1920×1080; la vista integrada pide 1920×1040.</p>
+        <p className="muted">Moonlight es un programa aparte: se coloca encima de este marco, no dentro de la página.</p>
         <div className="modal-actions"><button className="btn btn-primary" onClick={onClose} autoFocus>Entendido</button></div>
       </div>
     </div>
@@ -53,19 +62,22 @@ export function OsdHelp({ onClose }: { onClose: () => void }) {
 }
 
 export function PowerMenu({ onClose }: { onClose: () => void }) {
-  const { requestAction } = useOrbit();
+  const { state, requestAction } = useOrbit();
+  const sinHp = motivoFuera(state, 'hp');
+  const sinPi = motivoFuera(state, 'pi');
   const go = (a: string) => { requestAction(a); onClose(); };
   return (
     <div className="modal-back" role="dialog" aria-modal="true" aria-labelledby="pw-title" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2 id="pw-title">Apagado seguro</h2>
         <div className="grid-2">
-          <button className="btn btn-danger big" onClick={() => go('hp.shutdown')}>Apagar HP</button>
-          <button className="btn big" onClick={() => go('hp.restart')}>Reiniciar HP</button>
-          <button className="btn big" onClick={() => go('hp.shutdown_cancel')}>Cancelar apagado HP</button>
-          <button className="btn btn-danger big" onClick={() => go('pi.shutdown')}>Apagar Raspberry Pi</button>
+          <button className="btn btn-danger big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.shutdown')}>Apagar HP</button>
+          <button className="btn big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.restart')}>Reiniciar HP</button>
+          <button className="btn big" disabled={!!sinHp} title={sinHp ?? undefined} onClick={() => go('hp.shutdown_cancel')}>Anular apagado del HP</button>
+          <button className="btn btn-danger big" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => go('pi.shutdown')}>Apagar Raspberry Pi</button>
+          <button className="btn big" disabled={!!sinPi} title={sinPi ?? undefined} onClick={() => go('pi.restart')}>Reiniciar Raspberry Pi</button>
         </div>
-        <p className="muted">Cada acción pide confirmación y orbitd la valida contra la lista blanca.</p>
+        <p className="muted">Apagar y reiniciar piden confirmación. Anular el apagado del HP no la pide: cancela los 60 segundos.</p>
         <div className="modal-actions"><button className="btn" onClick={onClose}>Cerrar</button></div>
       </div>
     </div>

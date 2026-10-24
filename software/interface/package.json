@@ -1,9 +1,9 @@
 {
   "name": "orbit-interface",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Orbit OS Interface v0 (Orbit Terminal)",
+  "description": "Orbit OS 1.0.0 (Orbit Terminal)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -13,6 +13,12 @@
     "screenshots": "node ../../scripts/screenshots.mjs"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/lint": "^6.9.7",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

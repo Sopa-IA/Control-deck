@@ -66,7 +66,9 @@ async def test_ui_handshake_state_mapping(server):
         assert st["payload"]["hp"]["connected"] is False and st["payload"]["video_input"] == "pi"
         assert st["payload"]["visible"]["system"] == "pi" and st["payload"]["visible"]["mode"] == "remoto"
         mp = await recv(ws, "mapping")
-        assert mp["payload"]["pots"]["P1"] == "hp.volume_set"
+        assert mp["payload"]["pots"]["P1"] == "none"
+        assert mp["payload"]["pots"]["P2"] == "none"
+        assert mp["payload"]["buttons"]["B2"] == "pi.switch_visible"
         tel = await recv(ws, "telemetry")
         assert tel["payload"]["host"] == "pi" and tel["payload"]["simulated"] is False
 
@@ -176,11 +178,21 @@ async def test_mapping_set_and_serial_to_volume(server):
         await send(ui, "mapping_set", {"pots": {"P1": "hp.volume_set"}, "buttons": {"B1": "hp.volume_mute"}})
         assert (await recv(ui, "mapping"))["payload"]["buttons"]["B1"] == "hp.volume_mute"
         hub = server.app[HUB_KEY]
-        await hub.on_serial_line("P1 1023\n")
+        for _ in range(3):
+            await hub.on_serial_line("P1 0\n")
+        base = await recv(ui, "control_event")
+        assert base["payload"]["value"] == 0
+        assert hub._volume_pending is None
+        for _ in range(3):
+            await hub.on_serial_line("P1 1023\n")
         ev = await recv(ui, "control_event")
         assert ev["payload"] == {"control": "P1", "kind": "pot", "value": 1023, "simulated": False}
         fwd = await recv(hp, "action")
         assert fwd["payload"] == {"action": "hp.volume_set", "params": {"level": 100}}
+        await hub.on_serial_line("P1 1023\n")
+        await hub.on_serial_line("P1 1020\n")
+        await hub.on_serial_line("P1 1023\n")
+        assert hub._volume_pending is None
         await hub.on_serial_line("B1 1\n")
         fwd = await recv(hp, "action")
         assert fwd["payload"]["action"] == "hp.volume_mute"
@@ -204,13 +216,15 @@ async def test_real_hp_agent_client_dry_run(server):
             assert tel["payload"]["simulated"] is False
             await send(ui, "action_request", {"action": "hp.lock_screen"})
             r = await recv(ui, "action_result")
-            assert r["payload"]["ok"] and r["payload"]["dry_run"] and r["payload"]["message"].startswith("DRY-RUN")
+            assert r["payload"]["ok"] and r["payload"]["dry_run"] and r["payload"]["message"].startswith("Preparado")
     finally:
         agent.cancel()
 
 
 async def test_ui_gets_last_pot_values_on_connect(server):
-    await server.app[HUB_KEY].on_serial_line("P2 300")
+    hub = server.app[HUB_KEY]
+    for _ in range(3):
+        await hub.on_serial_line("P2 300")
     async with aiohttp.ClientSession() as s:
         ui = await connect(s, server)
         ev = await recv(ui, "control_event")
@@ -218,7 +232,7 @@ async def test_ui_gets_last_pot_values_on_connect(server):
 
 
 async def test_switch_visible_modo_captura(tmp_path, monkeypatch):
-    # Modo C configurado en local (dispositivo simulado por el test): el estado indica «captura»
+    # Visor local configurado (dispositivo simulado por el test): el estado indica «captura»
     # y la entrada física de la MSI sigue siendo la Pi.
     import sys
 
@@ -240,5 +254,108 @@ async def test_switch_visible_modo_captura(tmp_path, monkeypatch):
             assert st["payload"]["video_input"] == "pi"
             r = await recv(ws, "action_result")
             assert r["payload"]["ok"] is True and r["payload"]["dry_run"] is False
+    finally:
+        await srv.close()
+
+
+def _power_cfg(tmp_path, **kw):
+    calls = []
+
+    def runner(argv):
+        calls.append(list(argv))
+        return 0
+
+    cfg = Config(state_dir=tmp_path, hp_token=TOKEN, telemetry_period_s=30, power_runner=runner, **kw)
+    return cfg, calls
+
+
+async def _confirm(srv, action):
+    async with aiohttp.ClientSession() as s:
+        ui = await connect(s, srv)
+        await recv(ui, "welcome")
+        await send(ui, "action_request", {"action": action})
+        cr = await recv(ui, "confirm_required")
+        await send(ui, "action_confirm", {
+            "request_id": cr["payload"]["request_id"], "challenge": cr["payload"]["challenge"],
+        })
+        return await recv(ui, "action_result")
+
+
+async def test_pi_shutdown_en_simulacion_no_apaga(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, sim_hp=True, sim_controls=True, power_live=True,
+                            device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        r = await _confirm(srv, "pi.shutdown")
+        assert r["payload"]["dry_run"] is True and r["payload"]["simulated"] is True
+        assert "SIMULADO" in r["payload"]["message"]
+        assert calls == []
+    finally:
+        await srv.close()
+
+
+async def test_pi_restart_en_pc_no_llama_a_systemctl(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="QEMU")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        r = await _confirm(srv, "pi.restart")
+        assert r["payload"]["dry_run"] is True and calls == []
+    finally:
+        await srv.close()
+
+
+async def test_pi_shutdown_en_la_pi_usa_sudo_fijo(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        off = await _confirm(srv, "pi.shutdown")
+        assert off["payload"]["ok"] is True and off["payload"]["dry_run"] is False
+        assert calls == [["sudo", "-n", "/usr/bin/systemctl", "poweroff"]]
+    finally:
+        await srv.close()
+
+
+async def test_boton_corto_no_apaga_y_mantener_pide_confirmacion(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        async with aiohttp.ClientSession() as s:
+            ui = await connect(s, srv)
+            await recv(ui, "welcome")
+            await send(ui, "mapping_set", {"pots": {}, "buttons": {"B1": "pi.shutdown", "B2": "pi.restart"}})
+            mp = await recv(ui, "mapping")
+            while mp["payload"]["buttons"].get("B1") != "pi.shutdown":
+                mp = await recv(ui, "mapping")
+            hub = srv.app[HUB_KEY]
+            await hub.on_serial_line("B1 1\n")
+            ev = await recv(ui, "control_event")
+            assert ev["payload"]["event"] == "press"
+            assert hub.pending_confirm == {} and calls == []
+            await hub.on_serial_line("B2 L\n")
+            cr = await recv(ui, "confirm_required")
+            assert cr["payload"]["action"] == "pi.restart" and calls == []
+            await send(ui, "action_confirm", {
+                "request_id": cr["payload"]["request_id"], "challenge": cr["payload"]["challenge"],
+            })
+            r = await recv(ui, "action_result")
+            assert r["payload"]["action"] == "pi.restart" and r["payload"]["dry_run"] is False
+            assert calls == [["sudo", "-n", "/usr/bin/systemctl", "reboot"]]
+    finally:
+        await srv.close()
+
+
+async def test_mantener_sin_interfaz_no_apaga(tmp_path):
+    cfg, calls = _power_cfg(tmp_path, power_live=True, device_model="Raspberry Pi 4 Model B Rev 1.5")
+    srv = TestServer(build_app(cfg))
+    await srv.start_server()
+    try:
+        hub = srv.app[HUB_KEY]
+        hub.mapping = {"version": 1, "pots": {}, "buttons": {"B1": "pi.shutdown"}}
+        await hub.on_serial_line("B1 L\n")
+        assert calls == [] and hub.pending_confirm == {}
     finally:
         await srv.close()

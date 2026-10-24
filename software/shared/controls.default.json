@@ -1,6 +1,6 @@
 {
-  "$comment": "Asignación por defecto de controles (Arduino Nano de mandos: potenciómetros P1..Pn, botones B1..Bn). Editable desde Controles; orbitd la guarda en su directorio de estado (no en el repo).",
-  "version": 1,
-  "pots": { "P1": "hp.volume_set", "P2": "ui.scroll" },
+  "$comment": "Asignación por defecto. Los potenciómetros vienen en none: A0 y A1 al aire no mandan acciones. Se activan en Controles o Configuración. orbitd guarda la copia en su directorio de estado (no en el repo). La version 2 no vuelve a apagar un pot que el usuario haya activado.",
+  "version": 2,
+  "pots": { "P1": "none", "P2": "none" },
   "buttons": { "B1": "ui.power_menu", "B2": "pi.switch_visible" }
 }

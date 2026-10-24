@@ -1,10 +1,40 @@
 # Estado y traspaso · Orbit Terminal
 
-Fecha de este documento: **2026-10-20**. Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
+Fecha de este documento: **2026-10-24**. Sirve para que Miguel, u otro agente, retome el proyecto **sin el historial del chat**.
 
-**Nada de lo que hay aquí está listo para fabricar.** Los STL de la carcasa llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. El software corre en simulación: no se ha probado con el HP, la Pi, el Arduino ni el monitor, salvo lo que este documento marca como verificado físicamente (la plantilla de agujeros).
+**Todo el software de este estado está en la rama `cursor/bandeja-v2-modular-6d15`, pull request [#9](https://github.com/Sopa-IA/Control-deck/pull/9).** Ese PR es un **borrador**, contra `main`, y **no está fusionado**. **No fusionar sin la aprobación de Miguel.** El título del PR no se cambia.
+
+**La carcasa no está lista para fabricar.** Los STL llevan el prefijo `PROVISIONAL_`. Las comprobaciones geométricas son cajas envolventes y mallas, no un montaje real. **Orbit OS 1.0.0** corre en la Pi y en el HP: ver [`CHANGELOG.md`](../CHANGELOG.md) y la sección siguiente. Lo que no está cableado (potenciómetros, pulsadores, tira de luz, Nano de prácticas) se muestra apagado en la pantalla.
 
 La licencia del repositorio es la de Miguel: **Apache-2.0** (`LICENSE`). No se cambia.
+
+Historial de este texto: 2026-10-20 el documento original; 2026-10-23 los adaptadores de la carcasa ya impresa (no se corta), las dos carcasas futuras (no se imprimen ahora) y la bandeja v3 (ventanas para los Dupont); **2026-10-24** el estado real de la Pi y del HP tras Orbit OS 1.0.0. Este archivo no lleva contraseñas, tokens ni domicilio.
+
+---
+
+## Estado comprobado el 2026-10-24
+
+Comprobado en el hardware de Miguel después de Orbit OS 1.0.0. La punta de la rama en ese momento es el commit `39874f3`. Si el historial ha avanzado, mirar `git log` de `cursor/bandeja-v2-modular-6d15` antes de dar nada por hecho.
+
+### Pi
+
+- Arranca directa en Orbit OS. La sesión es `orbit` (`labwc -C /etc/orbit/labwc`). El usuario es `orbit` y el clon está en `/home/orbit/Control-deck`.
+- El Wi-Fi `MOVISTAR_C410` es un perfil de NetworkManager. El perfil antiguo de Raspberry Pi Imager, guardado en netplan, lo borró un instalador anterior. Quedó arreglado en el commit `738be94`: el instalador ya no reinstala NetworkManager si está, no recarga perfiles y no aplica netplan. La clave no se anota en el repo. Si el perfil faltara, se vuelve a crear en la Pi con `sudo nmtui`.
+- `eth0` es el perfil `orbit-enlace-hp`, dirección `10.0.0.2/24`, sin puerta de enlace, sin DNS y sin ser la ruta por defecto. El HP está en `10.0.0.1`. Ese cable no lleva internet.
+- La pausa del kiosco es `/run/orbit/kiosk-pausa`. No es `/var/lib/orbit/kiosk-pausa`: esa ruta vieja sobrevivía al reinicio y dejaba la pantalla negra. Ctrl+Alt+T crea la pausa. `rm /run/orbit/kiosk-pausa` vuelve al kiosco. Un reinicio también vuelve, porque `/run` se vacía. `sudo orbit-escritorio` y un reinicio devuelven el escritorio (`rpd-labwc` o `LXDE-pi-labwc`).
+- El teclado Bluetooth está emparejado con la Pi. La reconexión automática (`orbit-bt-unblock.service` y `orbit-bt-autoconnect.service`) no le basta a Miguel. Quiere un botón en Orbit OS que lo conecte al pulsarlo. Está anotado abajo y **no se implementa** todavía.
+
+### HP
+
+- Windows 10 Home 22H2, compilación **19045.2965**.
+- Sunshine **v2025.924.154138**. Es la última versión compatible con Windows 10. **No actualizar Sunshine.**
+- Virtual Display Driver **25.7.23**, a **1920×1080**. El HDMI del HP no va a ningún monitor: esa pantalla virtual es la que ve Moonlight.
+- Moonlight en la Pi está emparejado y funciona. Orbit lo detecta por `srvcert` en `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, sección `[hosts]`. No usa `pairState`. **Probados en real el 2026-10-24:** Cambiar sistema, la vista integrada y la pantalla completa.
+- hp-agent está instalado con `scripts/instalar-hp.ps1`. La tarea `OrbitHpAgent` está en vivo. **Probados en real:** CPU, RAM, disco, red (kb/s), tiempo activo, Bloquear y Apagar.
+
+En la pantalla real, el 2026-10-24, **siguen sin salir** aunque el código ya exista: la temperatura del HP (la fila se queda en raya pese a LibreHardwareMonitor) y el volumen del HP (el deslizador `hp.volume_set` no cambia el volumen). No se arreglan en este cambio. Ver los pendientes de software.
+
+Los potenciómetros, los pulsadores y la tira LED siguen sin cablear. El Nano de prácticas no consta en la foto. **No grabar el Nano** para retomar este estado.
 
 ---
 
@@ -16,14 +46,34 @@ Dentro de la cuña conviven:
 
 - una **Raspberry Pi** que ejecuta Orbit OS y es la que manda;
 - la placa de un **HP Slimline 260-a110ns** sacado de su caja, que sigue corriendo **Windows 10 Home** por su cuenta;
-- un **monitor MSI** compartido;
+- un **monitor MSI** que va solo a la Pi;
 - un **Arduino Nano** (clon, mini-USB) que lee potenciómetros y botones;
 - un **ESP8266** previsto para la tira LED, y un **segundo Nano** de prácticas con pines y una OLED en la trasera (el segundo Nano no consta en la foto: **PENDIENTE** de tenerlo);
 - luces ámbar.
 
-**Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente. En los modos A y C la MSI se queda en la entrada de la Pi.
+**Requisito n.º 1.** La Pi controla todo. El cambio entre lo que se ve de la Pi y lo que se ve del HP es **automático desde Orbit OS** (acción `pi.switch_visible`, botón B2 por defecto y botón de la sección Sistemas). Miguel **no** cambia la entrada a mano en el menú del monitor. El HP no se apaga ni se convierte en un esclavo: Windows sigue independiente.
 
-Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está configurado y responde, ese; si no, el modo C si la capturadora está configurada; si no, el modo A. Si uno falla, prueba el siguiente. No hay cifras de latencia ni de fps: no se han medido.
+Desde el 2026-10-22 el montaje que instala `scripts/instalar-pi.sh` es este: la MSI va solo a la Pi. La imagen del HP llega por un cable de red directo (HP 10.0.0.1, Pi 10.0.0.2), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada. Ver [`instalacion-pi.md`](instalacion-pi.md). Ese camino está en uso y quedó comprobado el 2026-10-24: ver el estado al principio de este documento.
+
+El 2026-10-23 la carcasa ya está impresa (los cuatro trozos). **No se corta, no se taladra y no se lima.** Los adaptadores entran en los huecos que ya hay. Aparte, hay dos STL `FUTURO_carcasa_*_sin_adaptadores`: **no imprimir ahora**.
+
+La bandeja de huecos también está impresa y **no sirve**: las paredes largas llegan hasta la PCB y encierran los pines macho. No se corta. Hay que imprimir la v3 (`PROVISIONAL_bandeja_servicio`, 126,00 × 237,49 × 20,60 mm, 173,2 cm³, pieza de noche, unas 14 h sin laminar). La malla vieja queda en `OBSOLETA_bandeja_huecos_v2_ya_impresa` (181,71 cm³). Las placas no se mueven. Los tornillos son los mismos. Un Dupont hembra recto (~14,5 mm) no entra en los 13 mm bajo la PCB, y subir la placa 7,5 mm chocaría con la tina en el ESP (4,8 mm en la esquina delantera). **FALTA: comprar** Dupont hembra acodado a 90°, uno por pin (30 por cada Nano; los del ESP, al contarlos), y un step-down LM2596 de 43 × 21 mm a 5 V. En ese hueco hay ahora un convertidor ZERO/SPAN de 4–20 mA. El reborde de ese hueco acaba a ras de la PCB y no encierra un borne de arriba.
+
+Adaptadores para ahora (piezas de día, sin tornillo nuevo):
+
+- I/O frontal de `carcasa_x0_y1`: la ventana sigue en 62 × 18 mm. `PROVISIONAL_marco_io_frontal` (67,4 × 26,0 × 3,8 mm, 1,58 cm³) entra a presión desde fuera. Quedan a mano los dos USB y, si asoma, el lector SD. Se pierden los dos jacks de audio del frontal (el audio sigue en la placa trasera). Si el lector no cabe en la boca de 59,8 × 15,8 mm, se pierde también.
+- Placa del HP: la ventana de 159,75 × 45,45 no se toca. `io_huecos` sale de la foto del 2026-10-23, escalada a ese ancho (la regla está delante y no se usa). Mirando la trasera: VGA a la izquierda y jack DC a la derecha, ±2 mm. Antes de montar, `PRUEBA_placa_io_hp` tiene que caer sobre el VGA azul. No se pierde ningún puerto de esa foto.
+- Trasera de `carcasa_x1_y1`: los agujeros impresos son el panel genérico, no la Pi. `PROVISIONAL_placa_puertos_pi` (85,0 × 39,0 × 3,8 mm, 6,94 cm³) los tapa por dentro, con un tetón en cada uno. Los cuatro USB y el RJ45 de la Pi se alcanzan por la tapa del techo: la cara del conector acaba en y = 255,5 y la pared interior está en y = 297,5. Por esa trasera, esos puertos se pierden. Un alargador USB o RJ45 sería FALTA y esta tapa no lo usa.
+- Panel de pines: los Ø1,6 se quedan. `PROVISIONAL_panel_pines` (80,0 × 78,0 × 4,6 mm, 9,19 cm³) va por fuera y se engancha en las ventanas de OLED y de PRG. Quedan a mano los 40 pines de la Pi y los 24 del Nano (D2–D13 y A0–A7, GND, RST, 5 V, 3,3 V). Se pierden D0, D1 y cualquier pin de una regleta 2×15 sin agujero. **FALTA: comprar** regleta macho 2×20 y regleta macho 2×12, pines de al menos 11 mm, y cables Dupont hembra-hembra. El CSV de electrónica no se ha podido leer.
+
+Carcasa futura, no imprimir ahora (si algún día se imprime, es pieza de noche):
+
+- `FUTURO_carcasa_x0_y1_sin_adaptadores`: ventana frontal de 94 × 18 mm (y = 171,5 a 265,5, z = 74 a 92). Caben jacks, USB y lector. No hace falta marco.
+- `FUTURO_carcasa_x1_y1_sin_adaptadores`: dos pasos de cable alineados con la Pi, y ranuras de regleta Pi 2×20 y Nano 2×15 en lugar de los Ø1,6. No hace falta tapa ni careta.
+
+En `consumo.md` (repo del inventario, no este): el M3×6 avellanado sigue en 4 de 40 y el inserto M3 4×5 sigue en 6 de 30. Los adaptadores no gastan tornillo. La bandeja v3 tampoco: mismos M3×12, M3×8 y grapas. Anota como compra los Dupont acodados a 90° y el LM2596 de 43 × 21 mm a 5 V.
+
+No hay cifras de latencia ni de fps: no se han medido.
 
 ---
 
@@ -36,7 +86,9 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `docs/ESTADO-Y-TRASPASO.md` | Este archivo. |
 | `docs/decisiones-prototipo.md` | Decisiones del 2026-10-18. El disco ya no es el SSD recomendado: ver la nota del 2026-10-20 en esa tabla. |
 | `docs/diseno-mecanico.md` | Diseño v1 + HP v3. **Varios párrafos siguen hablando del SSD 2,5".** La geometría vigente está en `params.scad`, no en ese texto. |
-| `docs/conmutacion-video-usb.md` | Vídeo y cambio de sistema (modos A, B y C). |
+| `docs/conmutacion-video-usb.md` | Notas de la fase 1. El montaje vigente está en `instalacion-pi.md`. |
+| `docs/instalacion-pi.md` | Arranque directo a Orbit OS, kiosco, Moonlight y el marco integrado. |
+| `docs/ardu-lab.md` | Programar el Nano de prácticas desde Orbit OS. El de mandos queda bloqueado. |
 | `docs/datos-pendientes-hp.md` | Ficha del HP, fuentes y lista H-1…H-12. Parte de H-2 y H-8 ha avanzado; el archivo no se ha reescrito entero. |
 | `docs/informe-fase1.md`, `pantallas.md`, `controles.md`, `raspberry-pi.md`, `alimentacion-preliminar.md`, `incertidumbres-hardware.md` | Investigación de la fase 1. Prevalecen las decisiones del prototipo cuando no coinciden. |
 | `hardware/cad/params.scad` | Todas las cotas, con etiqueta de origen. |
@@ -58,7 +110,7 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `assets/screenshots/` | Capturas de la interfaz en simulación. |
 | `software/interface/` | Orbit OS: React + TypeScript + Vite. Secciones: Inicio, Sistemas, Hardware, Controles, Herramientas, Configuración. |
 | `software/pi-controller/orbitd/` | Hub de la Pi: `__main__.py` (CLI), `hub.py` (WebSocket y acciones), `serial_events.py` (Arduino), `telemetry.py` (psutil local), `video.py` (modos A/B/C). |
-| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. Por defecto dry-run. |
+| `software/hp-agent/` | Agente del HP: `agent.py`, `actions.py` (órdenes fijas, sin shell), `config.py`. A mano, dry-run salvo `--live` o `live = true`. En Windows, `scripts/instalar-hp.ps1` deja la tarea `OrbitHpAgent` en vivo; `-DryRun` solo mira. La red va en kb/s. El código lee la temperatura de la CPU en LibreHardwareMonitor 0.9.6 si la tarea `OrbitLibreHardwareMonitor` está en marcha. En el HP real, el 2026-10-24, esa fila sigue en raya. |
 | `software/shared/` | Protocolo v1: `PROTOCOLO.md`, `actions.json`, `controls.default.json`, `schemas/protocol.schema.json`, `ts/protocol.ts`, `python/orbit_protocol`. |
 | `software/arduino-controls/` | Firmware del Nano de mandos. Pines por defecto: P1 A0, P2 A1, B1 D2, B2 D3. Sin HID. |
 | `software/arduino-pruebas/` | Ejemplo del Nano de prácticas: OLED I2C y mapa del panel trasero. No habla con orbitd. |
@@ -71,19 +123,19 @@ Orden que usa `software/pi-controller/orbitd/video.py`: si el modo B está confi
 | `tests/python/` | pytest: `test_protocol.py`, `test_serial.py`, `test_hub.py`, `test_hp_agent.py`, `test_video.py`. |
 | `.github/workflows/ci.yml` | Dos jobs: Python (ruff + pytest, 3.12) e interfaz (npm ci, tsc, vitest, build, Node 20). En el PR #5 también apareció CodeQL; no está en este workflow. |
 
-`.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. El token de los tests es el fixture que ya existía (`token-de-prueba-0123456789`).
+`.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. Los tests usan un fixture local. No se copia aquí ningún token.
 
-Asignación por defecto (`controls.default.json`): P1 `hp.volume_set`, P2 `ui.scroll`, B1 `ui.power_menu`, B2 `pi.switch_visible`. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El volumen del HP lo aplica hp-agent.
+Asignación por defecto (`controls.default.json`, version 2): P1 y P2 en `none`, B1 `ui.power_menu`, B2 `pi.switch_visible`. Un `controls.json` de la version 1 con esos pots de fábrica pasa a `none` una sola vez; lo que se guarde después se queda. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El deslizador del HP llama a `hp.volume_set` y hp-agent lo aplica con pycaw. En el HP real, el 2026-10-24, ese deslizador no cambia el volumen.
 
 ---
 
 ## 3. Lo que Miguel ya tiene
 
-Sin compras. La capturadora del modo C **no** está en esta lista: es una referencia vista en Amazon, no un aparato que tenga.
+Sin compras.
 
 | Pieza | Qué se sabe | Etiqueta |
 |---|---|---|
-| HP Slimline 260-a110ns, sacado de la caja | Placa de la familia Iris. Nombre "Iris-A6" es provisional (datos del propietario, 2026-10-18). AMD A6-7310, 8 GB DDR3L, Windows 10 Home. | Datos del propietario 2026-10-18. La ficha oficial de este P/N no se encontró; las hermanas Iris-E2 / Iris-A8 están en `docs/datos-pendientes-hp.md`. |
+| HP Slimline 260-a110ns, sacado de la caja | Placa de la familia Iris. Nombre "Iris-A6" es provisional (datos del propietario, 2026-10-18). AMD A6-7310, 8 GB DDR3L, Windows 10 Home. El 2026-10-24 el sistema en marcha es Windows 10 Home 22H2, compilación 19045.2965. | Datos del propietario 2026-10-18. La compilación la confirma el propio Windows el 2026-10-24. La ficha oficial de este P/N no se encontró; las hermanas Iris-E2 / Iris-A8 están en `docs/datos-pendientes-hp.md`. |
 | Placa | 17 × 17 cm, mini-ITX. | **VERIFICADA** por Miguel, 2026-10-18 (instrumento no indicado). En el CAD: `mitx = 170`. |
 | Altura máxima sobre la placa | 35 mm (disipador con ventilador). | **VERIFICADA** por Miguel, 2026-10-18. `hp_comp_h = 35`. |
 | Agujeros C, F, H, J | Patrón estándar mini-ITX. | **DE FUENTE** (estándar mini-ITX / plano comercial citado en `params.scad`). **VERIFICADA FÍSICAMENTE** el 2026-10-19: Miguel imprimió `PRUEBA_plantilla_agujeros_HP.stl` y los cuatro agujeros cuadraron con su placa. No es una medida de calibre. |
@@ -93,20 +145,18 @@ Sin compras. La capturadora del modo C **no** está en esta lista: es una refere
 | Alimentación | Adaptador original externo 65 W, 19,5 V. Queda **fuera** de la cuña, sin modificar. | Datos del propietario. El diámetro del jack es **PENDIENTE**. Dentro de la cuña no hay red eléctrica. |
 | DVD | Se retira. No se modela. | Decisión. |
 | HDD Toshiba 3,5", marca de fecha MAR-2017 | El disco real. Miguel lo midió a ojo el 2026-10-20: ~150 × 100 × 25 mm. | Esa medición es **a ojo**. El CAD **no la usa**. Usa SFF-8301: 101,6 × 147 × 26,1 mm (**DE FUENTE**). |
-| Raspberry Pi 4 + HAT VHF | Miguel lo confirma el 2026-10-20. El HAT trae OLED y antena SMA plegable; dice que la carcasa cierra con holgura. Ya da imagen en la MSI; no se sabe por qué entrada. | Placa: **DE FUENTE** (dibujo mecánico de la Pi 4, 85 × 56, agujeros 58 × 49) y dato de Miguel. Altura de la Pi y todo el HAT: **PENDIENTE**. `pi_h = 20` no incluye el HAT. Si el HAT no deja pasar el GPIO, el conector del panel no se cablea. |
+| Raspberry Pi 4 + HAT VHF | Miguel lo confirma el 2026-10-20. El HAT trae OLED y antena SMA plegable; dice que la carcasa cierra con holgura. La MSI va solo a la Pi y Orbit OS arranca directo (comprobado el 2026-10-24). La imagen del HP no entra por el monitor: llega por Moonlight. | Placa: **DE FUENTE** (dibujo mecánico de la Pi 4, 85 × 56, agujeros 58 × 49) y dato de Miguel. Altura de la Pi y todo el HAT: **PENDIENTE**. `pi_h = 20` no incluye el HAT. Si el HAT no deja pasar el GPIO, el conector del panel no se cablea. |
 | Arduino Nano (mandos) | Clon ATmega328P, mini-USB, CH340 probable (dato de Miguel, chip no leído). Lee potenciómetros y botones. | PCB 18 × 45 mm: **DE FUENTE** ([tienda oficial](https://store.arduino.cc/products/arduino-nano)). La placa de la foto no se ha medido. Alturas: **PENDIENTE**. |
 | Arduino Uno | El de la foto. No se monta. | 68,6 × 53,4 mm: **DE FUENTE** ([Uno Rev3](https://store.arduino.cc/products/arduino-uno-rev3)). Cabe solo en el hueco delantero y no cabe bien con el ESP y un cable USB-B. |
 | Segundo Nano (prácticas) | Independiente del de mandos. Pines y OLED en la trasera. | Misma cota de catálogo. **PENDIENTE**: la foto no muestra un segundo Nano. Miguel acepta uno si el Uno no cabe. No es una compra hecha. |
-| ESP8266 NodeMCU | Carro del riel, puesto y = 105, junto al Nano de prácticas. Previsto para WLED. | Envolvente de referencia 25,4 × 48,3 mm (**DE FUENTE**, NodeMCU DEVKIT 1.0 / Ai-Thinker V1.2), no de esta placa. **PENDIENTE** de medir. El riel usa las dos torretas DC que ya están a la izquierda de la canaleta. |
+| ESP8266 de la tira | Hueco fijo de la bandeja, x = 346, y = 86, USB hacia +Y. Previsto para WLED. La proto 30 × 70 ya no tiene puesto. | La placa de la foto se estima en 58 × 31 mm [PENDIENTE]. No se usa el DEVKIT 1.0 (25,4 × 48,3) como cota. |
 | OLED 0,96" SSD1306 | Ventana en la trasera, junto al panel de pines. La controla el Nano de prácticas. | Referencia **DE FUENTE**: [Waveshare 0.96inch OLED (B)](https://www.waveshare.com/0.96inch-oled-b.htm), PCB 33,0 × 33,5, área visible 21,70 × 11,20, 128×64, amarillo/azul. La ficha dice tensión 3,3 V y la [wiki](https://www.waveshare.com/wiki/0.96inch_OLED_(B)) dice 3,3 V/5 V. El módulo no está elegido ni medido. |
 | MSI Pro MP161 E2U | 15,6", 1920×1080, no táctil. Mini-HDMI y 2 USB-C con DP Alt. | Envolvente 362,26 × 233,84 × 18,8 mm y área activa 344,16 × 193,59 mm: **DE FUENTE** (ficha MSI; el manual da 232,92 mm de alto y el CAD usa el mayor). Posición del área activa y de los puertos del canto: **PENDIENTE** (el área se supone centrada). |
 | Potenciómetros y pulsadores | Los suyos. El CAD usa marcadores genéricos de 24 mm y 16 mm. Eje de 6 mm acordado. | **PENDIENTE** de medir. `eje_pot_d` está marcado acordado y sin medir. |
 | Tira LED | La suya. Tipo y tensión desconocidos. | **PENDIENTE**. |
-| Adaptador Mini-HDMI → HDMI | Lo tiene. En el modo C iría de la Pi a la Mini-HDMI de la MSI. | Existencia: dato del propietario. Modelo: **PENDIENTE**. |
-| Adaptador UGREEN | Modelo y sentido sin confirmar. Probablemente USB-C → HDMI, que es el sentido contrario al que haría falta para el modo B. | **PENDIENTE**. |
-| Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material del diseño: PETG. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
-
-La capturadora de referencia (marca SUOFEIXIANG, texto "4K30 entrada / 1080p", 14,69 € vistos el 2026-10-18, sin URL) **no se ha comprado**. En el CAD la reserva nominal sigue siendo 72 × 30 × 20 mm. Desde el 2026-10-21 la caja que se comprueba mide 67,2 mm de ancho: el riel y las torretas Ø8 ya impresas ocupan el resto. No es la medida de un aparato.
+| Adaptador Mini-HDMI → HDMI | Lo tiene. La Pi va a la Mini-HDMI de la MSI. | Existencia: dato del propietario. Modelo: **PENDIENTE**. |
+| Adaptador UGREEN | Modelo y sentido sin confirmar. No se usa: la MSI va solo a la Pi y el HP se ve por el cable de red. | **PENDIENTE**. |
+| Impresora | Bambu Lab A1, volumen 256 × 256 × 256 mm, marco abierto. Material de impresión: PLA+ negro mate. | Volumen: **DE FUENTE** (ficha Bambu Lab). |
 
 ---
 
@@ -138,8 +188,7 @@ Unidades: milímetros. Ejes: X ancho, Y fondo (frente en 0), Z altura.
 | Panel de prácticas | x = 250, z = 68, 74 × 72 | DISEÑO, en la cara trasera de `carcasa_x1_y1` |
 | OLED (marcador) | 33,5 × 12 × 33,0; ventana 24 × 14 | FUENTE de la PCB Waveshare; profundidad y ventana DISEÑO |
 | Potenciómetro / pulsador | genérico 24 mm / 16 mm | PENDIENTE |
-| Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = true` | PENDIENTE. El hueco se conserva aunque el modo B sea poco probable |
-| Capturadora (reserva) | Nominal 72 × 30 × 20; la caja comprobada es 67,2 × 30 × 20 | DISEÑO, no un aparato real. Los 4,8 mm que faltan los ocupan las torretas y el riel |
+| Adaptador de vídeo (hueco) | 72 × 32 × 16, `usar_adaptador_video = false` | El hueco sigue en el CAD y no se dibuja. La imagen del HP llega por el cable de red |
 | KVM | `usar_kvm = false` | DISEÑO |
 
 Agujeros HP en coordenadas de la carcasa, los que imprimió `comprobar_base_hdd.py` el 2026-10-20: C (23,35, 284,332), F (180,83, 261,472), H (23,35, 129,392), J (180,83, 129,392). C y F caen en `base_x0_y1`; H y J en `base_x0_y0`. Las bases de la derecha no llevan separadores del HP.
@@ -162,11 +211,12 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_base_x1_y1` | 228,13 × 150,13 × 8,99 | 81,02 | Detrás-derecha: hueco de la bandeja (Pi), una pata del disco | Igual | Igual |
 | `PROVISIONAL_pletina_empalme_x4` | 30,00 × 10,00 × 3,00 | 0,84 | Una pletina. Hay que imprimir 4 | Cara plana, sin soportes (misma guía) | No consta impresión de este STL |
 | `PROVISIONAL_soporte_disco` | 111,60 × 147,00 × 17,99 | 18,64 | Bandeja del HDD 3,5" (patas 14 mm, colisos a 3,18 mm del lateral) | Única pieza de la guía que pide soportes: boca abajo, bandeja contra la cama, soportes solo en la cama | El soporte **2,5"** (SSD) se imprimió y salió pequeño. Este STL 3,5" no consta como impreso |
-| `PROVISIONAL_bandeja_servicio` | 141,00 × 237,49 × 14,00 | 154,07 | Pi, torretas del soporte y canal USB. **No regenerado** el 2026-10-20: la pieza ya está impresa | Cara plana, sin soportes (misma guía) | Impresa (Miguel, 2026-10-20). Sin resultado de encaje comunicado |
+| `PROVISIONAL_bandeja_servicio` | 126,00 × 237,49 × 20,60 | 173,2 | Bandeja v3. Ventanas de 13 mm en los cantos largos (Nano 40 mm, ESP 53 mm). Misma ala, misma Pi, mismos 4 M3 | Plancha abajo, pieza de noche, unas 14 h sin laminar. No cortar la carcasa | Sustituye a la v2 ya impresa |
+| `OBSOLETA_bandeja_huecos_v2_ya_impresa` | 126,00 × 237,49 × 20,60 | 181,71 | La bandeja de paredes cerradas que Miguel ya imprimió | No reimprimir y no cortar | Obsoleta: encierra los pines |
 | `PROVISIONAL_carcasa_x0_y0` | 228,13 × 150,25 × 95,36 | 104,65 | Delante-izquierda | `diseno-mecanico.md` recomienda la cara de corte sobre la cama. Soportes: no documentado | No probada |
 | `PROVISIONAL_carcasa_x0_y1` | 228,13 × 150,25 × 150,93 | 213,68 | Detrás-izquierda: ventana I/O del HP, pasacables, I/O frontal, pulsador y LED | Igual | No probada. Volumen 213,68 cm³ |
 | `PROVISIONAL_carcasa_x1_y0` | 228,13 × 150,25 × 95,36 | 115,54 | Delante-derecha | Igual | No probada |
-| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 242,11 | Detrás-derecha: conectores de Orbit y panel de prácticas (pines, OLED, USB). Regenerado el 2026-10-20. Antes 243,84 cm³ | Igual | No probada |
+| `PROVISIONAL_carcasa_x1_y1` | 228,13 × 150,25 × 150,93 | 233,81 | Detrás-derecha. Guías Ø2,5 en los postes de la tapa y en sus tres orejetas (antes 233,65). Rejilla de la Pi desde z ≈ 90. Panel de pines y OLED siguen | Igual | No probada. Hay que imprimir este STL, no el de 233,65 ni los anteriores |
 | `PROVISIONAL_bisel_x0_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Plano, cara vista abajo (`diseno-mecanico.md`). Soportes: no documentado | No probado |
 | `PROVISIONAL_bisel_x0_y1` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
 | `PROVISIONAL_bisel_x1_y0` | 190,83 × 126,62 × 3,60 | 24,89 | Trozo de bisel | Igual | No probado |
@@ -175,13 +225,14 @@ Orientación y soportes: solo donde un archivo del repo lo dice. Si no está esc
 | `PROVISIONAL_guia_luz_frontal_1` | 201,13 × 9,00 × 6,95 | 9,82 | El otro tramo | No documentado | No probada |
 | `PROVISIONAL_anillo_luz_x2` | 41,00 × 41,00 × 5,60 | 1,82 | Un anillo. Imprimir 2 | No documentado | No probado |
 | `PROVISIONAL_pomo_x2` | 30,00 × 30,00 × 17,00 | 11,02 | Un pomo. Imprimir 2 | No documentado | Impreso o en impresión. Sin resultado comunicado |
-| `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 | Soporte del Nano de mandos. Regenerado el 2026-10-20 (antes 25,70 de ancho y 9,52 cm³, asiento del Micro). **El 2026-10-21 no se ha modificado** | No documentado | Pasado a Miguel para imprimir. La geometría de este STL no ha vuelto a cambiar |
-| `PROVISIONAL_riel_placas` | 13,00 × 143,49 × 6,00 | 7,85 | Riel de la bahía. Se atornilla a las dos torretas DC de la izquierda del canal | STL ya boca abajo: mortises contra la cama, cajeado abierto arriba. Sin soporte en ese cajeado | Nuevo el 2026-10-21. Sin imprimir |
-| `PROVISIONAL_carro_nano` | 54,25 × 20,00 × 8,65 | 2,73 | Carro del Nano de prácticas (puesto y = 76) | Cama abajo. Soporte solo bajo el tetón de 2 mm | Nuevo. Sin imprimir |
-| `PROVISIONAL_carro_esp` | 57,55 × 27,40 × 8,65 | 3,81 | Carro del ESP8266 (puesto y = 105) | Igual | Nuevo. Sin imprimir |
-| `PROVISIONAL_carro_proto30x70` | 79,25 × 32,00 × 8,65 | 6,14 | Carro de una proto 30 × 70 (mismo puesto que el ESP; no van a la vez) | Igual | Nuevo. La placa es DISEÑO, no medida |
+| `PROVISIONAL_soporte_arduino` | 26,00 × 70,00 × 19,10 | 9,58 | Soporte de la bandeja v1. El STL no se ha vuelto a exportar. En la bandeja v2 no tiene torretas: no se monta | — | Ya impreso o en impresión para la v1. No vale en la v2 |
+| `PROVISIONAL_carro_nano` | 51,45 × 16,40 × 25,10 | 6,54 | **Obsoleto.** Carro de la bahía v2. La bandeja ya no tiene cajeado | — | No imprimir |
+| `PROVISIONAL_carro_esp` | 64,45 × 29,60 × 25,10 | 3,94 | **Obsoleto.** Carro del ESP de la bahía v2 | — | No imprimir |
+| `PROVISIONAL_carro_proto30x70` | 76,45 × 28,40 × 25,10 | 10,79 | **Obsoleto.** Carro de la proto. Esa placa ya no tiene puesto | — | No imprimir |
+| `PROVISIONAL_retenedor_nano` | 29,40 × 51,20 × 10,40 | 1,38 | **Obsoleto.** Clip de la cuna. El Nano de mandos va en su hueco, con cuatro M3 | — | No imprimir |
+| `PROVISIONAL_tapa_pi` | 92,00 × 46,79 × 4,60 | 12,43 | Placa dentro del lomo plano (y 248,50–295,29). Tetón 71,4 × 41,4 × 2,2 en el hueco 72 × 42. Dos M3, ranuras y agujeros de ventilador. La de 94 × 54 ya impresa no se usa | Plana, chaflán abajo | Regenerada el 2026-10-23. La carcasa no se toca |
 
-`comprobar_stl.py` (2026-10-21): las 24 caben en 256³ con 10 mm de margen y son mallas cerradas. El script imprime el volumen con un decimal (riel 7,9; carros 2,7, 3,8 y 6,1). Las cifras de dos decimales de esta tabla salen de los mismos vértices. El soporte y la bandeja no se han regenerado en esta pasada.
+`comprobar_stl.py` (2026-10-21, bandeja v2): las 25 mallas caben en 256³ con 10 mm de margen y están cerradas. El script imprime el volumen con un decimal. Las cifras de dos decimales de la bandeja, los carros, el clip, la tapa y `carcasa_x1_y1` salen de los vértices de esta pasada. `PROVISIONAL_riel_placas` ya no está.
 
 ### Pruebas (`hardware/impresion/`)
 
@@ -212,42 +263,41 @@ Los STL de las piezas 02 a 15 están en `hardware/cad/export/stl/`. Los STEP 01 
 | Nº | Pieza | STL | STEP | Notas de estado |
 |---|---|---|---|---|
 | 01 | Plantilla de pivotes C 3,8 / F 3,6 / H 3,4 / J 3,2 | `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl` | `01_PRUEBA_plantilla_pivotes_HP.step` | **Pendiente de resultado.** Hasta entonces la base sigue con insertos M3 |
-| 02 | Bandeja de servicio | `PROVISIONAL_bandeja_servicio.stl` | `02_PROVISIONAL_bandeja_servicio.step` | **Ya impresa** (Miguel, 2026-10-20). El STL no se regenera. Sigue trayendo 2 torretas sueltas de la distribución DC |
+| 02 | Bandeja de servicio v3 | `PROVISIONAL_bandeja_servicio.stl` (126,00 × 237,49 × 20,60, 173,2 cm³) | `02_…step` **desfasado** (sigue siendo la v1) | Pieza de noche, unas 14 h. La v2 impresa es `OBSOLETA_bandeja_huecos_v2_ya_impresa` y no se usa. El STEP no se ha regenerado |
 | 03 | Carcasa detrás-izquierda | `PROVISIONAL_carcasa_x0_y1.stl` | `03_PROVISIONAL_carcasa_x0_y1.step` (malla) | No impresa. Después de probar la pared I/O |
 | 04 | Carcasa delante-izquierda | `PROVISIONAL_carcasa_x0_y0.stl` | `04_PROVISIONAL_carcasa_x0_y0.step` (malla) | No impresa |
 | 05 | Carcasa delante-derecha | `PROVISIONAL_carcasa_x1_y0.stl` | `05_PROVISIONAL_carcasa_x1_y0.step` (malla, **no válido**) | No impresa. 12 triángulos cruzados en x ≈ 406,3 |
-| 06 | Carcasa detrás-derecha | `PROVISIONAL_carcasa_x1_y1.stl` (regenerado: panel de prácticas, 242,11 cm³) | `06_PROVISIONAL_carcasa_x1_y1.step` (malla, **desfasado**) | No impresa. El STEP no incluye el panel nuevo |
+| 06 | Carcasa detrás-derecha | `PROVISIONAL_carcasa_x1_y1.stl` (233,81 cm³: guías autorroscantes) | `06_…step` (malla, **desfasado**) | Imprimir este STL. Las otras tres carcasas no cambian. El STEP no incluye la tapa |
 | 07-10 | Bisel, cuatro trozos | `PROVISIONAL_bisel_x0_y0.stl`, `x0_y1`, `x1_y0`, `x1_y1` | `07_` a `10_` (malla) | No impresos |
 | 11-12 | Guías de luz | `PROVISIONAL_guia_luz_frontal_0.stl` y `_1.stl` | `11_` y `12_` (sólido) | No impresas |
 | 13 | Anillo de luz (imprimir 2) | `PROVISIONAL_anillo_luz_x2.stl` | `13_PROVISIONAL_anillo_luz_x2.step` (sólido) | No impreso |
-| 14 | Pomo (imprimir 2) | `PROVISIONAL_pomo_x2.stl` | `14_PROVISIONAL_pomo_x2.step` (sólido) | Ya lanzado antes. Sin resultado |
-| 15 | Soporte del Nano | `PROVISIONAL_soporte_arduino.stl` (26,00 × 70,00 × 19,10, 9,58 cm³). **No modificado el 2026-10-21** | `15_PROVISIONAL_soporte_arduino.step` (sólido, **desfasado**: sigue el Micro) | Ya pasado a Miguel para imprimir. Los tornillos coinciden con la bandeja |
-| 16 | Riel de placas | `PROVISIONAL_riel_placas.stl` (13,00 × 143,49 × 6,00, 7,85 cm³) | No hay STEP | Nuevo. Boca abajo, sobre las dos torretas DC de la izquierda del canal |
-| 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (54,25 × 20,00 × 8,65, 2,73 cm³) | No hay STEP | Puesto y = 76. Soporte bajo el tetón |
-| 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (57,55 × 27,40 × 8,65, 3,81 cm³) | No hay STEP | Puesto y = 105. No a la vez que el 19 |
-| 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (79,25 × 32,00 × 8,65, 6,14 cm³) | No hay STEP | Mismo puesto que el 18. Placa de diseño, no medida |
+| 14 | Pomo (imprimir 2) | `PROVISIONAL_pomo_x2.stl` | `14_…step` **desfasado** | Regenerado: inserto M3 4×5 y M3×12 de botón. Pieza de día. El STEP no se ha regenerado |
+| 15 | Soporte del Nano (v1) | `PROVISIONAL_soporte_arduino.stl` (26,00 × 70,00 × 19,10, 9,58 cm³) | `15_…step` (sólido, **desfasado**) | No se monta en la bandeja v2. Sirve solo si se sigue con la bandeja ya impresa |
+| 16 | Retenedor del Nano de mandos | `PROVISIONAL_retenedor_nano.stl` (29,40 × 51,20 × 10,40, 1,38 cm³) | No hay STEP | Clip de la cuna v2. El riel suelto ya no está |
+| 17 | Carro Nano de prácticas | `PROVISIONAL_carro_nano.stl` (51,45 × 16,40 × 25,10, 6,54 cm³) | No hay STEP | Puesto y = 90. Dos M3 al cajeado. Pines abajo |
+| 18 | Carro ESP8266 | `PROVISIONAL_carro_esp.stl` (64,45 × 29,60 × 25,10, 3,94 cm³) | No hay STEP | Puesto y = 124. Dos M3. No a la vez que el 19 |
+| 19 | Carro proto 30 × 70 | `PROVISIONAL_carro_proto30x70.stl` (76,45 × 28,40 × 25,10, 10,79 cm³) | No hay STEP | Mismos tornillos que el 18 |
+| 20 | Tapa de la Pi | `PROVISIONAL_tapa_pi.stl` (92,00 × 46,79 × 4,60, 12,43 cm³) | No hay STEP | Dos M3×8 de botón en los postes ya impresos. La tapa de 94 × 54 no se usa |
 
 Los STEP de la base (4 bases, pletina, soporte del disco, pared I/O y plantilla de agujeros) están en `hardware/impresion/base/STEP/` y no hay que reimprimirlos.
 
 **STEP de malla se editan peor en SolidWorks.** Carcasas, biseles, las cuatro bases y la pared I/O salen de la STL: sirven para medir, cortar y añadir operaciones, y los agujeros no son cilindros editables. Los de origen CSG (pivotes, bandeja, guías, anillo, pomo, soporte del Arduino, plantilla de agujeros, pletina y soporte del disco) sí traen cilindros. `05_PROVISIONAL_carcasa_x1_y0` tiene 12 triángulos cruzados; FreeCAD lo marca no válido. La tabla completa, hecha con FreeCAD 1.0 el 2026-10-20, está en `hardware/impresion/siguientes/STEP/COMPROBACION_STEP.txt`. Aquí no se ha reejecutado FreeCAD (no está instalado): solo se ha visto que los 23 STEP son AP214 de FreeCAD.
 
-**Manual:** [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf), 21 páginas, estilo IKEA (inventario, tornillería, 16 pasos y pendientes). Los dibujos salen del CAD, no son fotos del montaje. **No se ha regenerado**: no incluye el Nano, el panel de prácticas, la OLED ni la bahía del 2026-10-21. No certifica que el prototipo esté listo para fabricar.
+**Manual vigente:** [`docs/manual_montaje/Orbit_manual_montaje.pdf`](manual_montaje/Orbit_manual_montaje.pdf), generado desde el CAD de esta rama. Va por subpasos, con la pieza de cada kit en cada unión. La fuente del inventario es el repo `inventario-taller` (`tornilleria/inventario.csv`); este cambio no escribe ahí. Incluye el botón de encendido provisional y el corte de los pines bajo la PCB: 51 subpasos, 31 páginas. `carcasa_x0_y1` no se regenera. Las figuras las regenera `hardware/cad/manual/render_manual.py` y el PDF `hardware/cad/manual/escribir_manual.py`. Sigue siendo provisional: los tornillos están elegidos y no probados en el plástico, salvo el M3 con el que ya se cerró la carcasa. El PDF antiguo [`docs/manual-montaje/MANUAL_MONTAJE_ORBIT.pdf`](manual-montaje/MANUAL_MONTAJE_ORBIT.pdf) (21 páginas) **no se ha regenerado** y no incluye el Nano, el panel ni la bandeja de huecos.
 
-**Renders y capturas.** `hardware/render/escena_blender.py` sigue dibujando el Arduino Micro. No se ha vuelto a lanzar Blender. Las capturas de `assets/screenshots/` son de antes de cambiar los textos de la interfaz. Las dos cosas quedan desfasadas.
+**Renders y capturas.** `hardware/render/escena_blender.py` sigue dibujando el Arduino Micro. No se ha vuelto a lanzar Blender. Las capturas de `assets/screenshots/` incluyen la vista integrada simulada (la zona del HP no es Windows).
 
 **Tamaño.** No hay `.gitattributes`. El STEP mayor mide 3,6 MB (`06_PROVISIONAL_carcasa_x1_y1.step`). `hardware/impresion/siguientes/` pesa unos 15 MB. Por debajo del aviso de GitHub (50 MB por archivo) y del rechazo (100 MB). No hace falta Git LFS.
 
 ---
 
-## 7. Modos de vídeo
+## 7. Imagen del HP
 
-| Modo | Qué hace | Estado |
-|---|---|---|
-| **A · remoto** | La MSI muestra la Pi. Ver el HP es abrir en la Pi un visor del escritorio (Sunshine en el HP + Moonlight en la Pi) por el Ethernet interno. Variable `ORBIT_REMOTE_CMD` (sin shell). Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. | **Base.** Implementado en `video.py` y cubierto por tests. **No** probado con Sunshine, Moonlight, el HP ni la MSI. Windows 10 Home no trae servidor RDP. |
-| **B · DDC/CI** | La Pi cambiaría la entrada de la MSI (`ddcutil`, VCP 0x60). Haría falta el adaptador HDMI → USB-C en el sentido correcto. Variables: `ORBIT_VIDEO_DDC=1`, `ORBIT_DDC_HP`, `ORBIT_DDC_PI`, `ORBIT_DDC_BUS`. | Implementado y **apagado** por defecto. **Poco probable:** los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE. |
-| **C · capturadora** | HDMI del HP → capturadora UVC → USB de la Pi. La MSI sigue en la Pi. Variables: `ORBIT_CAPTURE_DEVICE` (`/dev/videoN` o `/dev/v4l/by-id|by-path/…`) y `ORBIT_CAPTURE_CMD` (sin shell; el texto `{device}` se sustituye). Teclado y ratón del HP van al HP, no a la capturadora. | **Recomendado** junto al A para tener imagen real del HP. Implementado y cubierto por tests con dispositivo simulado. **No** hay capturadora, y no se ha probado con hardware. |
+La MSI va solo a la Pi. La imagen del HP llega por un cable de red directo: el HP en 10.0.0.1 y la Pi en 10.0.0.2. Sunshine corre en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. `ORBIT_REMOTE_CMD` lanza Moonlight sin shell. Si no hay orden, el cambio se registra y la interfaz enseña su panel, sin lanzar nada. Está implementado en `video.py` y cubierto por tests.
 
-Prioridad en código: B si está listo, si no C si está configurado, si no A.
+**Comprobado en el HP y en la Pi el 2026-10-24.** Sunshine queda en **v2025.924.154138**: es la última versión compatible con Windows 10 y **no se actualiza**. El HDMI del HP no va a ningún monitor. Virtual Display Driver **25.7.23** pone una pantalla de **1920×1080**, que es la que captura Sunshine. Moonlight en la Pi está emparejado. Orbit lo detecta por `srvcert` en la sección `[hosts]` de `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, no por `pairState`. Cambiar sistema, la vista integrada y la pantalla completa se probaron de verdad. Windows 10 Home no trae servidor RDP. No hay cifras de latencia ni de fps.
+
+Cambiar la entrada de la MSI con `ddcutil` (`ORBIT_VIDEO_DDC`) está en el código y apagado. Los manuales de la MSI no mencionan DDC/CI ni MCCS. El UGREEN no está identificado y probablemente va al revés. Valores VCP: PENDIENTE.
 
 ---
 
@@ -256,9 +306,9 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 | PR | Qué se decidió y por qué |
 |---|---|
 | **#1** (merge `861db16`) | Entra el v0: investigación, CAD paramétrico y software **solo en simulación**. Nada probado en hardware. Se conserva la licencia Apache-2.0 de Miguel. |
-| **#2** (merge `68be364`) | CAD v1: 2 potenciómetros + 2 botones con Arduino Micro, sin KVM, impresora Bambu Lab A1 y PETG. Las medidas de mandos son de catálogo genérico. El Micro lo sustituye el cambio de abajo; esta fila se queda como historia. |
+| **#2** (merge `68be364`) | CAD v1: 2 potenciómetros + 2 botones con Arduino Micro, sin KVM, impresora Bambu Lab A1. El material de impresión vigente es PLA+ negro mate. Las medidas de mandos son de catálogo genérico. El Micro lo sustituye el cambio de abajo; esta fila se queda como historia. |
 | **#3** (merge `fc4837b`) | El HP Slimline se saca de la caja y entra la placa desnuda, sin cambiar la envolvente. El adaptador de 65 W se queda fuera y sin modificar. El cambio de sistema pasa a ser automático desde Orbit OS (entonces A y después B). |
-| **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Entra el modo C. El modo B pasa a poco probable porque los manuales de la MSI no documentan DDC/CI. |
+| **#4** (merge `21cd5af`) | Medidas reales: placa 17 × 17 cm y 35 mm. El agujero F del v2 estaba alineado con C; el estándar lo desplaza 22,86 mm y el v3 lo corrige. Cambiar la entrada de la MSI queda como poco probable porque los manuales no documentan DDC/CI. |
 | **#5** (merge `bf6d641`) | Renders del CAD v3, no fotos, con créditos de qué es exacto y qué es aproximado. En un commit aparte, la lámina con recortes de fotos: Miguel autorizó publicar esa imagen. |
 | **#6** (merge `3978879`) | El disco del modelo pasa al Toshiba 3,5" porque es el que hay, no un SSD pendiente de comprar. Las patas suben a 14 mm: con 8 mm la plancha chocaba con las pletinas. Los colisos siguen SFF-8301 (3,18 mm al lateral), no la medición a ojo. Las torretas de empalme llevan paso Ø3,4 en la cara superior. El agujero del inserto de los separadores queda abierto por arriba: antes lo cerraba una tapa de 0,17 mm. Entran la guía de impresión de la base, la pared de prueba, la plantilla ya comprobada y la de pivotes (Miguel prefiere pivotes a tornillos; el diámetro ganador no se conoce). |
 | **#7** (merge `05ac19f`) | Después de la base: STEP AP214 para SolidWorks, el orden de las 15 piezas siguientes (los STL no se duplican) y el manual de montaje de 21 páginas. La plantilla de pivotes sigue sin resultado. Los STEP de malla se editan peor; `05_carcasa_x1_y0` tiene 12 triángulos cruzados. |
@@ -268,7 +318,7 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 ## 9. Restricciones
 
-- No se compra nada sin autorización de Miguel. La capturadora es una propuesta, no un pedido.
+- No se compra nada sin autorización de Miguel.
 - No se suben credenciales, tokens reales, `.env` ni fotos personales. La única excepción de imagen es la lámina autorizada del PR #5.
 - No se añade telemetría de uso ni envío de datos fuera. La telemetría que ya existe es local: psutil en la máquina donde corre orbitd o hp-agent, para la propia interfaz.
 - Nada va conectado a la red eléctrica dentro de la cuña. La fuente original del HP no se modifica y se queda fuera.
@@ -283,33 +333,82 @@ Prioridad en código: B si está listo, si no C si está configurado, si no A.
 
 1. **Resultado de la impresión de la base** (en marcha el 2026-10-20) y de lo ya lanzado: `pomo_x2`. El soporte del Nano de mandos ya está pasado a imprimir; el STL no se ha vuelto a cambiar el 2026-10-21. Si llegó a salir el del Micro, no vale. El soporte 2,5" ya dio un resultado: salió pequeño. La bandeja de servicio ya está impresa y no se regenera. El riel y los tres carros son STL nuevos, sin imprimir.
 2. **Diámetro de pivote** (C 3,8 / F 3,6 / H 3,4 / J 3,2) cuando Miguel pruebe `hardware/impresion/plantillas/PRUEBA_plantilla_pivotes_HP.stl`. Sigue **sin resultado**. Es la pieza 01 de `hardware/impresion/siguientes/README.md`.
-3. **HAT VHF:** medidas, y si deja pasar el cabezal de 40 pines. La Pi es una Pi 4 (Miguel, 2026-10-20). Por qué entrada da imagen en la MSI sigue abierto.
+3. **HAT VHF:** medidas, y si deja pasar el cabezal de 40 pines. La Pi es una Pi 4 (Miguel, 2026-10-20). La MSI va solo a la Pi; la imagen del HP llega por Moonlight, no por otra entrada del monitor.
 4. **Posiciones de los puertos y teclas del canto del MSI.**
 5. **Medidas de los potenciómetros y de los pulsadores** de Miguel (el eje de 6 mm está acordado y sin medir). Medir también el Nano clon, el ESP8266 de la foto y, cuando se elija, el módulo OLED. El segundo Nano no consta en la foto.
 6. **Tipo y tensión de la tira LED.** De eso depende si WLED en el ESP necesita desplazador de nivel. GPIO2 (D4 en la mayoría de NodeMCU) es el dato por defecto de WLED y tiene que estar en alto al arrancar.
 7. **Patillaje del botón de encendido del HP** (polímetro, H-6). No se inventa.
 8. **BIOS:** Wake-on-LAN y «After Power Loss» (H-11).
-9. **Instalar y arrancar en la Pi** (aún no hecho):
+9. **La Pi y el HP ya arrancan Orbit OS 1.0.0** (comprobado el 2026-10-24). Para actualizar o volver atrás, usar los comandos de la sección 11. No hace falta clonar de nuevo ni grabar el Nano. En un PC de desarrollo, la simulación sigue siendo `./scripts/setup-dev.sh` y `./scripts/dev-sim.sh`.
 
-```bash
-sudo apt install -y git nodejs npm python3-venv
-git clone https://github.com/Sopa-IA/Control-deck
-cd Control-deck
-./scripts/setup-dev.sh
-./scripts/dev-sim.sh
-```
+También siguen abiertos: el calibre de cada conector trasero del HP (la placa usa la foto del 2026-10-23, ±2 mm; la prueba lo comprueba antes de pegar), los agujeros reales de la pestaña del I/O frontal (el marco trae dos a 60 mm y se taladra la chapa), antenas, cables SATA, diámetro del jack, probar en la Pi el apagado desde Orbit OS (el software ya llama a `systemctl poweroff` tras confirmar; no se ha hecho en la Pi), `wss://`, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el cuerpo real de las regletas (el modelo usa 5,1 × 8,5 mm de catálogo), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente. El volumen del HP en Windows es el pendiente de software de abajo: el deslizador ya está en el código y en el HP real no responde.
 
-Eso deja orbitd en simulación. El hardware real sigue pendiente: token, `--serial` (ejemplo `/dev/ttyUSB0`; confirmar con `/dev/serial/by-id`), hp-agent y el visor del modo A o C.
+### Pendientes de software anotados por Miguel el 2026-10-24
 
-También siguen abiertos: posición real de cada conector trasero del HP, placa I/O impresa, antenas, cables SATA, diámetro del jack, `pi.shutdown`, volumen del HP en Windows, `wss://`, servicios de arranque, bootloader del clon (nuevo u `atmega328old`), cuánto tarda ese reinicio (los 2 s son diseño), si el tapón mini-USB pasa por el canal de 10 mm, el recorte real del USB de panel (el hueco es 14 × 8, diseño), la orientación de la OLED y el pin de 3,3 V del clon (puede no existir). Los cuatro USB de la Pi 4 quedan ocupados en el reparto de diseño; no se ha medido la corriente.
+**No implementar todavía.** Solo quedan escritos para el siguiente agente.
 
-De la bahía (2026-10-21), sin probar en la bandeja impresa: que un inserto M3 corto entre en el agujero Ø4 de ~4 mm de cada torreta DC y en el de ~3,3 mm bajo cada mortise; el ajuste del cajeado Ø8,4 y del tetón; si el carro de 30 × 70 (2,3 mm hasta el borde de la bandeja) cabe con la placa real; las medidas del ESP, del Nano clon y de cualquier otra placa que se quiera montar. El puesto y = 90 no se usa a la vez que los otros dos.
+1. Un botón en Orbit OS que, al pulsarlo, conecte el teclado Bluetooth. La reconexión automática no le basta. El teclado ya está emparejado.
+2. La temperatura del HP sigue sin salir en Orbit, pese a LibreHardwareMonitor. La fila se queda en raya. CPU, RAM, disco, red y tiempo activo sí salen.
+3. El volumen del HP desde Orbit no funciona en real. El deslizador es la acción `hp.volume_set`. Bloquear y Apagar sí funcionan.
+
+### Pendientes de hardware que se mantienen
+
+Potenciómetros y pulsadores sin cablear y sin medir. Tira LED sin tipo ni tensión. Compras **FALTA**, sin comprar nada hasta que Miguel lo diga: Dupont hembra acodado a 90° (uno por pin; 30 por cada Nano, y los del ESP al contarlos), step-down LM2596 de 43 × 21 mm a 5 V, regleta macho 2×20, regleta macho 2×12 (pines de al menos 11 mm) y cables Dupont hembra-hembra. El detalle de impresión, pivotes, HAT y el resto de la lista de arriba no se borra.
+
+De la bandeja con huecos fijos (2026-10-22), sin probar en una pieza impresa: el módulo real del step-down (el CAD usa un LM2596 típico de 43 × 21 mm, agujeros a 3,5 mm de la esquina); el ESP de la foto (58 × 31); el tramo sin pines del canto corto (el apoyo es de 2,0 mm); el largo de las clavijas y el HAT. El riel suelto y los carros no se montan. La guía de los insertos cortos de las torretas DC era de esa bahía y ya no aplica a esta bandeja.
 
 ---
 
 ## 11. Cómo lo retoma un agente
 
-Desde la raíz del repo. OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
+La rama de trabajo es `cursor/bandeja-v2-modular-6d15` (PR #9, borrador). No fusionar sin Miguel. No grabar el Nano. No actualizar Sunshine. No hace falta contraseña, token ni domicilio para seguir estas líneas: el instalador del HP pide la contraseña de la Pi en el momento y no la escribe en pantalla.
+
+### Cómo actualizar la Pi
+
+El proceso de orbitd que ya está en marcha no carga el Python nuevo. El instalador construye la interfaz y hace `daemon-reload`, y no hace `systemctl restart orbitd`. Hace falta reiniciar.
+
+```bash
+cd /home/orbit/Control-deck
+git pull
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+### Cómo actualizar el HP
+
+En el HP, PowerShell **como administrador**. Volver a pegar la línea basta: el instalador se puede repetir y no borra la configuración. Siempre baja el zip de la **punta** de `cursor/bandeja-v2-modular-6d15`. Un `git checkout` en la Pi no cambia lo que hay en el HP. El cable `10.0.0.1` no lleva internet: el HP baja por su Wi-Fi. Actualizar la Pi antes que el HP. Si el agente nuevo habla con un orbitd viejo, la telemetría entera puede rechazarse.
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
+```
+
+### Cómo volver a una versión anterior
+
+El punto conocido anterior a la red en kb/s, el volumen y la puerta de ruido de los potenciómetros es **`738be94`** («El instalador de la Pi ya no toca el perfil Wi-Fi»). No usar `de6ffba`: es anterior y deshace ese arreglo del Wi-Fi, la pausa del kiosco en `/run` y el instalador del HP.
+
+Solo si **no** se ha vuelto a lanzar `instalar-hp.ps1` después de este checkout. Si el HP ya tiene el agente nuevo (`volume_pct` y `volume_muted`) y la Pi vuelve a `738be94`, orbitd rechaza **toda** la telemetría y la CPU desaparece hasta regresar a la rama y reinstalar en la Pi. El instalador del HP no baja un commit viejo: un checkout en la Pi no vuelve atrás el HP. Mientras no se haya relanzado ese instalador, el agente viejo del HP sigue coincidiendo con `738be94`.
+
+```bash
+cd /home/orbit/Control-deck
+git checkout 738be94
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+Para volver a la rama:
+
+```bash
+cd /home/orbit/Control-deck
+git checkout cursor/bandeja-v2-modular-6d15
+sudo bash scripts/instalar-pi.sh
+sudo reboot
+```
+
+Después, si el HP se había quedado en el agente viejo y hace falta el de la rama, repetir la línea de PowerShell de arriba.
+
+### CAD y pruebas, desde la raíz del repo
+
+OpenSCAD de este entorno: **2021.01**. Esa versión no admite `-I`; los scripts de la base incluyen `piezas.scad` por ruta absoluta.
 
 ```bash
 # Ver el ensamblaje (no exporta)
@@ -341,7 +440,7 @@ openscad -o /tmp/pared.stl hardware/impresion/base/prueba_pared_trasera_io.scad
 | Comprobación | Resultado |
 |---|---|
 | `exportar.sh` | **No** se ha lanzado: borra todos los STL. El 2026-10-20 se regeneraron el soporte y `carcasa_x1_y1`. El 2026-10-21 solo el riel y los tres carros. La bandeja no. El soporte **no** se ha vuelto a exportar. |
-| `comprobar_interferencias.py` | Salida 0 el 2026-10-21. **SIN INTERFERENCIAS**, 23 cajas, en `carro_conjunto = "nano_esp"` y en `"nano_proto"`. Envolvente 456,3 × 300,5 × 153,9 mm. Carro del Nano ≥ 3 mm (tina). Tramo de anclaje del riel ≥ 3 mm (canal USB). ESP, proto, capturadora y adaptador ≥ 10 mm. La capturadora comprobada mide 67,2 mm de ancho, no 72. **I/O frontal y pulsador del HP: holgura mínima ≥ 0 mm**. OLED ≥ 1 mm. El script los marca OK; 0 mm no es holgura de montaje. |
+| `comprobar_interferencias.py` | Salida 0 el 2026-10-21 con la bandeja v2, en `carro_conjunto = "nano_esp"` (23 cajas) y en `"nano_proto"` (22 cajas). Envolvente 456,3 × 300,5 × 153,9 mm. Clavijas USB-A de la Pi ≥ 5 mm a la pared. Carro del Nano de prácticas ≥ 1 mm a la tina. La clavija del RJ45 queda a ≥ 1 mm de una orejeta trasera de 11 mm de alto. **I/O frontal y pulsador del HP: holgura mínima ≥ 0 mm**. OLED ≥ 1 mm. El script los marca OK; 0 mm no es holgura de montaje. |
 | `comprobar_stl.py` | Salida 0 el 2026-10-21. Las 24 caben y son mallas cerradas. |
 | `comprobar_base_hdd.py` | Salida 0. Plancha a 2,0 mm del borde de la placa, pata más cercana a 1,0 mm, pila bajo la plancha con 0,6 mm frente a la cabeza 6-32 (cota de cabeza pendiente). |
 | `verificar_separadores.py` | Salida 0. C y F abiertos en `base_x0_y1`; H y J abiertos en `base_x0_y0` (centro y r = 1,5 huecos en z = 10,27 y z = 7,35; r = 3,5 sólido). Las bases x1 no tienen esos separadores. |

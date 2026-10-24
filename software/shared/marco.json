@@ -1,0 +1,9 @@
+{
+  "screen_w": 1920,
+  "screen_h": 1080,
+  "bar_px": 40,
+  "sidebar_px": 48,
+  "fps": 60,
+  "hp_host": "10.0.0.1",
+  "app": "Desktop"
+}

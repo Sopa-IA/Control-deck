@@ -1,13 +1,13 @@
 // Estado de la interfaz y reductor puro de mensajes del protocolo.
-import type {
-  ActionResultPayload, ConfirmRequiredPayload, ControlEventPayload, MappingPayload, Message, Mode, NodeState, StatePayload, TelemetryPayload,
+import {
+  ACTIONS, type ActionResultPayload, type ConfirmRequiredPayload, type ControlEventPayload, type MappingPayload, type Message, type Mode, type NodeState, type StatePayload, type TelemetryPayload,
 } from '@shared/ts/protocol';
 
 export type SourceKind = 'sim' | 'ws';
 export type ConnStatus = 'conectando' | 'conectado' | 'desconectado';
 
 export interface ControlReading extends ControlEventPayload { ts: number }
-export interface LogEntry { ts: number; level: 'info' | 'ok' | 'warn' | 'error'; text: string; simulated?: boolean }
+export interface LogEntry { ts: number; level: 'info' | 'ok' | 'warn' | 'error'; text: string; simulated?: boolean; count?: number }
 
 export interface OrbitState {
   source: SourceKind;
@@ -19,7 +19,9 @@ export interface OrbitState {
   controls: Record<string, ControlReading>;
   mapping: MappingPayload | null;
   pendingConfirm: ConfirmRequiredPayload | null;
-  /** Sistema visible y modo de cambio (remoto = visor del HP en la Pi; ddc = entrada de la MSI por DDC/CI; captura = capturadora HDMI->USB en la Pi). */
+  /** Acción enviada y aún sin respuesta. */
+  busyAction: string | null;
+  /** Sistema visible (remoto = Moonlight en la Pi; ddc = entrada de la MSI por DDC/CI). */
   visible: StatePayload['visible'] | null;
   log: LogEntry[];
 }
@@ -27,7 +29,7 @@ export interface OrbitState {
 export const initialState = (source: SourceKind): OrbitState => ({
   source, conn: 'conectando', mode: null,
   nodes: { hp: null, pi: null, arduino: null },
-  telemetry: {}, controls: {}, mapping: null, pendingConfirm: null, visible: null, log: [],
+  telemetry: {}, controls: {}, mapping: null, pendingConfirm: null, busyAction: null, visible: null, log: [],
 });
 
 export type OrbitEvent =
@@ -35,17 +37,55 @@ export type OrbitEvent =
   | { kind: 'conn'; conn: ConnStatus; detail?: string }
   | { kind: 'log'; entry: LogEntry }
   | { kind: 'clear_confirm' }
+  | { kind: 'busy'; action: string | null }
   | { kind: 'reset'; source: SourceKind };
 
+function limpiar(message: string): string {
+  let text = message.trim();
+  text = text.replace(/^(DRY-RUN|SIMULADO)\s*[·:.-]*\s*/i, '');
+  text = text.replace(/^[a-z][a-z0-9_.]*:\s*/i, '');
+  text = text.replace(/«[^»]*»/g, '');
+  text = text.replace(/\s{2,}/g, ' ').replace(/\s+([.,])/g, '$1').trim();
+  text = text.replace(/^ejecutaría\s*/i, '').trim();
+  text = text.replace(/sin implementación real en \w+\s*\(PENDIENTE\)/gi, 'no está disponible en este equipo');
+  text = text.replace(/\bPENDIENTE\b/gi, '').replace(/\s{2,}/g, ' ').trim();
+  if (!text || /^ok$/i.test(text)) return '';
+  return text;
+}
+
+/** Texto del registro: en español, sin la orden interna y sin repetir la clave de la acción. */
+export function textoAccion(p: ActionResultPayload): string {
+  const nombre = ACTIONS[p.action]?.label ?? 'Acción';
+  const detalle = limpiar(p.message);
+  if (p.simulated) return detalle ? `Simulación. ${nombre}: ${detalle}` : `Simulación. ${nombre}: no se ha hecho en el equipo.`;
+  if (!p.ok) return detalle ? `${nombre}: ${detalle}` : `${nombre}: no se ha podido hacer.`;
+  if (p.dry_run) return detalle ? `${nombre}: ${detalle}` : `${nombre}: preparado, sin ejecutar.`;
+  return detalle ? `${nombre}: ${detalle}` : `${nombre}: hecho.`;
+}
+
+const ERRORES: Record<string, string> = {
+  not_allowed: 'Esa acción no está permitida.',
+  target_offline: 'El equipo no está conectado.',
+  confirm_expired: 'La confirmación ha caducado. Vuelve a intentarlo.',
+  bad_params: 'Esos datos no valen.',
+};
+
 const MAX_LOG = 60;
-const pushLog = (log: LogEntry[], e: LogEntry) => [e, ...log].slice(0, MAX_LOG);
+export function pushLog(log: LogEntry[], e: LogEntry): LogEntry[] {
+  const head = log[0];
+  if (head && head.text === e.text && head.level === e.level && !!head.simulated === !!e.simulated) {
+    return [{ ...head, ts: e.ts, count: (head.count ?? 1) + 1 }, ...log.slice(1)];
+  }
+  return [e, ...log].slice(0, MAX_LOG);
+}
 
 export function reduce(s: OrbitState, ev: OrbitEvent): OrbitState {
   switch (ev.kind) {
     case 'reset': return initialState(ev.source);
     case 'conn': return { ...s, conn: ev.conn, connDetail: ev.detail };
     case 'log': return { ...s, log: pushLog(s.log, ev.entry) };
-    case 'clear_confirm': return { ...s, pendingConfirm: null };
+    case 'clear_confirm': return { ...s, pendingConfirm: null, busyAction: null };
+    case 'busy': return { ...s, busyAction: ev.action };
     case 'message': {
       const m = ev.msg;
       const now = ev.now ?? Date.now();
@@ -70,12 +110,12 @@ export function reduce(s: OrbitState, ev: OrbitEvent): OrbitState {
         case 'confirm_required': return { ...s, pendingConfirm: (m as Message<'confirm_required'>).payload };
         case 'action_result': {
           const p = m.payload as ActionResultPayload;
-          const tag = p.simulated ? 'SIMULADO · ' : p.dry_run ? 'DRY-RUN · ' : '';
-          return { ...s, log: pushLog(s.log, { ts: now, level: p.ok ? 'ok' : 'warn', text: `${tag}${p.action}: ${p.message}`, simulated: p.simulated }) };
+          return { ...s, busyAction: null, log: pushLog(s.log, { ts: now, level: p.ok ? 'ok' : 'warn', text: textoAccion(p), simulated: p.simulated }) };
         }
         case 'error': {
           const p = (m as Message<'error'>).payload;
-          return { ...s, log: pushLog(s.log, { ts: now, level: 'error', text: `${p.code}: ${p.message}` }) };
+          const text = ERRORES[p.code] ?? (p.message || 'No se ha podido.');
+          return { ...s, busyAction: null, log: pushLog(s.log, { ts: now, level: 'error', text }) };
         }
         default: return s;
       }

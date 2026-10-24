@@ -1,5 +1,6 @@
 // Fuente REAL: conecta con orbitd. No inventa datos: si no hay conexión, la interfaz lo muestra.
 import { isMessage, makeMessage, type Message } from '@shared/ts/protocol';
+import { ORBIT_VERSION } from '../version';
 import type { DataSource } from './source';
 import type { ConnStatus } from './state';
 
@@ -19,7 +20,7 @@ export class WsDataSource implements DataSource {
       try { ws = new WebSocket(this.url); } catch (e) { onStatus('desconectado', String(e)); return; }
       this.ws = ws;
       ws.onopen = () => {
-        const hello = makeMessage('hello', 'ui', { role: 'ui', client: 'orbit-interface', version: '0.1.0', ...(this.token ? { token: this.token } : {}) });
+        const hello = makeMessage('hello', 'ui', { role: 'ui', client: 'orbit-interface', version: ORBIT_VERSION, ...(this.token ? { token: this.token } : {}) });
         ws.send(JSON.stringify(hello));
       };
       ws.onmessage = (ev) => {
@@ -33,7 +34,7 @@ export class WsDataSource implements DataSource {
       ws.onclose = () => {
         this.ws = null;
         if (this.closed) return;
-        onStatus('desconectado', `sin conexión con orbitd (${this.url}); reintento en ${Math.round(this.retry / 1000)} s`);
+        onStatus('desconectado', `Sin conexión. Reintento en ${Math.round(this.retry / 1000)} s.`);
         this.timer = setTimeout(open, this.retry);
         this.retry = Math.min(this.retry * 2, 15000);
       };
