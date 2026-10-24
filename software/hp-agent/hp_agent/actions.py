@@ -8,6 +8,8 @@ from typing import Optional
 
 import orbit_protocol as P
 
+from .volume import VolumeDevice, apply_windows
+
 log = logging.getLogger("hp_agent.actions")
 
 PENDIENTE = None  # marcador: sin implementación real en este sistema operativo
@@ -43,9 +45,14 @@ def command_for(action: str, params: dict, system: str, apps: dict[str, list[str
 
 
 def run_action(action: str, params: dict, *, live: bool, apps: dict[str, list[str]],
-               system: Optional[str] = None) -> dict:
+               system: Optional[str] = None, volume_device: Optional[VolumeDevice] = None) -> dict:
     """Ejecuta (o simula en dry-run) una acción. Devuelve payload de action_result."""
     system = system or platform.system()
+    if system == "Windows" and action in ("hp.volume_set", "hp.volume_mute"):
+        try:
+            return apply_windows(action, params, live=live, device=volume_device)
+        except P.ProtocolError as exc:
+            return {"action": action, "ok": False, "dry_run": not live, "simulated": False, "message": exc.message}
     try:
         cmd = command_for(action, params, system, apps)
     except P.ProtocolError as exc:

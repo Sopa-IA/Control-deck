@@ -27,7 +27,7 @@
   },
   "control_functions": {
     "$comment": "Funciones asignables a potenciómetros (kind=pot) y botones (kind=button) desde la sección Controles. ui.* las resuelve la interfaz; hp.*/pi.* las resuelve orbitd contra la lista blanca.",
-    "none":               { "kinds": ["pot", "button"], "label": "Sin asignar" },
+    "none":               { "kinds": ["pot", "button"], "label": "Ninguna (desactivado)" },
     "hp.volume_set":      { "kinds": ["pot"],           "label": "Volumen del HP" },
     "ui.scroll":          { "kinds": ["pot"],           "label": "Desplazar lista / foco" },
     "ui.brightness":      { "kinds": ["pot"],           "label": "Brillo de la interfaz (atenuación en pantalla)" },

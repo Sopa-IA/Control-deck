@@ -3,6 +3,7 @@ import marco from '@shared/marco.json';
 import { useOrbit } from '../data/OrbitContext';
 import { StatusDot, useNow } from './ui';
 import { formatClock, formatPct } from '../lib/format';
+import { useHpVolume } from '../lib/useHpVolume';
 
 const LEDS = ['off', 'ambar', 'respirar', 'sistema'] as const;
 
@@ -10,7 +11,7 @@ const LEDS = ['off', 'ambar', 'respirar', 'sistema'] as const;
 export function Marco() {
   const { state, requestAction } = useOrbit();
   const now = useNow(1000);
-  const [vol, setVol] = useState(40);
+  const { vol, muted, onChange: onVol, onRelease: releaseVol } = useHpVolume((level) => requestAction('hp.volume_set', { level }));
   const [led, setLed] = useState(0);
   const layout = state.visible?.layout ?? 'integrado';
   const sidebar = state.visible?.sidebar ?? 'cerrado';
@@ -33,12 +34,9 @@ export function Marco() {
         <b className="marco-clock">{formatClock(new Date(now), true)}</b>
         <span className="marco-stat"><StatusDot ok={state.nodes.hp?.connected} sim={sim} /> HP {formatPct(hp?.cpu_pct)} · {formatPct(hp?.mem_pct)}</span>
         <span className="marco-stat"><StatusDot ok={state.nodes.pi?.connected} sim={state.nodes.pi?.simulated} /> π {formatPct(pi?.cpu_pct)} · {formatPct(pi?.mem_pct)}</span>
-        <label className="marco-vol">Vol
-          <input type="range" min={0} max={100} value={vol} aria-label="Volumen del HP" onChange={(e) => {
-            const level = Number(e.target.value);
-            setVol(level);
-            requestAction('hp.volume_set', { level });
-          }} />
+        <label className="marco-vol">{muted ? 'Silencio' : 'Vol'}
+          <input type="range" min={0} max={100} value={vol} aria-label="Volumen del HP"
+            onChange={(e) => onVol(Number(e.target.value))} onPointerUp={releaseVol} onKeyUp={releaseVol} onBlur={releaseVol} />
         </label>
         <button className="marco-btn" onClick={() => {
           const mode = LEDS[(led + 1) % LEDS.length];

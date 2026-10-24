@@ -23,6 +23,7 @@ export interface TelemetryPayload {
   host: 'hp' | 'pi'; simulated: boolean; hostname?: string; model?: string; os?: string;
   cpu_pct: number; mem_pct: number; mem_used_mb?: number; mem_total_mb?: number; disk_pct?: number;
   temp_c?: number | null; uptime_s?: number; net_up_kbps?: number; net_down_kbps?: number;
+  volume_pct?: number; volume_muted?: boolean;
 }
 export interface ControlEventPayload { control: string; kind: 'pot' | 'button'; value?: number; event?: 'press' | 'release' | 'long'; simulated: boolean }
 export interface ActionRequestPayload { action: string; params?: Record<string, unknown>; dry_run?: boolean }

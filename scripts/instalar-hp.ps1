@@ -373,6 +373,8 @@ if (-not (Test-Path -LiteralPath $venvW)) {
 if ($LASTEXITCODE -ne 0) { throw "pip no se actualizó. El HP necesita internet, además del cable 10.0.0.1." }
 & $venvPy -m pip install -e (Join-Path $Destino 'software\shared\python') -e (Join-Path $Destino 'software\hp-agent')
 if ($LASTEXITCODE -ne 0) { throw "No se instaló hp-agent. El HP necesita internet para PyPI." }
+& $venvPy -m pip install "pycaw>=20230615" "comtypes>=1.2"
+if ($LASTEXITCODE -ne 0) { throw "No se instaló pycaw (volumen de Windows). El HP necesita internet para PyPI." }
 
 $toml = Join-Path $env:APPDATA 'orbit\hp-agent.toml'
 Write-Paso "Leo el token en la Pi (no se muestra)"
@@ -415,6 +417,7 @@ if ($DryRun) {
 }
 Write-Host "Tarea: $Tarea. Estado: $estado. Último resultado: $($info.LastTaskResult)."
 Write-Host "En Orbit OS, Sistemas, la tarjeta del HP tiene que decir hp-agent conectado."
+Write-Host "Antes, en la Pi: git pull e instalar-pi.sh. Si el HP se actualiza primero, orbitd viejo puede rechazar la telemetría porque ahora puede llevar volumen."
 Write-Host "La temperatura puede salir como raya: este Windows no da sensores a psutil."
 Write-Host "Registro: $log"
 Write-Host "Comprobar la tarea: schtasks /Query /TN $Tarea /FO LIST /V"

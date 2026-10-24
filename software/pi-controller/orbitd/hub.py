@@ -17,6 +17,7 @@ import orbit_protocol as P
 from . import __version__
 from .ardu_lab import FQBN_OLD, ArduLab
 from .power import power_allowed, read_device_model, run_power
+from .pots import PotGate, normalize_mapping
 from .serial_events import NANO_RESET_WAIT_S, Hello, SerialReader, SimControls, parse_line
 from .telemetry import local_telemetry, simulated_hp_telemetry
 from .video import VideoConfig, VideoSwitcher
@@ -94,7 +95,9 @@ class Hub:
             sketch_dir=cfg.ardu_sketch_dir or (cfg.state_dir / "ardu-lab"),
             by_path=cfg.ardu_by_path, cli=cfg.ardu_cli, fqbn=cfg.ardu_fqbn, serial_fallback=cfg.serial_port or "")
         self._last_volume_sent = 0.0
+        self._last_volume_level: Optional[int] = None
         self._volume_pending: Optional[int] = None
+        self._pot_gate = PotGate()
         self._tasks: list[asyncio.Task] = []
         self._serial: Optional[SerialReader] = None
         self.sim_controls = (
@@ -131,11 +134,20 @@ class Hub:
         return self.cfg.state_dir / "controls.json"
 
     def _load_mapping(self) -> dict:
-        try:
-            m = json.loads(self._mapping_path().read_text(encoding="utf-8"))
-            return P.check_mapping({"version": 1, "pots": m["pots"], "buttons": m["buttons"]})
-        except (OSError, ValueError, KeyError, P.ProtocolError):
+        path = self._mapping_path()
+        if not path.is_file():
             return P.load_default_mapping()
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            mapping, changed = normalize_mapping(raw)
+            mapping = P.check_mapping(mapping)
+        except (OSError, ValueError, KeyError, TypeError, P.ProtocolError):
+            # Un archivo ilegible no se borra: se usa el de fábrica solo en memoria.
+            return P.load_default_mapping()
+        self.mapping = mapping
+        if changed:
+            self._save_mapping()
+        return mapping
 
     def _save_mapping(self) -> None:
         try:
@@ -292,7 +304,15 @@ class Hub:
             }
             await self.execute(pend["action"], pend["params"], c, msg["id"])
         elif t == "mapping_set":
-            m = P.check_mapping({"version": 1, "pots": p["pots"], "buttons": p["buttons"]})
+            # version 2: los pots de fábrica ya pasaron a none. No volver a escribir 1,
+            # o el siguiente arranque desharía lo que el usuario acaba de guardar.
+            try:
+                version = int(p.get("version") or 2)
+            except (TypeError, ValueError):
+                version = 2
+            if version < 2:
+                version = 2
+            m = P.check_mapping({"version": version, "pots": p["pots"], "buttons": p["buttons"]})
             self.mapping = m
             self._save_mapping()
             await self.broadcast_ui("mapping", m)
@@ -400,12 +420,28 @@ class Hub:
             self.arduino["detail"] = f"{ev.firmware} v{ev.version}: {ev.pots} pots, {ev.buttons} botones"
             await self.broadcast_ui("state", self.state_payload())
             return
+        if ev["kind"] == "pot" and not simulated:
+            decision = self._pot_gate.feed(ev["control"], int(ev.get("value") or 0))
+            if decision.show is None:
+                return
+            ev = dict(ev, value=decision.show)
+            self.last_controls[ev["control"]] = ev
+            await self.broadcast_ui("control_event", ev)
+            fn = self.mapping["pots"].get(ev["control"], "none")
+            if fn == "hp.volume_set" and decision.act and decision.level is not None:
+                if decision.level != self._last_volume_level:
+                    self._last_volume_level = decision.level
+                    self._volume_pending = decision.level
+            return
         if ev["kind"] == "pot":
             self.last_controls[ev["control"]] = ev
         await self.broadcast_ui("control_event", ev)
         fn = (self.mapping["pots"] if ev["kind"] == "pot" else self.mapping["buttons"]).get(ev["control"], "none")
         if fn == "hp.volume_set" and ev["kind"] == "pot":
-            self._volume_pending = round(ev["value"] * 100 / 1023)
+            lvl = round(ev["value"] * 100 / 1023)
+            if lvl != self._last_volume_level:
+                self._last_volume_level = lvl
+                self._volume_pending = lvl
         elif ev["kind"] == "button" and fn in P.ACTIONS:
             if P.ACTIONS[fn]["confirm"]:
                 # Un toque corto no apaga. Mantener pulsado pide la confirmación en pantalla.

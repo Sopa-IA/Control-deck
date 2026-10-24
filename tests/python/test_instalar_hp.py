@@ -56,6 +56,8 @@ def test_una_linea_winget_zip_venv_y_tarea():
     assert "StrictHostKeyChecking=accept-new" in t
     assert "RedirectStandardOutput = $true" in t
     assert "instalar-hp.ps1 -Desinstalar" in t
+    assert "pycaw>=20230615" in t
+    assert "comtypes>=1.2" in t
 
 
 def test_no_imprime_el_token():

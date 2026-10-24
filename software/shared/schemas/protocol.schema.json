@@ -115,7 +115,9 @@
         "temp_c": { "type": ["number", "null"] },
         "uptime_s": { "type": "number", "minimum": 0 },
         "net_up_kbps": { "type": "number", "minimum": 0 },
-        "net_down_kbps": { "type": "number", "minimum": 0 }
+        "net_down_kbps": { "type": "number", "minimum": 0 },
+        "volume_pct": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "volume_muted": { "type": "boolean" }
       }
     },
     "control_event": {

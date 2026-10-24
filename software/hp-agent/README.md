@@ -17,5 +17,5 @@ python -m hp_agent --hub ws://10.0.0.2:8765/ws --live   # ejecuta las órdenes d
 - **Token:** se toma de `ORBIT_HP_TOKEN` o del archivo local `%APPDATA%\orbit\hp-agent.toml` / `~/.config/orbit/hp-agent.toml` (copiar de `hp-agent.example.toml`). El instalador lo lee por ssh del `.env` de la Pi y no lo imprime. Nunca va en el repositorio. En Windows el registro `%LOCALAPPDATA%\orbit\hp-agent.log` tampoco lo guarda: si apareciera en un mensaje, se sustituye.
 - **Apagado y reinicio:** se programan con 60 s de margen (`shutdown /s /t 60`) y se pueden anular con `hp.shutdown_cancel`.
 - **Temperatura:** en Windows `psutil.sensors_temperatures` no existe como dato (`NotImplementedError`). La telemetría sigue, con `temp_c` vacío. La tarjeta lo enseña como raya.
-- **Pendiente en Windows:** volumen, silencio y reproducir/pausar no tienen orden nativa (habría que usar pycaw o nircmd). El agente responde `ok: false` explicando que está PENDIENTE.
+- **Volumen en Windows:** `hp.volume_set` y `hp.volume_mute` usan pycaw sobre la salida por defecto. La telemetría puede llevar `volume_pct` y `volume_muted` (opcionales). Reproducir/pausar sigue pendiente.
 - El modelo, en Windows, se lee del registro (`SystemProductName`). No probado aún en el HP real.

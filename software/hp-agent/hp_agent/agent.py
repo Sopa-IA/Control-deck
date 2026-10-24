@@ -7,6 +7,7 @@ import json
 import logging
 import platform
 import socket
+import subprocess
 import time
 
 import aiohttp
@@ -17,6 +18,7 @@ import orbit_protocol as P
 from . import __version__
 from .actions import run_action
 from .config import AgentConfig
+from .volume import read_default
 
 log = logging.getLogger("hp_agent")
 
@@ -47,7 +49,30 @@ def os_label() -> str:
     return f"{system} {platform.release()}"[:128]
 
 
-def _cpu_temp_c() -> float | None:
+_temp_cache: tuple[float, float | None] | None = None
+_TEMP_TTL_S = 30.0
+
+
+def celsius_from_acpi_tenths(raw: str) -> float | None:
+    """MSAcpi_ThermalZoneTemperature.CurrentTemperature viene en décimas de kelvin.
+
+    Fuera de 5–100 °C se descarta: un cero o un valor absurdo no se enseña.
+    """
+    for line in raw.splitlines():
+        piece = line.strip()
+        if not piece:
+            continue
+        try:
+            value = float(piece)
+        except ValueError:
+            continue
+        celsius = value / 10.0 - 273.15
+        if 5.0 <= celsius <= 100.0:
+            return round(celsius, 1)
+    return None
+
+
+def _temp_psutil() -> float | None:
     # En Windows psutil.sensors_temperatures lanza NotImplementedError. No es un fallo del agente.
     try:
         readings = psutil.sensors_temperatures() or {}
@@ -57,6 +82,41 @@ def _cpu_temp_c() -> float | None:
         if values:
             return round(values[0].current, 1)
     return None
+
+
+def _temp_windows_cached() -> float | None:
+    global _temp_cache
+    now = time.monotonic()
+    if _temp_cache is not None and now - _temp_cache[0] < _TEMP_TTL_S:
+        return _temp_cache[1]
+    value = _read_acpi_temp()
+    _temp_cache = (now, value)
+    return value
+
+
+def _read_acpi_temp() -> float | None:
+    if platform.system() != "Windows":
+        return None
+    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    try:
+        done = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command",
+             "Get-CimInstance -Namespace root/wmi -ClassName MSAcpi_ThermalZoneTemperature "
+             "-ErrorAction SilentlyContinue | Select-Object -ExpandProperty CurrentTemperature"],
+            capture_output=True, text=True, timeout=1.5, creationflags=flags,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return celsius_from_acpi_tenths(done.stdout or "")
+
+
+def _cpu_temp_c() -> float | None:
+    got = _temp_psutil()
+    if got is not None:
+        return got
+    if platform.system() != "Windows":
+        return None
+    return _temp_windows_cached()
 
 
 # Lectura anterior de bytes enviados y recibidos, para pasar de contadores a kb/s.
@@ -119,12 +179,19 @@ def telemetry() -> dict:
     except OSError:
         disk = 0.0
     up, down = _net_kbps()
-    return {"host": "hp", "simulated": False, "hostname": socket.gethostname()[:64],
-            "model": machine_model(), "os": os_label(),
-            "cpu_pct": round(psutil.cpu_percent(interval=None), 1), "mem_pct": round(vm.percent, 1),
-            "mem_used_mb": round((vm.total - vm.available) / 2**20, 1), "mem_total_mb": round(vm.total / 2**20, 1),
-            "disk_pct": round(disk, 1), "temp_c": _cpu_temp_c(), "uptime_s": round(time.time() - psutil.boot_time()),
-            "net_up_kbps": up, "net_down_kbps": down}
+    out = {"host": "hp", "simulated": False, "hostname": socket.gethostname()[:64],
+           "model": machine_model(), "os": os_label(),
+           "cpu_pct": round(psutil.cpu_percent(interval=None), 1), "mem_pct": round(vm.percent, 1),
+           "mem_used_mb": round((vm.total - vm.available) / 2**20, 1), "mem_total_mb": round(vm.total / 2**20, 1),
+           "disk_pct": round(disk, 1), "temp_c": _cpu_temp_c(), "uptime_s": round(time.time() - psutil.boot_time()),
+           "net_up_kbps": up, "net_down_kbps": down}
+    # Opcional: un orbitd anterior no conoce estas claves y rechazaría toda la telemetría.
+    # La Pi tiene que actualizarse antes que el HP. Si no hay mezclador, no se envían.
+    heard = read_default()
+    if heard is not None:
+        out["volume_pct"] = heard[0]
+        out["volume_muted"] = heard[1]
+    return out
 
 
 async def run_once(cfg: AgentConfig) -> None:

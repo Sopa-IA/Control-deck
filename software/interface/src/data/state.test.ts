@@ -30,6 +30,19 @@ describe('reductor de estado', () => {
     expect(s.pendingConfirm).toBeNull();
   });
 
+  it('el registro agrupa la misma línea y no la repite', () => {
+    let s = initialState('ws');
+    const line = { action: 'hp.volume_set', ok: false, dry_run: false, message: 'hp.volume_set: sin implementación real en Windows (PENDIENTE)' };
+    for (let i = 0; i < 12; i++) {
+      s = reduce(s, { kind: 'message', now: i, msg: makeMessage('action_result', 'pi', line) });
+    }
+    expect(s.log).toHaveLength(1);
+    expect(s.log[0].count).toBe(12);
+    s = reduce(s, { kind: 'message', msg: makeMessage('action_result', 'pi', { ...line, message: 'volumen al 40%, con sonido' }) });
+    expect(s.log).toHaveLength(2);
+    expect(s.log[0].text).toContain('volumen al 40%');
+  });
+
   it('el registro está acotado', () => {
     let s = initialState('ws');
     for (let i = 0; i < 100; i++) s = reduce(s, { kind: 'log', entry: { ts: i, level: 'info', text: `${i}` } });

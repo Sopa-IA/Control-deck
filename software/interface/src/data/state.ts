@@ -7,7 +7,7 @@ export type SourceKind = 'sim' | 'ws';
 export type ConnStatus = 'conectando' | 'conectado' | 'desconectado';
 
 export interface ControlReading extends ControlEventPayload { ts: number }
-export interface LogEntry { ts: number; level: 'info' | 'ok' | 'warn' | 'error'; text: string; simulated?: boolean }
+export interface LogEntry { ts: number; level: 'info' | 'ok' | 'warn' | 'error'; text: string; simulated?: boolean; count?: number }
 
 export interface OrbitState {
   source: SourceKind;
@@ -38,7 +38,13 @@ export type OrbitEvent =
   | { kind: 'reset'; source: SourceKind };
 
 const MAX_LOG = 60;
-const pushLog = (log: LogEntry[], e: LogEntry) => [e, ...log].slice(0, MAX_LOG);
+export function pushLog(log: LogEntry[], e: LogEntry): LogEntry[] {
+  const head = log[0];
+  if (head && head.text === e.text && head.level === e.level && !!head.simulated === !!e.simulated) {
+    return [{ ...head, ts: e.ts, count: (head.count ?? 1) + 1 }, ...log.slice(1)];
+  }
+  return [e, ...log].slice(0, MAX_LOG);
+}
 
 export function reduce(s: OrbitState, ev: OrbitEvent): OrbitState {
   switch (ev.kind) {

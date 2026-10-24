@@ -25,7 +25,7 @@ La línea se puede repetir. Sin `-DryRun` deja otra vez el modo real. No cambia 
 
 6. Si no hay Python 3.12, lo instala con winget (`Python.Python.3.12`). Si winget no está o no lo deja, baja el instalador oficial `python-3.12.10-amd64.exe` y lo ejecuta en silencio.
 7. Baja el zip de la rama `cursor/bandeja-v2-modular-6d15` a `C:\Orbit\Control-deck`. No hace falta git.
-8. Crea `C:\Orbit\Control-deck\.venv` e instala `software/shared/python` y `software/hp-agent`.
+8. Crea `C:\Orbit\Control-deck\.venv` e instala `software/shared/python`, `software/hp-agent`, `pycaw` y `comtypes`. pycaw es el volumen de la salida por defecto. No cambia el token ni la tarea.
 9. Por ssh, como `orbit@10.0.0.2`, lee `ORBIT_HP_TOKEN` del `.env` de la raíz del clon. En la Pi ese archivo es `/home/orbit/Control-deck/.env`: lo escribe `scripts/gen-token.sh` y `scripts/instalar-pi.sh` no lo regenera si ya existe. `/etc/orbit/orbitd.env` tiene una copia, pero es de root y el usuario `orbit` no la lee.
 10. Escribe `%APPDATA%\orbit\hp-agent.toml` con `hub_url = "ws://10.0.0.2:8765/ws"` y `live = true`. Con `-DryRun`, `live = false`. El archivo no se enseña.
 11. Crea la tarea oculta `OrbitHpAgent`. Arranca al iniciar sesión, con `pythonw.exe -m hp_agent --live`, sin ventana. Con `-DryRun` los argumentos son `-m hp_agent`, sin `--live`. Si el proceso se cae, el Programador de tareas lo relanza al minuto, hasta 999 veces, y no tiene límite de horas. La arranca ya.
@@ -38,7 +38,7 @@ La línea se puede repetir. Sin `-DryRun` deja otra vez el modo real. No cambia 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p -DryRun
 ```
 
-13. En vivo, Bloquear llama a `rundll32.exe user32.dll,LockWorkStation`. Apagar es `shutdown /s /t 60`. Reiniciar es `shutdown /r /t 60`. Anular es `shutdown /a`. Volumen, silencio y reproducir/pausar siguen sin orden en Windows: el agente responde que está pendiente.
+13. En vivo, Bloquear llama a `rundll32.exe user32.dll,LockWorkStation`. Apagar es `shutdown /s /t 60`. Reiniciar es `shutdown /r /t 60`. Anular es `shutdown /a`. El volumen y el silencio usan el mezclador de Windows (pycaw), sobre la salida por defecto. Reproducir/pausar sigue pendiente. La Pi tiene que actualizarse antes que el HP: si no, orbitd rechaza la telemetría nueva.
 14. Para volver al modo real, otra vez la línea del paso 2, sin `-DryRun`.
 
 ## Comprobar

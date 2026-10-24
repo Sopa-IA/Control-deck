@@ -66,7 +66,9 @@ async def test_ui_handshake_state_mapping(server):
         assert st["payload"]["hp"]["connected"] is False and st["payload"]["video_input"] == "pi"
         assert st["payload"]["visible"]["system"] == "pi" and st["payload"]["visible"]["mode"] == "remoto"
         mp = await recv(ws, "mapping")
-        assert mp["payload"]["pots"]["P1"] == "hp.volume_set"
+        assert mp["payload"]["pots"]["P1"] == "none"
+        assert mp["payload"]["pots"]["P2"] == "none"
+        assert mp["payload"]["buttons"]["B2"] == "pi.switch_visible"
         tel = await recv(ws, "telemetry")
         assert tel["payload"]["host"] == "pi" and tel["payload"]["simulated"] is False
 
@@ -176,11 +178,21 @@ async def test_mapping_set_and_serial_to_volume(server):
         await send(ui, "mapping_set", {"pots": {"P1": "hp.volume_set"}, "buttons": {"B1": "hp.volume_mute"}})
         assert (await recv(ui, "mapping"))["payload"]["buttons"]["B1"] == "hp.volume_mute"
         hub = server.app[HUB_KEY]
-        await hub.on_serial_line("P1 1023\n")
+        for _ in range(3):
+            await hub.on_serial_line("P1 0\n")
+        base = await recv(ui, "control_event")
+        assert base["payload"]["value"] == 0
+        assert hub._volume_pending is None
+        for _ in range(3):
+            await hub.on_serial_line("P1 1023\n")
         ev = await recv(ui, "control_event")
         assert ev["payload"] == {"control": "P1", "kind": "pot", "value": 1023, "simulated": False}
         fwd = await recv(hp, "action")
         assert fwd["payload"] == {"action": "hp.volume_set", "params": {"level": 100}}
+        await hub.on_serial_line("P1 1023\n")
+        await hub.on_serial_line("P1 1020\n")
+        await hub.on_serial_line("P1 1023\n")
+        assert hub._volume_pending is None
         await hub.on_serial_line("B1 1\n")
         fwd = await recv(hp, "action")
         assert fwd["payload"]["action"] == "hp.volume_mute"
@@ -210,7 +222,9 @@ async def test_real_hp_agent_client_dry_run(server):
 
 
 async def test_ui_gets_last_pot_values_on_connect(server):
-    await server.app[HUB_KEY].on_serial_line("P2 300")
+    hub = server.app[HUB_KEY]
+    for _ in range(3):
+        await hub.on_serial_line("P2 300")
     async with aiohttp.ClientSession() as s:
         ui = await connect(s, server)
         ev = await recv(ui, "control_event")

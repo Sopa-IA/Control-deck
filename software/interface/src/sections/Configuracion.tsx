@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { CONTROL_FUNCTIONS, canAssign } from '@shared/ts/protocol';
 import { useOrbit } from '../data/OrbitContext';
 import { usePlanetMotion } from '../components/Planet';
 import { Panel } from '../components/ui';
 
 export function Configuracion({ brightness, setBrightness }: { brightness: number; setBrightness: (n: number) => void }) {
-  const { state, setSource, wsUrl, setWsUrl } = useOrbit();
+  const { state, setSource, setMapping, wsUrl, setWsUrl } = useOrbit();
   const [url, setUrl] = useState(wsUrl);
   const [token, setToken] = useState(sessionStorage.getItem('orbit.uiToken') ?? '');
   const [motion, setMotion] = usePlanetMotion();
@@ -19,6 +20,19 @@ export function Configuracion({ brightness, setBrightness }: { brightness: numbe
         <label className="field"><span>URL de orbitd</span><input value={url} onChange={(e) => setUrl(e.target.value)} /></label>
         <label className="field"><span>Token de interfaz (opcional; solo en esta sesión)</span><input type="password" value={token} onChange={(e) => setToken(e.target.value)} autoComplete="off" /></label>
         <button className="btn btn-primary" onClick={() => { sessionStorage.setItem('orbit.uiToken', token); setWsUrl(url); setSource('ws'); }}>Conectar</button>
+      </Panel>
+      <Panel title="Potenciómetros">
+        <p className="muted">Vienen en Ninguna. A0 y A1 no están cableados: déjalos así hasta que lo estén. Lo mismo se guarda desde Controles.</p>
+        {Object.keys(state.mapping?.pots ?? {}).sort().map((id) => (
+          <label key={id} className="field"><span>{id}</span>
+            <select value={state.mapping?.pots[id] ?? 'none'} onChange={(e) => {
+              if (!state.mapping) return;
+              setMapping({ ...state.mapping, version: Math.max(2, state.mapping.version ?? 2), pots: { ...state.mapping.pots, [id]: e.target.value } });
+            }}>
+              {Object.entries(CONTROL_FUNCTIONS).filter(([k]) => canAssign(k, 'pot')).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+          </label>
+        ))}
       </Panel>
       <Panel title="Pantalla">
         <label className="field"><span>Brillo de la interfaz: {brightness}%</span>

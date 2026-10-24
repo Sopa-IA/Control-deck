@@ -17,6 +17,7 @@ export function simTelemetry(host: 'hp' | 'pi', t: number): TelemetryPayload {
       mem_used_mb: round(8192 * (41 + 4 * Math.sin(s / 30)) / 100), mem_total_mb: 8192, disk_pct: 63,
       temp_c: round(44 + 6 * Math.sin(s / 11)), uptime_s: Math.round(15_300 + fase), net_up_kbps: round(Math.abs(120 * Math.sin(s / 5))),
       net_down_kbps: round(Math.abs(900 * Math.sin(s / 3))),
+      volume_pct: 40, volume_muted: false,
     };
   }
   return {

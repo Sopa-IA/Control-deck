@@ -95,7 +95,7 @@ No hay cifras de latencia ni de fps: no se han medido.
 
 `.env`, `*.env` (salvo `*.env.example`), `config.local.*`, `secrets/`, `*.token`, `*.pem` y `*.key` están en `.gitignore`. El token de los tests es el fixture que ya existía (`token-de-prueba-0123456789`).
 
-Asignación por defecto (`controls.default.json`): P1 `hp.volume_set`, P2 `ui.scroll`, B1 `ui.power_menu`, B2 `pi.switch_visible`. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El volumen del HP lo aplica hp-agent.
+Asignación por defecto (`controls.default.json`, version 2): P1 y P2 en `none`, B1 `ui.power_menu`, B2 `pi.switch_visible`. Un `controls.json` de la version 1 con esos pots de fábrica pasa a `none` una sola vez; lo que se guarde después se queda. El volumen HID no es posible: el Nano es un ATmega328P, sin USB nativo. `ENABLE_HID_VOLUME 1` no compila. El volumen del HP lo aplica hp-agent.
 
 ---
 

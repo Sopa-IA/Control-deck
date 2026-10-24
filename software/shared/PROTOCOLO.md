@@ -45,7 +45,7 @@ Todos los mensajes son objetos JSON de texto de 16 KiB como máximo. El esquema 
 | `error` | cualquiera | `auth_failed`, `bad_message`, `not_allowed`, `bad_params`, `target_offline`, `confirm_expired`, `rate_limited` o `internal` |
 | `ping` / `pong` | orbitd ↔ cliente | Latido |
 | `state` | orbitd → ui | Estado de nodos (hp, pi, arduino): `connected`, `simulated`, `last_seen` |
-| `telemetry` | hp → orbitd → ui; orbitd → ui (pi) | CPU, RAM, disco, temperatura, uptime. **`simulated` es obligatorio** |
+| `telemetry` | hp → orbitd → ui; orbitd → ui (pi) | CPU, RAM, disco, temperatura, uptime, red. Volumen (`volume_pct`, `volume_muted`) opcional. **`simulated` es obligatorio**. Un agente viejo, sin esas claves, sigue valiendo |
 | `control_event` | orbitd → ui | Potenciómetro (`value` de 0 a 1023) o botón (`press`, `release` o `long`), con `simulated` |
 | `action_request` | ui → orbitd | Petición de acción de la lista blanca |
 | `confirm_required` | orbitd → ui | La acción es destructiva y requiere confirmación con un desafío |
@@ -73,7 +73,7 @@ Está definida **una sola vez** en `actions.json`, y la leen la interfaz, orbitd
 2. Los parámetros se validan con el mini-esquema de cada acción (`bad_params`), sin propiedades adicionales.
 3. **Nunca se ejecuta texto arbitrario.** hp-agent traduce cada acción a una orden fija (lista de argumentos, sin shell). `hp.open_app` solo acepta un identificador que exista en la lista de aplicaciones de la configuración local del agente.
 4. Un `python -m hp_agent` a mano arranca en **dry-run por defecto**: registra lo que haría y responde `dry_run: true`. Para ejecutar de verdad hace falta `--live`, o `live = true` en el toml. La tarea que deja `scripts/instalar-hp.ps1` en el HP lleva `--live` y `live = true`. `-DryRun` en ese instalador deja solo la telemetría.
-5. Límite de frecuencia: `hp.volume_set` se agrupa a un máximo de 10 por segundo; el resto de acciones, a 5 por segundo por conexión (`rate_limited`).
+5. Límite de frecuencia: `hp.volume_set` se agrupa a un máximo de 10 por segundo; el resto de acciones, a 5 por segundo por conexión (`rate_limited`). Un potenciómetro no repite el mismo nivel. Por defecto P1 y P2 están en `none`. Un cambio menor del 3 %, o una entrada que salta al azar, no dispara la acción.
 
 ## 6. Apagado seguro (acciones con `confirm: true`)
 

@@ -68,7 +68,7 @@ export function Controles() {
             <li key={e.control}><b>{e.control}</b> {e.kind === 'pot' ? `= ${e.value}` : e.event} <span className="muted">{ago(e.ts)}</span> <SimTag show={e.simulated} /></li>
           ))}
         </ul>
-        <p className="muted small-note">Los encoders se han sustituido por potenciómetros + botones leídos por un Arduino Nano. El Nano no tiene USB nativo: no hay volumen HID. El volumen del HP lo aplica orbitd a través de hp-agent.</p>
+        <p className="muted small-note">Los potenciómetros vienen en Ninguna (desactivado). A0 y A1 del Nano de mandos no están cableados: al aire leen ruido y, si tuvieran una función, la mandarían sin parar. Cuando se cableen, elige la función aquí o en Configuración y guarda. Un cambio menor del 3 % no cuenta, y una entrada que salta al azar no dispara acciones. El mismo nivel no se repite.</p>
       </Panel>
     </div>
   );

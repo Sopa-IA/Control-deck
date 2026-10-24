@@ -9,7 +9,8 @@ def test_commands_windows_and_linux():
     assert actions.command_for("hp.shutdown", {}, "Linux", {}) == ["shutdown", "-h", "+1"]
     assert actions.command_for("hp.shutdown_cancel", {}, "Windows", {}) == ["shutdown", "/a"]
     assert actions.command_for("hp.volume_set", {"level": 30}, "Linux", {})[-1] == "30%"
-    assert actions.command_for("hp.volume_set", {"level": 30}, "Windows", {}) is None  # PENDIENTE
+    # En Windows no hay una orden de consola: el volumen va por el mezclador.
+    assert actions.command_for("hp.volume_set", {"level": 30}, "Windows", {}) is None
 
 
 def test_dry_run_never_executes(monkeypatch):
@@ -212,6 +213,71 @@ def test_un_contador_que_retrocede_no_sale_negativo(monkeypatch):
     )
     assert agent._net_kbps() == (0.0, 0.0)
     assert agent._net_kbps() == (0.0, 0.0)
+
+
+class _Mezclador:
+    def __init__(self):
+        self.level = 10
+        self.muted = False
+        self.touched = False
+
+    def get(self):
+        return self.level, self.muted
+
+    def set_level(self, level):
+        self.touched = True
+        self.level = level
+
+    def set_muted(self, muted):
+        self.touched = True
+        self.muted = muted
+
+
+def test_volumen_windows_en_seco_no_toca_el_mezclador():
+    mix = _Mezclador()
+    r = actions.run_action("hp.volume_set", {"level": 30}, live=False, apps={}, system="Windows", volume_device=mix)
+    assert r["ok"] and r["dry_run"] and not mix.touched
+    assert "30%" in r["message"]
+
+
+def test_volumen_windows_pone_el_nivel_y_alterna_el_silencio():
+    mix = _Mezclador()
+    r = actions.run_action("hp.volume_set", {"level": 30}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert r["ok"] and not r["dry_run"] and mix.level == 30 and "volumen al 30%" in r["message"]
+    mute = actions.run_action("hp.volume_mute", {}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert mute["ok"] and mix.muted and "silenciado" in mute["message"]
+    otra = actions.run_action("hp.volume_mute", {}, live=True, apps={}, system="Windows", volume_device=mix)
+    assert otra["ok"] and not mix.muted and "con sonido" in otra["message"]
+
+
+def test_bloquear_y_apagar_siguen_igual_en_windows():
+    assert actions.command_for("hp.lock_screen", {}, "Windows", {}) == ["rundll32.exe", "user32.dll,LockWorkStation"]
+    assert actions.command_for("hp.shutdown", {}, "Windows", {}) == ["shutdown", "/s", "/t", "60"]
+    assert actions.command_for("hp.shutdown_cancel", {}, "Windows", {}) == ["shutdown", "/a"]
+
+
+def test_temperatura_acpi_descarta_valores_absurdos():
+    import hp_agent.agent as agent
+
+    assert agent.celsius_from_acpi_tenths("3230") == round(3230 / 10 - 273.15, 1)
+    assert agent.celsius_from_acpi_tenths("0\n") is None
+    assert agent.celsius_from_acpi_tenths("no hay sensor") is None
+
+
+def test_la_telemetria_vieja_sigue_valiendo_y_el_volumen_es_opcional(monkeypatch):
+    import orbit_protocol as P
+    import hp_agent.agent as agent
+
+    monkeypatch.setattr(agent, "read_default", lambda: None)
+    agent._last_net = None
+    sin = agent.telemetry()
+    assert "volume_pct" not in sin
+    P.make("telemetry", "hp", {k: sin[k] for k in ("host", "simulated", "cpu_pct", "mem_pct", "disk_pct", "uptime_s")})
+    monkeypatch.setattr(agent, "read_default", lambda: (35, True))
+    con = agent.telemetry()
+    assert con["volume_pct"] == 35 and con["volume_muted"] is True
+    assert con["cpu_pct"] >= 0 and con["disk_pct"] >= 0 and con["uptime_s"] >= 0
+    P.make("telemetry", "hp", con)
 
 
 def test_config_env_overrides_file(tmp_path):
