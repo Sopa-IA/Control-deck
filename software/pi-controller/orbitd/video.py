@@ -35,8 +35,13 @@ log = logging.getLogger("orbitd.video")
 
 _VCP_RE = re.compile(r"^(0x)?[0-9a-fA-F]{1,2}$")
 _DEV_RE = re.compile(r"^/dev/(video[0-9]{1,3}|v4l/by-(id|path)/[A-Za-z0-9._:+-]{1,200})$")
-_ADDR_RE = re.compile(r"(\d+)\\(?:manualAddress|localAddress|remoteAddress|address)=(.*)$")
-_PAIR_RE = re.compile(r"(\d+)\\pairState=(\d+)$")
+# QSettings escapa la barra del array: en el fichero se ve 1\\manualaddress=…
+# También se acepta una sola barra, por si el texto no pasó por ese escape.
+_HOST_KV_RE = re.compile(r"^(\d+)\\+([A-Za-z0-9]+)=(.*)$")
+_ADDR_KEYS = frozenset({
+    "manualaddress", "localaddress", "remoteaddress", "ipv6address", "address", "hostname",
+})
+_HOST_SECTIONS = frozenset({"hosts", "hostsbackup"})
 
 _MARCO_PATH = Path(__file__).resolve().parents[2] / "shared" / "marco.json"
 
@@ -57,26 +62,93 @@ def pairing_message(host: str) -> str:
             "Hasta emparejarlo no se abre el escritorio.")
 
 
-def conf_paired_with(text: str, host: str) -> bool:
-    """QSettings de Moonlight Qt: ``N\\manualAddress`` y ``N\\pairState`` (1 = emparejado)."""
-    addrs: dict[str, set[str]] = {}
-    states: dict[str, int] = {}
+def _unquote(value: str) -> str:
+    v = value.strip()
+    if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
+        return v[1:-1]
+    return v
+
+
+def _srvcert_present(value: str) -> bool:
+    """Un certificado vacío llega como ``@ByteArray()``. Cualquier otro contenido cuenta."""
+    v = _unquote(value).strip()
+    if not v or v == "@Invalid()":
+        return False
+    m = re.fullmatch(r"@ByteArray\((.*)\)", v, flags=re.DOTALL)
+    if not m:
+        return True
+    payload = m.group(1).replace("%00", "").replace("\\0", "").replace("\\x00", "")
+    return bool(payload.strip())
+
+
+def _host_lines(text: str) -> list[str]:
+    """Líneas de ``[hosts]`` y ``[hostsbackup]``. Sin secciones, el texto entero."""
+    current = ""
+    saw_section = False
+    chosen: list[str] = []
+    loose: list[str] = []
     for raw in text.splitlines():
         line = raw.strip()
-        m = _ADDR_RE.match(line)
-        if m:
-            addrs.setdefault(m.group(1), set()).add(m.group(2).strip())
+        if not line or line.startswith("#") or line.startswith(";"):
             continue
-        m = _PAIR_RE.match(line)
-        if m:
-            states[m.group(1)] = int(m.group(2))
-    return any(host in values and states.get(idx, 0) >= 1 for idx, values in addrs.items())
+        if line.startswith("[") and line.endswith("]") and "\\" not in line:
+            saw_section = True
+            name = line[1:-1].strip().lower()
+            current = name if name in _HOST_SECTIONS else ""
+            continue
+        if saw_section:
+            if current:
+                chosen.append(line)
+        else:
+            loose.append(line)
+    return chosen if saw_section else loose
+
+
+def conf_paired_with(text: str, host: str) -> bool:
+    """El HP está emparejado si su dirección coincide y ``srvcert`` no está vacío.
+
+    Moonlight Qt (``nvcomputer.cpp``, ``SER_*``) escribe las claves en minúsculas
+    dentro de ``[hosts]``: ``manualaddress``, ``localaddress``, ``remoteaddress``,
+    ``ipv6address``, ``srvcert``. No guarda ``pairState``. Un ``pairState`` mayor
+    o igual que 1 sigue contando, por ficheros anteriores.
+    """
+    want = host.strip().casefold()
+    if not want:
+        return False
+    found: dict[str, dict] = {}
+    for line in _host_lines(text):
+        m = _HOST_KV_RE.match(line)
+        if not m:
+            continue
+        idx, key, raw_val = m.group(1), m.group(2).casefold(), m.group(3)
+        rec = found.setdefault(idx, {"addrs": set(), "cert": False, "state": None})
+        val = _unquote(raw_val).strip()
+        if key in _ADDR_KEYS and val:
+            rec["addrs"].add(val.casefold())
+        elif key == "srvcert":
+            rec["cert"] = rec["cert"] or _srvcert_present(raw_val)
+        elif key == "pairstate":
+            try:
+                rec["state"] = int(val)
+            except ValueError:
+                continue
+    return any(
+        want in rec["addrs"] and (rec["cert"] or (rec["state"] is not None and rec["state"] >= 1))
+        for rec in found.values()
+    )
 
 
 def moonlight_config_paths(home: Path) -> list[Path]:
+    """QSettings de moonlight-qt en Linux.
+
+    ``main.cpp`` fija la organización «Moonlight Game Streaming Project» y la
+    aplicación «Moonlight». En Raspberry Pi OS, con el usuario orbit, el fichero
+    es ``~/.config/Moonlight Game Streaming Project/Moonlight.conf``.
+    """
+    org = "Moonlight Game Streaming Project"
     return [
-        home / ".config" / "Moonlight Game Streaming Project" / "Moonlight.conf",
-        home / ".config" / "Moonlight Game Streaming Project.conf",
+        home / ".config" / org / "Moonlight.conf",
+        home / ".config" / f"{org}.conf",
     ]
 
 

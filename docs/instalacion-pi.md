@@ -29,7 +29,7 @@ El script se puede repetir. La segunda vez no cambia los tokens de `.env`. No po
 14. Comprueba que existe la aplicación `Desktop`. Si no está, créala como el escritorio de Windows.
 15. En la Pi, fuera del kiosco, empareja: `moonlight-qt pair 10.0.0.1`.
 16. Escribe en Sunshine el PIN de cuatro cifras que muestra Moonlight.
-17. Hasta que ese emparejamiento no esté hecho, Cambiar sistema no abre el HP y Orbit OS lo dice en la pantalla.
+17. Hasta que ese emparejamiento no esté hecho, Cambiar sistema no abre el HP y Orbit OS lo dice en la pantalla. Moonlight lo anota en `~/.config/Moonlight Game Streaming Project/Moonlight.conf`, sección `[hosts]`: la clave es `srvcert`, no `pairState`. Para comprobarlo sin enseñar el certificado, desde la carpeta del repo: `.venv/bin/python -c 'from orbitd.video import moonlight_paired; print("emparejado" if moonlight_paired("10.0.0.1") else "sin emparejar")'`. Tiene que imprimir `emparejado`. Después, `sudo systemctl restart orbitd` para que Sistemas lo vea.
 
 ## Resoluciones, para que no se vea borroso
 

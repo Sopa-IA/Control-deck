@@ -1,6 +1,7 @@
 """Pruebas del cambio de sistema visible (orbitd.video): sin ddcutil ni visor reales."""
 import asyncio
 import sys
+from pathlib import Path
 
 from orbitd.video import VideoConfig, VideoSwitcher
 
@@ -159,7 +160,7 @@ def test_sin_emparejar_no_abre_moonlight(monkeypatch, tmp_path):
 
 def test_emparejado_abre_y_el_boton_cierra(monkeypatch, tmp_path):
     conf = tmp_path / "Moonlight.conf"
-    conf.write_text("[computers]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
+    conf.write_text("[hosts]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
     monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(conf))
     sw = VideoSwitcher(VideoConfig(moonlight_bin=sys.executable, hp_host="10.0.0.1", moonlight_app="Desktop"))
     # El binario de prueba no se llama moonlight: la orden fija evita el emparejamiento.
@@ -178,7 +179,7 @@ def test_emparejado_abre_y_el_boton_cierra(monkeypatch, tmp_path):
 
 def test_al_cerrar_moonlight_vuelve_a_orbit(monkeypatch, tmp_path):
     conf = tmp_path / "Moonlight.conf"
-    conf.write_text("[computers]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
+    conf.write_text("[hosts]\n1\\manualAddress=10.0.0.1\n1\\pairState=1\nsize=1\n", encoding="utf-8")
     monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(conf))
     assert VideoSwitcher(VideoConfig(moonlight_bin="moonlight-qt", hp_host="10.0.0.1")).is_paired()
     sw = VideoSwitcher(VideoConfig(remote_cmd=[sys.executable, "-c", ""], hp_host="10.0.0.1"))
@@ -218,6 +219,73 @@ def test_parser_emparejamiento():
     assert conf_paired_with("1\\manualAddress=10.0.0.1\n1\\pairState=1\n", "10.0.0.1")
     assert not conf_paired_with("1\\manualAddress=10.0.0.1\n1\\pairState=0\n", "10.0.0.1")
     assert not conf_paired_with("1\\manualAddress=10.0.0.9\n1\\pairState=1\n", "10.0.0.1")
+    assert conf_paired_with("1\\manualaddress=10.0.0.1\n1\\srvcert=@ByteArray(CERT)\n", "10.0.0.1")
+
+
+def _conf_moonlight_qt(cert="@ByteArray(CERT)"):
+    """Fichero como lo escribe QSettings: [hosts] y claves en minúsculas, sin pairState."""
+    return "\n".join([
+        "[General]",
+        "certificate=@ByteArray(CLIENTE)",
+        "key=@ByteArray(CLAVE)",
+        "width=1920",
+        "",
+        "[hosts]",
+        "1\\\\hostname=Otro",
+        "1\\\\manualaddress=192.168.1.50",
+        "1\\\\localaddress=192.168.1.50",
+        "1\\\\remoteaddress=",
+        "1\\\\srvcert=@ByteArray()",
+        "1\\\\apps\\\\1\\\\name=Desktop",
+        "1\\\\apps\\\\size=1",
+        "2\\\\hostname=HP",
+        "2\\\\uuid=0123456789abcdef0123456789abcdef",
+        "2\\\\localaddress=10.0.0.1",
+        "2\\\\localport=47989",
+        "2\\\\remoteaddress=",
+        "2\\\\remoteport=47989",
+        "2\\\\manualaddress=10.0.0.1",
+        "2\\\\manualport=47989",
+        "2\\\\ipv6address=",
+        "2\\\\ipv6port=47989",
+        f"2\\\\srvcert={cert}",
+        "2\\\\customname=false",
+        "2\\\\nvidiasw=false",
+        "2\\\\apps\\\\1\\\\name=Desktop",
+        "2\\\\apps\\\\1\\\\id=881448767",
+        "2\\\\apps\\\\size=1",
+        "size=2",
+        "",
+    ])
+
+
+def test_conf_real_de_moonlight_qt():
+    from orbitd.video import conf_paired_with, moonlight_config_paths
+    texto = _conf_moonlight_qt()
+    assert "pairState" not in texto and "manualAddress" not in texto
+    assert "2\\\\manualaddress=10.0.0.1" in texto
+    assert conf_paired_with(texto, "10.0.0.1")
+    assert not conf_paired_with(texto, "192.168.1.50")
+    assert not conf_paired_with(texto, "10.0.0.10")
+    assert not conf_paired_with(_conf_moonlight_qt("@ByteArray()"), "10.0.0.1")
+    assert not conf_paired_with(_conf_moonlight_qt("@ByteArray(%00)"), "10.0.0.1")
+    assert not conf_paired_with(_conf_moonlight_qt('""'), "10.0.0.1")
+    rutas = moonlight_config_paths(Path("/home/orbit"))
+    assert rutas[0] == Path("/home/orbit/.config/Moonlight Game Streaming Project/Moonlight.conf")
+
+
+def test_lee_moonlight_conf_del_usuario(monkeypatch, tmp_path):
+    from orbitd.video import moonlight_paired
+    monkeypatch.delenv("ORBIT_MOONLIGHT_CONFIG", raising=False)
+    destino = tmp_path / ".config" / "Moonlight Game Streaming Project"
+    destino.mkdir(parents=True)
+    (destino / "Moonlight.conf").write_text(_conf_moonlight_qt(), encoding="utf-8")
+    assert moonlight_paired("10.0.0.1", home=tmp_path)
+    assert not moonlight_paired("10.0.0.9", home=tmp_path)
+    sw = VideoSwitcher(VideoConfig(moonlight_bin="moonlight-qt", hp_host="10.0.0.1"))
+    monkeypatch.setenv("ORBIT_MOONLIGHT_CONFIG", str(destino / "Moonlight.conf"))
+    assert sw.is_paired()
+    assert sw.state()["pairing"] == "hecho"
 
 
 def test_ddc_falla_usa_captura(monkeypatch):
