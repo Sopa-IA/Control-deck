@@ -30,7 +30,7 @@ def test_una_linea_winget_zip_venv_y_tarea():
     t = _texto()
     assert "Python.Python.3.12" in t
     assert "https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe" in t
-    assert "$Rama = 'cursor/bandeja-v2-modular-6d15'" in t
+    assert "$Rama = 'main'" in t
     assert "archive/refs/heads/$Rama.zip" in t
     assert r"C:\Orbit\Control-deck" in t
     assert r"software\shared\python" in t

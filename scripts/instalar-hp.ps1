@@ -3,7 +3,7 @@
 # -DryRun deja solo la telemetría. -Desinstalar quita la tarea, la carpeta y la configuración. No desinstala Python.
 #
 # Una línea, en PowerShell como administrador (la contraseña de la Pi la pide ssh; el token no se muestra):
-#   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
+#   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/main/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
 # Solo mirar, la misma línea y al final: -DryRun
 #
 # El token está en el .env de la raíz del clon. scripts/gen-token.sh lo escribe ahí y
@@ -18,7 +18,7 @@ param(
     [string]$PiUser = 'orbit',
     [string]$HubUrl = 'ws://10.0.0.2:8765/ws',
     [string]$Destino = 'C:\Orbit\Control-deck',
-    [string]$Rama = 'cursor/bandeja-v2-modular-6d15'
+    [string]$Rama = 'main'
 )
 
 $ErrorActionPreference = 'Stop'

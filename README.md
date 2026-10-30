@@ -4,7 +4,7 @@
 
 Orbit Terminal es un terminal de sobremesa en forma de cuña que reúne dos mundos en una sola pantalla: un **HP** reutilizado como sistema principal y una **Raspberry Pi** que ejecuta *Orbit OS*. Tiene consola de mandos física (potenciómetros y botones) y luces ámbar.
 
-**Orbit OS 1.0.0** corre en la Raspberry Pi y en el HP (Windows 10 Home 22H2). El registro de cambios está en [`CHANGELOG.md`](CHANGELOG.md). La carcasa **no está lista para fabricar.**
+**Orbit OS 1.0.0** corre en la Raspberry Pi y en el HP (Windows 10). El registro de cambios está en [`CHANGELOG.md`](CHANGELOG.md). La carcasa **no está lista para fabricar.**
 
 > **Para retomar el proyecto sin contexto** (Miguel u otro agente): [`docs/ESTADO-Y-TRASPASO.md`](docs/ESTADO-Y-TRASPASO.md). Ahí están el mapa del repo, lo que Miguel ya tiene, cada STL con su caja medida, cómo llega la imagen del HP y los comandos para comprobar el CAD.
 >
@@ -18,8 +18,8 @@ Detalle en [`docs/decisiones-prototipo.md`](docs/decisiones-prototipo.md).
 
 - **Solo piezas que Miguel ya tiene.**
 - **Pantalla:** MSI PRO MP161 E2U 15,6", 1920×1080, **no táctil**. Se usa con ratón y controles; la interfaz sigue preparada para táctil.
-- **HP:** HP Slimline 260-a110ns **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
-- **Vídeo:** la MSI va solo a la Pi (micro-HDMI a mini-HDMI). La imagen del HP llega por un cable de red directo: el HP en `10.0.0.1` y la Pi en `10.0.0.2`, con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada (barra de Orbit OS y Moonlight sin bordes en el hueco). La pantalla completa es la alternativa. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md).
+- **HP:** PC de sobremesa compacto de HP **desmontado**; su placa mini-ITX va dentro de la cuña (adaptador externo de 19,5 V fuera, DVD retirado). El CAD usa el **HDD Toshiba 3,5"** real (`usar_hdd_35 = true`, cotas SFF-8301). El SSD 2,5" queda como opción del mismo parámetro.
+- **Vídeo:** la MSI va solo a la Pi (micro-HDMI a mini-HDMI). La imagen del HP llega por un cable de red directo: con una IP fija para el HP (`<IP-del-HP>`) y otra para la Pi (`<IP-de-la-Pi>`), con Sunshine en el HP y Moonlight en la Pi. El teclado y el ratón son Bluetooth, emparejados con la Pi. La vista por defecto es integrada (barra de Orbit OS y Moonlight sin bordes en el hueco). La pantalla completa es la alternativa. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md).
 - **Controles:** potenciómetros y botones leídos por un **Arduino Nano** (clon ATmega328P, mini-USB). Sustituye al Micro: el Nano no tiene USB nativo y no puede hacer de teclado HID.
 - **Placa de prácticas:** un segundo Nano, independiente, con pines y una OLED 0,96" en la trasera. Miguel tiene 4 OLED; Orbit usa una. El Uno de la foto no se monta. Se programa desde la sección **Ardu Lab**, sin el IDE. Detalle en [`docs/ardu-lab.md`](docs/ardu-lab.md).
 - **ESP8266 NodeMCU** en su hueco de la bandeja, previsto para la tira LED con WLED. La tira sigue sin identificar.
@@ -65,10 +65,10 @@ Solo la interfaz, con el simulador del navegador: `cd software/interface && npm 
 
 1. **Token:** `./scripts/gen-token.sh` lo guarda en `.env` (ignorado por git). Hay que copiarlo al HP por un canal seguro.
 2. **Raspberry Pi:** en la Pi, con Wi-Fi, `sudo bash scripts/instalar-pi.sh` y reinicia. El detalle, el emparejamiento y cómo salir del kiosco están en [`docs/instalacion-pi.md`](docs/instalacion-pi.md).
-3. **HP (Windows 10):** en PowerShell como administrador, una línea. Hace falta internet en el HP; el cable `10.0.0.1` no lo da. ssh pide la contraseña de la Pi y no muestra el token. Guía: [`docs/instalacion-hp.md`](docs/instalacion-hp.md).
+3. **HP (Windows 10):** en PowerShell como administrador, una línea. Hace falta internet en el HP; el cable directo no lo da. ssh pide la contraseña de la Pi y no muestra el token. Guía: [`docs/instalacion-hp.md`](docs/instalacion-hp.md).
 
    ```powershell
-   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/cursor/bandeja-v2-modular-6d15/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
+   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $u='https://raw.githubusercontent.com/Sopa-IA/Control-deck/main/scripts/instalar-hp.ps1'; $p=Join-Path $env:TEMP 'instalar-hp.ps1'; Invoke-WebRequest -UseBasicParsing -Uri $u -OutFile $p; powershell -NoProfile -ExecutionPolicy Bypass -File $p
    ```
 
    Arranca en vivo: telemetría (CPU, memoria, disco, red en kb/s y temperatura), Bloquear, volumen, silencio, reproducir o pausar, Reiniciar y Apagar (60 s). La misma línea terminada en `-DryRun` deja solo la telemetría. La Pi tiene que actualizarse antes que el HP.
@@ -91,8 +91,8 @@ Las capturas se regeneran con orbitd en marcha y `node scripts/screenshots.mjs` 
 | ESP8266 y tira LED (WLED) | **Requiere intervención humana** | La tira sigue sin identificar. D6 del Nano de mandos ya no se reserva |
 | Apagado de la Pi (`pi.shutdown`) | **Implementado** | Pide confirmación y, en la Pi, llama a systemctl. En el simulador no apaga |
 | Tira de luz ámbar | **Falta conectarla** | Los botones están apagados. No se envía nada |
-| Cambio de lo que se ve (`pi.switch_visible`, botón B2) | **En uso** | La MSI va solo a la Pi. La imagen del HP llega por el cable de red directo (HP `10.0.0.1`, Pi `10.0.0.2`): Sunshine en el HP y Moonlight en la Pi. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md) |
-| HP: **HP Slimline 260-a110ns** (A6-7310, 8 GB, HDMI + VGA, adaptador externo 19,5 V 65 W) | **Identificado y abierto** | **Medido por Miguel:** placa 17 × 17 cm, altura máxima 35 mm. Agujeros: patrón estándar mini-ITX (coincide visualmente con la foto, no medido). Sin escudo I/O. Faltan posición de conectores traseros, botón de encendido, antenas y BIOS: **requieren intervención humana** (`docs/datos-pendientes-hp.md` §A2, con nota de seguridad) |
+| Cambio de lo que se ve (`pi.switch_visible`, botón B2) | **En uso** | La MSI va solo a la Pi. La imagen del HP llega por el cable de red directo (HP `<IP-del-HP>`, Pi `<IP-de-la-Pi>`): Sunshine en el HP y Moonlight en la Pi. Pasos en [`docs/instalacion-pi.md`](docs/instalacion-pi.md) |
+| HP: **PC compacto con placa mini-ITX** (HDMI + VGA, adaptador externo 19,5 V 65 W) | **Identificado y abierto** | **Medido por Miguel:** placa 17 × 17 cm, altura máxima 35 mm. Agujeros: patrón estándar mini-ITX (coincide visualmente con la foto, no medido). Sin escudo I/O. Faltan posición de conectores traseros, botón de encendido, antenas y BIOS: **requieren intervención humana** (`docs/datos-pendientes-hp.md` §A2, con nota de seguridad) |
 | Pi 4 confirmada (2026-10-20) con HAT VHF; conexión a la MSI, medidas del HAT y si deja pasar el GPIO | **Requiere intervención humana** | El HAT no está modelado. Ver `software/arduino-pruebas/README.md` |
 | Cifrado del enlace HP↔Pi (`wss://` / mTLS) | **Pendiente** | v0 usa `ws://` con token: solo en red de confianza o cable directo |
 | Servicios systemd (Pi) y Chromium en kiosco | **En uso** | Sesión `orbit`. En el HP, la tarea `OrbitHpAgent` la crea `scripts/instalar-hp.ps1` |
